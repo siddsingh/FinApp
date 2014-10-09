@@ -10,7 +10,6 @@
 		9E602D1A19E655DF00ACDEC6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1919E655DF00ACDEC6 /* main.m */; };
 		9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */; };
 		9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */; };
-		9E602D2319E655DF00ACDEC6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D2219E655DF00ACDEC6 /* ViewController.m */; };
 		9E602D2619E655DF00ACDEC6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9E602D2419E655DF00ACDEC6 /* Main.storyboard */; };
 		9E602D2819E655DF00ACDEC6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9E602D2719E655DF00ACDEC6 /* Images.xcassets */; };
 		9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */; };
@@ -34,8 +33,6 @@
 		9E602D1B19E655DF00ACDEC6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9E602D1F19E655DF00ACDEC6 /* FinApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FinApp.xcdatamodel; sourceTree = "<group>"; };
-		9E602D2119E655DF00ACDEC6 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		9E602D2219E655DF00ACDEC6 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		9E602D2519E655DF00ACDEC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9E602D2719E655DF00ACDEC6 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		9E602D2A19E655DF00ACDEC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -85,8 +82,6 @@
 			children = (
 				9E602D1B19E655DF00ACDEC6 /* AppDelegate.h */,
 				9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */,
-				9E602D2119E655DF00ACDEC6 /* ViewController.h */,
-				9E602D2219E655DF00ACDEC6 /* ViewController.m */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E602D2719E655DF00ACDEC6 /* Images.xcassets */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
@@ -224,7 +219,6 @@
 			files = (
 				9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */,
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
-				9E602D2319E655DF00ACDEC6 /* ViewController.m in Sources */,
 				9E602D1A19E655DF00ACDEC6 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -349,9 +343,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = FinApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -359,9 +355,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = FinApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -418,6 +416,7 @@
 				9E602D3C19E655DF00ACDEC6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9E602D3D19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "FinAppTests" */ = {
 			isa = XCConfigurationList;
@@ -426,6 +425,7 @@
 				9E602D3F19E655DF00ACDEC6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
