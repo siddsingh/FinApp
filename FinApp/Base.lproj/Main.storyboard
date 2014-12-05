@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WNQ-2i-B77">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WNQ-2i-B77">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Upcoming View Controller-->
@@ -16,31 +17,70 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UPCOMING" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lH9-rm-JDu">
-                                <rect key="frame" x="257" y="28" width="86" height="21"/>
+                            <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Search for a Company or Ticker" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
+                                <rect key="frame" x="160" y="55" width="281" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="0I4-LN-bYm"/>
+                                    <constraint firstAttribute="width" constant="281" id="vrZ-cq-fqZ"/>
+                                </constraints>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
+                                <rect key="frame" x="0.0" y="108" width="600" height="492"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <tableView key="tableFooterView" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="IdK-qx-Llr">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="517"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </tableView>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UPCOMING EVENTS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lH9-rm-JDu">
+                                <rect key="frame" x="227" y="28" width="146" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="CAA-8i-PX1"/>
+                                    <constraint firstAttribute="width" constant="146" id="MGA-VY-RSE"/>
                                     <constraint firstAttribute="width" constant="86" id="lWh-TG-SSE"/>
+                                    <constraint firstAttribute="height" constant="21" id="oCz-iR-kcu"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="CAA-8i-PX1"/>
+                                        <exclude reference="lWh-TG-SSE"/>
+                                    </mask>
+                                </variation>
                             </label>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
-                                <rect key="frame" x="0.0" y="57" width="600" height="543"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="Nql-41-vTF" firstAttribute="top" secondItem="KbY-6m-WGH" secondAttribute="bottom" id="6kb-Kb-Td4"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="KbY-6m-WGH" secondAttribute="trailing" constant="-16" id="Iz9-nn-BuG"/>
+                            <constraint firstItem="lH9-rm-JDu" firstAttribute="top" secondItem="fPu-sh-VAw" secondAttribute="topMargin" constant="28" id="NJ8-tI-peu"/>
+                            <constraint firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="OUY-lb-ibx"/>
+                            <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" constant="-16" id="XNw-9z-wwK"/>
                             <constraint firstAttribute="centerX" secondItem="KbY-6m-WGH" secondAttribute="centerX" id="Xrd-bo-7db"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" id="YYc-TA-BAy"/>
                             <constraint firstAttribute="trailing" secondItem="KbY-6m-WGH" secondAttribute="trailing" id="Yel-CZ-VCU"/>
+                            <constraint firstAttribute="centerX" secondItem="KbY-6m-WGH" secondAttribute="centerX" id="ZPx-EN-Zmh"/>
                             <constraint firstAttribute="centerX" secondItem="lH9-rm-JDu" secondAttribute="centerX" id="anK-za-GYh"/>
                             <constraint firstItem="lH9-rm-JDu" firstAttribute="top" secondItem="QkD-j3-H2X" secondAttribute="bottom" constant="8" id="et4-Ir-NC2"/>
+                            <constraint firstItem="nfw-0u-xss" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" constant="6" id="i1d-5l-ZqH"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" constant="8" id="lpK-IH-YxZ"/>
+                            <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="9" id="s0K-VK-9ey"/>
                             <constraint firstItem="Nql-41-vTF" firstAttribute="top" secondItem="KbY-6m-WGH" secondAttribute="bottom" id="v5Y-Tw-fQx"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="YYc-TA-BAy"/>
+                                <exclude reference="Yel-CZ-VCU"/>
+                                <exclude reference="ZPx-EN-Zmh"/>
+                                <exclude reference="lpK-IH-YxZ"/>
+                                <exclude reference="et4-Ir-NC2"/>
+                                <exclude reference="v5Y-Tw-fQx"/>
+                            </mask>
+                        </variation>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1ub-g1-2Pv" userLabel="First Responder" sceneMemberID="firstResponder"/>
