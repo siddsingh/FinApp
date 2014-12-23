@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WNQ-2i-B77">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WNQ-2i-B77">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Upcoming View Controller-->
         <scene sceneID="itC-Tw-22A">
             <objects>
-                <viewController title="Upcoming View Controller" id="WNQ-2i-B77" sceneMemberID="viewController">
+                <viewController title="Upcoming View Controller" id="WNQ-2i-B77" customClass="FAUpcomingEventsViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="QkD-j3-H2X"/>
                         <viewControllerLayoutGuide type="bottom" id="Nql-41-vTF"/>
@@ -33,6 +33,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </tableView>
+                                <connections>
+                                    <outlet property="dataSource" destination="WNQ-2i-B77" id="RUK-9k-jFq"/>
+                                    <outlet property="delegate" destination="WNQ-2i-B77" id="K4r-Sx-ibt"/>
+                                </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UPCOMING EVENTS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lH9-rm-JDu">
                                 <rect key="frame" x="227" y="28" width="146" height="21"/>
@@ -82,10 +86,13 @@
                             </mask>
                         </variation>
                     </view>
+                    <connections>
+                        <outlet property="eventsListTable" destination="KbY-6m-WGH" id="U1B-qA-4Xm"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1ub-g1-2Pv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="396" y="300"/>
+            <point key="canvasLocation" x="306" y="295"/>
         </scene>
     </scenes>
 </document>
