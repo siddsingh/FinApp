@@ -1,5 +1,5 @@
 //
-//  FAUpcomingEventsViewController.m
+//  FAEventsViewController.m
 //  FinApp
 //
 //  Class that manages the view showing upcoming events.
@@ -8,13 +8,13 @@
 //  Copyright (c) 2014 Sidd Singh. All rights reserved.
 //
 
-#import "FAUpcomingEventsViewController.h"
+#import "FAEventsViewController.h"
 
-@interface FAUpcomingEventsViewController ()
+@interface FAEventsViewController ()
 
 @end
 
-@implementation FAUpcomingEventsViewController
+@implementation FAEventsViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];

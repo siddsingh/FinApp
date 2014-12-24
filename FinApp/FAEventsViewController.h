@@ -1,5 +1,5 @@
 //
-//  FAUpcomingEventsViewController.h
+//  FAEventsViewController.h
 //  FinApp
 //
 //  Class that manages the view showing upcoming events.
@@ -10,7 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FAUpcomingEventsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface FAEventsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 
 // Table for list of events

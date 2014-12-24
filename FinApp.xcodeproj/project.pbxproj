@@ -14,7 +14,8 @@
 		9E602D2819E655DF00ACDEC6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9E602D2719E655DF00ACDEC6 /* Images.xcassets */; };
 		9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */; };
 		9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D3619E655DF00ACDEC6 /* FinAppTests.m */; };
-		9E681D4D1A43B08F00FC5E5D /* FAUpcomingEventsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E681D4C1A43B08F00FC5E5D /* FAUpcomingEventsViewController.m */; };
+		9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */; };
+		9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,8 +41,10 @@
 		9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D3519E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E602D3619E655DF00ACDEC6 /* FinAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinAppTests.m; sourceTree = "<group>"; };
-		9E681D4B1A43B08F00FC5E5D /* FAUpcomingEventsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAUpcomingEventsViewController.h; sourceTree = "<group>"; };
-		9E681D4C1A43B08F00FC5E5D /* FAUpcomingEventsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAUpcomingEventsViewController.m; sourceTree = "<group>"; };
+		9E681D4B1A43B08F00FC5E5D /* FAEventsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventsViewController.h; sourceTree = "<group>"; };
+		9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventsViewController.m; sourceTree = "<group>"; };
+		9E681D4E1A4A660D00FC5E5D /* FAEventsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventsTableViewCell.h; sourceTree = "<group>"; };
+		9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventsTableViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,8 +89,10 @@
 				9E602D1B19E655DF00ACDEC6 /* AppDelegate.h */,
 				9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
-				9E681D4B1A43B08F00FC5E5D /* FAUpcomingEventsViewController.h */,
-				9E681D4C1A43B08F00FC5E5D /* FAUpcomingEventsViewController.m */,
+				9E681D4B1A43B08F00FC5E5D /* FAEventsViewController.h */,
+				9E681D4E1A4A660D00FC5E5D /* FAEventsTableViewCell.h */,
+				9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */,
+				9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */,
 				9E602D2719E655DF00ACDEC6 /* Images.xcassets */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
@@ -222,10 +227,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9E681D4D1A43B08F00FC5E5D /* FAUpcomingEventsViewController.m in Sources */,
+				9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */,
 				9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */,
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
 				9E602D1A19E655DF00ACDEC6 /* main.m in Sources */,
+				9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
