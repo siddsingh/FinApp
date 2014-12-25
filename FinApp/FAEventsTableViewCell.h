@@ -12,4 +12,13 @@
 
 @interface FAEventsTableViewCell : UITableViewCell
 
+// Label that represents the company ticker whose event we are showing.
+@property (weak, nonatomic) IBOutlet UILabel *companyTicker;
+
+// Label that represents the company name whose event we are showing.
+@property (weak, nonatomic) IBOutlet UILabel *companyName;
+
+// Label that represents the event description
+@property (weak, nonatomic) IBOutlet UILabel *eventDescription;
+
 @end

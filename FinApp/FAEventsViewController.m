@@ -9,6 +9,7 @@
 //
 
 #import "FAEventsViewController.h"
+#import "FAEventsTableViewCell.h"
 
 @interface FAEventsViewController ()
 
@@ -25,6 +26,41 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - Events List Table
+
+// Return number of sections in the events list table view
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    // There's only one section for now
+    return 1;
+}
+
+// Return number of rows in the events list table view
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    // TO DO: Placeholder for testing
+    return 1;
+}
+
+// Return a cell configured to display a task or a task nav item
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"EventCell";
+    FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+        
+    // TO DO: Show the company ticker from the database
+    [[cell  companyTicker] setText:@"TSLA"];
+    
+    // TO DO: Show the company name from the database
+    [[cell  companyName] setText:@"Tesla"];
+    
+    // TO DO: Show the event description from the database
+    [[cell  eventDescription] setText:@"Q4 Earnings Call on Jan 12th, 2015"];
+    
+    return cell;
+}
+
 
 /*
 #pragma mark - Navigation
