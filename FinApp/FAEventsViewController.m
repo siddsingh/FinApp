@@ -46,8 +46,8 @@
 // Return a cell configured to display a task or a task nav item
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"EventCell";
-    FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    //static NSString *CellIdentifier = @"EventCell";
+    FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
         
     // TO DO: Show the company ticker from the database
     [[cell  companyTicker] setText:@"TSLA"];
