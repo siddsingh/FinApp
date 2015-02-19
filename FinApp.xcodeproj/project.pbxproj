@@ -16,6 +16,8 @@
 		9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D3619E655DF00ACDEC6 /* FinAppTests.m */; };
 		9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */; };
 		9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */; };
+		9E6D80701A958C9D00E1F2D3 /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D806F1A958C9D00E1F2D3 /* Event.m */; };
+		9E6D80731A958C9E00E1F2D3 /* Company.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80721A958C9E00E1F2D3 /* Company.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +47,10 @@
 		9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventsViewController.m; sourceTree = "<group>"; };
 		9E681D4E1A4A660D00FC5E5D /* FAEventsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventsTableViewCell.h; sourceTree = "<group>"; };
 		9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventsTableViewCell.m; sourceTree = "<group>"; };
+		9E6D806E1A958C9D00E1F2D3 /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
+		9E6D806F1A958C9D00E1F2D3 /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
+		9E6D80711A958C9E00E1F2D3 /* Company.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Company.h; sourceTree = "<group>"; };
+		9E6D80721A958C9E00E1F2D3 /* Company.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Company.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +102,10 @@
 				9E602D2719E655DF00ACDEC6 /* Images.xcassets */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
+				9E6D80711A958C9E00E1F2D3 /* Company.h */,
+				9E6D80721A958C9E00E1F2D3 /* Company.m */,
+				9E6D806E1A958C9D00E1F2D3 /* Event.h */,
+				9E6D806F1A958C9D00E1F2D3 /* Event.m */,
 				9E602D1719E655DF00ACDEC6 /* Supporting Files */,
 			);
 			path = FinApp;
@@ -227,11 +237,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E6D80701A958C9D00E1F2D3 /* Event.m in Sources */,
 				9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */,
 				9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */,
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
 				9E602D1A19E655DF00ACDEC6 /* main.m in Sources */,
 				9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */,
+				9E6D80731A958C9E00E1F2D3 /* Company.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
