@@ -18,6 +18,8 @@
 		9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */; };
 		9E6D80701A958C9D00E1F2D3 /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D806F1A958C9D00E1F2D3 /* Event.m */; };
 		9E6D80731A958C9E00E1F2D3 /* Company.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80721A958C9E00E1F2D3 /* Company.m */; };
+		9E6D80761A9EB49700E1F2D3 /* FADataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80751A9EB49700E1F2D3 /* FADataStore.m */; };
+		9E6D80791AA4E07100E1F2D3 /* FADataController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80781AA4E07100E1F2D3 /* FADataController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,10 @@
 		9E6D806F1A958C9D00E1F2D3 /* Event.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
 		9E6D80711A958C9E00E1F2D3 /* Company.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Company.h; sourceTree = "<group>"; };
 		9E6D80721A958C9E00E1F2D3 /* Company.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Company.m; sourceTree = "<group>"; };
+		9E6D80741A9EB49700E1F2D3 /* FADataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FADataStore.h; sourceTree = "<group>"; };
+		9E6D80751A9EB49700E1F2D3 /* FADataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FADataStore.m; sourceTree = "<group>"; };
+		9E6D80771AA4E07100E1F2D3 /* FADataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FADataController.h; sourceTree = "<group>"; };
+		9E6D80781AA4E07100E1F2D3 /* FADataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FADataController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,12 +100,16 @@
 			children = (
 				9E602D1B19E655DF00ACDEC6 /* AppDelegate.h */,
 				9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */,
+				9E6D80771AA4E07100E1F2D3 /* FADataController.h */,
+				9E6D80781AA4E07100E1F2D3 /* FADataController.m */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E681D4B1A43B08F00FC5E5D /* FAEventsViewController.h */,
 				9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */,
 				9E681D4E1A4A660D00FC5E5D /* FAEventsTableViewCell.h */,
 				9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */,
 				9E602D2719E655DF00ACDEC6 /* Images.xcassets */,
+				9E6D80741A9EB49700E1F2D3 /* FADataStore.h */,
+				9E6D80751A9EB49700E1F2D3 /* FADataStore.m */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
 				9E6D80711A958C9E00E1F2D3 /* Company.h */,
@@ -243,7 +253,9 @@
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
 				9E602D1A19E655DF00ACDEC6 /* main.m in Sources */,
 				9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */,
+				9E6D80761A9EB49700E1F2D3 /* FADataStore.m in Sources */,
 				9E6D80731A958C9E00E1F2D3 /* Company.m in Sources */,
+				9E6D80791AA4E07100E1F2D3 /* FADataController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
