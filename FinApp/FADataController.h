@@ -37,6 +37,7 @@
 
 #pragma mark - Events Data Related
 
-// Insert Event Data
+// Add an Event along with a parent company to the Event Data Store
+
 
 @end

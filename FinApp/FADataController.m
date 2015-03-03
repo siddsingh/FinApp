@@ -12,6 +12,7 @@
 
 #import "FADataController.h"
 #import "FADataStore.h"
+#import "Company.h"
 
 @implementation FADataController
 
@@ -43,7 +44,31 @@
 // it's details only if the ticker doesn't exist.
 - (void)insertUniqueCompanyWithTicker:(NSString *)companyTicker name:(NSString *)companyName
 {
-
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the Company exists by doing a case insensitive query on companyTicker
+    NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    NSPredicate *companyPredicate = [NSPredicate predicateWithFormat:@"ticker =[c] %@",companyTicker];
+    [companyFetchRequest setEntity:companyEntity];
+    [companyFetchRequest setPredicate:companyPredicate];
+    NSError *error;
+    Company *existingCompany = nil;
+    existingCompany  = [[dataStoreContext executeFetchRequest:companyFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting a company from data store, to check uniqueness when inserting, failed: %@",error.description);
+    }
+    
+    // If the Company does not exist, insert it
+    if (!existingCompany) {
+        Company *company = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+        company.ticker = companyTicker;
+        company.name = companyName;
+        // Insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Saving a company that is unique, to the data store, failed: %@",error.description);
+        }
+    }
 }
 
 
