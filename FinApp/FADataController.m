@@ -35,6 +35,20 @@
     return _managedObjectContext;
 }
 
+#pragma mark - Company Data Related
+
+
+// Add company details to the company data store. Current design is that a company
+// is uniquely identified by it's ticker. Thus this method creates the company with
+// it's details only if the ticker doesn't exist.
+- (void)insertUniqueCompanyWithTicker:(NSString *)companyTicker name:(NSString *)companyName
+{
+
+}
+
+
 #pragma mark - Events Data Related
+
+// Insert Event Data
 
 @end

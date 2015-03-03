@@ -46,7 +46,8 @@
 
 #pragma mark - Core Data stack
 
-/*
+/* Not needed since our achitecture uses a Data Controller and Data Store to manage core data storage and retrieval. These mehtods are implemented in there.
+ 
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
