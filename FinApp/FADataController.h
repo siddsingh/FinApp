@@ -38,6 +38,6 @@
 #pragma mark - Events Data Related
 
 // Add an Event along with a parent company to the Event Data Store
-
+- (void)insertEventWithDate:(NSDate *)eventDate details:(NSString *)eventDetails type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker;
 
 @end

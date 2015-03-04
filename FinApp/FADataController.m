@@ -13,6 +13,7 @@
 #import "FADataController.h"
 #import "FADataStore.h"
 #import "Company.h"
+#import "Event.h"
 
 @implementation FADataController
 
@@ -74,6 +75,46 @@
 
 #pragma mark - Events Data Related
 
-// Insert Event Data
+// Add an Event along with a parent company to the Event Data Store
+- (void)insertEventWithDate:(NSDate *)eventDate details:(NSString *)eventDetails type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the parent listed company for the event by doing a case insensitive query on the company ticker
+    NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    [companyFetchRequest setEntity:companyEntity];
+    NSPredicate *companyPredicate = [NSPredicate predicateWithFormat:@"ticker =[c] %@",listedCompanyTicker];
+    [companyFetchRequest setPredicate:companyPredicate];
+    NSError *error;
+    Company *parentCompany = nil;
+    parentCompany  = [[dataStoreContext executeFetchRequest:companyFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting a parent listed company, for inserting an associated event from data store failed: %@",error.description);
+    }
+    
+    // Insert the event with the parent listed company
+    Event *event = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    event.date = eventDate;
+    event.details = eventDetails;
+    event.certainty = eventCertainty;
+    event.listedCompany = parentCompany;
+    if (![dataStoreContext save:&error]) {
+        NSLog(@"ERROR: Saving event to data store failed: %@",error.description);
+    }
+}
 
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
