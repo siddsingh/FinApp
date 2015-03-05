@@ -10,6 +10,7 @@
 
 #import "FAEventsViewController.h"
 #import "FAEventsTableViewCell.h"
+#import "FADataController.h"
 
 @interface FAEventsViewController ()
 
@@ -19,7 +20,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     // Do any additional setup after loading the view.
+    
+    // Get a data controller that you will use later
+    self.eventDataController = [[FADataController alloc] init];
+    
+    // TO DO: Temporaray Data Setup for testing. Erase later
+
+    // Add Three Companies, Apple, Tesla, Electronic Arts
+    
 }
 
 - (void)didReceiveMemoryWarning {

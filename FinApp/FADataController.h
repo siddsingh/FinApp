@@ -40,4 +40,8 @@
 // Add an Event along with a parent company to the Event Data Store
 - (void)insertEventWithDate:(NSDate *)eventDate details:(NSString *)eventDetails type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker;
 
+// Get all Events. Returns a results controller with identities of all Events recorded, but no more
+// than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllEvents;
+
 @end
