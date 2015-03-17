@@ -21,4 +21,10 @@
 // Label that represents the event description
 @property (weak, nonatomic) IBOutlet UILabel *eventDescription;
 
+// Label that represents the date of the event
+@property (weak, nonatomic) IBOutlet UILabel *eventDate;
+
+// Label that represents the certainty of this event
+@property (weak, nonatomic) IBOutlet UILabel *eventCertainty;
+
 @end

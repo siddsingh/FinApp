@@ -11,6 +11,8 @@
 #import "FAEventsViewController.h"
 #import "FAEventsTableViewCell.h"
 #import "FADataController.h"
+#import "Event.h"
+#import "Company.h"
 
 @interface FAEventsViewController ()
 
@@ -29,6 +31,18 @@
     // TO DO: Temporaray Data Setup for testing. Erase later
 
     // Add Three Companies, Apple, Tesla, Electronic Arts
+    [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
+    [self.eventDataController insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla"];
+    [self.eventDataController insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts"];
+    
+    // Add an event each for the three Companies
+    [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q1 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AAPL"];
+    [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q2 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"TSLA"];
+    [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q3 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"EA"];
+    
+    // Query all events as that is the default view first shown
+    self.eventResultsController = [self.eventDataController getAllEvents];
+    NSLog(@"Data Setup and Query done");
     
 }
 
@@ -42,31 +56,72 @@
 // Return number of sections in the events list table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    NSLog(@"Number of sections in table view returned");
     // There's only one section for now
     return 1;
+    
+    
 }
 
 // Return number of rows in the events list table view
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    
     // TO DO: Placeholder for testing
-    return 1;
+    //return 1;
+    
+    //NSLog(@"EventResultsController:::%@", self.eventResultsController);
+    // NSArray *eventSection = [self.eventResultsController sections];
+    //NSLog(@"EventSection:::%@", eventSection);
+    NSLog(@"Number of rows in table view returned");
+    // return 1;
+    //return [eventSection count];
+    id eventSection = [[self.eventResultsController sections] objectAtIndex:section];
+    NSLog(@"**********Number of Events:%lu",(unsigned long)[eventSection numberOfObjects]);
+    return [eventSection numberOfObjects];
 }
 
 // Return a cell configured to display a task or a task nav item
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //static NSString *CellIdentifier = @"EventCell";
+    NSLog(@"Rendering a cell with indexpath");
+    
+/*    FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
+    
+    // Show the company ticker associated with the event
+    [[cell  companyTicker] setText:@"EA"];
+    
+    // Show the company ticker associated with the event
+    [[cell  companyName] setText:@"Electronic Arts"];
+    
+    // Show the event descriotion
+    [[cell  companyName] setText:@"Quarterly Earnings Call"];
+    
+    return cell; */
+    
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
-        
-    // TO DO: Show the company ticker from the database
-    [[cell  companyTicker] setText:@"TSLA"];
     
-    // TO DO: Show the company name from the database
-    [[cell  companyName] setText:@"Tesla"];
+    // Get event to display
+    Event *eventAtIndex;
+    eventAtIndex = [self.eventResultsController objectAtIndexPath:indexPath];
     
-    // TO DO: Show the event description from the database
-    [[cell  eventDescription] setText:@"Q4 Earnings Call on Jan 12th, 2015"];
+    // Show the company ticker associated with the event
+    [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
+    
+    // Show the company ticker associated with the event
+    [[cell  companyName] setText:eventAtIndex.listedCompany.name];
+    
+    // Show the event description
+    [[cell  eventDescription] setText:eventAtIndex.details];
+    
+    // Show the event date
+    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+    [eventDateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
+    [[cell eventDate] setText:eventDateString];
+    
+    // Show the certainty of the event
+    [[cell eventCertainty] setText:eventAtIndex.certainty];
     
     return cell;
 }

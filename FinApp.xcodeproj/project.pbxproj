@@ -20,6 +20,7 @@
 		9E6D80731A958C9E00E1F2D3 /* Company.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80721A958C9E00E1F2D3 /* Company.m */; };
 		9E6D80761A9EB49700E1F2D3 /* FADataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80751A9EB49700E1F2D3 /* FADataStore.m */; };
 		9E6D80791AA4E07100E1F2D3 /* FADataController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80781AA4E07100E1F2D3 /* FADataController.m */; };
+		9E6D807B1AAFDF5800E1F2D3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		9E6D80751A9EB49700E1F2D3 /* FADataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FADataStore.m; sourceTree = "<group>"; };
 		9E6D80771AA4E07100E1F2D3 /* FADataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FADataController.h; sourceTree = "<group>"; };
 		9E6D80781AA4E07100E1F2D3 /* FADataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FADataController.m; sourceTree = "<group>"; };
+		9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E6D807B1AAFDF5800E1F2D3 /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +83,7 @@
 		9E602D0B19E655DF00ACDEC6 = {
 			isa = PBXGroup;
 			children = (
+				9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */,
 				9E602D1619E655DF00ACDEC6 /* FinApp */,
 				9E602D3319E655DF00ACDEC6 /* FinAppTests */,
 				9E602D1519E655DF00ACDEC6 /* Products */,

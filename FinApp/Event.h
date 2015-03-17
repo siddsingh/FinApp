@@ -10,6 +10,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+@class Company;
 
 
 @interface Event : NSManagedObject
@@ -27,6 +28,6 @@
 @property (nonatomic, retain) NSString * certainty;
 
 // Company associated with this event
-@property (nonatomic, retain) NSManagedObject *listedCompany;
+@property (nonatomic, retain) Company *listedCompany;
 
 @end

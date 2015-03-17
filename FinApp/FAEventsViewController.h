@@ -9,8 +9,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
 @class FADataController;
-@class NSFetchedResultsController;
 
 @interface FAEventsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 

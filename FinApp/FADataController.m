@@ -124,6 +124,7 @@
     if (![self.resultsController performFetch:&error]) {
         NSLog(@"ERROR: Getting all events from data store failed: %@",error.description);
     }
+    
     return self.resultsController;
 }
 
