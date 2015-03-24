@@ -39,7 +39,6 @@
 
 #pragma mark - Company Data Related
 
-
 // Add company details to the company data store. Current design is that a company
 // is uniquely identified by it's ticker. Thus this method creates the company with
 // it's details only if the ticker doesn't exist.
@@ -71,7 +70,6 @@
         }
     }
 }
-
 
 #pragma mark - Events Data Related
 
@@ -126,6 +124,69 @@
     }
     
     return self.resultsController;
+}
+
+#pragma mark - Methods to call Data Source APIs
+
+// Get a list of all companies and their tickers. Current algorithm to do this is:
+//
+// 1. Use the metadata call of the Zacks Earnings Announcements (ZEA) database using the following API
+// www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1
+//
+// 2. Use the following columns at the start to get the number of API calls to make to get all
+// companies
+// "total_count":7439,
+// "current_page":1,
+// "per_page":300,
+//
+// 3. On each page get the ticker and parse out the name using the following
+// "code":"AVD",
+// "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)"
+- (void)getAllCompaniesFromApi
+{
+    // The API endpoint URL
+    NSString *endpointURL = @"http://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
+    
+    // Set no of messages being returned per page to 300
+    NSInteger noOfMessagesPerPage = 300;
+    // Set no of results pages, with 300 messages being returned per page, to 1
+    NSInteger noOfPages = 1;
+    // Set page no to 1
+    NSInteger pageNo = 1;
+    
+    // Append no of messages per page to the endpoint URL &per_page=300&page=1
+    endpointURL = [NSString stringWithFormat:@"%@&per_page=%ld",endpointURL,(long)noOfMessagesPerPage];
+    
+    // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
+    while (pageNo <= noOfPages) {
+        
+        // Append page number to the API endpoint URL
+        endpointURL = [NSString stringWithFormat:@"%@&page=%ld",endpointURL,(long)pageNo];
+        
+        NSError * error = nil;
+        NSURLResponse *response = nil;
+        
+        // Make the call synchronously
+        NSData *responseData = [NSURLConnection sendSynchronousRequest:messageRequest returningResponse:&response
+                                                                 error:&error];
+        
+        // Process the response
+        if (error == nil)
+        {
+            // Process the response that contains the first page of companies.
+            // Get back total no of pages of companies in the response.
+            noOfPages = [self processResponse:responseData];
+            
+        } else {
+            // Set initial data fetch state on the user object in core data store to false.
+            [self setInitialDataState:NO];
+            NSLog(@"ERROR: Could not get messages from the Yammer Search endpoint. Error description: %@",error.description);
+        }
+        
+        ++pageNo;
+        endpointURL = @"https://www.yammer.com/api/v1/search.json";
+    }
+    
 }
 
 @end

@@ -44,4 +44,22 @@
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllEvents;
 
+#pragma mark - Methods to call Data Source APIs
+
+// Get a list of all companies and their tickers. Current algorithm to do this is:
+//
+// 1. Use the metadata call of the Zacks Earnings Announcements (ZEA) database using the following API
+// www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1
+//
+// 2. Use the following columns at the start to get the number of API calls to make to get all
+// companies
+// "total_count":7439,
+// "current_page":1,
+// "per_page":300,
+//
+// 3. On each page get the ticker and parse out the name using the following
+// "code":"AVD",
+// "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)"
+- (void)getAllCompaniesFromApi;
+
 @end

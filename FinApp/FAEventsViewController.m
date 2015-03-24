@@ -86,19 +86,6 @@
 {
     NSLog(@"Rendering a cell with indexpath");
     
-/*    FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
-    
-    // Show the company ticker associated with the event
-    [[cell  companyTicker] setText:@"EA"];
-    
-    // Show the company ticker associated with the event
-    [[cell  companyName] setText:@"Electronic Arts"];
-    
-    // Show the event descriotion
-    [[cell  companyName] setText:@"Quarterly Earnings Call"];
-    
-    return cell; */
-    
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
     
     // Get event to display
