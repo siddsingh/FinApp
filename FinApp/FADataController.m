@@ -133,29 +133,24 @@
 // 1. Use the metadata call of the Zacks Earnings Announcements (ZEA) database using the following API
 // www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1
 //
-// 2. Use the following columns at the start to get the number of API calls to make to get all
-// companies
-// "total_count":7439,
-// "current_page":1,
-// "per_page":300,
-//
-// 3. On each page get the ticker and parse out the name using the following
-// "code":"AVD",
-// "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)"
+
 - (void)getAllCompaniesFromApi
 {
+    // To get all the companies use the metadata call of the Zacks Earnings Announcements (ZEA) database using
+    // the following API: www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1
+    
     // The API endpoint URL
     NSString *endpointURL = @"http://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
     
     // Set no of messages being returned per page to 300
-    NSInteger noOfMessagesPerPage = 300;
-    // Set no of results pages, with 300 messages being returned per page, to 1
+    NSInteger noOfCompaniesPerPage = 300;
+    // Set no of results pages to 1
     NSInteger noOfPages = 1;
     // Set page no to 1
     NSInteger pageNo = 1;
     
     // Append no of messages per page to the endpoint URL &per_page=300&page=1
-    endpointURL = [NSString stringWithFormat:@"%@&per_page=%ld",endpointURL,(long)noOfMessagesPerPage];
+    endpointURL = [NSString stringWithFormat:@"%@&per_page=%ld",endpointURL,(long)noOfCompaniesPerPage];
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
     while (pageNo <= noOfPages) {
@@ -167,7 +162,8 @@
         NSURLResponse *response = nil;
         
         // Make the call synchronously
-        NSData *responseData = [NSURLConnection sendSynchronousRequest:messageRequest returningResponse:&response
+        NSMutableURLRequest *companiesRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
+        NSData *responseData = [NSURLConnection sendSynchronousRequest:companiesRequest returningResponse:&response
                                                                  error:&error];
         
         // Process the response
@@ -178,15 +174,152 @@
             noOfPages = [self processResponse:responseData];
             
         } else {
-            // Set initial data fetch state on the user object in core data store to false.
-            [self setInitialDataState:NO];
-            NSLog(@"ERROR: Could not get messages from the Yammer Search endpoint. Error description: %@",error.description);
+            NSLog(@"ERROR: Could not get comapnies data from the API Data Source. Error description: %@",error.description);
         }
         
         ++pageNo;
-        endpointURL = @"https://www.yammer.com/api/v1/search.json";
+        endpointURL = @"http://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
+    }
+}
+
+// Parse the companies API response and return total no of pages of companies in it.
+// Before returning call on to formatting and adding companies data to the core data store.
+- (NSInteger)processResponse:(NSData *)response {
+    
+    NSError *error;
+    
+    // Set no of results pages to 1
+    NSInteger noOfPages = 1;
+    
+    // Here's the format of the companies query response
+    // {
+    //   "total_count":7439,
+    //   "current_page":1,
+    //   "per_page":300,
+    //   "docs":[
+    //        {
+    //          "id":15533777,
+    //          "source_id":12930,
+    //          "source_code":"ZEA",
+    //          "code":"AVD",
+    //          "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)",
+    
+    // Get the response into a parsed object
+    NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:response
+                                                                   options:kNilOptions
+                                                                     error:&error];
+    
+    // Call on to formatting and adding companies data to the core data store.
+    [self formatAddMessages:parsedResponse];
+    
+    // Get the total no of companies from the parsed response
+    NSString *parsedNoOfCompanies = [parsedResponse objectForKey:@"total_count"];
+    NSInteger noOfCompanies = [parsedNoOfCompanies integerValue];
+    
+    // Get the no of companies per page from the parsed response
+    NSString *parsedNoOfCompaniesPerPage = [parsedResponse objectForKey:@"per_page"];
+    NSInteger noOfCompaniesPerPage = [parsedNoOfCompaniesPerPage integerValue];;
+    
+    // Compute total no of pages of companies;
+    noOfPages = (noOfCompanies/noOfCompaniesPerPage) + 1;
+    if ((noOfCompanies%noOfCompaniesPerPage)== 0){
+        -- noOfPages;
     }
     
+    return noOfPages;
+}
+
+// Parse the list of companies and their tickers, format them and add them to the core data message store.
+- (void)formatAddCompanies:(NSDictionary *)parsedResponse {
+    
+    // Here's the format of the companies query response
+    // {
+    //   "total_count":7439,
+    //   "current_page":1,
+    //   "per_page":300,
+    //   "docs":[
+    //        {
+    //          "id":15533777,
+    //          "source_id":12930,
+    //          "source_code":"ZEA",
+    //          "code":"AVD",
+    //          "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)",
+    
+    // Get the list of companies first from the overall response
+    NSDictionary *parsedMessagesSection = [parsedResponse objectForKey:@"messages"];
+    
+    // Get the list of companies first from the overall response
+    NSArray *parsedCompanies = [parsedResponse objectForKey:@"docs"];
+    
+    // Then loop through the companies, get the appropriate fields and create messages
+    // to be displayed in this app.
+    for (NSDictionary *company in parsedCompanies) {
+        
+        NSString *companyTicker = [company objectForKey:@"code"];
+        NSString *companyNameString = [company objectForKey:@"name"];
+        
+        NSString *messageWebUrl = [message objectForKey:@"web_url"];
+        NSString *messageFromId = [NSString stringWithFormat:@"%@",[message objectForKey:@"sender_id"]];
+        NSNumber *messageId = [message objectForKey:@"id"];
+        NSNumber *threadId = [message objectForKey:@"thread_id"];
+        
+        // Format and add attachments to the message content
+        messageContent = [self formatAttachmentsInfoFromMessageObject:message withMessageContent:messageContent];
+        
+        // Populate from user and mugshot URL of from user from the references section of the message
+        // Also populate the colleagues core data store with users in the references section.
+        NSString *messageFrom;
+        NSString *fromMugshotURL;
+        
+        NSString *userFullName;
+        NSString *userMugshotURL;
+        NSString *userNameString;
+        NSNumber *userId;
+        NSString *userState;
+        
+        // Get the references from the messages section
+        NSArray *parsedReferences = [parsedMessagesSection objectForKey:@"references"];
+        
+        // Then loop through the references
+        for (NSDictionary *reference in parsedReferences) {
+            
+            // Get type of reference
+            NSString *referenceType = [reference objectForKey:@"type"];
+            
+            // If the type is "user"
+            if ([referenceType isEqualToString:@"user"]) {
+                
+                // Get all the properties to populate colleagues from that message
+                userFullName = [reference objectForKey:@"full_name"];
+                userMugshotURL = [reference objectForKey:@"mugshot_url"];
+                userNameString = [reference objectForKey:@"name"];
+                userId = [reference objectForKey:@"id"];
+                userState = [reference objectForKey:@"state"];
+                
+                // If the user is active, add them to the colleagues data store.
+                if ([userState isEqualToString:@"active"]) {
+                    [self insertUniqueColleagueWithID:userId fullName:userFullName nameString:userNameString mugshotUrl:userMugshotURL];
+                }
+                
+                // Convert id into a string for comparison
+                NSString *referenceId = [NSString stringWithFormat:@"%@",userId];
+                
+                // Find the user whose id matches that of the from user for the message and get the full name and
+                // mugshotURL for saving the message to the data store.
+                if ([referenceId isEqualToString:messageFromId]) {
+                    messageFrom = [reference objectForKey:@"full_name"];
+                    fromMugshotURL = [reference objectForKey:@"mugshot_url"];
+                }
+            }
+        }
+        
+        // Add messages to the core data message store
+        // TO DO: Remove hardcoded app type name.
+        [self insertMessageWithID:messageId threadID:threadId content:messageContent from:messageFrom app:@"Yammer" webUrl:messageWebUrl fromMugshotUrl:fromMugshotURL];
+    }
+    
+    // Send a notification that the store has been updated
+    [self sendMessagesChangeNotification];
 }
 
 @end
