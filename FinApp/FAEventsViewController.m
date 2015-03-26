@@ -16,6 +16,9 @@
 
 @interface FAEventsViewController ()
 
+// Get all companies from API. Typically called in a background thread
+- (void)getAllCompaniesFromApiInBackground;
+
 @end
 
 @implementation FAEventsViewController
@@ -28,10 +31,12 @@
     // Get a data controller that you will use later
     self.eventDataController = [[FADataController alloc] init];
     
+    [self getAllCompaniesFromApiInBackground];
+    
     // TO DO: Temporaray Data Setup for testing. Erase later
 
     // Add Three Companies, Apple, Tesla, Electronic Arts
-    [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
+  /*  [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
     [self.eventDataController insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla"];
     [self.eventDataController insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts"];
     
@@ -42,7 +47,7 @@
     
     // Query all events as that is the default view first shown
     self.eventResultsController = [self.eventDataController getAllEvents];
-    NSLog(@"Data Setup and Query done");
+    NSLog(@"Data Setup and Query done"); */
     
 }
 
@@ -113,6 +118,16 @@
     return cell;
 }
 
+#pragma mark - Data Source API
+
+// Get all companies from API. Typically called in a background thread
+- (void)getAllCompaniesFromApiInBackground
+{
+    // Create a new FADataController so that this thread has its own MOC
+    FADataController *companiesDataController = [[FADataController alloc] init];
+    
+    [companiesDataController getAllCompaniesFromApi];
+}
 
 /*
 #pragma mark - Navigation

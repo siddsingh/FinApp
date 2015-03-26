@@ -210,7 +210,7 @@
                                                                      error:&error];
     
     // Call on to formatting and adding companies data to the core data store.
-    [self formatAddMessages:parsedResponse];
+    [self formatAddCompanies:parsedResponse];
     
     // Get the total no of companies from the parsed response
     NSString *parsedNoOfCompanies = [parsedResponse objectForKey:@"total_count"];
@@ -246,80 +246,23 @@
     //          "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)",
     
     // Get the list of companies first from the overall response
-    NSDictionary *parsedMessagesSection = [parsedResponse objectForKey:@"messages"];
-    
-    // Get the list of companies first from the overall response
     NSArray *parsedCompanies = [parsedResponse objectForKey:@"docs"];
     
-    // Then loop through the companies, get the appropriate fields and create messages
-    // to be displayed in this app.
+    // Then loop through the companies, get the appropriate fields and insert them into the data store
     for (NSDictionary *company in parsedCompanies) {
         
+        // Get the company ticker and company name string
         NSString *companyTicker = [company objectForKey:@"code"];
         NSString *companyNameString = [company objectForKey:@"name"];
+        // Extract the company name from the company name string
+        NSRange forString = [companyNameString rangeOfString:@"for"];
+        NSRange dotChar = [companyNameString rangeOfString:@"."];
+        NSRange companyNameRange = NSMakeRange(forString.location + 5, (dotChar.location - forString.location) - 5);
+        NSString *companyName = [companyNameString substringWithRange:companyNameRange];
+        NSLog(@"Company Ticker to be entered in db is: %@ and Company Name is: %@",companyTicker, companyName);
         
-        NSString *messageWebUrl = [message objectForKey:@"web_url"];
-        NSString *messageFromId = [NSString stringWithFormat:@"%@",[message objectForKey:@"sender_id"]];
-        NSNumber *messageId = [message objectForKey:@"id"];
-        NSNumber *threadId = [message objectForKey:@"thread_id"];
-        
-        // Format and add attachments to the message content
-        messageContent = [self formatAttachmentsInfoFromMessageObject:message withMessageContent:messageContent];
-        
-        // Populate from user and mugshot URL of from user from the references section of the message
-        // Also populate the colleagues core data store with users in the references section.
-        NSString *messageFrom;
-        NSString *fromMugshotURL;
-        
-        NSString *userFullName;
-        NSString *userMugshotURL;
-        NSString *userNameString;
-        NSNumber *userId;
-        NSString *userState;
-        
-        // Get the references from the messages section
-        NSArray *parsedReferences = [parsedMessagesSection objectForKey:@"references"];
-        
-        // Then loop through the references
-        for (NSDictionary *reference in parsedReferences) {
-            
-            // Get type of reference
-            NSString *referenceType = [reference objectForKey:@"type"];
-            
-            // If the type is "user"
-            if ([referenceType isEqualToString:@"user"]) {
-                
-                // Get all the properties to populate colleagues from that message
-                userFullName = [reference objectForKey:@"full_name"];
-                userMugshotURL = [reference objectForKey:@"mugshot_url"];
-                userNameString = [reference objectForKey:@"name"];
-                userId = [reference objectForKey:@"id"];
-                userState = [reference objectForKey:@"state"];
-                
-                // If the user is active, add them to the colleagues data store.
-                if ([userState isEqualToString:@"active"]) {
-                    [self insertUniqueColleagueWithID:userId fullName:userFullName nameString:userNameString mugshotUrl:userMugshotURL];
-                }
-                
-                // Convert id into a string for comparison
-                NSString *referenceId = [NSString stringWithFormat:@"%@",userId];
-                
-                // Find the user whose id matches that of the from user for the message and get the full name and
-                // mugshotURL for saving the message to the data store.
-                if ([referenceId isEqualToString:messageFromId]) {
-                    messageFrom = [reference objectForKey:@"full_name"];
-                    fromMugshotURL = [reference objectForKey:@"mugshot_url"];
-                }
-            }
-        }
-        
-        // Add messages to the core data message store
-        // TO DO: Remove hardcoded app type name.
-        [self insertMessageWithID:messageId threadID:threadId content:messageContent from:messageFrom app:@"Yammer" webUrl:messageWebUrl fromMugshotUrl:fromMugshotURL];
+        // Add company ticker and name into the data store
     }
-    
-    // Send a notification that the store has been updated
-    [self sendMessagesChangeNotification];
 }
 
 @end
