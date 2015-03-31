@@ -128,16 +128,11 @@
 
 #pragma mark - Methods to call Data Source APIs
 
-// Get a list of all companies and their tickers. Current algorithm to do this is:
-//
-// 1. Use the metadata call of the Zacks Earnings Announcements (ZEA) database using the following API
-// www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1
-//
-
+// Get a list of all companies and their tickers.
 - (void)getAllCompaniesFromApi
 {
     // To get all the companies use the metadata call of the Zacks Earnings Announcements (ZEA) database using
-    // the following API: www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1
+    // the following API: www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ
     
     // The API endpoint URL
     NSString *endpointURL = @"http://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
@@ -148,15 +143,19 @@
     NSInteger noOfPages = 1;
     // Set page no to 1
     NSInteger pageNo = 1;
-    
-    // Append no of messages per page to the endpoint URL &per_page=300&page=1
-    endpointURL = [NSString stringWithFormat:@"%@&per_page=%ld",endpointURL,(long)noOfCompaniesPerPage];
+
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
     while (pageNo <= noOfPages) {
         
+        // Append no of messages per page to the endpoint URL &per_page=300&page=1
+        endpointURL = [NSString stringWithFormat:@"%@&per_page=%ld",endpointURL,(long)noOfCompaniesPerPage];
+        
         // Append page number to the API endpoint URL
         endpointURL = [NSString stringWithFormat:@"%@&page=%ld",endpointURL,(long)pageNo];
+        
+        // Append auth token to the call
+        endpointURL = [NSString stringWithFormat:@"%@&auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
         
         NSError * error = nil;
         NSURLResponse *response = nil;
@@ -174,7 +173,7 @@
             noOfPages = [self processResponse:responseData];
             
         } else {
-            NSLog(@"ERROR: Could not get comapnies data from the API Data Source. Error description: %@",error.description);
+            NSLog(@"ERROR: Could not get companies data from the API Data Source. Error description: %@",error.description);
         }
         
         ++pageNo;
@@ -218,12 +217,19 @@
     
     // Get the no of companies per page from the parsed response
     NSString *parsedNoOfCompaniesPerPage = [parsedResponse objectForKey:@"per_page"];
-    NSInteger noOfCompaniesPerPage = [parsedNoOfCompaniesPerPage integerValue];;
+    NSInteger noOfCompaniesPerPage = [parsedNoOfCompaniesPerPage integerValue];
     
     // Compute total no of pages of companies;
-    noOfPages = (noOfCompanies/noOfCompaniesPerPage) + 1;
-    if ((noOfCompanies%noOfCompaniesPerPage)== 0){
-        -- noOfPages;
+    if ((noOfCompanies == 0)||(noOfCompaniesPerPage == 0)) {
+        NSLog(@"ERROR: API Data Source returned an incorrect 0 value for either noOfCompanies or noOfCompaniesPerPage while getting all companies. Raw Response Data from the API was: %@",[[NSString alloc]initWithData:response encoding:NSUTF8StringEncoding]);
+        //NSLog(@"The raw response from the API is:%@", responseDataStr);
+    } else
+    {
+        NSLog(@"No Of Companies: %ld and No of Companies Per Page: %ld", (long)noOfCompanies, (long)noOfCompaniesPerPage);
+        noOfPages = (noOfCompanies/noOfCompaniesPerPage) + 1;
+        if ((noOfCompanies%noOfCompaniesPerPage)== 0){
+            -- noOfPages;
+        }
     }
     
     return noOfPages;
@@ -255,11 +261,11 @@
         NSString *companyTicker = [company objectForKey:@"code"];
         NSString *companyNameString = [company objectForKey:@"name"];
         // Extract the company name from the company name string
-        NSRange forString = [companyNameString rangeOfString:@"for"];
+       /* NSRange forString = [companyNameString rangeOfString:@"for"];
         NSRange dotChar = [companyNameString rangeOfString:@"."];
         NSRange companyNameRange = NSMakeRange(forString.location + 5, (dotChar.location - forString.location) - 5);
-        NSString *companyName = [companyNameString substringWithRange:companyNameRange];
-        NSLog(@"Company Ticker to be entered in db is: %@ and Company Name is: %@",companyTicker, companyName);
+        NSString *companyName = [companyNameString substringWithRange:companyNameRange];*/
+        NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
         
         // Add company ticker and name into the data store
     }
