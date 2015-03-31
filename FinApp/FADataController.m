@@ -260,12 +260,15 @@
         // Get the company ticker and company name string
         NSString *companyTicker = [company objectForKey:@"code"];
         NSString *companyNameString = [company objectForKey:@"name"];
-        // Extract the company name from the company name string
-       /* NSRange forString = [companyNameString rangeOfString:@"for"];
-        NSRange dotChar = [companyNameString rangeOfString:@"."];
-        NSRange companyNameRange = NSMakeRange(forString.location + 5, (dotChar.location - forString.location) - 5);
-        NSString *companyName = [companyNameString substringWithRange:companyNameRange];*/
         NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
+        
+        // Extract the company name from the company name string
+        NSRange forString = [companyNameString rangeOfString:@"for"];
+        NSString *endTickerString = [NSString stringWithFormat:@"(%@)",companyTicker];
+        NSRange endTicker = [companyNameString rangeOfString:endTickerString];
+        NSRange companyNameRange = NSMakeRange(forString.location + 4, (endTicker.location - forString.location) - 5);
+        NSString *companyName = [companyNameString substringWithRange:companyNameRange];
+        NSLog(@"Company Name to be entered in db is: %@", companyName);
         
         // Add company ticker and name into the data store
     }
