@@ -259,6 +259,8 @@
         
         // Get the company ticker and company name string
         NSString *companyTicker = [company objectForKey:@"code"];
+        // Replace underscore in certain ticker names with . e.g.GRP_U -> GRP.U
+        companyTicker = [companyTicker stringByReplacingOccurrencesOfString:@"_" withString:@"."];
         NSString *companyNameString = [company objectForKey:@"name"];
         NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
         
@@ -268,6 +270,13 @@
         NSRange endTicker = [companyNameString rangeOfString:endTickerString];
         NSRange companyNameRange = NSMakeRange(forString.location + 4, (endTicker.location - forString.location) - 5);
         NSString *companyName = [companyNameString substringWithRange:companyNameRange];
+        // If there is a period at the end, remove it
+        if ([companyName length] > 0) {
+            if([companyName hasSuffix:@"."])
+            {
+                companyName = [companyName substringToIndex:[companyName length]-1];
+            }
+        }
         NSLog(@"Company Name to be entered in db is: %@", companyName);
         
         // Add company ticker and name into the data store
