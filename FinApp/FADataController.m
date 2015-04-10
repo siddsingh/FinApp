@@ -280,6 +280,7 @@
         NSLog(@"Company Name to be entered in db is: %@", companyName);
         
         // Add company ticker and name into the data store
+        [self insertUniqueCompanyWithTicker:companyTicker name:companyName];
     }
 }
 
