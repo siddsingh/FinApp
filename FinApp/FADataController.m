@@ -126,7 +126,7 @@
     return self.resultsController;
 }
 
-#pragma mark - Methods to call Data Source APIs
+#pragma mark - Methods to call Company Data Source APIs
 
 // Get a list of all companies and their tickers.
 - (void)getAllCompaniesFromApi

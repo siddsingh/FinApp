@@ -44,7 +44,7 @@
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllEvents;
 
-#pragma mark - Methods to call Data Source APIs
+#pragma mark - Methods to call Company Data Source APIs
 
 // Get a list of all companies and their tickers. Current algorithm to do this is:
 //
@@ -61,5 +61,52 @@
 // "code":"AVD",
 // "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)"
 - (void)getAllCompaniesFromApi;
+
+#pragma mark - Methods to call Company Event Data Source APIs
+
+// Get the event details for a company given it's ticker. Call the following API:
+// www.quandl.com/api/v1/datasets/ZEA/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ
+//
+// Get the following types of events:
+// 1. Quarterly Earnings: For this type we get the following pieces of information from the API response:
+// a) Date on which the event takes place
+// b) Details related to the event. "Quarterly Earnings" would have timing information
+// "After Market Close", "Before Market Open, "During Market Trading", "Unknown".
+// c) Date related to the event. "Quarterly Earnings" would have the end date of the next fiscal
+// quarter to be reported
+// d) Indicator if this event is "confirmed" or "speculated" or "unknown"
+// {
+//  "errors":{},
+//  "id":15532680,
+//  "source_code":"ZEA",....
+//  "data":[
+//     [
+//       "2015-04-09",
+//        20140930.0,
+//   Date related to the event
+//        20150331.0,
+//        2.13,
+//   Date on which the event takes place
+//        20150427.0,
+//        20150728.0,
+//        20151019.0,
+//        0.0,
+// Indicator if this event is "confirmed" or "speculated" or "unknown"
+// 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
+//        1.0,
+// Details related to the event
+// 1 (After market close), 2 (Before the open), 3 (During market trading) or 4 (Unknown)
+//        1.0,
+//        3.06,
+//        20141231.0,
+//        1.66,
+//        20140331.0
+//      ]
+//         ]
+// }
+
+@property (nonatomic, retain) NSDate * relatedDate;
+
+// Indicator if this event is "confirmed" or "speculated" or "unknown"
 
 @end

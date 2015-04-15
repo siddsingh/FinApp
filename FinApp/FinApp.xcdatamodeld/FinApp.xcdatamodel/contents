@@ -8,12 +8,13 @@
     <entity name="Event" representedClassName="Event" syncable="YES">
         <attribute name="certainty" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="details" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="relatedDate" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="relatedDetails" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="listedCompany" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="events" inverseEntity="Company" syncable="YES"/>
     </entity>
     <elements>
         <element name="Company" positionX="-270" positionY="-9" width="128" height="88"/>
-        <element name="Event" positionX="88" positionY="113" width="128" height="118"/>
+        <element name="Event" positionX="88" positionY="113" width="128" height="133"/>
     </elements>
 </model>

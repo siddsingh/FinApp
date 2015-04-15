@@ -18,13 +18,21 @@
 // Date on which the event takes place
 @property (nonatomic, retain) NSDate * date;
 
-// Detailed description of the event e.g. "Q4 earnings call"
-@property (nonatomic, retain) NSString * details;
-
-// The type of event e.g. "Quarterly Earnings Call"
+// The type of event
+// 1. "Quarterly Earnings"
 @property (nonatomic, retain) NSString * type;
 
-// Indicator if this event is "confirmed" or "speculated"
+// Details related to the event, based on event type
+// 1. "Quarterly Earnings" would have timing information "After Market Close",
+// "Before Market Open, "During Market Trading", "Unknown".
+@property (nonatomic, retain) NSString * relatedDetails;
+
+// Date related to the event.
+// 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
+// to be reported
+@property (nonatomic, retain) NSDate * relatedDate;
+
+// Indicator if this event is "confirmed" or "speculated" or "unknown"
 @property (nonatomic, retain) NSString * certainty;
 
 // Company associated with this event
