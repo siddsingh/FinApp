@@ -74,7 +74,7 @@
 #pragma mark - Events Data Related
 
 // Add an Event along with a parent company to the Event Data Store
-- (void)insertEventWithDate:(NSDate *)eventDate details:(NSString *)eventDetails type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker
+- (void)insertEventWithDate:(NSDate *)eventDate relatedDetails:(NSString *)eventRelatedDetails relatedDate:(NSDate *)eventRelatedDate type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -94,7 +94,8 @@
     // Insert the event with the parent listed company
     Event *event = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:dataStoreContext];
     event.date = eventDate;
-    event.details = eventDetails;
+    event.relatedDetails = eventRelatedDetails;
+    event.relatedDate = eventRelatedDate;
     event.certainty = eventCertainty;
     event.listedCompany = parentCompany;
     if (![dataStoreContext save:&error]) {
@@ -170,7 +171,7 @@
         {
             // Process the response that contains the first page of companies.
             // Get back total no of pages of companies in the response.
-            noOfPages = [self processResponse:responseData];
+            noOfPages = [self processCompaniesResponse:responseData];
             
         } else {
             NSLog(@"ERROR: Could not get companies data from the API Data Source. Error description: %@",error.description);
@@ -183,7 +184,7 @@
 
 // Parse the companies API response and return total no of pages of companies in it.
 // Before returning call on to formatting and adding companies data to the core data store.
-- (NSInteger)processResponse:(NSData *)response {
+- (NSInteger)processCompaniesResponse:(NSData *)response {
     
     NSError *error;
     
@@ -281,6 +282,43 @@
         
         // Add company ticker and name into the data store
         [self insertUniqueCompanyWithTicker:companyTicker name:companyName];
+    }
+}
+
+#pragma mark - Methods to call Company Event Data Source APIs
+
+// Get the event details for a company given it's ticker.
+- (void)getAllEventsFromApiWithTicker:(NSString *)companyTicker
+{
+    // Get the event details for a company given it's ticker. Call the following API:
+    // www.quandl.com/api/v1/datasets/ZEA/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ
+    
+    // The API endpoint URL
+    NSString *endpointURL = @"http://www.quandl.com/api/v1/datasets/ZEA";
+        
+    // Append ticker for the company to the API endpoint URL
+    endpointURL = [NSString stringWithFormat:@"%@/%@.json",endpointURL,companyTicker];
+        
+    // Append auth token to the call
+    endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
+        
+    NSError * error = nil;
+    NSURLResponse *response = nil;
+        
+    // Make the call synchronously
+    NSMutableURLRequest *companiesRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:companiesRequest returningResponse:&response
+                                                                 error:&error];
+        
+    // Process the response
+    if (error == nil)
+    {
+        // Process the response that contains the first page of companies.
+        // Get back total no of pages of companies in the response.
+        [self processEventsResponse:responseData];
+            
+    } else {
+        NSLog(@"ERROR: Could not get events data from the API Data Source. Error description: %@",error.description);
     }
 }
 
