@@ -31,7 +31,9 @@
     // Get a data controller that you will use later
     self.eventDataController = [[FADataController alloc] init];
     
-    [self getAllCompaniesFromApiInBackground];
+    // TO DO: Uncomment later and make it a background process
+    // [self getAllCompaniesFromApiInBackground];
+    [self.eventDataController getAllEventsFromApiWithTicker:@"AAPL"];
     
     // TO DO: Temporaray Data Setup for testing. Erase later
 
@@ -104,7 +106,7 @@
     [[cell  companyName] setText:eventAtIndex.listedCompany.name];
     
     // Show the event description
-    [[cell  eventDescription] setText:eventAtIndex.details];
+    [[cell  eventDescription] setText:eventAtIndex.relatedDetails];
     
     // Show the event date
     NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];

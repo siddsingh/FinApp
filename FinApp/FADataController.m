@@ -306,20 +306,91 @@
     NSURLResponse *response = nil;
         
     // Make the call synchronously
-    NSMutableURLRequest *companiesRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:companiesRequest returningResponse:&response
+    NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
                                                                  error:&error];
         
     // Process the response
     if (error == nil)
     {
-        // Process the response that contains the first page of companies.
-        // Get back total no of pages of companies in the response.
+        // Process the response that contains the events for the company.
         [self processEventsResponse:responseData];
             
     } else {
         NSLog(@"ERROR: Could not get events data from the API Data Source. Error description: %@",error.description);
     }
+}
+
+// Parse the events API response and add the following events information to the data store:
+// 1. Quarterly Earnings
+- (void)processEventsResponse:(NSData *)response {
+    
+    NSError *error;
+    
+    // For Quarterly Earnings event, we get the following pieces of information from the API response:
+    // a) Date on which the event takes place
+    // b) Details related to the event. "Quarterly Earnings" would have timing information
+    // "After Market Close", "Before Market Open, "During Market Trading", "Unknown".
+    // c) Date related to the event. "Quarterly Earnings" would have the end date of the next fiscal
+    // quarter to be reported
+    // d) Indicator if this event is "confirmed" or "speculated" or "unknown"
+    // {
+    //  "errors":{},
+    //  "id":15532680,
+    //  "source_code":"ZEA",....
+    //  "data":[
+    //     [
+    //       "2015-04-09",
+    //        20140930.0,
+    //   Date related to the event
+    //        20150331.0,
+    //        2.13,
+    //   Date on which the event takes place
+    //        20150427.0,
+    //        20150728.0,
+    //        20151019.0,
+    //        0.0,
+    // Indicator if this event is "confirmed" or "speculated" or "unknown"
+    // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
+    //        1.0,
+    // Details related to the event
+    // 1 (After market close), 2 (Before the open), 3 (During market trading) or 4 (Unknown)
+    //        1.0,
+    //        3.06,
+    //        20141231.0,
+    //        1.66,
+    //        20140331.0
+    //      ]
+    //         ]
+    // }
+    
+    // Get the response into a parsed object
+    NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:response
+                                                                   options:kNilOptions
+                                                                     error:&error];
+    
+    // Get the list of data sets first from the overall response
+    NSArray *parsedDataSets = [parsedResponse objectForKey:@"data"];
+    
+    // Get the list and details of events which is essentially the first and only data set from the list of data sets
+    NSArray *parsedEventsList = [parsedDataSets objectAtIndex:0];
+    
+    // Next get the different pices of information for the events depending on their position in the list and details of events
+    
+    // Get the date on which the event takes place which is the 5th item
+    NSLog(@"The date on which the event takes place: %@",[parsedEventsList objectAtIndex:4]);
+    
+    // Get Details related to the event which is the 10th item
+    // 1 (After market close), 2 (Before the open), 3 (During market trading) or 4 (Unknown)
+    NSLog(@"The timing details related to the event: %@",[parsedEventsList objectAtIndex:9]);
+    
+    // Get the Date related to the event which is the 3rd item
+    NSLog(@"The quarter end date related to the event: %@",[parsedEventsList objectAtIndex:2]);
+    
+    // Get Indicator if this event is "confirmed" or "speculated" or "unknown" which is the 9th item
+    // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
+    NSLog(@"The confirmation indicator for this event: %@",[parsedEventsList objectAtIndex:8]);
+    
 }
 
 @end
