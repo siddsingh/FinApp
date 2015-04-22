@@ -314,7 +314,7 @@
     if (error == nil)
     {
         // Process the response that contains the events for the company.
-        [self processEventsResponse:responseData];
+        [self processEventsResponse:responseData forTicker:companyTicker];
             
     } else {
         NSLog(@"ERROR: Could not get events data from the API Data Source. Error description: %@",error.description);
@@ -323,7 +323,7 @@
 
 // Parse the events API response and add the following events information to the data store:
 // 1. Quarterly Earnings
-- (void)processEventsResponse:(NSData *)response {
+- (void)processEventsResponse:(NSData *)response forTicker:(NSString *)ticker{
     
     NSError *error;
     
@@ -426,19 +426,21 @@
     // Get Indicator if this event is "confirmed" or "speculated" or "unknown" which is the 9th item
     // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
     NSLog(@"The confirmation indicator for this event: %@",[parsedEventsList objectAtIndex:8]);
-    NSString *certaintyRawStr = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:8]];
+    NSString *certaintyStr = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:8]];
     // Convert to human understandable string
-    if ([certaintyRawStr isEqualToString:@"1"]) {
-        certaintyRawStr = [NSString stringWithFormat:@"Confirmed"];
+    if ([certaintyStr isEqualToString:@"1"]) {
+        certaintyStr = [NSString stringWithFormat:@"Confirmed"];
     }
-    if ([certaintyRawStr isEqualToString:@"2"]) {
-        certaintyRawStr = [NSString stringWithFormat:@"Estimated"];
+    if ([certaintyStr isEqualToString:@"2"]) {
+        certaintyStr = [NSString stringWithFormat:@"Estimated"];
     }
-    if ([certaintyRawStr isEqualToString:@"3"]) {
-        certaintyRawStr = [NSString stringWithFormat:@"Unknown"];
+    if ([certaintyStr isEqualToString:@"3"]) {
+        certaintyStr = [NSString stringWithFormat:@"Unknown"];
     }
-    NSLog(@"The confirmation indicator for this event formatted: %@",certaintyRawStr);
+    NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
     
+    // Insert events data into the data store
+    [self insertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
 }
 
 @end
