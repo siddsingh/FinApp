@@ -377,19 +377,67 @@
     
     // Next get the different pices of information for the events depending on their position in the list and details of events
     
+    // Set the type of event. Currently support:
+    // 1) "Quarterly Earnings"
+    NSString *eventType = @"Quarterly Earnings";
+    NSLog(@"The event type is: %@",eventType);
+    
     // Get the date on which the event takes place which is the 5th item
     NSLog(@"The date on which the event takes place: %@",[parsedEventsList objectAtIndex:4]);
+    NSString *eventDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:4]];
+    // Convert from string to Date
+    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+    [eventDateFormatter setDateFormat:@"yyyyMMdd"];
+    NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
+    NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+    
     
     // Get Details related to the event which is the 10th item
-    // 1 (After market close), 2 (Before the open), 3 (During market trading) or 4 (Unknown)
+    // For Quarterly Earnings: 1 (After market closes), 2 (Before market opens), 3 (During market trading) or 4 (Unknown)
     NSLog(@"The timing details related to the event: %@",[parsedEventsList objectAtIndex:9]);
+    NSString *eventDetails = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:9]];
+    // Convert to human understandable string
+    if ([eventDetails isEqualToString:@"1"]) {
+        eventDetails = [NSString stringWithFormat:@"After market closes"];
+    }
+    if ([eventDetails isEqualToString:@"2"]) {
+        eventDetails = [NSString stringWithFormat:@"Before market opens"];
+    }
+    if ([eventDetails isEqualToString:@"3"]) {
+        eventDetails = [NSString stringWithFormat:@"During market trading"];
+    }
+    if ([eventDetails isEqualToString:@"4"]) {
+        eventDetails = [NSString stringWithFormat:@"Unknown"];
+    }
+    NSLog(@"The timing details related to the event formatted: %@",eventDetails);
+    
     
     // Get the Date related to the event which is the 3rd item
+    // 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
+    // to be reported
     NSLog(@"The quarter end date related to the event: %@",[parsedEventsList objectAtIndex:2]);
+    NSString *relatedDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:2]];
+    // Convert from string to Date
+    NSDateFormatter *relatedDateFormatter = [[NSDateFormatter alloc] init];
+    [relatedDateFormatter setDateFormat:@"yyyyMMdd"];
+    NSDate *relatedDate = [relatedDateFormatter dateFromString:relatedDateStr];
+    NSLog(@"The quarter end date related to the event formatted as a Date: %@",relatedDate);
     
     // Get Indicator if this event is "confirmed" or "speculated" or "unknown" which is the 9th item
     // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
     NSLog(@"The confirmation indicator for this event: %@",[parsedEventsList objectAtIndex:8]);
+    NSString *certaintyRawStr = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:8]];
+    // Convert to human understandable string
+    if ([certaintyRawStr isEqualToString:@"1"]) {
+        certaintyRawStr = [NSString stringWithFormat:@"Confirmed"];
+    }
+    if ([certaintyRawStr isEqualToString:@"2"]) {
+        certaintyRawStr = [NSString stringWithFormat:@"Estimated"];
+    }
+    if ([certaintyRawStr isEqualToString:@"3"]) {
+        certaintyRawStr = [NSString stringWithFormat:@"Unknown"];
+    }
+    NSLog(@"The confirmation indicator for this event formatted: %@",certaintyRawStr);
     
 }
 
