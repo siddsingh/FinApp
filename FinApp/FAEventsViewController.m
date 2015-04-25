@@ -31,25 +31,27 @@
     // Get a data controller that you will use later
     self.eventDataController = [[FADataController alloc] init];
     
+    // TO DO: Delete Later. Add Three Companies, Apple, Tesla, Electronic Arts
+    [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
+    //[self.eventDataController insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla"];
+    //[self.eventDataController insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts"];
+    
     // TO DO: Uncomment later and make it a background process
     // [self getAllCompaniesFromApiInBackground];
     [self.eventDataController getAllEventsFromApiWithTicker:@"AAPL"];
     
+    
+    //Query all events as that is the default view first shown
+    self.eventResultsController = [self.eventDataController getAllEvents];
+    NSLog(@"Data Setup and Query done");
+    
     // TO DO: Temporaray Data Setup for testing. Erase later
-
-    // Add Three Companies, Apple, Tesla, Electronic Arts
-  /*  [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
-    [self.eventDataController insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla"];
-    [self.eventDataController insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts"];
     
     // Add an event each for the three Companies
-    [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q1 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AAPL"];
+   /* [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q1 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AAPL"];
     [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q2 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"TSLA"];
-    [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q3 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"EA"];
-    
-    // Query all events as that is the default view first shown
-    self.eventResultsController = [self.eventDataController getAllEvents];
-    NSLog(@"Data Setup and Query done"); */
+    [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q3 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"EA"]; */
+   
     
 }
 
@@ -102,16 +104,18 @@
     // Show the company ticker associated with the event
     [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
     
-    // Show the company ticker associated with the event
+    // Show the company name associated with the event
     [[cell  companyName] setText:eventAtIndex.listedCompany.name];
     
-    // Show the event description
-    [[cell  eventDescription] setText:eventAtIndex.relatedDetails];
+    // Show the event type
+    [[cell  eventDescription] setText:eventAtIndex.type];
     
     // Show the event date
     NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
     [eventDateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
+    // Append related details (timing information) to the event date
+    eventDateString = [NSString stringWithFormat:@"%@(%@)",eventDateString,eventAtIndex.relatedDetails];
     [[cell eventDate] setText:eventDateString];
     
     // Show the certainty of the event

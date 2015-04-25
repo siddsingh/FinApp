@@ -93,6 +93,7 @@
     
     // Insert the event with the parent listed company
     Event *event = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    event.type = eventType;
     event.date = eventDate;
     event.relatedDetails = eventRelatedDetails;
     event.relatedDate = eventRelatedDate;
