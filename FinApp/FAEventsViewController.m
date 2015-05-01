@@ -37,7 +37,7 @@
     //[self.eventDataController insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts"];
     
     // TO DO: Uncomment later and make it a background process
-    // [self getAllCompaniesFromApiInBackground];
+    [self getAllCompaniesFromApiInBackground];
     [self.eventDataController getAllEventsFromApiWithTicker:@"AAPL"];
     
     
@@ -51,7 +51,6 @@
    /* [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q1 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AAPL"];
     [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q2 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"TSLA"];
     [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q3 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"EA"]; */
-   
     
 }
 

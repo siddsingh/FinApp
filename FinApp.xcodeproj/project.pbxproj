@@ -21,6 +21,7 @@
 		9E6D80761A9EB49700E1F2D3 /* FADataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80751A9EB49700E1F2D3 /* FADataStore.m */; };
 		9E6D80791AA4E07100E1F2D3 /* FADataController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80781AA4E07100E1F2D3 /* FADataController.m */; };
 		9E6D807B1AAFDF5800E1F2D3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		9E7586461AF44679009DD7B2 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E7586451AF44679009DD7B2 /* User.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,8 @@
 		9E6D80771AA4E07100E1F2D3 /* FADataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FADataController.h; sourceTree = "<group>"; };
 		9E6D80781AA4E07100E1F2D3 /* FADataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FADataController.m; sourceTree = "<group>"; };
 		9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		9E7586441AF44679009DD7B2 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		9E7586451AF44679009DD7B2 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +117,8 @@
 				9E6D80741A9EB49700E1F2D3 /* FADataStore.h */,
 				9E6D80751A9EB49700E1F2D3 /* FADataStore.m */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
+				9E7586441AF44679009DD7B2 /* User.h */,
+				9E7586451AF44679009DD7B2 /* User.m */,
 				9E6D80711A958C9E00E1F2D3 /* Company.h */,
 				9E6D80721A958C9E00E1F2D3 /* Company.m */,
 				9E6D806E1A958C9D00E1F2D3 /* Event.h */,
@@ -251,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E7586461AF44679009DD7B2 /* User.m in Sources */,
 				9E6D80701A958C9D00E1F2D3 /* Event.m in Sources */,
 				9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */,
 				9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */,
