@@ -106,5 +106,9 @@
 // }
 - (void)getAllEventsFromApiWithTicker:(NSString *)companyTicker;
 
+#pragma mark - Methods for Data Syncing
+
+// Add the most basic set of most used company information to the company data store. This is done locally
+- (void)performCompanySeedSyncLocally;
 
 @end

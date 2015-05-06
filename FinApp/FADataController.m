@@ -324,7 +324,7 @@
 
 // Parse the events API response and add the following events information to the data store:
 // 1. Quarterly Earnings
-- (void)processEventsResponse:(NSData *)response forTicker:(NSString *)ticker{
+- (void)processEventsResponse:(NSData *)response forTicker:(NSString *)ticker {
     
     NSError *error;
     
@@ -442,6 +442,29 @@
     
     // Insert events data into the data store
     [self insertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
+}
+
+#pragma mark - Methods for Data Syncing
+
+// Add the most basic set of most used company information to the company data store. This is done locally.
+- (void)performCompanySeedSyncLocally {
+    
+    // Add the 20 most used company tickers and name to the company database.
+    // TO DO: CAPABILITY: Expand to include at least 50 most used companies.
+    // TO DO: OPTIMIZATION: Since the seed sync will be done when the company data store is empty, add a write to store without checking for duplicates method.
+    // TO DO: TEST: How do you handle different kinds of shares like GOOGLE
+    [self insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple Inc"];
+    [self insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla Motors Inc"];
+    [self insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts Inc"];
+    [self insertUniqueCompanyWithTicker:@"CRM" name:@"Salesforce.com Inc"];
+    [self insertUniqueCompanyWithTicker:@"NFLX" name:@"Netflix Inc"];
+    [self insertUniqueCompanyWithTicker:@"FB" name:@"Facebook Inc"];
+    [self insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts Inc"];
+    [self insertUniqueCompanyWithTicker:@"MSFT" name:@"Microsoft Corp"];
+    [self insertUniqueCompanyWithTicker:@"TWTR" name:@"Twitter Inc"];
+    [self insertUniqueCompanyWithTicker:@"TGT" name:@"Target Corp"];
+    [self insertUniqueCompanyWithTicker:@"QCOM" name:@"Qualcomm Inc"];
+    [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike Inc"];
 }
 
 @end
