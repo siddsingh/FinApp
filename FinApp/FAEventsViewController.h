@@ -14,8 +14,8 @@
 
 @interface FAEventsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-// Data Controller to add/access events data in the data store
-@property (strong, nonatomic) FADataController *eventDataController;
+// Primary Data Controller to add/access data in the data store
+@property (strong, nonatomic) FADataController *primaryDataController;
 
 // Controller containing results of event queries to Core Data store
 @property (strong, nonatomic) NSFetchedResultsController *eventResultsController;

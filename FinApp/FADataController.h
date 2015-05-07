@@ -106,9 +106,24 @@
 // }
 - (void)getAllEventsFromApiWithTicker:(NSString *)companyTicker;
 
-#pragma mark - Methods for Data Syncing
+#pragma mark - Data Syncing Related
 
 // Add the most basic set of most used company information to the company data store. This is done locally
 - (void)performCompanySeedSyncLocally;
+
+#pragma mark - User State Related
+
+// Get the Company Data Sync Status for the one user in the data store. Returns the following values:
+// "NoSyncPerformed" means there has been no company data has been added to the company data store
+// "SeedSyncDone" means the most basic set of company information has been added to
+// the company data store.
+// "FullSyncDone" means the full set of company information has been added to
+// the company data store.
+- (NSString *)getCompanySyncStatus;
+
+// Add company data sync status to the user data store. Current design is that the user object is created
+// when a company data sync is done. Thus this method creates the user with the given status if it
+// doesn't exist or updates the user with the new status if the user exists.
+- (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus;
 
 @end

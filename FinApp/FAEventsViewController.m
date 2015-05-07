@@ -28,22 +28,27 @@
     
     // Do any additional setup after loading the view.
     
-    // Get a data controller that you will use later
-    self.eventDataController = [[FADataController alloc] init];
+    // Get a primary data controller that you will use later
+    self.primaryDataController = [[FADataController alloc] init];
+    
+    // Seed the company data to get the user started
+    if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+        [self.primaryDataController performCompanySeedSyncLocally];
+    }
     
     // TO DO: Delete Later. Add Three Companies, Apple, Tesla, Electronic Arts
-    [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
+    // [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
     //[self.eventDataController insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla"];
     //[self.eventDataController insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts"];
     
     // TO DO: Uncomment later and make it a background process
-    [self getAllCompaniesFromApiInBackground];
-    [self.eventDataController getAllEventsFromApiWithTicker:@"AAPL"];
+    //[self getAllCompaniesFromApiInBackground];
+    [self.primaryDataController getAllEventsFromApiWithTicker:@"AAPL"];
     
     
     //Query all events as that is the default view first shown
-    self.eventResultsController = [self.eventDataController getAllEvents];
-    NSLog(@"Data Setup and Query done");
+    self.eventResultsController = [self.primaryDataController getAllEvents];
+    NSLog(@"Data Setup and Query done in viewdidload");
     
     // TO DO: Temporaray Data Setup for testing. Erase later
     

@@ -14,6 +14,7 @@
 #import "FADataStore.h"
 #import "Company.h"
 #import "Event.h"
+#import "User.h"
 
 @implementation FADataController
 
@@ -444,7 +445,7 @@
     [self insertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
 }
 
-#pragma mark - Methods for Data Syncing
+#pragma mark - Data Syncing Related
 
 // Add the most basic set of most used company information to the company data store. This is done locally.
 - (void)performCompanySeedSyncLocally {
@@ -465,6 +466,86 @@
     [self insertUniqueCompanyWithTicker:@"TGT" name:@"Target Corp"];
     [self insertUniqueCompanyWithTicker:@"QCOM" name:@"Qualcomm Inc"];
     [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike Inc"];
+    
+    // Add or Update the Company Data Sync status to SeedSyncDone.
+    [self upsertUserWithCompanySyncStatus:@"SeedSyncDone"];
+}
+
+#pragma mark - User State Related
+
+// Get the Company Data Sync Status for the one user in the data store. Returns the following values:
+// "NoSyncPerformed" means there has been no company data has been added to the company data store
+// "SeedSyncDone" means the most basic set of company information has been added to
+// the company data store.
+// "FullSyncDone" means the full set of company information has been added to
+// the company data store.
+- (NSString *)getCompanySyncStatus {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    NSFetchRequest *statusFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [statusFetchRequest setEntity:userEntity];
+    
+    NSError *error;
+    NSArray *fetchedUsers = [dataStoreContext executeFetchRequest:statusFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store failed: %@",error.description);
+    }
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store");
+    }
+    
+    // Compute and return the statuses
+    if (fetchedUsers.count == 0) {
+        return [NSString stringWithFormat:@"NoSyncPerformed"];
+    }
+    User *fetchedUser = [fetchedUsers lastObject];
+    return fetchedUser.companySyncStatus;
+}
+
+// Add company data sync status to the user data store. Current design is that the user object is created
+// when a company data sync is done. Thus this method creates the user with the given status if it
+// doesn't exist or updates the user with the new status if the user exists.
+- (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the user object exists by querying for it
+    NSFetchRequest *userFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [userFetchRequest setEntity:userEntity];
+    NSError *error;
+    User *existingUser = nil;
+    NSArray *fetchedUsers= [dataStoreContext executeFetchRequest:userFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store failed: %@",error.description);
+    }
+    
+    existingUser = [fetchedUsers lastObject];
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store");
+    }
+    
+    // If the user does not exist
+    else if (!existingUser) {
+        User *user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:dataStoreContext];
+        user.companySyncStatus = syncStatus;
+        user.companySyncDate = [NSDate date];
+    }
+    
+    // If the user exists
+    else {
+        existingUser.companySyncStatus = syncStatus;
+        existingUser.companySyncDate = [NSDate date];
+    }
+    
+    // Update the user
+    if (![dataStoreContext save:&error]) {
+        NSLog(@"ERROR: Saving user company data sync status to data store failed: %@",error.description);
+    }
 }
 
 @end
