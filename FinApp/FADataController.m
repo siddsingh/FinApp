@@ -138,7 +138,7 @@
     // the following API: www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ
     
     // The API endpoint URL
-    NSString *endpointURL = @"http://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
+    NSString *endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
     
     // Set no of messages being returned per page to 300
     NSInteger noOfCompaniesPerPage = 300;
@@ -180,8 +180,11 @@
         }
         
         ++pageNo;
-        endpointURL = @"http://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
+        endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
     }
+    
+    // Add or Update the Company Data Sync status to SeedSyncDone.
+    [self upsertUserWithCompanySyncStatus:@"FullSyncDone"];
 }
 
 // Parse the companies API response and return total no of pages of companies in it.
@@ -296,7 +299,7 @@
     // www.quandl.com/api/v1/datasets/ZEA/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ
     
     // The API endpoint URL
-    NSString *endpointURL = @"http://www.quandl.com/api/v1/datasets/ZEA";
+    NSString *endpointURL = @"https://www.quandl.com/api/v1/datasets/ZEA";
         
     // Append ticker for the company to the API endpoint URL
     endpointURL = [NSString stringWithFormat:@"%@/%@.json",endpointURL,companyTicker];

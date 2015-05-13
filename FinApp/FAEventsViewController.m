@@ -31,10 +31,17 @@
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
     
-    // Seed the company data to get the user started
+    // Seed the company data, the very first time, to get the user started
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
         [self.primaryDataController performCompanySeedSyncLocally];
     }
+    
+    // If the initial company data has been seeded, perform the full company data sync from the API
+    // in the background
+    if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
+        [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
+    }
+ 
     
     // TO DO: Delete Later. Add Three Companies, Apple, Tesla, Electronic Arts
     // [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
