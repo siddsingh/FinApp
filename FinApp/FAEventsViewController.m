@@ -50,7 +50,7 @@
     
     // TO DO: Uncomment later and make it a background process
     //[self getAllCompaniesFromApiInBackground];
-    [self.primaryDataController getAllEventsFromApiWithTicker:@"AAPL"];
+    //[self.primaryDataController getAllEventsFromApiWithTicker:@"CRM"];
     
     
     //Query all events as that is the default view first shown
@@ -123,10 +123,14 @@
     
     // Show the event date
     NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-    [eventDateFormatter setDateFormat:@"yyyy-MM-dd"];
+    //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
+    [eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
     NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
-    // Append related details (timing information) to the event date
-    eventDateString = [NSString stringWithFormat:@"%@(%@)",eventDateString,eventAtIndex.relatedDetails];
+    NSString *eventTimeString = eventAtIndex.relatedDetails;
+    // Append related details (timing information) to the event date if it's known
+    if (![eventTimeString isEqualToString:@"Unknown"]) {
+        eventDateString = [NSString stringWithFormat:@"%@(%@)",eventDateString,eventTimeString];
+    }
     [[cell eventDate] setText:eventDateString];
     
     // Show the certainty of the event
