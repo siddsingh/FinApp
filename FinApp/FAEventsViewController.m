@@ -19,6 +19,9 @@
 // Get all companies from API. Typically called in a background thread
 - (void)getAllCompaniesFromApiInBackground;
 
+// Validate search text entered
+- (BOOL) searchTextValid:(NSString *)text;
+
 @end
 
 @implementation FAEventsViewController
@@ -52,6 +55,8 @@
     //[self getAllCompaniesFromApiInBackground];
     //[self.primaryDataController getAllEventsFromApiWithTicker:@"CRM"];
     
+    // Set the Filter Specified flag to false, indicating that no search filter has been specified
+    self.filterSpecified = NO;
     
     //Query all events as that is the default view first shown
     self.eventResultsController = [self.primaryDataController getAllEvents];
@@ -148,6 +153,79 @@
     FADataController *companiesDataController = [[FADataController alloc] init];
     
     [companiesDataController getAllCompaniesFromApi];
+}
+
+#pragma mark - Search Bar Delegate Methods, Related
+
+// When Search button associated with the search bar is clicked, search the ticker and name
+// fields on the company related to the event, for the search text entered.
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    
+    // Validate search text entered. If valid
+    if ([self searchTextValid:searchBar.text]) {
+        
+            
+        // search the ticker and name fields on the company related to the events in the data store, for the
+        // search text entered
+        self.filteredEventsController = [self.primaryDataController searchAllEventsFor:searchBar.text];
+            
+        // Set the Filter Specified flag to true, indicating that a search filter has been specified
+        self.filterSpecified = YES;
+        
+        // Search the from and content fields on messages in that category, in core data, for the search text entered.
+        self.filteredMessagesController = [self.yamMsgDataController searchMessagesFor:searchBar.text inCategory:self.currentNavItemTitle];
+        
+        // Reload messages table
+        [self.messagesTable reloadData];
+    }
+    
+    [searchBar resignFirstResponder];
+}
+
+// Text in the search bar is changed
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    
+    // Validate search text entered. If valid
+    if ([self searchTextValid:searchBar.text]) {
+        
+        // If the messages navigation item is the default "All"
+        if ([self.currentNavItemTitle isEqualToString:@"All"]) {
+            
+            // Search the from and content fields on all messages, in core data, for the search text entered.
+            self.filteredMessagesController = [self.yamMsgDataController searchAllMessagesFor:searchBar.text];
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+        }
+        // If the messages navigation item is a category
+        else {
+            
+            // Search the from and content fields on messages in that category, in core data, for the search text entered.
+            self.filteredMessagesController = [self.yamMsgDataController searchMessagesFor:searchBar.text inCategory:self.currentNavItemTitle];
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+        }
+        
+        // Reload messages table
+        [self.messagesTable reloadData];
+    }
+}
+
+// Validate search text entered
+- (BOOL) searchTextValid:(NSString *)text {
+    
+    // If the entered category is empty
+    if ([text isEqualToString:@""]) {
+        return NO;
+    }
+    
+    // If the length of text is 0
+    if (text.length == 0) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 /*

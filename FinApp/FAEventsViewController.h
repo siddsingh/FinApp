@@ -20,6 +20,12 @@
 // Controller containing results of event queries to Core Data store
 @property (strong, nonatomic) NSFetchedResultsController *eventResultsController;
 
+// Controller containing results of search queries to Data store
+@property (strong, nonatomic) NSFetchedResultsController *filteredEventsController;
+
+// Flag to show if the search filter has been applied
+@property BOOL filterSpecified;
+
 // Table for list of events
 @property (weak, nonatomic) IBOutlet UITableView *eventsListTable;
 

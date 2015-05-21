@@ -44,6 +44,11 @@
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllEvents;
 
+// Search and return all events that match the search text on "ticker" and "name" fields for the listed Company.
+// Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15)
+// objects’ data will be fetched from the data store at a time.
+- (NSFetchedResultsController *)searchEventsFor:(NSString *)searchText;
+
 #pragma mark - Methods to call Company Data Source APIs
 
 // Get a list of all companies and their tickers. Current algorithm to do this is:

@@ -129,6 +129,41 @@
     return self.resultsController;
 }
 
+// Search and return all events that match the search text on "ticker" and "name" fields for the listed Company.
+// Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15)
+// objects’ data will be fetched from the data store at a time.
+- (NSFetchedResultsController *)searchEventsFor:(NSString *)searchText
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@", searchText, searchText];
+    [eventFetchRequest setPredicate:searchPredicate];
+    
+    // TO DO: Should it be ascending or descending to get the latest first ?
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    
+    [eventFetchRequest setFetchBatchSize:15];
+    
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Searching for events with the following name and ticker search text: %@ from data store failed: %@",searchText, error.description);
+    }
+    
+    return self.resultsController;
+}
+
+
 #pragma mark - Methods to call Company Data Source APIs
 
 // Get a list of all companies and their tickers.
