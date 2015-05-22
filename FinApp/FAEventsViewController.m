@@ -91,19 +91,27 @@
 // Return number of rows in the events list table view
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+     NSInteger numberOfRows = 0;
     
-    // TO DO: Placeholder for testing
-    //return 1;
+    // If a search filter has been applied show the filtered list of events
+    if (self.filterSpecified) {
+        // Use filtered results set
+        id filteredEventSection = [[self.filteredEventsController sections] objectAtIndex:section];
+        // TO DO: Testing Delete
+        NSLog(@"**********Number of Events:%lu",(unsigned long)[filteredEventSection numberOfObjects]);
+        numberOfRows = [filteredEventSection numberOfObjects];
+    }
     
-    //NSLog(@"EventResultsController:::%@", self.eventResultsController);
-    // NSArray *eventSection = [self.eventResultsController sections];
-    //NSLog(@"EventSection:::%@", eventSection);
-    NSLog(@"Number of rows in table view returned");
-    // return 1;
-    //return [eventSection count];
-    id eventSection = [[self.eventResultsController sections] objectAtIndex:section];
-    NSLog(@"**********Number of Events:%lu",(unsigned long)[eventSection numberOfObjects]);
-    return [eventSection numberOfObjects];
+    // If not, show all events
+    else {
+        // Use all events results set
+        id eventSection = [[self.eventResultsController sections] objectAtIndex:section];
+        // TO DO: Testing Delete
+        NSLog(@"**********Number of Events:%lu",(unsigned long)[eventSection numberOfObjects]);
+        numberOfRows = [eventSection numberOfObjects];
+    }
+
+    return numberOfRows;
 }
 
 // Return a cell configured to display a task or a task nav item
@@ -115,7 +123,15 @@
     
     // Get event to display
     Event *eventAtIndex;
-    eventAtIndex = [self.eventResultsController objectAtIndexPath:indexPath];
+    // If a search filter has been applied
+    if (self.filterSpecified) {
+        // Use filtered results set
+        eventAtIndex = [self.filteredEventsController objectAtIndexPath:indexPath];
+    }
+    // If not
+    else {
+        eventAtIndex = [self.eventResultsController objectAtIndexPath:indexPath];
+    }
     
     // Show the company ticker associated with the event
     [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
@@ -161,22 +177,20 @@
 // fields on the company related to the event, for the search text entered.
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     
+    NSLog(@"Search Button Clicked");
+    
     // Validate search text entered. If valid
     if ([self searchTextValid:searchBar.text]) {
         
-            
         // search the ticker and name fields on the company related to the events in the data store, for the
         // search text entered
-        self.filteredEventsController = [self.primaryDataController searchAllEventsFor:searchBar.text];
+        self.filteredEventsController = [self.primaryDataController searchEventsFor:searchBar.text];
             
         // Set the Filter Specified flag to true, indicating that a search filter has been specified
         self.filterSpecified = YES;
         
-        // Search the from and content fields on messages in that category, in core data, for the search text entered.
-        self.filteredMessagesController = [self.yamMsgDataController searchMessagesFor:searchBar.text inCategory:self.currentNavItemTitle];
-        
         // Reload messages table
-        [self.messagesTable reloadData];
+        [self.eventsListTable reloadData];
     }
     
     [searchBar resignFirstResponder];
@@ -185,30 +199,20 @@
 // Text in the search bar is changed
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     
+     NSLog(@"Search Text Changed");
+    
     // Validate search text entered. If valid
     if ([self searchTextValid:searchBar.text]) {
         
-        // If the messages navigation item is the default "All"
-        if ([self.currentNavItemTitle isEqualToString:@"All"]) {
-            
-            // Search the from and content fields on all messages, in core data, for the search text entered.
-            self.filteredMessagesController = [self.yamMsgDataController searchAllMessagesFor:searchBar.text];
-            
-            // Set the Filter Specified flag to true, indicating that a search filter has been specified
-            self.filterSpecified = YES;
-        }
-        // If the messages navigation item is a category
-        else {
-            
-            // Search the from and content fields on messages in that category, in core data, for the search text entered.
-            self.filteredMessagesController = [self.yamMsgDataController searchMessagesFor:searchBar.text inCategory:self.currentNavItemTitle];
-            
-            // Set the Filter Specified flag to true, indicating that a search filter has been specified
-            self.filterSpecified = YES;
-        }
+        // search the ticker and name fields on the company related to the events in the data store, for the
+        // search text entered
+        self.filteredEventsController = [self.primaryDataController searchEventsFor:searchBar.text];
+        
+        // Set the Filter Specified flag to true, indicating that a search filter has been specified
+        self.filterSpecified = YES;
         
         // Reload messages table
-        [self.messagesTable reloadData];
+        [self.eventsListTable reloadData];
     }
 }
 

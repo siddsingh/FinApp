@@ -26,6 +26,9 @@
 // Flag to show if the search filter has been applied
 @property BOOL filterSpecified;
 
+// Outlet for the events search bar
+@property (weak, nonatomic) IBOutlet UISearchBar *eventsSearchBar;
+
 // Table for list of events
 @property (weak, nonatomic) IBOutlet UITableView *eventsListTable;
 

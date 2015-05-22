@@ -24,6 +24,9 @@
                                     <constraint firstAttribute="width" constant="281" id="vrZ-cq-fqZ"/>
                                 </constraints>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="WNQ-2i-B77" id="0Ap-eJ-shR"/>
+                                </connections>
                             </searchBar>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UPCOMING EVENTS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lH9-rm-JDu">
                                 <rect key="frame" x="227" y="28" width="146" height="21"/>
@@ -131,6 +134,7 @@
                     </view>
                     <connections>
                         <outlet property="eventsListTable" destination="KbY-6m-WGH" id="U1B-qA-4Xm"/>
+                        <outlet property="eventsSearchBar" destination="nfw-0u-xss" id="pfV-29-mXe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1ub-g1-2Pv" userLabel="First Responder" sceneMemberID="firstResponder"/>
