@@ -116,6 +116,10 @@
 // Add the most basic set of most used company information to the company data store. This is done locally
 - (void)performCompanySeedSyncLocally;
 
+// Add the most basic set of most used events to the event data store. This is done locally and is dependent on the
+// set of companies that are included in the Company Seed Sync.
+- (void)performEventSeedSyncRemotely;
+
 #pragma mark - User State Related
 
 // Get the Company Data Sync Status for the one user in the data store. Returns the following values:
@@ -129,6 +133,8 @@
 // Add company data sync status to the user data store. Current design is that the user object is created
 // when a company data sync is done. Thus this method creates the user with the given status if it
 // doesn't exist or updates the user with the new status if the user exists.
+// Additionally since the user object is created when the first company data sync is done, set the event sync
+// status for the user to "NoSyncPerformed" when creating the user, not for the update.
 - (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus;
 
 @end

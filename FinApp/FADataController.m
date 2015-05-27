@@ -509,6 +509,30 @@
     [self upsertUserWithCompanySyncStatus:@"SeedSyncDone"];
 }
 
+// Add the most basic set of most used events to the event data store. This is fetched from the data source
+// API based on the set of companies that are included in the Company Seed Sync.
+- (void)performEventSeedSyncRemotely {
+    
+    // Add the events for the 20 most used companies to the events database.
+    // TO DO: CAPABILITY: Expand to include at least 50 most used companies.
+    [self getAllEventsFromApiWithTicker:@"AAPL"];
+    [self getAllEventsFromApiWithTicker:@"TSLA"];
+    // TO DO: Commenting to not expire the API test limits. Uncomment when ready to finally test for shipping.
+   /* [self getAllEventsFromApiWithTicker:@"EA"];
+    [self getAllEventsFromApiWithTicker:@"CRM"];
+    [self getAllEventsFromApiWithTicker:@"NFLX"];
+    [self getAllEventsFromApiWithTicker:@"FB"];
+    [self getAllEventsFromApiWithTicker:@"EA"];
+    [self getAllEventsFromApiWithTicker:@"MSFT"];
+    [self getAllEventsFromApiWithTicker:@"TWTR"];
+    [self getAllEventsFromApiWithTicker:@"TGT"];
+    [self getAllEventsFromApiWithTicker:@"QCOM"];
+    [self getAllEventsFromApiWithTicker:@"NKE"]; */
+    
+    // Add or Update the Company Data Sync status to SeedSyncDone.
+    [self upsertUserWithCompanySyncStatus:@"SeedSyncDone"];
+}
+
 #pragma mark - User State Related
 
 // Get the Company Data Sync Status for the one user in the data store. Returns the following values:
@@ -544,8 +568,10 @@
 }
 
 // Add company data sync status to the user data store. Current design is that the user object is created
-// when a company data sync is done. Thus this method creates the user with the given status if it
+// when the first company data sync is done. Thus this method creates the user with the given status if it
 // doesn't exist or updates the user with the new status if the user exists.
+// Additionally since the user object is created when the first company data sync is done, set the event sync
+// status for the user to "NoSyncPerformed" when creating the user, not for the update.
 - (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -572,6 +598,8 @@
         User *user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:dataStoreContext];
         user.companySyncStatus = syncStatus;
         user.companySyncDate = [NSDate date];
+        user.eventSyncStatus = [NSString stringWithFormat:@"NoSyncPerformed"];
+        user.eventSyncDate = [NSDate date];
     }
     
     // If the user exists
