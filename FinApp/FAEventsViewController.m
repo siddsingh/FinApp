@@ -34,9 +34,14 @@
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
     
-    // Seed the company data, the very first time, to get the user started
+    // Seed the company data, the very first time, to get the user started.
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
         [self.primaryDataController performCompanySeedSyncLocally];
+    }
+    
+    // Seed the events data, the very first time, to get the user started.
+    if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+        [self.primaryDataController performEventSeedSyncRemotely];
     }
     
     // If the initial company data has been seeded, perform the full company data sync from the API

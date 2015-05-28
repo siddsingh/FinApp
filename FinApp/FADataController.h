@@ -130,11 +130,21 @@
 // the company data store.
 - (NSString *)getCompanySyncStatus;
 
+// Get the Event Data Sync Status for the one user in the data store. Returns the following values:
+// "SeedSyncDone" means the most basic set of events information has been added to the event data store.
+// "NoSyncPerformed" means no event information has been added to the event data store.
+- (NSString *)getEventSyncStatus;
+
 // Add company data sync status to the user data store. Current design is that the user object is created
 // when a company data sync is done. Thus this method creates the user with the given status if it
 // doesn't exist or updates the user with the new status if the user exists.
 // Additionally since the user object is created when the first company data sync is done, set the event sync
 // status for the user to "NoSyncPerformed" when creating the user, not for the update.
 - (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus;
+
+// Add events data sync status to the user data store. This method updates the user with the given events sync
+// status. If the user doesn't exist, it logs an error. Since the user is created the first time a company
+// event sync is performed, CALL THIS METHOD AFTER THE UPSERT COMPANY SYNC STATUS METHOD IS CALLED ONCE.
+- (void)updateUserWithEventSyncStatus:(NSString *)syncStatus;
 
 @end

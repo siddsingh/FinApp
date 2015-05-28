@@ -567,6 +567,35 @@
     return fetchedUser.companySyncStatus;
 }
 
+// Get the Event Data Sync Status for the one user in the data store. Returns the following values:
+// "SeedSyncDone" means the most basic set of events information has been added to the event data store.
+// "NoSyncPerformed" means no event information has been added to the event data store.
+- (NSString *)getEventSyncStatus {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    NSFetchRequest *statusFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [statusFetchRequest setEntity:userEntity];
+    
+    NSError *error;
+    NSArray *fetchedUsers = [dataStoreContext executeFetchRequest:statusFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store failed: %@",error.description);
+    }
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store");
+    }
+    
+    // Compute and return the statuses
+    if (fetchedUsers.count == 0) {
+        return [NSString stringWithFormat:@"NoSyncPerformed"];
+    }
+    User *fetchedUser = [fetchedUsers lastObject];
+    return fetchedUser.eventSyncStatus;
+}
+
 // Add company data sync status to the user data store. Current design is that the user object is created
 // when the first company data sync is done. Thus this method creates the user with the given status if it
 // doesn't exist or updates the user with the new status if the user exists.
@@ -611,6 +640,47 @@
     // Update the user
     if (![dataStoreContext save:&error]) {
         NSLog(@"ERROR: Saving user company data sync status to data store failed: %@",error.description);
+    }
+}
+
+// Add events data sync status to the user data store. This method updates the user with the given events sync
+// status. If the user doesn't exist, it logs an error. Since the user is created the first time a company
+// event sync is performed, CALL THIS METHOD AFTER THE UPSERT COMPANY SYNC STATUS METHOD IS CALLED AT LEAST ONCE.
+- (void)updateUserWithEventSyncStatus:(NSString *)syncStatus
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the user object exists by querying for it
+    NSFetchRequest *userFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [userFetchRequest setEntity:userEntity];
+    NSError *error;
+    User *existingUser = nil;
+    NSArray *fetchedUsers= [dataStoreContext executeFetchRequest:userFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store failed: %@",error.description);
+    }
+    
+    existingUser = [fetchedUsers lastObject];
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store");
+    }
+    
+    // If the user does not exist
+    else if (!existingUser) {
+        NSLog(@"SEVERE_WARNING: No user found for updating the event sync status. Make sure the event sync update method is not called before the upsert company sync status method has been called at least once.");
+    }
+    
+    // If the user exists
+    else {
+        existingUser.eventSyncStatus = syncStatus;
+        existingUser.eventSyncDate = [NSDate date];
+    }
+    
+    // Update the user
+    if (![dataStoreContext save:&error]) {
+        NSLog(@"ERROR: Updating user event sync status to data store failed: %@",error.description);
     }
 }
 
