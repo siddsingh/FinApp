@@ -49,6 +49,11 @@
 // objects’ data will be fetched from the data store at a time.
 - (NSFetchedResultsController *)searchEventsFor:(NSString *)searchText;
 
+// Search and return all companies that match the search text on "ticker" and "name" fields for the Company.
+// Returns a results controller with identities of all companies recorded, but no more than batchSize (currently set
+// to 15) objects’ data will be fetched from the data store at a time.
+- (NSFetchedResultsController *)searchCompaniesFor:(NSString *)searchText;
+
 #pragma mark - Methods to call Company Data Source APIs
 
 // Get a list of all companies and their tickers. Current algorithm to do this is:

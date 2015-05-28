@@ -163,6 +163,39 @@
     return self.resultsController;
 }
 
+// Search and return all companies that match the search text on "ticker" and "name" fields for the Company.
+// Returns a results controller with identities of all companies recorded, but no more than batchSize (currently set
+// to 15) objects’ data will be fetched from the data store at a time.
+- (NSFetchedResultsController *)searchCompaniesFor:(NSString *)searchText
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
+    
+    NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    [companyFetchRequest setEntity:companyEntity];
+    
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"name contains[cd] %@ OR ticker contains[cd] %@", searchText, searchText];
+    [companyFetchRequest setPredicate:searchPredicate];
+    
+    // TO DO: Should it be ascending or descending to get the latest first ?
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    [companyFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    
+    [companyFetchRequest setFetchBatchSize:15];
+    
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:companyFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Searching for companies with the following name and ticker search text: %@ from data store failed: %@",searchText, error.description);
+    }
+    
+    return self.resultsController;
+}
 
 #pragma mark - Methods to call Company Data Source APIs
 
