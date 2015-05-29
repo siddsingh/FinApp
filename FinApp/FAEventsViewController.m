@@ -63,6 +63,9 @@
     // Set the Filter Specified flag to false, indicating that no search filter has been specified
     self.filterSpecified = NO;
     
+    // Set the filter type to None_Specified, meaning no filter has been specified.
+    self.filterType = [NSString stringWithFormat:@"None_Specified"];
+    
     //Query all events as that is the default view first shown
     self.eventResultsController = [self.primaryDataController getAllEvents];
     NSLog(@"Data Setup and Query done in viewdidload");
@@ -101,7 +104,7 @@
     // If a search filter has been applied show the filtered list of events
     if (self.filterSpecified) {
         // Use filtered results set
-        id filteredEventSection = [[self.filteredEventsController sections] objectAtIndex:section];
+        id filteredEventSection = [[self.filteredResultsController sections] objectAtIndex:section];
         // TO DO: Testing Delete
         NSLog(@"**********Number of Events:%lu",(unsigned long)[filteredEventSection numberOfObjects]);
         numberOfRows = [filteredEventSection numberOfObjects];
@@ -131,7 +134,7 @@
     // If a search filter has been applied
     if (self.filterSpecified) {
         // Use filtered results set
-        eventAtIndex = [self.filteredEventsController objectAtIndexPath:indexPath];
+        eventAtIndex = [self.filteredResultsController objectAtIndexPath:indexPath];
     }
     // If not
     else {
@@ -179,7 +182,9 @@
 #pragma mark - Search Bar Delegate Methods, Related
 
 // When Search button associated with the search bar is clicked, search the ticker and name
-// fields on the company related to the event, for the search text entered.
+// fields on the company related to the event, for the search text entered. Display the events
+// found. If there are no events, search for the same fields on the company to display the matching
+// companies to prompt the user to fetch the events data for these companies.
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     
     NSLog(@"Search Button Clicked");
@@ -187,9 +192,20 @@
     // Validate search text entered. If valid
     if ([self searchTextValid:searchBar.text]) {
         
-        // search the ticker and name fields on the company related to the events in the data store, for the
+        // Search the ticker and name fields on the company related to the events in the data store, for the
         // search text entered
-        self.filteredEventsController = [self.primaryDataController searchEventsFor:searchBar.text];
+        self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
+        // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+        // has been specified.
+        self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+        
+        // If no events are found, search for the name and ticker fields on the companies data store.
+        if ([self.filteredResultsController fetchedObjects].count == 0) {
+            self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+            // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+            // has been specified.
+            self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+        }
             
         // Set the Filter Specified flag to true, indicating that a search filter has been specified
         self.filterSpecified = YES;
@@ -201,7 +217,9 @@
     [searchBar resignFirstResponder];
 }
 
-// Text in the search bar is changed
+// When text in the search bar is changed, search the ticker and name fields on the company related to the event,
+// for the search text entered. Display the events found. If there are no events, search for the same fields on the
+// company to display the matching companies to prompt the user to fetch the events data for these companies.
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     
      NSLog(@"Search Text Changed");
@@ -209,9 +227,20 @@
     // Validate search text entered. If valid
     if ([self searchTextValid:searchBar.text]) {
         
-        // search the ticker and name fields on the company related to the events in the data store, for the
+        // Search the ticker and name fields on the company related to the events in the data store, for the
         // search text entered
-        self.filteredEventsController = [self.primaryDataController searchEventsFor:searchBar.text];
+        self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
+        // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+        // has been specified.
+        self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+        
+        // If no events are found, search for the name and ticker fields on the companies data store.
+        if ([self.filteredResultsController fetchedObjects].count == 0) {
+            self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+            // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+            // has been specified.
+            self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+        }
         
         // Set the Filter Specified flag to true, indicating that a search filter has been specified
         self.filterSpecified = YES;

@@ -21,10 +21,16 @@
 @property (strong, nonatomic) NSFetchedResultsController *eventResultsController;
 
 // Controller containing results of search queries to Data store
-@property (strong, nonatomic) NSFetchedResultsController *filteredEventsController;
+@property (strong, nonatomic) NSFetchedResultsController *filteredResultsController;
 
 // Flag to show if the search filter has been applied
 @property BOOL filterSpecified;
+
+// Specify which type of search filter has been applied. Currently
+// Match_Companies_Events: filters matching companies with existing events.
+// Match_Companies_NoEvents: filters for matching companies with no events.
+// None_Specified: no filter is specified.
+@property (strong,nonatomic) NSString *filterType;
 
 // Outlet for the events search bar
 @property (weak, nonatomic) IBOutlet UISearchBar *eventsSearchBar;
