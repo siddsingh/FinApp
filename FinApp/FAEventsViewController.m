@@ -101,13 +101,27 @@
 {
      NSInteger numberOfRows = 0;
     
-    // If a search filter has been applied show the filtered list of events
+    // If a search filter has been applied return the number of events in the filtered list of events or companies,
+    // depending on the type of filter
     if (self.filterSpecified) {
-        // Use filtered results set
-        id filteredEventSection = [[self.filteredResultsController sections] objectAtIndex:section];
-        // TO DO: Testing Delete
-        NSLog(@"**********Number of Events:%lu",(unsigned long)[filteredEventSection numberOfObjects]);
-        numberOfRows = [filteredEventSection numberOfObjects];
+        
+        // If the filter type is Match_Companies_Events, meaning a filter of matching companies with existing events
+        // has been specified.
+        if ([self.filterType isEqualToString:@"Match_Companies_Events"]) {
+            id filteredEventSection = [[self.filteredResultsController sections] objectAtIndex:section];
+            // TO DO: Testing Delete
+            NSLog(@"**********Number of Events:%lu",(unsigned long)[filteredEventSection numberOfObjects]);
+            numberOfRows = [filteredEventSection numberOfObjects];
+        }
+        
+        // If the filter type is Match_Companies_NoEvents, meaning a filter of matching companies with no existing events
+        // has been specified.
+        if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]) {
+            id filteredCompaniesSection = [[self.filteredResultsController sections] objectAtIndex:section];
+            // TO DO: Testing Delete
+            NSLog(@"**********Number of Companies:%lu",(unsigned long)[filteredCompaniesSection numberOfObjects]);
+            numberOfRows = [filteredCompaniesSection numberOfObjects];
+        }
     }
     
     // If not, show all events
@@ -122,48 +136,79 @@
     return numberOfRows;
 }
 
-// Return a cell configured to display a task or a task nav item
+// Return a cell configured to display an event or a company with a fetch event
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSLog(@"Rendering a cell with indexpath");
     
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
     
-    // Get event to display
+    // Get event or company  to display
     Event *eventAtIndex;
-    // If a search filter has been applied
+    Company *companyAtIndex;
+    
+    // If a search filter has been applied, GET the matching companies with events or companies with the fetch events message
+    // depending on the type of filter applied
     if (self.filterSpecified) {
-        // Use filtered results set
-        eventAtIndex = [self.filteredResultsController objectAtIndexPath:indexPath];
+        
+        // If the filter type is Match_Companies_Events, meaning a filter of matching companies with existing events
+        // has been specified.
+        if ([self.filterType isEqualToString:@"Match_Companies_Events"]) {
+            // Use filtered events results set
+            eventAtIndex = [self.filteredResultsController objectAtIndexPath:indexPath];
+        }
+        
+        // If the filter type is Match_Companies_NoEvents, meaning a filter of matching companies with no existing events
+        // has been specified.
+        if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]) {
+            // Use filtered companies results set
+            companyAtIndex = [self.filteredResultsController objectAtIndexPath:indexPath];
+        }
     }
-    // If not
+    // If no search filter
     else {
         eventAtIndex = [self.eventResultsController objectAtIndexPath:indexPath];
     }
     
-    // Show the company ticker associated with the event
-    [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
-    
-    // Show the company name associated with the event
-    [[cell  companyName] setText:eventAtIndex.listedCompany.name];
-    
-    // Show the event type
-    [[cell  eventDescription] setText:eventAtIndex.type];
-    
-    // Show the event date
-    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-    //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
-    [eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
-    NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
-    NSString *eventTimeString = eventAtIndex.relatedDetails;
-    // Append related details (timing information) to the event date if it's known
-    if (![eventTimeString isEqualToString:@"Unknown"]) {
-        eventDateString = [NSString stringWithFormat:@"%@(%@)",eventDateString,eventTimeString];
+    // Depending the type of search filter that has been applied, SHOW the matching companies with events or companies
+    // with the fetch events message.
+    if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]) {
+        
+        // Show the company ticker associated with the event
+        [[cell  companyTicker] setText:companyAtIndex.ticker];
+        
+        // Show the company name associated with the event
+        [[cell  companyName] setText:companyAtIndex.name];
+        
+        // Show the "Get Events" text in the event display area
+        [[cell  eventDescription] setText:@"Get Events"];
     }
-    [[cell eventDate] setText:eventDateString];
-    
-    // Show the certainty of the event
-    [[cell eventCertainty] setText:eventAtIndex.certainty];
+    else {
+        
+        // Show the company ticker associated with the event
+        [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
+        
+        // Show the company name associated with the event
+        [[cell  companyName] setText:eventAtIndex.listedCompany.name];
+        
+        // Show the event type
+        [[cell  eventDescription] setText:eventAtIndex.type];
+        
+        // Show the event date
+        NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+        //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
+        [eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
+        NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
+        NSString *eventTimeString = eventAtIndex.relatedDetails;
+        // Append related details (timing information) to the event date if it's known
+        if (![eventTimeString isEqualToString:@"Unknown"]) {
+            eventDateString = [NSString stringWithFormat:@"%@(%@)",eventDateString,eventTimeString];
+        }
+        [[cell eventDate] setText:eventDateString];
+        
+        // Show the certainty of the event
+        [[cell eventCertainty] setText:eventAtIndex.certainty];
+    } 
     
     return cell;
 }
