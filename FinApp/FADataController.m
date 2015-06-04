@@ -563,7 +563,7 @@
     [self getAllEventsFromApiWithTicker:@"NKE"]; */
     
     // Add or Update the Company Data Sync status to SeedSyncDone.
-    [self upsertUserWithCompanySyncStatus:@"SeedSyncDone"];
+    [self updateUserWithEventSyncStatus:@"SeedSyncDone"];
 }
 
 #pragma mark - User State Related

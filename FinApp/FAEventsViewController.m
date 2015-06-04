@@ -34,6 +34,8 @@
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
     
+    NSLog(@"TTTTTTTTTTTTTThe CompanySyncStatus is:%@ and EventSyncStatus is:%@",[self.primaryDataController getCompanySyncStatus],[self.primaryDataController getEventSyncStatus]);
+    
     // Seed the company data, the very first time, to get the user started.
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
         [self.primaryDataController performCompanySeedSyncLocally];
@@ -48,8 +50,9 @@
     // in the background
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
         [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
+        // TO DO: Ideally, you only want to update the status after the full background fetch has succeeded
+        [self.primaryDataController upsertUserWithCompanySyncStatus:@"FullSyncDone"];
     }
- 
     
     // TO DO: Delete Later. Add Three Companies, Apple, Tesla, Electronic Arts
     // [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
@@ -182,6 +185,10 @@
         
         // Show the "Get Events" text in the event display area
         [[cell  eventDescription] setText:@"Get Events"];
+        
+        // Set all other fields to empty
+        [[cell eventDate] setText:@" "];
+        [[cell eventCertainty] setText:@" "];
     }
     else {
         
@@ -267,9 +274,10 @@
 // company to display the matching companies to prompt the user to fetch the events data for these companies.
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     
-     NSLog(@"Search Text Changed");
-    
-    // Validate search text entered. If valid
+    // Validate search text entered to make sure it's not empty.
+    // TO DO: When we are validating for more like special characters, etc, modify the else clause to not reset the search results table
+    // to show all events as we only want to do that when the text is cleared.
+    // If valid
     if ([self searchTextValid:searchBar.text]) {
         
         // Search the ticker and name fields on the company related to the events in the data store, for the
@@ -293,18 +301,33 @@
         // Reload messages table
         [self.eventsListTable reloadData];
     }
+    
+    // If not valid
+    else {
+        
+        // TO DO: In case you want to clear the search context
+        //[searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
+        
+        //Query all events as that is the default view
+        self.eventResultsController = [self.primaryDataController getAllEvents];
+        
+        // Set the Filter Specified flag to false, indicating that no search filter has been specified
+        self.filterSpecified = NO;
+        
+        // Set the filter type to None_Specified i.e. no filter is specified
+        self.filterType = [NSString stringWithFormat:@"None_Specified"];
+        
+        // Reload messages table
+        [self.eventsListTable reloadData];
+    }
 }
 
-// Validate search text entered
+// Validate search text entered. Currently only checking for if the search text is empty.
 - (BOOL) searchTextValid:(NSString *)text {
     
     // If the entered category is empty
-    if ([text isEqualToString:@""]) {
-        return NO;
-    }
-    
-    // If the length of text is 0
-    if (text.length == 0) {
+    if ([text isEqualToString:@""]||(text.length == 0)) {
+        
         return NO;
     }
     
