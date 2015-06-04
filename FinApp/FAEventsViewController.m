@@ -186,6 +186,11 @@
         // Show the "Get Events" text in the event display area
         [[cell  eventDescription] setText:@"Get Events"];
         
+        // Set the fetch state of the event cell to true
+        // TO DO: Should you really be holding logic state at the cell level or should there
+        // be a unique identifier for each event ?
+        cell.eventRemoteFetch = YES;
+        
         // Set all other fields to empty
         [[cell eventDate] setText:@" "];
         [[cell eventCertainty] setText:@" "];
@@ -219,6 +224,37 @@
     
     return cell;
 }
+
+// When a row is selected on the events list table, check to see if there is a "Get Event Message", meaning
+// the event needs to be fetched from the remote Data Source. Additionally clear out the search context.
+/*- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    // If its the navigation table
+    if(tableView == self.messagesNavTable){
+        
+        // Set the title of the currently selected navigation item
+        self.currentNavItemTitle = [self.messagesNavTable cellForRowAtIndexPath:indexPath].textLabel.text;
+        
+        // Clear out search context
+        // Set the Filter Specified flag to false, indicating that no search filter has been specified.
+        self.filterSpecified = NO;
+        // Clear out search bar text
+        [self.messagesSearchBar setText:@""];
+        // Remove keyboard focus from search bar
+        [self.messagesSearchBar resignFirstResponder];
+        
+        // Reload the messages table, logic in the reload triggered methods take care of populating the messages
+        // with the category selected
+        [self.messagesTable reloadData];
+    }
+    
+    // If its the messages table
+    if (tableView == self.messagesTable) {
+        
+        // Remove keyboard focus from search bar
+        [self.messagesSearchBar resignFirstResponder];
+    }
+} */
 
 #pragma mark - Data Source API
 
