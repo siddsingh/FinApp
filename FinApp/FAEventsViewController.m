@@ -225,36 +225,28 @@
     return cell;
 }
 
-// When a row is selected on the events list table, check to see if there is a "Get Event Message", meaning
-// the event needs to be fetched from the remote Data Source. Additionally clear out the search context.
-/*- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+// When a row is selected on the events list table, check to see if that row has an event cell with remote fetch status
+// set to true, meaning the event needs to be fetched from the remote Data Source. Additionally clear out the search context.
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    // If its the navigation table
-    if(tableView == self.messagesNavTable){
+    // Check to see if the row selected has an event cell with remote fetch status set to true
+    FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+    if (cell.eventRemoteFetch) {
         
-        // Set the title of the currently selected navigation item
-        self.currentNavItemTitle = [self.messagesNavTable cellForRowAtIndexPath:indexPath].textLabel.text;
+        // Fetch the event for the related parent company
+        NSLog(@"Fetching Event Data for ticker:%@",(cell.companyTicker).text);
+        [self.primaryDataController getAllEventsFromApiWithTicker:(cell.companyTicker).text];
         
-        // Clear out search context
-        // Set the Filter Specified flag to false, indicating that no search filter has been specified.
-        self.filterSpecified = NO;
-        // Clear out search bar text
-        [self.messagesSearchBar setText:@""];
-        // Remove keyboard focus from search bar
-        [self.messagesSearchBar resignFirstResponder];
+        // Force a search to capture the refreshed event
+        [self searchBarSearchButtonClicked:self.eventsSearchBar];
         
-        // Reload the messages table, logic in the reload triggered methods take care of populating the messages
-        // with the category selected
-        [self.messagesTable reloadData];
+        // Resign first responder from Search Bar
+        [self.eventsSearchBar resignFirstResponder];
+        
+        // Reload Events list table
+        [self.eventsListTable reloadData];
     }
-    
-    // If its the messages table
-    if (tableView == self.messagesTable) {
-        
-        // Remove keyboard focus from search bar
-        [self.messagesSearchBar resignFirstResponder];
-    }
-} */
+}
 
 #pragma mark - Data Source API
 
@@ -279,7 +271,7 @@
     
     // Validate search text entered. If valid
     if ([self searchTextValid:searchBar.text]) {
-        
+    
         // Search the ticker and name fields on the company related to the events in the data store, for the
         // search text entered
         self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
@@ -341,9 +333,6 @@
     // If not valid
     else {
         
-        // TO DO: In case you want to clear the search context
-        //[searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
-        
         //Query all events as that is the default view
         self.eventResultsController = [self.primaryDataController getAllEvents];
         
@@ -355,6 +344,9 @@
         
         // Reload messages table
         [self.eventsListTable reloadData];
+        
+        // TO DO: In case you want to clear the search context
+        [searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
     }
 }
 
