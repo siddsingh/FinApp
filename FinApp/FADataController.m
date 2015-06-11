@@ -74,32 +74,62 @@
 
 #pragma mark - Events Data Related
 
-// Add an Event along with a parent company to the Event Data Store
-- (void)insertEventWithDate:(NSDate *)eventDate relatedDetails:(NSString *)eventRelatedDetails relatedDate:(NSDate *)eventRelatedDate type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker
+// Upsert an Event along with a parent company to the Event Data Store i.e. If the specified event type for that particular company exists, update it. If not insert it.
+- (void)upsertEventWithDate:(NSDate *)eventDate relatedDetails:(NSString *)eventRelatedDetails relatedDate:(NSDate *)eventRelatedDate type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
-    // Get the parent listed company for the event by doing a case insensitive query on the company ticker
-    NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    [companyFetchRequest setEntity:companyEntity];
-    NSPredicate *companyPredicate = [NSPredicate predicateWithFormat:@"ticker =[c] %@",listedCompanyTicker];
-    [companyFetchRequest setPredicate:companyPredicate];
+    // Check to see if the event exists by doing a case insensitive query on parent company Ticker and event type.
+    // TO DO: Current assumption is that an event is uniquely identified by the combination of above 2 fields. This might need to change in the future.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@" listedCompany.ticker =[c] %@ AND type =[c] %@",listedCompanyTicker, eventType];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
     NSError *error;
-    Company *parentCompany = nil;
-    parentCompany  = [[dataStoreContext executeFetchRequest:companyFetchRequest error:&error] lastObject];
+    Event *existingEvent = nil;
+    existingEvent  = [[dataStoreContext executeFetchRequest:eventFetchRequest error:&error] lastObject];
     if (error) {
-        NSLog(@"ERROR: Getting a parent listed company, for inserting an associated event from data store failed: %@",error.description);
+        NSLog(@"ERROR: Getting an event from data store, to check uniqueness when upserting, failed: %@",error.description);
     }
     
-    // Insert the event with the parent listed company
-    Event *event = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:dataStoreContext];
-    event.type = eventType;
-    event.date = eventDate;
-    event.relatedDetails = eventRelatedDetails;
-    event.relatedDate = eventRelatedDate;
-    event.certainty = eventCertainty;
-    event.listedCompany = parentCompany;
+    // If the event does not exist, insert it
+    if (!existingEvent) {
+        
+        // Get the parent listed company for the event by doing a case insensitive query on the company ticker
+        NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
+        NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
+        [companyFetchRequest setEntity:companyEntity];
+        NSPredicate *companyPredicate = [NSPredicate predicateWithFormat:@"ticker =[c] %@",listedCompanyTicker];
+        [companyFetchRequest setPredicate:companyPredicate];
+        Company *parentCompany = nil;
+        parentCompany  = [[dataStoreContext executeFetchRequest:companyFetchRequest error:&error] lastObject];
+        if (error) {
+            NSLog(@"ERROR: Getting a parent listed company, for inserting an associated event from data store failed: %@",error.description);
+        }
+        
+        // Insert the event with the parent listed company
+        Event *event = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:dataStoreContext];
+        event.type = eventType;
+        event.date = eventDate;
+        event.relatedDetails = eventRelatedDetails;
+        event.relatedDate = eventRelatedDate;
+        event.certainty = eventCertainty;
+        event.listedCompany = parentCompany;
+    }
+    
+    // If the event exists update it
+    else {
+        
+        // Don't need to update type and company as these are the unique identifiers
+        existingEvent.date = eventDate;
+        existingEvent.relatedDetails = eventRelatedDetails;
+        existingEvent.relatedDate = eventRelatedDate;
+        existingEvent.certainty = eventCertainty;
+    }
+    
+    // Perform the insert
     if (![dataStoreContext save:&error]) {
         NSLog(@"ERROR: Saving event to data store failed: %@",error.description);
     }
@@ -513,7 +543,7 @@
     NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
     
     // Insert events data into the data store
-    [self insertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
+    [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
 }
 
 #pragma mark - Data Syncing Related

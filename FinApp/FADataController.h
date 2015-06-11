@@ -37,8 +37,8 @@
 
 #pragma mark - Events Data Related
 
-// Add an Event along with a parent company to the Event Data Store
-- (void)insertEventWithDate:(NSDate *)eventDate relatedDetails:(NSString *)eventRelatedDetails relatedDate:(NSDate *)eventRelatedDate type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker;
+// Upsert an Event along with a parent company to the Event Data Store i.e. If the specified event type for that particular company exists, update it. If not insert it.
+- (void)upsertEventWithDate:(NSDate *)eventDate relatedDetails:(NSString *)eventRelatedDetails relatedDate:(NSDate *)eventRelatedDate type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker;
 
 // Get all Events. Returns a results controller with identities of all Events recorded, but no more
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
