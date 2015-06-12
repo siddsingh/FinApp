@@ -34,7 +34,7 @@
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
     
-    NSLog(@"TTTTTTTTTTTTTThe CompanySyncStatus is:%@ and EventSyncStatus is:%@",[self.primaryDataController getCompanySyncStatus],[self.primaryDataController getEventSyncStatus]);
+    // NSLog(@"TTTTTTTTTTTTTThe CompanySyncStatus is:%@ and EventSyncStatus is:%@",[self.primaryDataController getCompanySyncStatus],[self.primaryDataController getEventSyncStatus]);
     
     // Seed the company data, the very first time, to get the user started.
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
@@ -79,6 +79,9 @@
    /* [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q1 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AAPL"];
     [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q2 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"TSLA"];
     [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q3 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"EA"]; */
+    
+    // TO DO: Testing refresh of event data. Delete later
+    [self.primaryDataController updateEventsFromRemoteIfNeeded];
     
 }
 

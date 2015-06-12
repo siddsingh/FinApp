@@ -596,6 +596,44 @@
     [self updateUserWithEventSyncStatus:@"SeedSyncDone"];
 }
 
+// Update the existing events in the local data store, with latest information from the remote data source, if it's
+// likely that the remote source has been updated. If the speculated date of an event is within 2 weeks of today, then
+// we consider it likely that the event has been updated in the remote source
+- (void)updateEventsFromRemoteIfNeeded {
+    
+    // Get all events in the local data store.
+    NSFetchedResultsController *eventResultsController = [self getAllEvents];
+    
+    // For every event check if it's likely that the remote source has been updated. If the speculated date of an event
+    // is within 2 weeks of today, then we consider it likely that the event has been updated in the remote source.
+    for (Event *localEvent in eventResultsController.fetchedObjects)
+    {
+        // Get Today's Date
+        NSDate *todaysDate = [NSDate date];
+        
+        // Get the event's date
+        NSDate *eventDate = localEvent.date;
+        
+        // Get the number of months and days between the 2 dates
+        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        
+       // NSUInteger unitFlags = NSCalendarUnitMonth | NSDayCalendarUnit;
+        
+        NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay
+                                                    fromDate:todaysDate
+                                                      toDate:eventDate options:0];
+        
+        // NSInteger months = [components month];
+        NSInteger days = [components day];
+        
+        NSLog(@"No of days for event for %@ is %ld",localEvent.listedCompany.ticker, days);
+        
+    }
+    
+    // If likely update that event by refetching and updating it in the local data store
+}
+
+
 #pragma mark - User State Related
 
 // Get the Company Data Sync Status for the one user in the data store. Returns the following values:
