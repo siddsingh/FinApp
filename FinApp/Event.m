@@ -30,7 +30,7 @@
 // to be reported
 @dynamic relatedDate;
 
-// Indicator if this event is "confirmed" or "speculated" or "unknown"
+// Indicator if this event is "Confirmed" or "Estimated" or "Unknown"
 @dynamic certainty;
 
 // Company associated with this event

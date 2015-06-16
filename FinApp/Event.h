@@ -32,7 +32,7 @@
 // to be reported
 @property (nonatomic, retain) NSDate * relatedDate;
 
-// Indicator if this event is "confirmed" or "speculated" or "unknown"
+// Indicator if this event is "Confirmed" or "Estimated" or "Unknown"
 @property (nonatomic, retain) NSString * certainty;
 
 // Company associated with this event

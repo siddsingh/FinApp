@@ -127,7 +127,8 @@
 
 // Update the existing events in the local data store, with latest information from the remote data source, if it's
 // likely that the remote source has been updated. If the speculated date of an event is within 2 weeks of today, then
-// we consider it likely that the event has been updated in the remote source
+// we consider it likely that the event has been updated in the remote source. The likely event also needs to have a certainty
+// of either "Estimated" or "Unknown" to qualify for the update.
 - (void)updateEventsFromRemoteIfNeeded;
 
 #pragma mark - User State Related

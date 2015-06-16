@@ -34,6 +34,11 @@
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
     
+    // Register a listener for changes to events stored locally
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(eventStoreChanged:)
+                                                 name:@"EventStoreUpdated" object:nil];
+    
     // NSLog(@"TTTTTTTTTTTTTThe CompanySyncStatus is:%@ and EventSyncStatus is:%@",[self.primaryDataController getCompanySyncStatus],[self.primaryDataController getEventSyncStatus]);
     
     // Seed the company data, the very first time, to get the user started.
@@ -365,6 +370,14 @@
     return YES;
 }
 
+#pragma mark - Change Listener Responses
+
+// Refresh the messages table when the message store for the table has changed
+- (void)eventStoreChanged:(NSNotification *)notification {
+    
+    [self.eventsListTable reloadData];
+    NSLog(@"Event Store Changed listener fired to refresh table");
+}
 /*
 #pragma mark - Navigation
 

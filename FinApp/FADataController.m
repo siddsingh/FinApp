@@ -16,6 +16,13 @@
 #import "Event.h"
 #import "User.h"
 
+@interface FADataController ()
+
+// Send a notification that the list of messages has changed (updated)
+- (void)sendEventsChangeNotification;
+
+@end
+
 @implementation FADataController
 
 #pragma mark - Data Store related
@@ -526,7 +533,7 @@
     NSDate *relatedDate = [relatedDateFormatter dateFromString:relatedDateStr];
     NSLog(@"The quarter end date related to the event formatted as a Date: %@",relatedDate);
     
-    // Get Indicator if this event is "confirmed" or "speculated" or "unknown" which is the 9th item
+    // Get Indicator if this event is "Confirmed" or "Estimated" or "Unknown" which is the 9th item
     // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
     NSLog(@"The confirmation indicator for this event: %@",[parsedEventsList objectAtIndex:8]);
     NSString *certaintyStr = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:8]];
@@ -598,39 +605,44 @@
 
 // Update the existing events in the local data store, with latest information from the remote data source, if it's
 // likely that the remote source has been updated. If the speculated date of an event is within 2 weeks of today, then
-// we consider it likely that the event has been updated in the remote source
+// we consider it likely that the event has been updated in the remote source. The likely event also needs to have a certainty
+// of either "Estimated" or "Unknown" to qualify for the update.
 - (void)updateEventsFromRemoteIfNeeded {
+    
+    // Flag to see if any event was updated
+    BOOL eventsUpdated = NO;
     
     // Get all events in the local data store.
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
     
     // For every event check if it's likely that the remote source has been updated. If the speculated date of an event
-    // is within 2 weeks of today, then we consider it likely that the event has been updated in the remote source.
+    // is within 2 weeks of today, then we consider it likely that the event has been updated in the remote source. The likely
+    // event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
+    // An event that overall qualifies will be refetched from the remote data source and updated in the local data store.
     for (Event *localEvent in eventResultsController.fetchedObjects)
     {
         // Get Today's Date
         NSDate *todaysDate = [NSDate date];
-        
         // Get the event's date
         NSDate *eventDate = localEvent.date;
-        
-        // Get the number of months and days between the 2 dates
+        // Get the number of days between the 2 dates
         NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:todaysDate toDate:eventDate options:0];
+        NSInteger daysBetween = [components day];
         
-       // NSUInteger unitFlags = NSCalendarUnitMonth | NSDayCalendarUnit;
-        
-        NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay
-                                                    fromDate:todaysDate
-                                                      toDate:eventDate options:0];
-        
-        // NSInteger months = [components month];
-        NSInteger days = [components day];
-        
-        NSLog(@"No of days for event for %@ is %ld",localEvent.listedCompany.ticker, days);
-        
+        // See if the event qualifies for the update. If it does, call the remote data source to update it.
+        if (([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 14)){
+            NSLog(@"No of days for event for %@ is %ld",localEvent.listedCompany.ticker, daysBetween);
+            [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
+            eventsUpdated = YES;
+        }
     }
     
-    // If likely update that event by refetching and updating it in the local data store
+    // Fire events change notification if any event was updated
+    if (eventsUpdated) {
+        
+        [self sendEventsChangeNotification];
+    }
 }
 
 
@@ -783,6 +795,14 @@
     if (![dataStoreContext save:&error]) {
         NSLog(@"ERROR: Updating user event sync status to data store failed: %@",error.description);
     }
+}
+
+#pragma mark - Notifications
+
+// Send a notification that the list of events has changed (updated)
+- (void)sendEventsChangeNotification {
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 
 @end
