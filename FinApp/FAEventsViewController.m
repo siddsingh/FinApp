@@ -376,7 +376,7 @@
 - (void)eventStoreChanged:(NSNotification *)notification {
     
     [self.eventsListTable reloadData];
-    NSLog(@"Event Store Changed listener fired to refresh table");
+    NSLog(@"*******************************************Event Store Changed listener fired to refresh table");
 }
 /*
 #pragma mark - Navigation

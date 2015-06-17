@@ -7,8 +7,12 @@
 //
 
 #import "AppDelegate.h"
+#import "FADataController.h"
 
 @interface AppDelegate ()
+
+// Refresh events that are likely to be updated, from API. Typically called in a background thread.
+- (void)refreshEventsIfNeededFromApiInBackground;
 
 @end
 
@@ -37,6 +41,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
+    [self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
     NSLog(@"******************************************Active State Fired****************************************");
 }
 
@@ -45,6 +50,18 @@
     // Saves changes in the application's managed object context before the application terminates.
     // [self saveContext];
 }
+
+#pragma mark - State Refresh
+
+// Refresh events that are likely to be updated, from API. Typically called in a background thread.
+- (void)refreshEventsIfNeededFromApiInBackground
+{
+    // Create a new FADataController so that this thread has its own MOC
+    FADataController *generalDataController = [[FADataController alloc] init];
+    
+    [generalDataController updateEventsFromRemoteIfNeeded];
+}
+
 
 #pragma mark - Core Data stack
 

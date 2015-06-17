@@ -632,7 +632,7 @@
         
         // See if the event qualifies for the update. If it does, call the remote data source to update it.
         if (([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 14)){
-            NSLog(@"No of days for event for %@ is %ld",localEvent.listedCompany.ticker, daysBetween);
+            NSLog(@"****************************No of days for event for %@ is %ld",localEvent.listedCompany.ticker, daysBetween);
             [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
             eventsUpdated = YES;
         }
