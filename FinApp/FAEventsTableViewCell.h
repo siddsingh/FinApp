@@ -27,6 +27,9 @@
 // Label that represents the certainty of this event
 @property (weak, nonatomic) IBOutlet UILabel *eventCertainty;
 
+// Spinner to indicate that an event details are being fetched from the remote data source
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *fetchingEventSpinner;
+
 // Flag to show if the event needs to be fetched from the remote data source
 @property BOOL eventRemoteFetch;
 

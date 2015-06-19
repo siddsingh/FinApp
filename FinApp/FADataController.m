@@ -152,7 +152,7 @@
     NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
-    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
     [eventFetchRequest setFetchBatchSize:15];
     self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
@@ -604,9 +604,10 @@
 }
 
 // Update the existing events in the local data store, with latest information from the remote data source, if it's
-// likely that the remote source has been updated. If the speculated date of an event is within 2 weeks of today, then
-// we consider it likely that the event has been updated in the remote source. The likely event also needs to have a certainty
-// of either "Estimated" or "Unknown" to qualify for the update.
+// likely that the remote source has been updated. There are 2 scenarios where it's likely:
+// 1. If the speculated date of an event is within 2 weeks of today, then we consider it likely that the event has been updated
+// in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
+// 2. If the confirmed date of the event is in the past.
 - (void)updateEventsFromRemoteIfNeeded {
     
     // Flag to see if any event was updated
@@ -615,9 +616,10 @@
     // Get all events in the local data store.
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
     
-    // For every event check if it's likely that the remote source has been updated. If the speculated date of an event
-    // is within 2 weeks of today, then we consider it likely that the event has been updated in the remote source. The likely
-    // event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
+    // For every event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
+    // 1. If the speculated date of an event is within 2 weeks of today, then we consider it likely that the event has been updated
+    // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
+    // 2. If the confirmed date of the event is in the past.
     // An event that overall qualifies will be refetched from the remote data source and updated in the local data store.
     for (Event *localEvent in eventResultsController.fetchedObjects)
     {
@@ -631,7 +633,7 @@
         NSInteger daysBetween = [components day];
         
         // See if the event qualifies for the update. If it does, call the remote data source to update it.
-        if (([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 14)){
+        if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 14))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
             NSLog(@"****************************No of days for event for %@ is %ld",localEvent.listedCompany.ticker, daysBetween);
             [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
             eventsUpdated = YES;

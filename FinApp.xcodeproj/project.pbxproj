@@ -107,7 +107,6 @@
 			children = (
 				9E602D1B19E655DF00ACDEC6 /* AppDelegate.h */,
 				9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */,
-				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E681D4B1A43B08F00FC5E5D /* FAEventsViewController.h */,
 				9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */,
 				9E681D4E1A4A660D00FC5E5D /* FAEventsTableViewCell.h */,
@@ -116,6 +115,7 @@
 				9E6D80781AA4E07100E1F2D3 /* FADataController.m */,
 				9E6D80741A9EB49700E1F2D3 /* FADataStore.h */,
 				9E6D80751A9EB49700E1F2D3 /* FADataStore.m */,
+				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
 				9E7586441AF44679009DD7B2 /* User.h */,
 				9E7586451AF44679009DD7B2 /* User.m */,

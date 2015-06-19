@@ -86,6 +86,9 @@
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="1J9-bO-e8z">
+                                                    <rect key="frame" x="261" y="34" width="20" height="20"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
@@ -94,6 +97,7 @@
                                             <outlet property="eventCertainty" destination="Y7j-P2-Lf8" id="oaG-yw-h8e"/>
                                             <outlet property="eventDate" destination="Jou-oj-rjb" id="Ch0-PJ-9Gz"/>
                                             <outlet property="eventDescription" destination="r65-ua-5Pc" id="0Vs-fp-VsU"/>
+                                            <outlet property="fetchingEventSpinner" destination="1J9-bO-e8z" id="UeY-tv-oeC"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
