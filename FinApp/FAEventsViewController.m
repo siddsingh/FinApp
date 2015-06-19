@@ -152,7 +152,13 @@
 {
     NSLog(@"Rendering a cell with indexpath");
     
+    // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
+    
+    // Make sure the cell UI state is default where fetching events label and spinner are hidden and cell description is not.
+    [cell.fetchingEventLbl setHidden:YES];
+    [cell.fetchingEventSpinner stopAnimating];
+    [cell.eventDescription setHidden:YES];
     
     // Get event or company  to display
     Event *eventAtIndex;
@@ -240,6 +246,11 @@
     // Check to see if the row selected has an event cell with remote fetch status set to true
     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
     if (cell.eventRemoteFetch) {
+        
+        // Change UI to hide the cell description that says "Get Events". Show the event fetching spinner and label
+        [cell.eventDescription setHidden:YES];
+        [cell.fetchingEventSpinner startAnimating];
+        [cell.fetchingEventLbl setHidden:NO];
         
         // Fetch the event for the related parent company
         NSLog(@"Fetching Event Data for ticker:%@",(cell.companyTicker).text);

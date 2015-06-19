@@ -30,6 +30,9 @@
 // Spinner to indicate that an event details are being fetched from the remote data source
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *fetchingEventSpinner;
 
+// Label for text to indicate that an event details are being fetched from the remote data source
+@property (weak, nonatomic) IBOutlet UILabel *fetchingEventLbl;
+
 // Flag to show if the event needs to be fetched from the remote data source
 @property BOOL eventRemoteFetch;
 
