@@ -38,5 +38,7 @@
 // Table for list of events
 @property (weak, nonatomic) IBOutlet UITableView *eventsListTable;
 
+// Spinner to indicate a remote fetch is in progress
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *remoteFetchSpinner;
 
 @end

@@ -34,12 +34,13 @@
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
     
+    // Ensure that the remote fetch spinner is not animating thus hidden
+    [self.remoteFetchSpinner stopAnimating];
+    
     // Register a listener for changes to events stored locally
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(eventStoreChanged:)
                                                  name:@"EventStoreUpdated" object:nil];
-    
-    // NSLog(@"TTTTTTTTTTTTTThe CompanySyncStatus is:%@ and EventSyncStatus is:%@",[self.primaryDataController getCompanySyncStatus],[self.primaryDataController getEventSyncStatus]);
     
     // Seed the company data, the very first time, to get the user started.
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
@@ -150,15 +151,10 @@
 // Return a cell configured to display an event or a company with a fetch event
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"Rendering a cell with indexpath");
+     NSLog(@"Displaying cell in a table reload");
     
     // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
-    
-    // Make sure the cell UI state is default where fetching events label and spinner are hidden and cell description is not.
-    [cell.fetchingEventLbl setHidden:YES];
-    [cell.fetchingEventSpinner stopAnimating];
-    [cell.eventDescription setHidden:YES];
     
     // Get event or company  to display
     Event *eventAtIndex;
@@ -187,7 +183,7 @@
         eventAtIndex = [self.eventResultsController objectAtIndexPath:indexPath];
     }
     
-    // Depending the type of search filter that has been applied, SHOW the matching companies with events or companies
+    // Depending the type of search filter that has been applied, Show the matching companies with events or companies
     // with the fetch events message.
     if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]) {
         
@@ -216,6 +212,11 @@
         
         // Show the company name associated with the event
         [[cell  companyName] setText:eventAtIndex.listedCompany.name];
+        
+        // Set the fetch state of the event cell to false
+        // TO DO: Should you really be holding logic state at the cell level or should there
+        // be a unique identifier for each event ?
+        cell.eventRemoteFetch = NO;
         
         // Show the event type
         [[cell  eventDescription] setText:eventAtIndex.type];
@@ -247,23 +248,23 @@
     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
     if (cell.eventRemoteFetch) {
         
-        // Change UI to hide the cell description that says "Get Events". Show the event fetching spinner and label
-        [cell.eventDescription setHidden:YES];
-        [cell.fetchingEventSpinner startAnimating];
-        [cell.fetchingEventLbl setHidden:NO];
+        // Set the remote fetch spinner to animating to show a fetch is in progress
+        [self.remoteFetchSpinner startAnimating];
+        // TO DO: For testing after you have confirmed spinner works
+        [self.remoteFetchSpinner setColor:[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0]];
         
         // Fetch the event for the related parent company
         NSLog(@"Fetching Event Data for ticker:%@",(cell.companyTicker).text);
         [self.primaryDataController getAllEventsFromApiWithTicker:(cell.companyTicker).text];
         
-        // Force a search to capture the refreshed event
+        // Set the remote fetch spinner to animating to show a fetch is in progress
+        [self.remoteFetchSpinner stopAnimating];
+        // TO DO: For testing after you have confirmed spinner works
+        [self.remoteFetchSpinner setColor:[UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0]];
+        
+        // Force a search to capture the refreshed event, so that the table can be refreshed
+        // to show the refreshed event
         [self searchBarSearchButtonClicked:self.eventsSearchBar];
-        
-        // Resign first responder from Search Bar
-        [self.eventsSearchBar resignFirstResponder];
-        
-        // Reload Events list table
-        [self.eventsListTable reloadData];
     }
 }
 
@@ -313,7 +314,9 @@
         [self.eventsListTable reloadData];
     }
     
-    [searchBar resignFirstResponder];
+    //[searchBar resignFirstResponder];
+    // TO DO: In case you want to clear the search context
+    [searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
 }
 
 // When text in the search bar is changed, search the ticker and name fields on the company related to the event,
@@ -389,6 +392,7 @@
     [self.eventsListTable reloadData];
     NSLog(@"*******************************************Event Store Changed listener fired to refresh table");
 }
+
 /*
 #pragma mark - Navigation
 
