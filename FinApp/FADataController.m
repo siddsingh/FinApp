@@ -254,7 +254,7 @@
 
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
-    while (pageNo <= noOfPages) {
+    while (pageNo <= 1) {
         
         // Append no of messages per page to the endpoint URL &per_page=300&page=1
         endpointURL = [NSString stringWithFormat:@"%@&per_page=%ld",endpointURL,(long)noOfCompaniesPerPage];

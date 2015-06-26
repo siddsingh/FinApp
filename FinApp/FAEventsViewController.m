@@ -22,6 +22,9 @@
 // Validate search text entered
 - (BOOL) searchTextValid:(NSString *)text;
 
+// Get events for company given a ticker. Typically called in a background thread
+- (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
+
 @end
 
 @implementation FAEventsViewController
@@ -249,22 +252,12 @@
     if (cell.eventRemoteFetch) {
         
         // Set the remote fetch spinner to animating to show a fetch is in progress
+        NSLog(@"Starting to animate spinner");
         [self.remoteFetchSpinner startAnimating];
-        // TO DO: For testing after you have confirmed spinner works
-        [self.remoteFetchSpinner setColor:[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0]];
         
-        // Fetch the event for the related parent company
-        NSLog(@"Fetching Event Data for ticker:%@",(cell.companyTicker).text);
-        [self.primaryDataController getAllEventsFromApiWithTicker:(cell.companyTicker).text];
-        
-        // Set the remote fetch spinner to animating to show a fetch is in progress
-        [self.remoteFetchSpinner stopAnimating];
-        // TO DO: For testing after you have confirmed spinner works
-        [self.remoteFetchSpinner setColor:[UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0]];
-        
-        // Force a search to capture the refreshed event, so that the table can be refreshed
-        // to show the refreshed event
-        [self searchBarSearchButtonClicked:self.eventsSearchBar];
+        // Fetch the event for the related parent company in the background
+        NSLog(@"Fetching Event Data for ticker in the background:%@",(cell.companyTicker).text);
+        [self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
     }
 }
 
@@ -277,6 +270,25 @@
     FADataController *companiesDataController = [[FADataController alloc] init];
     
     [companiesDataController getAllCompaniesFromApi];
+}
+
+// Get events for company given a ticker. Typically called in a background thread
+- (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker
+{
+    // Create a new FADataController so that this thread has its own MOC
+    FADataController *eventsDataController = [[FADataController alloc] init];
+    
+    [eventsDataController getAllEventsFromApiWithTicker:ticker];
+    
+    
+    NSLog(@"Finished fetching Event Data for ticker in the background:%@",ticker);
+    NSLog(@"Stopping to animate spinner");
+    [self.remoteFetchSpinner stopAnimating];
+    
+    // Force a search to capture the refreshed event, so that the table can be refreshed
+    // to show the refreshed event
+    [self searchBarSearchButtonClicked:self.eventsSearchBar];
+    NSLog(@"Finished researching with updated event");
 }
 
 #pragma mark - Search Bar Delegate Methods, Related
