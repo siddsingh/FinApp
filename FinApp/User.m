@@ -19,6 +19,8 @@
 // "NoSyncPerformed" means no company information has been added to the company data store.
 // "FullSyncDone" means the full set of company information has been added to
 // the company data store.
+// "FullSyncAttemptedButFailed" means a full company sync was attempted but failed before it
+// could complete
 @dynamic companySyncStatus;
 
 // Date when the last company data sync was performed

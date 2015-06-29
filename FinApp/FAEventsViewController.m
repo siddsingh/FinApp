@@ -59,18 +59,7 @@
     // in the background
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
         [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
-        // TO DO: Ideally, you only want to update the status after the full background fetch has succeeded
-        [self.primaryDataController upsertUserWithCompanySyncStatus:@"FullSyncDone"];
     }
-    
-    // TO DO: Delete Later. Add Three Companies, Apple, Tesla, Electronic Arts
-    // [self.eventDataController insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple"];
-    //[self.eventDataController insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla"];
-    //[self.eventDataController insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts"];
-    
-    // TO DO: Uncomment later and make it a background process
-    //[self getAllCompaniesFromApiInBackground];
-    //[self.primaryDataController getAllEventsFromApiWithTicker:@"CRM"];
     
     // Set the Filter Specified flag to false, indicating that no search filter has been specified
     self.filterSpecified = NO;
@@ -78,20 +67,9 @@
     // Set the filter type to None_Specified, meaning no filter has been specified.
     self.filterType = [NSString stringWithFormat:@"None_Specified"];
     
-    //Query all events as that is the default view first shown
+    // Query all events as that is the default view first shown
     self.eventResultsController = [self.primaryDataController getAllEvents];
     NSLog(@"Data Setup and Query done in viewdidload");
-    
-    // TO DO: Temporaray Data Setup for testing. Erase later
-    
-    // Add an event each for the three Companies
-   /* [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q1 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AAPL"];
-    [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q2 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"TSLA"];
-    [self.eventDataController insertEventWithDate:[NSDate date] details:@"Q3 Earnings Call" type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"EA"]; */
-    
-    // TO DO: Testing refresh of event data. Delete later
-    [self.primaryDataController updateEventsFromRemoteIfNeeded];
-    
 }
 
 - (void)didReceiveMemoryWarning {

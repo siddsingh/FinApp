@@ -14,6 +14,9 @@
 // Refresh events that are likely to be updated, from API. Typically called in a background thread.
 - (void)refreshEventsIfNeededFromApiInBackground;
 
+// Redo fetching of company data from the API, in case the full sync of company data had failed. Typically called in a background thread.
+- (void)refreshCompanyInfoIfNeededFromApiInBackground;
+
 @end
 
 @implementation AppDelegate
@@ -39,9 +42,16 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
+    // Check and Refresh any events from the API that are likely to have updated information
     [self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
+    
+    // TO DO: Do I really need to spawn off a new thread every time just to check if an update is needed. Shouldn't I just create a new MOC and check here and then spawn the thread if neeeded ?
+    // If the full sync of company data has failed, retry it
+    [self performSelectorInBackground:@selector(refreshCompanyInfoIfNeededFromApiInBackground) withObject:nil];
+    
     NSLog(@"******************************************Active State Fired****************************************");
 }
 
@@ -57,11 +67,21 @@
 - (void)refreshEventsIfNeededFromApiInBackground
 {
     // Create a new FADataController so that this thread has its own MOC
-    FADataController *generalDataController = [[FADataController alloc] init];
+    FADataController *eventDataController = [[FADataController alloc] init];
     
-    [generalDataController updateEventsFromRemoteIfNeeded];
+    [eventDataController updateEventsFromRemoteIfNeeded];
 }
 
+// Redo fetching of company data from the API, in case the full sync of company data had failed. Typically called in a background thread.
+- (void)refreshCompanyInfoIfNeededFromApiInBackground
+{
+    // Create a new FADataController so that this thread has its own MOC
+    FADataController *companyDataController = [[FADataController alloc] init];
+    
+    if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"]) {
+        [companyDataController getAllCompaniesFromApi];
+    }
+}
 
 #pragma mark - Core Data stack
 

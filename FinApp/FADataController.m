@@ -281,6 +281,8 @@
             noOfPages = [self processCompaniesResponse:responseData];
             
         } else {
+            // If there is an error set the company sync status to "FullSyncAttemptedButFailed", meaning a full company sync was attempted but failed before it could complete
+            [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed"];
             NSLog(@"ERROR: Could not get companies data from the API Data Source. Error description: %@",error.description);
         }
         
