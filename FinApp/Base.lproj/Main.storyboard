@@ -27,7 +27,7 @@
                                     <constraint firstAttribute="width" constant="86" id="lWh-TG-SSE"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                                 <variation key="default">
                                     <mask key="constraints">
@@ -41,16 +41,6 @@
                                 <rect key="frame" x="292" y="89" width="20" height="20"/>
                                 <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
-                            <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Search for a Company or Ticker" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
-                                <rect key="frame" x="162" y="49" width="281" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="281" id="EYj-il-hhd"/>
-                                </constraints>
-                                <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <outlet property="delegate" destination="WNQ-2i-B77" id="0Ap-eJ-shR"/>
-                                </connections>
-                            </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="75" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
                                 <rect key="frame" x="-5" y="112" width="612" height="488"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -141,8 +131,19 @@
                                     <outlet property="delegate" destination="WNQ-2i-B77" id="K4r-Sx-ibt"/>
                                 </connections>
                             </tableView>
+                            <searchBar contentMode="redraw" barStyle="black" searchBarStyle="minimal" text="" placeholder="Search for a Company or Ticker" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
+                                <rect key="frame" x="162" y="49" width="281" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="281" id="EYj-il-hhd"/>
+                                </constraints>
+                                <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="WNQ-2i-B77" id="0Ap-eJ-shR"/>
+                                </connections>
+                            </searchBar>
                         </subviews>
-                        <color key="backgroundColor" red="0.21978136400000001" green="0.79947916669999997" blue="0.66971353460000005" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.16076361719999999" green="0.59039614900000004" blue="0.49652711049999998" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="lH9-rm-JDu" firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="2OV-1H-Pjh"/>
                             <constraint firstItem="Nql-41-vTF" firstAttribute="top" secondItem="KbY-6m-WGH" secondAttribute="bottom" id="4HM-kp-hNW"/>
