@@ -70,6 +70,9 @@
     // Query all events as that is the default view first shown
     self.eventResultsController = [self.primaryDataController getAllEvents];
     NSLog(@"Data Setup and Query done in viewdidload");
+    
+    // This will remove extra separators from the bottom of the tableview which doesn't have any cells
+    self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void)didReceiveMemoryWarning {
