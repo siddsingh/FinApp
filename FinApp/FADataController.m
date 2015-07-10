@@ -254,7 +254,7 @@
 
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
-    while (pageNo <= 1) {
+    while (pageNo <= noOfPages) {
         
         // Append no of messages per page to the endpoint URL &per_page=300&page=1
         endpointURL = [NSString stringWithFormat:@"%@&per_page=%ld",endpointURL,(long)noOfCompaniesPerPage];
@@ -272,6 +272,8 @@
         NSMutableURLRequest *companiesRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
         NSData *responseData = [NSURLConnection sendSynchronousRequest:companiesRequest returningResponse:&response
                                                                  error:&error];
+        
+         NSLog(@"******************************************Made request to get company data with page number:%@**************",endpointURL);
         
         // Process the response
         if (error == nil)
@@ -612,6 +614,8 @@
 // 2. If the confirmed date of the event is in the past.
 - (void)updateEventsFromRemoteIfNeeded {
     
+    NSLog(@"****************************Entered the method to updateevents**********************");
+    
     // Flag to see if any event was updated
     BOOL eventsUpdated = NO;
     
@@ -619,12 +623,13 @@
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
     
     // For every event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
-    // 1. If the speculated date of an event is within 2 weeks of today, then we consider it likely that the event has been updated
+    // 1. If the speculated date of an event is within 31 days from today, then we consider it likely that the event has been updated
     // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
     // 2. If the confirmed date of the event is in the past.
     // An event that overall qualifies will be refetched from the remote data source and updated in the local data store.
     for (Event *localEvent in eventResultsController.fetchedObjects)
     {
+        NSLog(@"****************************Entered the loop for checking**********************");
         // Get Today's Date
         NSDate *todaysDate = [NSDate date];
         // Get the event's date
@@ -633,11 +638,12 @@
         NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:todaysDate toDate:eventDate options:0];
         NSInteger daysBetween = [components day];
+        NSLog(@"****************************No of days for event for %@ is %ld",localEvent.listedCompany.ticker, daysBetween);
         
         // See if the event qualifies for the update. If it does, call the remote data source to update it.
-        if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 14))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
-            NSLog(@"****************************No of days for event for %@ is %ld",localEvent.listedCompany.ticker, daysBetween);
-            [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
+        if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
+            NSLog(@"****************************About to update an event**********************");
+            [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker]; 
             eventsUpdated = YES;
         }
     }

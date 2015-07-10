@@ -78,8 +78,11 @@
     // Create a new FADataController so that this thread has its own MOC
     FADataController *companyDataController = [[FADataController alloc] init];
     
+    NSLog(@"******************************************About to Processed the Get All Companies from API in the background since last sync was incomplete**************************************** with Company sync status:%@",[companyDataController getCompanySyncStatus]);
+    
     if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"]) {
         [companyDataController getAllCompaniesFromApi];
+         NSLog(@"******************************************Processed the Get All Companies from API in the background since last sync was incomplete****************************************");
     }
 }
 
