@@ -253,17 +253,18 @@
     // Set page no to 1
     NSInteger pageNo = 1;
     
-    
     // Check to see if No Sync or a Seed Data Sync has been performed for company information.
     // In either of these scenarios, attempt a full sync from page 1 of the company API response.
- /*   if ([[self getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]||[[self getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
-        // Set the company sync status to "FullSyncAttemptedButFailed". This will be updated to success once the whole set of company einformation has been obtained.
-        [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger: 0]];
+    if ([[self getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]||[[self getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
+        
+        // Set the company sync status to "FullSyncStarted" and no page has been currently synced.
+        [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger: 0]];
     }
-    // Else attempt a sync from the company API page No that was last successfully synced
-    else {
+    // Else, if any pages were successfully synced attempt a new sync from the company API page No that was last successfully synced
+    else if (([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||[[self getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"])&&[[self getCompanySyncedUptoPage] integerValue] != 0) {
+        
         pageNo = [[self getCompanySyncedUptoPage] integerValue];
-    } */
+    }
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
     while (pageNo <= noOfPages) {
@@ -294,10 +295,11 @@
             // Get back total no of pages of companies in the response.
             noOfPages = [self processCompaniesResponse:responseData];
             
-            // Keep the company sync status to "FullSyncAttemptedButFailed" but update the page number of the API response to the page that just finished. This status will be updated to success once the whole set of company information has been obtained. [NSNumber numberWithInteger: myValue]
-           // [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger: pageNo]];
+            // Keep the company sync status to "FullSyncStarted" but update the page number of the API response to the page that just finished.
+            [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger: pageNo]];
             
-        } else {
+        } else
+        {
             // If there is an error set the company sync status to "FullSyncAttemptedButFailed", meaning a full company sync was attempted but failed before it could complete
             [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger: --pageNo]];
             NSLog(@"ERROR: Could not get companies data from the API Data Source. Error description: %@",error.description);
