@@ -70,6 +70,8 @@
 // 3. On each page get the ticker and parse out the name using the following
 // "code":"AVD",
 // "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)"
+// The logic here takes care of determining from which point should the companies be fetched.
+// It's smart enough to not do a full sync every time.
 - (void)getAllCompaniesFromApi;
 
 #pragma mark - Methods to call Company Event Data Source APIs
@@ -142,17 +144,23 @@
 // the company data store.
 - (NSString *)getCompanySyncStatus;
 
+// Get the Page number to which the company data sync was completed, ranges from 0 to total no of pages in the company data API response.
+- (NSNumber *)getCompanySyncedUptoPage;
+
 // Get the Event Data Sync Status for the one user in the data store. Returns the following values:
 // "SeedSyncDone" means the most basic set of events information has been added to the event data store.
 // "NoSyncPerformed" means no event information has been added to the event data store.
 - (NSString *)getEventSyncStatus;
+
+
 
 // Add company data sync status to the user data store. Current design is that the user object is created
 // when a company data sync is done. Thus this method creates the user with the given status if it
 // doesn't exist or updates the user with the new status if the user exists.
 // Additionally since the user object is created when the first company data sync is done, set the event sync
 // status for the user to "NoSyncPerformed" when creating the user, not for the update.
-- (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus;
+// Synced Page number is the page to which the company data sync was completed, ranges from 0 to total no of pages in the company data API response
+- (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus syncedPageNo: (NSNumber *)pageNo;
 
 // Add events data sync status to the user data store. This method updates the user with the given events sync
 // status. If the user doesn't exist, it logs an error. Since the user is created the first time a company

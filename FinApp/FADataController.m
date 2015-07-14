@@ -236,7 +236,8 @@
 
 #pragma mark - Methods to call Company Data Source APIs
 
-// Get a list of all companies and their tickers.
+// Get a list of all companies and their tickers. The logic here takes care of determining from which point
+// should the companies be fetched. It's smart enough to not do a full sync every time.
 - (void)getAllCompaniesFromApi
 {
     // To get all the companies use the metadata call of the Zacks Earnings Announcements (ZEA) database using
@@ -251,7 +252,18 @@
     NSInteger noOfPages = 1;
     // Set page no to 1
     NSInteger pageNo = 1;
-
+    
+    
+    // Check to see if No Sync or a Seed Data Sync has been performed for company information.
+    // In either of these scenarios, attempt a full sync from page 1 of the company API response.
+ /*   if ([[self getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]||[[self getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
+        // Set the company sync status to "FullSyncAttemptedButFailed". This will be updated to success once the whole set of company einformation has been obtained.
+        [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger: 0]];
+    }
+    // Else attempt a sync from the company API page No that was last successfully synced
+    else {
+        pageNo = [[self getCompanySyncedUptoPage] integerValue];
+    } */
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
     while (pageNo <= noOfPages) {
@@ -282,9 +294,12 @@
             // Get back total no of pages of companies in the response.
             noOfPages = [self processCompaniesResponse:responseData];
             
+            // Keep the company sync status to "FullSyncAttemptedButFailed" but update the page number of the API response to the page that just finished. This status will be updated to success once the whole set of company information has been obtained. [NSNumber numberWithInteger: myValue]
+           // [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger: pageNo]];
+            
         } else {
             // If there is an error set the company sync status to "FullSyncAttemptedButFailed", meaning a full company sync was attempted but failed before it could complete
-            [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed"];
+            [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger: --pageNo]];
             NSLog(@"ERROR: Could not get companies data from the API Data Source. Error description: %@",error.description);
         }
         
@@ -293,7 +308,7 @@
     }
     
     // Add or Update the Company Data Sync status to SeedSyncDone.
-    [self upsertUserWithCompanySyncStatus:@"FullSyncDone"];
+    [self upsertUserWithCompanySyncStatus:@"FullSyncDone" syncedPageNo:[NSNumber numberWithInteger: --pageNo]];
 }
 
 // Parse the companies API response and return total no of pages of companies in it.
@@ -580,7 +595,7 @@
     [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike Inc"];
     
     // Add or Update the Company Data Sync status to SeedSyncDone.
-    [self upsertUserWithCompanySyncStatus:@"SeedSyncDone"];
+    [self upsertUserWithCompanySyncStatus:@"SeedSyncDone" syncedPageNo:[NSNumber numberWithInteger: 0]];
 }
 
 // Add the most basic set of most used events to the event data store. This is fetched from the data source
@@ -589,8 +604,8 @@
     
     // Add the events for the 20 most used companies to the events database.
     // TO DO: CAPABILITY: Expand to include at least 50 most used companies.
-    [self getAllEventsFromApiWithTicker:@"AAPL"];
-    [self getAllEventsFromApiWithTicker:@"TSLA"];
+   // [self getAllEventsFromApiWithTicker:@"AAPL"];
+    //[self getAllEventsFromApiWithTicker:@"TSLA"];
     // TO DO: Commenting to not expire the API test limits. Uncomment when ready to finally test for shipping.
    /* [self getAllEventsFromApiWithTicker:@"EA"];
     [self getAllEventsFromApiWithTicker:@"CRM"];
@@ -690,6 +705,30 @@
     return fetchedUser.companySyncStatus;
 }
 
+// Get the Page number to which the company data sync was completed, ranges from 0 to total no of pages in the company data API response.
+- (NSNumber *)getCompanySyncedUptoPage {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    NSFetchRequest *pageNoFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [pageNoFetchRequest setEntity:userEntity];
+    
+    NSError *error;
+    NSArray *fetchedUsers = [dataStoreContext executeFetchRequest:pageNoFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store failed: %@",error.description);
+    }
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store");
+    }
+    
+    // Return the page number
+    User *fetchedUser = [fetchedUsers lastObject];
+    return fetchedUser.companyPageNumber;
+}
+
 // Get the Event Data Sync Status for the one user in the data store. Returns the following values:
 // "SeedSyncDone" means the most basic set of events information has been added to the event data store.
 // "NoSyncPerformed" means no event information has been added to the event data store.
@@ -720,11 +759,12 @@
 }
 
 // Add company data sync status to the user data store. Current design is that the user object is created
-// when the first company data sync is done. Thus this method creates the user with the given status if it
+// when a company data sync is done. Thus this method creates the user with the given status if it
 // doesn't exist or updates the user with the new status if the user exists.
 // Additionally since the user object is created when the first company data sync is done, set the event sync
 // status for the user to "NoSyncPerformed" when creating the user, not for the update.
-- (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus
+// Synced Page number is the page to which the company data sync was completed, ranges from 0 to total no of pages in the company data API response.
+- (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus syncedPageNo: (NSNumber *)pageNo;
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -750,6 +790,7 @@
         User *user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:dataStoreContext];
         user.companySyncStatus = syncStatus;
         user.companySyncDate = [NSDate date];
+        user.companyPageNumber = pageNo;
         user.eventSyncStatus = [NSString stringWithFormat:@"NoSyncPerformed"];
         user.eventSyncDate = [NSDate date];
     }
@@ -758,6 +799,7 @@
     else {
         existingUser.companySyncStatus = syncStatus;
         existingUser.companySyncDate = [NSDate date];
+        existingUser.companyPageNumber = pageNo;
     }
     
     // Update the user

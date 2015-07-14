@@ -26,6 +26,10 @@
 // Date when the last company data sync was performed
 @dynamic companySyncDate;
 
+// Page number to which the company data sync was completed, ranges from
+// 0 to total no of pages in the company data API response
+@dynamic companyPageNumber;
+
 // Represents the event data sync status for this user
 // "SeedSyncDone" means the most basic set of events information has been added to
 // the event data store.

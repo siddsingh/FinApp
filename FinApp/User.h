@@ -27,6 +27,10 @@
 // Date when the last company data sync was performed
 @property (nonatomic, retain) NSDate * companySyncDate;
 
+// Page number to which the company data sync was completed, ranges from
+// 0 to total no of pages in the company data API response
+@property (nonatomic, retain) NSNumber * companyPageNumber;
+
 // Represents the event data sync status for this user
 // "SeedSyncDone" means the most basic set of events information has been added to
 // the event data store.
