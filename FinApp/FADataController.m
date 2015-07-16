@@ -260,10 +260,13 @@
         // Set the company sync status to "FullSyncStarted" and no page has been currently synced.
         [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger: 0]];
     }
-    // Else, if any pages were successfully synced attempt a new sync from the company API page No that was last successfully synced
+    // Else, if any pages were successfully synced attempt a new sync from the company API page No after the one that was last successfully synced
     else if (([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||[[self getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"])&&[[self getCompanySyncedUptoPage] integerValue] != 0) {
         
-        pageNo = [[self getCompanySyncedUptoPage] integerValue];
+        pageNo = ([[self getCompanySyncedUptoPage] integerValue] + 1);
+        // TO DO: Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value below and in applicationWillTerminate in AppDelegate as well.
+        noOfPages = 25;
+        NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
     }
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
@@ -298,19 +301,25 @@
             // Keep the company sync status to "FullSyncStarted" but update the page number of the API response to the page that just finished.
             [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger: pageNo]];
             
-        } else
+        }
+        else
         {
             // If there is an error set the company sync status to "FullSyncAttemptedButFailed", meaning a full company sync was attempted but failed before it could complete
-            [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger: --pageNo]];
+            [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger:(pageNo-1)]];
             NSLog(@"ERROR: Could not get companies data from the API Data Source. Error description: %@",error.description);
         }
         
         ++pageNo;
         endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
+        NSLog(@"Page Number is:%ld and NoOfPages is:%ld",(long)pageNo,(long)noOfPages);
     }
     
-    // Add or Update the Company Data Sync status to SeedSyncDone.
-    [self upsertUserWithCompanySyncStatus:@"FullSyncDone" syncedPageNo:[NSNumber numberWithInteger: --pageNo]];
+    // Add or Update the Company Data Sync status to SeedSyncDone. Check that all pages have been processed before doing so.
+    // TO DO: Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value above and in applicationWillTerminate in AppDelegate as well.
+    if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= 25))
+    {
+        [self upsertUserWithCompanySyncStatus:@"FullSyncDone" syncedPageNo:[NSNumber numberWithInteger:(pageNo-1)]];
+    }
 }
 
 // Parse the companies API response and return total no of pages of companies in it.
@@ -860,16 +869,4 @@
 }
 
 @end
-
-
-
-
-
-
-
-
-
-
-
-
 

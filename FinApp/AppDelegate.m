@@ -57,10 +57,22 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+    
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
     // [self saveContext];
     
+    // Create a new generic Data Controller
+    FADataController *genericDataController = [[FADataController alloc] init];
+    
+    // Check to see if all the company data has been synced before terminating. This is done by checking if 25 pages of information
+    // have been processed.
+    // TO DO: Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi in FADataController.
+    if ([[genericDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[genericDataController getCompanySyncedUptoPage] integerValue] < 25)
+    {
+        [genericDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[genericDataController getCompanySyncedUptoPage]];
+    }
+    NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld",[genericDataController getCompanySyncStatus],[[genericDataController getCompanySyncedUptoPage] longValue]);
     NSLog(@"******************************************App Termination Fired****************************************");
 }
 
