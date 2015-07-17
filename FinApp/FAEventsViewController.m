@@ -13,6 +13,7 @@
 #import "FADataController.h"
 #import "Event.h"
 #import "Company.h"
+#import <stdlib.h>
 
 @interface FAEventsViewController ()
 
@@ -139,6 +140,44 @@
     
     // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
+    
+    // Set the company ticker and name labels to one of 5 colors randomly
+    int randomColor = arc4random_uniform(4);
+    
+    // Purple
+    if (randomColor == 0) {
+        
+         cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+         cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+    }
+    
+    // Dark Pink
+    if (randomColor == 1) {
+        
+        cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+    }
+    
+    // Bright Blue
+    if (randomColor == 2) {
+        
+        cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+    }
+    
+    //
+    if (randomColor == 3) {
+        
+        cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+    }
+    
+    //
+    if (randomColor == 4) {
+        
+        cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+    }
     
     // Get event or company  to display
     Event *eventAtIndex;
