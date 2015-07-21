@@ -136,10 +136,13 @@
 // Return a cell configured to display an event or a company with a fetch event
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-     NSLog(@"Displaying cell in a table reload");
+    
     
     // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
+    
+    // Reset color for Event description to dark text, in case it's been set to blue for a "Get Events" display
+    cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     
     // Set the company ticker and name labels to one of 5 colors randomly
     int randomColor = arc4random_uniform(4);
@@ -147,36 +150,36 @@
     // Purple
     if (randomColor == 0) {
         
-         cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-         cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+         cell.companyTicker.textColor = [UIColor colorWithRed:175.0f/255.0f green:94.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
+         cell.companyName.textColor = [UIColor colorWithRed:175.0f/255.0f green:94.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
     }
     
-    // Dark Pink
+    // Orangish Pink
     if (randomColor == 1) {
         
-        cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        cell.companyTicker.textColor = [UIColor colorWithRed:233.0f/255.0f green:141.0f/255.0f blue:112.0f/255.0f alpha:1.0f];
+        cell.companyName.textColor = [UIColor colorWithRed:233.0f/255.0f green:141.0f/255.0f blue:112.0f/255.0f alpha:1.0f];
     }
     
     // Bright Blue
     if (randomColor == 2) {
         
-        cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        cell.companyTicker.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+        cell.companyName.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
     }
     
-    //
+    // Bright Pink
     if (randomColor == 3) {
         
-        cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        cell.companyTicker.textColor = [UIColor colorWithRed:224.0f/255.0f green:46.0f/255.0f blue:134.0f/255.0f alpha:1.0f];
+        cell.companyName.textColor = [UIColor colorWithRed:224.0f/255.0f green:46.0f/255.0f blue:134.0f/255.0f alpha:1.0f];
     }
     
-    //
+    // Light Purple
     if (randomColor == 4) {
         
-        cell.companyTicker.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        cell.companyName.textColor = [UIColor colorWithRed:255.0f/255.0f green:83.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        cell.companyTicker.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+        cell.companyName.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     
     // Get event or company  to display
@@ -216,8 +219,10 @@
         // Show the company name associated with the event
         [[cell  companyName] setText:companyAtIndex.name];
         
-        // Show the "Get Events" text in the event display area
+        // Show the "Get Events" text in the event display area.
         [[cell  eventDescription] setText:@"Get Events"];
+        // Set color to a link blue to provide a visual cue to click
+        cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
         
         // Set the fetch state of the event cell to true
         // TO DO: Should you really be holding logic state at the cell level or should there
