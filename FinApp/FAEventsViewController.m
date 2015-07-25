@@ -35,6 +35,21 @@
     
     // Do any additional setup after loading the view.
     
+    // Change the color of the events search bar placeholder text and text entered to be white.
+    UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
+    [eventSearchBarInputFld setValue:[UIColor darkGrayColor] forKeyPath:@"_placeholderLabel.textColor"];
+    eventSearchBarInputFld.textColor = [UIColor darkGrayColor];
+    
+    // Do the same for the Magnifying glass icon in the search bar.
+    UIImageView *magGlassIcon = (UIImageView *)eventSearchBarInputFld.leftView;
+    magGlassIcon.image = [magGlassIcon.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    magGlassIcon.tintColor = [UIColor darkGrayColor];
+    
+    // Do the same for the Clear button in the search bar.
+    UIButton *searchClearBtn = [eventSearchBarInputFld valueForKey:@"_clearButton"];
+    [searchClearBtn setImage:[searchClearBtn.imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+    searchClearBtn.tintColor = [UIColor darkGrayColor];
+    
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
     
