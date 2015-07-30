@@ -616,7 +616,7 @@
     // Add the events for the 20 most used companies to the events database.
     // TO DO: CAPABILITY: Expand to include at least 50 most used companies.
    // [self getAllEventsFromApiWithTicker:@"AAPL"];
-    //[self getAllEventsFromApiWithTicker:@"TSLA"];
+    [self getAllEventsFromApiWithTicker:@"TSLA"];
     // TO DO: Commenting to not expire the API test limits. Uncomment when ready to finally test for shipping.
    /* [self getAllEventsFromApiWithTicker:@"EA"];
     [self getAllEventsFromApiWithTicker:@"CRM"];

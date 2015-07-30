@@ -159,42 +159,55 @@
     // Reset color for Event description to dark text, in case it's been set to blue for a "Get Events" display
     cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     
-    // Set the company ticker and name labels to one of 5 colors randomly
-    int randomColor = arc4random_uniform(4);
+    // Set the company ticker and name labels to one of 8 colors randomly
+    int randomColor = arc4random_uniform(8);
     
     // Purple
     if (randomColor == 0) {
         
-         cell.companyTicker.textColor = [UIColor colorWithRed:175.0f/255.0f green:94.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
-         cell.companyName.textColor = [UIColor colorWithRed:175.0f/255.0f green:94.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
+        cell.companyTicker.backgroundColor = [UIColor colorWithRed:175.0f/255.0f green:94.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
     }
     
     // Orangish Pink
     if (randomColor == 1) {
         
-        cell.companyTicker.textColor = [UIColor colorWithRed:233.0f/255.0f green:141.0f/255.0f blue:112.0f/255.0f alpha:1.0f];
-        cell.companyName.textColor = [UIColor colorWithRed:233.0f/255.0f green:141.0f/255.0f blue:112.0f/255.0f alpha:1.0f];
+        cell.companyTicker.backgroundColor = [UIColor colorWithRed:233.0f/255.0f green:141.0f/255.0f blue:112.0f/255.0f alpha:1.0f];
     }
     
     // Bright Blue
     if (randomColor == 2) {
         
-        cell.companyTicker.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-        cell.companyName.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+        cell.companyTicker.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
     }
     
     // Bright Pink
     if (randomColor == 3) {
         
-        cell.companyTicker.textColor = [UIColor colorWithRed:224.0f/255.0f green:46.0f/255.0f blue:134.0f/255.0f alpha:1.0f];
-        cell.companyName.textColor = [UIColor colorWithRed:224.0f/255.0f green:46.0f/255.0f blue:134.0f/255.0f alpha:1.0f];
+        cell.companyTicker.backgroundColor = [UIColor colorWithRed:224.0f/255.0f green:46.0f/255.0f blue:134.0f/255.0f alpha:1.0f];
     }
     
     // Light Purple
     if (randomColor == 4) {
         
-        cell.companyTicker.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
-        cell.companyName.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+        cell.companyTicker.backgroundColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+    }
+    
+    // Carrotish Orange
+    if (randomColor == 5) {
+        
+        cell.companyTicker.backgroundColor = [UIColor colorWithRed:222.0f/255.0f green:105.0f/255.0f blue:38.0f/255.0f alpha:1.0f];
+    }
+    
+    // Yellow
+    if (randomColor == 6) {
+        
+        cell.companyTicker.backgroundColor = [UIColor colorWithRed:236.0f/255.0f green:186.0f/255.0f blue:38.0f/255.0f alpha:1.0f];
+    }
+    
+    // Another Blue
+    if (randomColor == 7) {
+        
+        cell.companyTicker.backgroundColor = [UIColor colorWithRed:40.0f/255.0f green:114.0f/255.0f blue:81.0f/255.0f alpha:1.0f];
     }
     
     // Get event or company  to display

@@ -53,20 +53,20 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TCKR" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bou-Yt-hGl">
-                                                    <rect key="frame" x="12" y="14" width="70" height="19"/>
-                                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <rect key="frame" x="24" y="8" width="48" height="47"/>
+                                                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="70" id="U3d-ql-ZhH"/>
+                                                        <constraint firstAttribute="width" constant="48" id="U3d-ql-ZhH"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="16"/>
-                                                    <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Company Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s1x-IM-BDA">
-                                                    <rect key="frame" x="12" y="30" width="70" height="19"/>
+                                                    <rect key="frame" x="6" y="56" width="85" height="19"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="10"/>
-                                                    <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Event Information Description" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r65-ua-5Pc">
@@ -97,16 +97,16 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="bottomMargin" secondItem="Jou-oj-rjb" secondAttribute="bottom" constant="17" id="DQa-ZF-AdS"/>
-                                                <constraint firstItem="s1x-IM-BDA" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" constant="22" id="Etb-81-0BA"/>
-                                                <constraint firstItem="Bou-Yt-hGl" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" constant="6" id="HdH-ls-FhF"/>
-                                                <constraint firstItem="r65-ua-5Pc" firstAttribute="leading" secondItem="Bou-Yt-hGl" secondAttribute="trailing" constant="10" id="Kwi-t7-HnV"/>
-                                                <constraint firstItem="Bou-Yt-hGl" firstAttribute="leading" secondItem="EdO-do-03K" secondAttribute="leadingMargin" constant="4" id="PE1-3T-jfj"/>
-                                                <constraint firstItem="s1x-IM-BDA" firstAttribute="centerY" secondItem="EdO-do-03K" secondAttribute="centerY" id="PpX-Id-f23"/>
+                                                <constraint firstItem="s1x-IM-BDA" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" constant="48" id="Etb-81-0BA"/>
+                                                <constraint firstItem="Bou-Yt-hGl" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" id="HdH-ls-FhF"/>
+                                                <constraint firstItem="r65-ua-5Pc" firstAttribute="leading" secondItem="Bou-Yt-hGl" secondAttribute="trailing" constant="20" id="Kwi-t7-HnV"/>
+                                                <constraint firstItem="Bou-Yt-hGl" firstAttribute="leading" secondItem="EdO-do-03K" secondAttribute="leadingMargin" constant="16" id="PE1-3T-jfj"/>
+                                                <constraint firstItem="s1x-IM-BDA" firstAttribute="centerY" secondItem="EdO-do-03K" secondAttribute="centerY" constant="26" id="PpX-Id-f23"/>
                                                 <constraint firstItem="r65-ua-5Pc" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" id="QH1-5f-NDm"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="Y7j-P2-Lf8" secondAttribute="trailing" constant="13" id="WPE-Cb-SYN"/>
-                                                <constraint firstItem="Bou-Yt-hGl" firstAttribute="trailing" secondItem="s1x-IM-BDA" secondAttribute="trailing" id="YRx-b6-hnw"/>
-                                                <constraint firstItem="Bou-Yt-hGl" firstAttribute="leading" secondItem="s1x-IM-BDA" secondAttribute="leading" id="Yto-fy-w2K"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="Bou-Yt-hGl" secondAttribute="bottom" constant="38" id="a56-Vg-cyB"/>
+                                                <constraint firstItem="Bou-Yt-hGl" firstAttribute="trailing" secondItem="s1x-IM-BDA" secondAttribute="trailing" constant="-19" id="YRx-b6-hnw"/>
+                                                <constraint firstItem="Bou-Yt-hGl" firstAttribute="leading" secondItem="s1x-IM-BDA" secondAttribute="leading" constant="18" id="Yto-fy-w2K"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="Bou-Yt-hGl" secondAttribute="bottom" constant="16" id="a56-Vg-cyB"/>
                                                 <constraint firstItem="Y7j-P2-Lf8" firstAttribute="top" secondItem="r65-ua-5Pc" secondAttribute="bottom" constant="19" id="gEo-2G-hxB"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="r65-ua-5Pc" secondAttribute="trailing" constant="-40" id="iWW-wf-qtp"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="Y7j-P2-Lf8" secondAttribute="bottom" constant="1" id="ieT-I4-PVd"/>
@@ -153,7 +153,7 @@
                                 </connections>
                             </searchBar>
                         </subviews>
-                        <color key="backgroundColor" red="0.31764705882352939" green="0.70980392156862748" blue="0.56470588235294117" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.31764705879999999" green="0.70980392160000005" blue="0.56470588239999997" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="lH9-rm-JDu" firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="2OV-1H-Pjh"/>
