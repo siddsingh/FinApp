@@ -434,13 +434,15 @@
     // www.quandl.com/api/v1/datasets/ZEA/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ
     
     // The API endpoint URL
-    NSString *endpointURL = @"https://www.quandl.com/api/v1/datasets/ZEA";
+ /*   NSString *endpointURL = @"https://www.quandl.com/api/v1/datasets/ZEA";
         
     // Append ticker for the company to the API endpoint URL
     endpointURL = [NSString stringWithFormat:@"%@/%@.json",endpointURL,companyTicker];
         
     // Append auth token to the call
-    endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
+    endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL]; */
+    
+    NSString *endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ";
         
     NSError * error = nil;
     NSURLResponse *response = nil;
@@ -453,6 +455,8 @@
     // Process the response
     if (error == nil)
     {
+        NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
+        NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         // Process the response that contains the events for the company.
         [self processEventsResponse:responseData forTicker:companyTicker];
             

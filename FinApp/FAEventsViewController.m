@@ -35,6 +35,9 @@
     
     // Do any additional setup after loading the view.
     
+    // Make the message bar fully transparent so that it's invisible to the user
+    self.messageBar.alpha = 0.0;
+    
     // Change the color of the events search bar placeholder text and text entered to be white.
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
     [eventSearchBarInputFld setValue:[UIColor darkGrayColor] forKeyPath:@"_placeholderLabel.textColor"];
@@ -457,6 +460,24 @@
     [self.eventsListTable reloadData];
     NSLog(@"*******************************************Event Store Changed listener fired to refresh table");
 }
+
+// Show the error message for a temporary period and then fade it if a user message has been generated
+// TO DO: Currently set to 5 seconds. Change as you see fit.
+- (void)userMessageGenerated:(NSNotification *)notification {
+    
+    // Make sure the message bar is empty and visible to the user
+    self.messageBar.text = @"";
+    self.messageBar.alpha = 1.0;
+    
+    // Show the message that's generated for a period of 5 seconds
+    [UIView animateWithDuration:5 animations:^{
+        self.messageBar.text = [notification object];
+        self.notificationLabel.alpha = 0;
+    }];
+    
+    NSLog(@"*******************************************User Message Generated listener fired to show error message");
+}
+
 
 /*
 #pragma mark - Navigation

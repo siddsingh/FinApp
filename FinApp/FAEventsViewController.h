@@ -41,4 +41,7 @@
 // Spinner to indicate a remote fetch is in progress
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *remoteFetchSpinner;
 
+// Label to show error and informational messages
+@property (weak, nonatomic) IBOutlet UILabel *messageBar;
+
 @end

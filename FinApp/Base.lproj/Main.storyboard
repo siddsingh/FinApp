@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UPCOMING EVENTS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lH9-rm-JDu">
-                                <rect key="frame" x="243" y="28" width="118" height="21"/>
+                                <rect key="frame" x="243" y="23" width="118" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="CAA-8i-PX1"/>
                                     <constraint firstAttribute="height" constant="21" id="LKS-na-rUg"/>
@@ -37,9 +37,9 @@
                                     </mask>
                                 </variation>
                             </label>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="kvC-1T-x6w">
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="kvC-1T-x6w">
                                 <rect key="frame" x="292" y="89" width="20" height="20"/>
-                                <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" sectionIndexMinimumDisplayRowCount="-1" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
                                 <rect key="frame" x="-5" y="112" width="612" height="488"/>
@@ -140,7 +140,7 @@
                                 </connections>
                             </tableView>
                             <searchBar contentMode="redraw" searchBarStyle="minimal" text="" placeholder="Company or Ticker" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
-                                <rect key="frame" x="162" y="49" width="281" height="44"/>
+                                <rect key="frame" x="162" y="44" width="281" height="44"/>
                                 <color key="backgroundColor" red="0.31764705879999999" green="0.70980392160000005" blue="0.56470588239999997" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="281" id="EYj-il-hhd"/>
@@ -152,6 +152,12 @@
                                     <outlet property="delegate" destination="WNQ-2i-B77" id="0Ap-eJ-shR"/>
                                 </connections>
                             </searchBar>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RVP-gf-zre">
+                                <rect key="frame" x="162" y="88" width="281" height="21"/>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="11"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.31764705879999999" green="0.70980392160000005" blue="0.56470588239999997" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -165,13 +171,13 @@
                             <constraint firstItem="lH9-rm-JDu" firstAttribute="top" secondItem="fPu-sh-VAw" secondAttribute="topMargin" constant="28" id="NJ8-tI-peu"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" id="QJJ-ft-4SW"/>
                             <constraint firstItem="nfw-0u-xss" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" id="VUT-Gs-jZe"/>
-                            <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="19" id="Vdc-k8-H6G"/>
+                            <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="24" id="Vdc-k8-H6G"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" constant="-21" id="YIU-ya-UOA"/>
                             <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" constant="5" id="YVT-6h-9BC"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" id="YYc-TA-BAy"/>
                             <constraint firstAttribute="trailing" secondItem="KbY-6m-WGH" secondAttribute="trailing" id="Yel-CZ-VCU"/>
                             <constraint firstAttribute="centerX" secondItem="KbY-6m-WGH" secondAttribute="centerX" id="ZPx-EN-Zmh"/>
-                            <constraint firstItem="lH9-rm-JDu" firstAttribute="top" secondItem="QkD-j3-H2X" secondAttribute="bottom" constant="8" id="ZUe-g5-vYJ"/>
+                            <constraint firstItem="lH9-rm-JDu" firstAttribute="top" secondItem="QkD-j3-H2X" secondAttribute="bottom" constant="3" id="ZUe-g5-vYJ"/>
                             <constraint firstItem="lH9-rm-JDu" firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" constant="-5.5" id="Zhp-Z4-IPS"/>
                             <constraint firstItem="nfw-0u-xss" firstAttribute="centerX" secondItem="kvC-1T-x6w" secondAttribute="centerX" id="a1j-OX-KCO"/>
                             <constraint firstAttribute="centerX" secondItem="lH9-rm-JDu" secondAttribute="centerX" constant="5" id="anK-za-GYh"/>
@@ -181,7 +187,7 @@
                             <constraint firstItem="Nql-41-vTF" firstAttribute="top" secondItem="KbY-6m-WGH" secondAttribute="bottom" id="hAn-1M-pGq"/>
                             <constraint firstItem="nfw-0u-xss" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" constant="6" id="i1d-5l-ZqH"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" constant="8" id="lpK-IH-YxZ"/>
-                            <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="-4" id="qpn-xq-r7Y"/>
+                            <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="1" id="qpn-xq-r7Y"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="9" id="s0K-VK-9ey"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="centerX" secondItem="kvC-1T-x6w" secondAttribute="centerX" constant="-1" id="sKH-pg-zah"/>
                             <constraint firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="t5v-Db-Sqo"/>
@@ -217,6 +223,7 @@
                     <connections>
                         <outlet property="eventsListTable" destination="KbY-6m-WGH" id="U1B-qA-4Xm"/>
                         <outlet property="eventsSearchBar" destination="nfw-0u-xss" id="pfV-29-mXe"/>
+                        <outlet property="messageBar" destination="RVP-gf-zre" id="oAs-Ba-0Ep"/>
                         <outlet property="remoteFetchSpinner" destination="kvC-1T-x6w" id="Pbt-nP-0Xf"/>
                     </connections>
                 </viewController>
