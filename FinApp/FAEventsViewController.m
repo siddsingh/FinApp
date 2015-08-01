@@ -64,6 +64,11 @@
                                              selector:@selector(eventStoreChanged:)
                                                  name:@"EventStoreUpdated" object:nil];
     
+    // Register a listener for messages to be shown to the user in the top bar userMessageGenerated
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userMessageGenerated:)
+                                                 name:@"UserMessageCreated" object:nil];
+    
     // Seed the company data, the very first time, to get the user started.
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
         [self.primaryDataController performCompanySeedSyncLocally];
@@ -472,7 +477,7 @@
     // Show the message that's generated for a period of 5 seconds
     [UIView animateWithDuration:5 animations:^{
         self.messageBar.text = [notification object];
-        self.notificationLabel.alpha = 0;
+        self.messageBar.alpha = 0;
     }];
     
     NSLog(@"*******************************************User Message Generated listener fired to show error message");

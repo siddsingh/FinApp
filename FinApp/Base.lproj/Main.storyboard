@@ -37,7 +37,7 @@
                                     </mask>
                                 </variation>
                             </label>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="kvC-1T-x6w">
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="kvC-1T-x6w">
                                 <rect key="frame" x="292" y="89" width="20" height="20"/>
                                 <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
@@ -152,8 +152,12 @@
                                     <outlet property="delegate" destination="WNQ-2i-B77" id="0Ap-eJ-shR"/>
                                 </connections>
                             </searchBar>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RVP-gf-zre">
-                                <rect key="frame" x="162" y="88" width="281" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unable to get Events. Check Connection." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RVP-gf-zre">
+                                <rect key="frame" x="160" y="88" width="281" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="281" id="GiC-uX-vhk"/>
+                                    <constraint firstAttribute="height" constant="21" id="VW0-7p-zBZ"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="11"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -170,8 +174,10 @@
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="bottom" secondItem="kvC-1T-x6w" secondAttribute="bottom" constant="494" id="KxZ-ia-aq2"/>
                             <constraint firstItem="lH9-rm-JDu" firstAttribute="top" secondItem="fPu-sh-VAw" secondAttribute="topMargin" constant="28" id="NJ8-tI-peu"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" id="QJJ-ft-4SW"/>
+                            <constraint firstItem="RVP-gf-zre" firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" constant="-2" id="UtF-aA-mCT"/>
                             <constraint firstItem="nfw-0u-xss" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" id="VUT-Gs-jZe"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="24" id="Vdc-k8-H6G"/>
+                            <constraint firstItem="RVP-gf-zre" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" id="Y1m-ha-GMZ"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" constant="-21" id="YIU-ya-UOA"/>
                             <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" constant="5" id="YVT-6h-9BC"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" id="YYc-TA-BAy"/>

@@ -21,6 +21,9 @@
 // Send a notification that the list of messages has changed (updated)
 - (void)sendEventsChangeNotification;
 
+// Send a notification that the list of events has changed (updated)
+- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
+
 @end
 
 @implementation FADataController
@@ -434,15 +437,16 @@
     // www.quandl.com/api/v1/datasets/ZEA/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ
     
     // The API endpoint URL
- /*   NSString *endpointURL = @"https://www.quandl.com/api/v1/datasets/ZEA";
+    NSString *endpointURL = @"https://www.quandl.com/api/v1/datasets/ZEA";
         
     // Append ticker for the company to the API endpoint URL
     endpointURL = [NSString stringWithFormat:@"%@/%@.json",endpointURL,companyTicker];
         
     // Append auth token to the call
-    endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL]; */
+    endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
     
-    NSString *endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ";
+    // DELETE: Use this endpoint for testing an incorrect API response.
+    // NSString *endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ";
         
     NSError * error = nil;
     NSURLResponse *response = nil;
@@ -461,7 +465,11 @@
         [self processEventsResponse:responseData forTicker:companyTicker];
             
     } else {
+        // Log error to console
         NSLog(@"ERROR: Could not get events data from the API Data Source. Error description: %@",error.description);
+        
+        // Show user an error message
+        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to get events. Check Connection."];
     }
 }
 
@@ -516,75 +524,88 @@
     // Get the list of data sets first from the overall response
     NSArray *parsedDataSets = [parsedResponse objectForKey:@"data"];
     
-    // Get the list and details of events which is essentially the first and only data set from the list of data sets
-    NSArray *parsedEventsList = [parsedDataSets objectAtIndex:0];
+    NSLog(@"The parsed data set is:%@",parsedDataSets.description);
     
-    // Next get the different pices of information for the events depending on their position in the list and details of events
-    
-    // Set the type of event. Currently support:
-    // 1) "Quarterly Earnings"
-    NSString *eventType = @"Quarterly Earnings";
-    NSLog(@"The event type is: %@",eventType);
-    
-    // Get the date on which the event takes place which is the 5th item
-    NSLog(@"The date on which the event takes place: %@",[parsedEventsList objectAtIndex:4]);
-    NSString *eventDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:4]];
-    // Convert from string to Date
-    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-    [eventDateFormatter setDateFormat:@"yyyyMMdd"];
-    NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
-    NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
-    
-    
-    // Get Details related to the event which is the 10th item
-    // For Quarterly Earnings: 1 (After market closes), 2 (Before market opens), 3 (During market trading) or 4 (Unknown)
-    NSLog(@"The timing details related to the event: %@",[parsedEventsList objectAtIndex:9]);
-    NSString *eventDetails = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:9]];
-    // Convert to human understandable string
-    if ([eventDetails isEqualToString:@"1"]) {
-        eventDetails = [NSString stringWithFormat:@"After market closes"];
+    // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
+    // then you don't want to process the data and enter as events.
+    // If response is not correct, show the user an error message
+    if (parsedDataSets == NULL)
+    {
+        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to get events. Try again later."];
     }
-    if ([eventDetails isEqualToString:@"2"]) {
-        eventDetails = [NSString stringWithFormat:@"Before market opens"];
+    // Else process response to enter event
+    else
+    {
+        // Get the list and details of events which is essentially the first and only data set from the list of data sets
+        NSArray *parsedEventsList = [parsedDataSets objectAtIndex:0];
+        
+        // Next get the different pices of information for the events depending on their position in the list and details of events
+        
+        // Set the type of event. Currently support:
+        // 1) "Quarterly Earnings"
+        NSString *eventType = @"Quarterly Earnings";
+        NSLog(@"The event type is: %@",eventType);
+        
+        // Get the date on which the event takes place which is the 5th item
+        NSLog(@"The date on which the event takes place: %@",[parsedEventsList objectAtIndex:4]);
+        NSString *eventDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:4]];
+        // Convert from string to Date
+        NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+        [eventDateFormatter setDateFormat:@"yyyyMMdd"];
+        NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
+        NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+        
+        
+        // Get Details related to the event which is the 10th item
+        // For Quarterly Earnings: 1 (After market closes), 2 (Before market opens), 3 (During market trading) or 4 (Unknown)
+        NSLog(@"The timing details related to the event: %@",[parsedEventsList objectAtIndex:9]);
+        NSString *eventDetails = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:9]];
+        // Convert to human understandable string
+        if ([eventDetails isEqualToString:@"1"]) {
+            eventDetails = [NSString stringWithFormat:@"After market closes"];
+        }
+        if ([eventDetails isEqualToString:@"2"]) {
+            eventDetails = [NSString stringWithFormat:@"Before market opens"];
+        }
+        if ([eventDetails isEqualToString:@"3"]) {
+            eventDetails = [NSString stringWithFormat:@"During market trading"];
+        }
+        if ([eventDetails isEqualToString:@"4"]) {
+            eventDetails = [NSString stringWithFormat:@"Unknown"];
+        }
+        NSLog(@"The timing details related to the event formatted: %@",eventDetails);
+        
+        
+        // Get the Date related to the event which is the 3rd item
+        // 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
+        // to be reported
+        NSLog(@"The quarter end date related to the event: %@",[parsedEventsList objectAtIndex:2]);
+        NSString *relatedDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:2]];
+        // Convert from string to Date
+        NSDateFormatter *relatedDateFormatter = [[NSDateFormatter alloc] init];
+        [relatedDateFormatter setDateFormat:@"yyyyMMdd"];
+        NSDate *relatedDate = [relatedDateFormatter dateFromString:relatedDateStr];
+        NSLog(@"The quarter end date related to the event formatted as a Date: %@",relatedDate);
+        
+        // Get Indicator if this event is "Confirmed" or "Estimated" or "Unknown" which is the 9th item
+        // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
+        NSLog(@"The confirmation indicator for this event: %@",[parsedEventsList objectAtIndex:8]);
+        NSString *certaintyStr = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:8]];
+        // Convert to human understandable string
+        if ([certaintyStr isEqualToString:@"1"]) {
+            certaintyStr = [NSString stringWithFormat:@"Confirmed"];
+        }
+        if ([certaintyStr isEqualToString:@"2"]) {
+            certaintyStr = [NSString stringWithFormat:@"Estimated"];
+        }
+        if ([certaintyStr isEqualToString:@"3"]) {
+            certaintyStr = [NSString stringWithFormat:@"Unknown"];
+        }
+        NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
+        
+        // Insert events data into the data store
+        [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
     }
-    if ([eventDetails isEqualToString:@"3"]) {
-        eventDetails = [NSString stringWithFormat:@"During market trading"];
-    }
-    if ([eventDetails isEqualToString:@"4"]) {
-        eventDetails = [NSString stringWithFormat:@"Unknown"];
-    }
-    NSLog(@"The timing details related to the event formatted: %@",eventDetails);
-    
-    
-    // Get the Date related to the event which is the 3rd item
-    // 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
-    // to be reported
-    NSLog(@"The quarter end date related to the event: %@",[parsedEventsList objectAtIndex:2]);
-    NSString *relatedDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:2]];
-    // Convert from string to Date
-    NSDateFormatter *relatedDateFormatter = [[NSDateFormatter alloc] init];
-    [relatedDateFormatter setDateFormat:@"yyyyMMdd"];
-    NSDate *relatedDate = [relatedDateFormatter dateFromString:relatedDateStr];
-    NSLog(@"The quarter end date related to the event formatted as a Date: %@",relatedDate);
-    
-    // Get Indicator if this event is "Confirmed" or "Estimated" or "Unknown" which is the 9th item
-    // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
-    NSLog(@"The confirmation indicator for this event: %@",[parsedEventsList objectAtIndex:8]);
-    NSString *certaintyStr = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:8]];
-    // Convert to human understandable string
-    if ([certaintyStr isEqualToString:@"1"]) {
-        certaintyStr = [NSString stringWithFormat:@"Confirmed"];
-    }
-    if ([certaintyStr isEqualToString:@"2"]) {
-        certaintyStr = [NSString stringWithFormat:@"Estimated"];
-    }
-    if ([certaintyStr isEqualToString:@"3"]) {
-        certaintyStr = [NSString stringWithFormat:@"Unknown"];
-    }
-    NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
-    
-    // Insert events data into the data store
-    [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
 }
 
 #pragma mark - Data Syncing Related
@@ -870,6 +891,12 @@
 - (void)sendEventsChangeNotification {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
+}
+
+// Send a notification that the list of events has changed (updated)
+- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
 }
 
 @end
