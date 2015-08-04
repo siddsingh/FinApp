@@ -262,6 +262,9 @@
         
         // Set the company sync status to "FullSyncStarted" and no page has been currently synced.
         [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger: 0]];
+        
+        // Show user a message that companies data is being synced
+        [self sendUserMessageCreatedNotificationWithMessage:@"Fetching Companies. If you can't find a Company, retry in a bit."];
     }
     // Else, if any pages were successfully synced attempt a new sync from the company API page No after the one that was last successfully synced
     else if (([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||[[self getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"])&&[[self getCompanySyncedUptoPage] integerValue] != 0) {
@@ -269,6 +272,9 @@
         pageNo = ([[self getCompanySyncedUptoPage] integerValue] + 1);
         // TO DO: Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value below and in applicationWillTerminate in AppDelegate as well.
         noOfPages = 25;
+        
+        // Show user a message that companies data is continuing to be synced
+        [self sendUserMessageCreatedNotificationWithMessage:@"Fetching Companies. If you can't find a Company, retry in a bit."];
         NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
     }
     
@@ -630,6 +636,7 @@
     [self insertUniqueCompanyWithTicker:@"QCOM" name:@"Qualcomm Inc"];
     [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike Inc"];
     
+    
     // Add or Update the Company Data Sync status to SeedSyncDone.
     [self upsertUserWithCompanySyncStatus:@"SeedSyncDone" syncedPageNo:[NSNumber numberWithInteger: 0]];
 }
@@ -643,9 +650,9 @@
    // [self getAllEventsFromApiWithTicker:@"AAPL"];
     [self getAllEventsFromApiWithTicker:@"TSLA"];
     // TO DO: Commenting to not expire the API test limits. Uncomment when ready to finally test for shipping.
-   /* [self getAllEventsFromApiWithTicker:@"EA"];
+   // [self getAllEventsFromApiWithTicker:@"EA"];
     [self getAllEventsFromApiWithTicker:@"CRM"];
-    [self getAllEventsFromApiWithTicker:@"NFLX"];
+   /* [self getAllEventsFromApiWithTicker:@"NFLX"];
     [self getAllEventsFromApiWithTicker:@"FB"];
     [self getAllEventsFromApiWithTicker:@"EA"];
     [self getAllEventsFromApiWithTicker:@"MSFT"];
