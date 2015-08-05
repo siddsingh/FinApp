@@ -26,6 +26,9 @@
 // Get events for company given a ticker. Typically called in a background thread
 - (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
 
+// Send a notification that the list of events has changed (updated)
+- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
+
 @end
 
 @implementation FAEventsViewController
@@ -412,7 +415,9 @@
         
         // If no events are found, search for the name and ticker fields on the companies data store.
         if ([self.filteredResultsController fetchedObjects].count == 0) {
+            
             self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+            
             // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
             // has been specified.
             self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
@@ -457,6 +462,29 @@
     return YES;
 }
 
+// Before a user enters a search term check to see if full company data sync has been completed.
+// If not show the user a message warming them.
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar*)searchBar {
+    
+    NSLog(@"SEARCH BAR EDITING BEGIN FIRED:");
+    // If the companies data is still being synced, give the user a warning message
+    if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
+        NSLog(@"NOTIFICATION ABOUT TO BE FIRED: With User Message: %@",@"Fetching Companies. If you can't find a Company, retry in a bit.");
+        // Show user a message that companies data is being synced
+        [self sendUserMessageCreatedNotificationWithMessage:@"Fetching Companies. If you can't find a Company, retry in a bit."];
+    }
+    return YES;
+}
+
+#pragma mark - Notifications
+
+// Send a notification that the list of events has changed (updated)
+- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
+    NSLog(@"NOTIFICATION FIRED: With User Message: %@",msgContents);
+}
+
 #pragma mark - Change Listener Responses
 
 // Refresh the messages table when the message store for the table has changed
@@ -473,6 +501,8 @@
     // Make sure the message bar is empty and visible to the user
     self.messageBar.text = @"";
     self.messageBar.alpha = 1.0;
+    
+     NSLog(@"NOTIFICATION ABOUT TO BE SHOWN: With User Message: %@",[notification object]);
     
     // Show the message that's generated for a period of 5 seconds
     [UIView animateWithDuration:5 animations:^{
