@@ -311,6 +311,8 @@
 // set to true, meaning the event needs to be fetched from the remote Data Source. Additionally clear out the search context.
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    NSLog(@"Row Clicked");
+    
     // Check to see if the row selected has an event cell with remote fetch status set to true
     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
     if (cell.eventRemoteFetch) {
@@ -323,6 +325,41 @@
         NSLog(@"Fetching Event Data for ticker in the background:%@",(cell.companyTicker).text);
         [self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
     }
+}
+
+// Make Sure the table row, if it should be, is editable
+// TO DO: Check to see that the row has event information. Only then, make it editable
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return YES;
+}
+
+// TO DO: Understand this method better.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+}
+
+// Add the following actions on swiping each event row: 1) "Set Reminder".
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    // Create the "Set Reminder" Action and handle it being exercised.
+    UITableViewRowAction *setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Set Reminder" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+        
+        // Get the cell for the row on which the action is being exercised
+        FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+        NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
+    }];
+    setReminderAction.backgroundColor = [UIColor blueColor];
+    
+    // TO DO: For future, if you want to add an additional action.
+    /* UITableViewRowAction *anotherAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Another Action" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+        // Handle exercising the action
+    }];
+    anotherAction.backgroundColor = [UIColor blueColor];
+    
+    return @[setReminderAction, anotherAction]; */
+    
+    return @[setReminderAction];
 }
 
 #pragma mark - Data Source API
