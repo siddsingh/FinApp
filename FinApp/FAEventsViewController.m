@@ -13,6 +13,7 @@
 #import "FADataController.h"
 #import "Event.h"
 #import "Company.h"
+@import EventKit;
 #import <stdlib.h>
 
 @interface FAEventsViewController ()
@@ -28,6 +29,12 @@
 
 // Send a notification that the list of events has changed (updated)
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
+
+// User's calendar events and reminders data store
+@property (strong, nonatomic) EKEventStore *userEventStore;
+
+// Shows if user has granted access to the app for his/her event store.
+@property (nonatomic) BOOL isAccessToUserEventStoreGranted;
 
 @end
 
@@ -334,7 +341,7 @@
     return YES;
 }
 
-// TO DO: Understand this method better.
+// TO DO: Understand this method better. Basically need this to be able to use the custom UITableViewRowAction
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     
 }
@@ -348,7 +355,10 @@
         // Get the cell for the row on which the action is being exercised
         FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
         NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
+        [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     }];
+    
+    // Format the Action UI to be the correct color and everything
     setReminderAction.backgroundColor = [UIColor blueColor];
     
     // TO DO: For future, if you want to add an additional action.
@@ -356,7 +366,6 @@
         // Handle exercising the action
     }];
     anotherAction.backgroundColor = [UIColor blueColor];
-    
     return @[setReminderAction, anotherAction]; */
     
     return @[setReminderAction];
@@ -548,6 +557,16 @@
     }];
     
     NSLog(@"*******************************************User Message Generated listener fired to show error message");
+}
+
+#pragma mark - Calendar and Event Related
+
+// Set the getter for the user event store property so that only one event store object gets created
+- (EKEventStore *)userEventStore {
+    if (!_userEventStore) {
+        _userEventStore = [[EKEventStore alloc] init];
+    }
+    return _userEventStore;
 }
 
 
