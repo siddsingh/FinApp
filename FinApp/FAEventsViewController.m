@@ -364,6 +364,8 @@
             // TO DO: Create Reminder
         }
         // Else present the user with the authorization request
+        // TO DO: Decide if you want to close the slid out action, before the user has provided
+        // access. Currently it's weird where the action closes and then the access popup is shown.
         else {
             
             [self requestAccessToUserEventStore];
@@ -597,12 +599,10 @@
     switch (accessStatus) {
         
         // If the user hasn't provided access, show an appropriate error message.
-        // TO DO: Check if the user can then provide access in the settings page. If yes, indicate that
-        // in the error message.
         case EKAuthorizationStatusDenied:
         case EKAuthorizationStatusRestricted: {
             self.isAccessToUserEventStoreGranted = NO;
-            [self sendUserMessageCreatedNotificationWithMessage:@"We don't have access to your Reminders to create one!"];
+            [self sendUserMessageCreatedNotificationWithMessage:@"Enable access to your Reminders under Settings>Finapp and try again!"];
             break;
         }
             
