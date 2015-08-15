@@ -107,6 +107,9 @@
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    // Set the user provided access to the events store as false
+    self.isAccessToUserEventStoreGranted = NO;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -355,6 +358,19 @@
         // Get the cell for the row on which the action is being exercised
         FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
         NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
+        
+        // If the user has already granted access, create the reminder
+        if (self.isAccessToUserEventStoreGranted) {
+            // TO DO: Create Reminder
+        }
+        // Else present the user with the authorization request
+        else {
+            
+            [self requestAccessToUserEventStore];
+        }
+        
+        // Slide the row back over the action.
+        // TO DO: See if you can animate the slide back.
         [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     }];
     
@@ -569,6 +585,50 @@
     return _userEventStore;
 }
 
+// Present the user with an access request to their reminders if it's not already been done. This method takes care
+// showing the appropriate warning message if the request has been denied previously.
+- (void)requestAccessToUserEventStore {
+    
+    // Get the current access status to the user's event store for event type reminder.
+    EKAuthorizationStatus accessStatus = [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder];
+    
+    // Depending on the current access status, choose what to do. Idea is to request access from a user
+    // only if he hasn't granted it before.
+    switch (accessStatus) {
+        
+        // If the user hasn't provided access, show an appropriate error message.
+        // TO DO: Check if the user can then provide access in the settings page. If yes, indicate that
+        // in the error message.
+        case EKAuthorizationStatusDenied:
+        case EKAuthorizationStatusRestricted: {
+            self.isAccessToUserEventStoreGranted = NO;
+            [self sendUserMessageCreatedNotificationWithMessage:@"We don't have access to your Reminders to create one!"];
+            break;
+        }
+            
+        // If the user has already provided access, set the appropriate access status for reference
+        // and do nothing.
+        case EKAuthorizationStatusAuthorized: {
+            self.isAccessToUserEventStoreGranted= YES;
+            break;
+        }
+            
+        // If the app hasn't requested access or the user hasn't decided yet, present the user with the
+        // authorization dialog.
+        case EKAuthorizationStatusNotDetermined: {
+            // create a weak reference to the controller, since you want to update the access status, in
+            // a non main thread where the authorization dialog is presented.
+            __weak FAEventsViewController *weakPtrToSelf = self;
+            [self.userEventStore requestAccessToEntityType:EKEntityTypeReminder
+                                            completion:^(BOOL grantedByUser, NSError *error) {
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                    weakPtrToSelf.isAccessToUserEventStoreGranted = grantedByUser;
+                                                });
+                                            }];
+            break;
+        }
+    }
+}
 
 /*
 #pragma mark - Navigation
