@@ -173,7 +173,6 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    
     // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
     
@@ -628,6 +627,38 @@
             break;
         }
     }
+}
+
+// Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
+- (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell {
+    
+    // Check to see if the event represented by the cell is estimated or confirmed ?
+    // If confirmed create and save to action data store
+    if ([eventCell.eventCertainty.text isEqualToString:@"Confirmed"]) {
+        
+    }
+    // If estimated add to action data store for later processing
+    else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
+        
+    }
+    
+    
+    // Show the event date
+    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+    //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
+    [eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
+    NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
+    NSString *eventTimeString = eventAtIndex.relatedDetails;
+    // Append related details (timing information) to the event date if it's known
+    if (![eventTimeString isEqualToString:@"Unknown"]) {
+        eventDateString = [NSString stringWithFormat:@"%@(%@)",eventDateString,eventTimeString];
+    }
+    [[cell eventDate] setText:eventDateString];
+    
+    // Show the certainty of the event
+    [[cell eventCertainty] setText:eventAtIndex.certainty];
+    
+
 }
 
 /*
