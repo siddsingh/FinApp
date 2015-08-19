@@ -12,7 +12,7 @@
 #import <CoreData/CoreData.h>
 @class Company;
 
-
+// Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 @interface Event : NSManagedObject
 
 // Date on which the event takes place

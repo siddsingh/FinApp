@@ -152,8 +152,6 @@
 // "NoSyncPerformed" means no event information has been added to the event data store.
 - (NSString *)getEventSyncStatus;
 
-
-
 // Add company data sync status to the user data store. Current design is that the user object is created
 // when a company data sync is done. Thus this method creates the user with the given status if it
 // doesn't exist or updates the user with the new status if the user exists.
@@ -166,5 +164,13 @@
 // status. If the user doesn't exist, it logs an error. Since the user is created the first time a company
 // event sync is performed, CALL THIS METHOD AFTER THE UPSERT COMPANY SYNC STATUS METHOD IS CALLED ONCE.
 - (void)updateUserWithEventSyncStatus:(NSString *)syncStatus;
+
+#pragma mark - Action Related
+
+// Add an Action associated with an event to the Action Data Store given the Action Type, Action Status, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (void)insertActionOfType:(NSString *)actionType status:(NSString *)actionStatus eventTicker:(NSString *)eventCompanyTicker eventType:(NSString *)associatedEventType;
+
+// Update an Action status in the Action Data Store given the Action Type, Event Company Ticker and Event Type, which uniquely identify the event.
+- (void)updateActionWithStatus:(NSString *)actionStatus type:(NSString *)actionType eventTicker:(NSString *)eventCompanyTicker eventType:(NSString *)associatedEventType;
 
 @end

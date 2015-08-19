@@ -10,7 +10,7 @@
 
 #import "Event.h"
 
-
+// Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 @implementation Event
 
 // Date on which the event takes place

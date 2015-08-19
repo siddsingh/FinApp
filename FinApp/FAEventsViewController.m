@@ -360,7 +360,8 @@
         
         // If the user has already granted access, create the reminder
         if (self.isAccessToUserEventStoreGranted) {
-            // TO DO: Create Reminder
+            
+            [self processReminderForEventInCell:cell];
         }
         // Else present the user with the authorization request
         // TO DO: Decide if you want to close the slid out action, before the user has provided
@@ -615,6 +616,7 @@
         // If the app hasn't requested access or the user hasn't decided yet, present the user with the
         // authorization dialog.
         case EKAuthorizationStatusNotDetermined: {
+            
             // create a weak reference to the controller, since you want to update the access status, in
             // a non main thread where the authorization dialog is presented.
             __weak FAEventsViewController *weakPtrToSelf = self;
@@ -636,29 +638,21 @@
     // If confirmed create and save to action data store
     if ([eventCell.eventCertainty.text isEqualToString:@"Confirmed"]) {
         
+        NSLog(@"About to create a reminder, since this event is confirmed");
+        
+        // Create the reminder
+        
+        // Add to the action data store with status created
+        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:eventCell.companyTicker.text eventType:eventCell.eventDescription.text];
     }
     // If estimated add to action data store for later processing
     else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
         
+        NSLog(@"About to queue a reminder for later creation, since this event is not confirmed");
+        
+        // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:eventCell.companyTicker.text eventType:eventCell.eventDescription.text];
     }
-    
-    
-    // Show the event date
-    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-    //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
-    [eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
-    NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
-    NSString *eventTimeString = eventAtIndex.relatedDetails;
-    // Append related details (timing information) to the event date if it's known
-    if (![eventTimeString isEqualToString:@"Unknown"]) {
-        eventDateString = [NSString stringWithFormat:@"%@(%@)",eventDateString,eventTimeString];
-    }
-    [[cell eventDate] setText:eventDateString];
-    
-    // Show the certainty of the event
-    [[cell eventCertainty] setText:eventAtIndex.certainty];
-    
-
 }
 
 /*

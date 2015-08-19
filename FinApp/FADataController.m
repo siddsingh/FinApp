@@ -15,6 +15,7 @@
 #import "Company.h"
 #import "Event.h"
 #import "User.h"
+#import "Action.h"
 
 @interface FADataController ()
 
@@ -884,6 +885,89 @@
     // Update the user
     if (![dataStoreContext save:&error]) {
         NSLog(@"ERROR: Updating user event sync status to data store failed: %@",error.description);
+    }
+}
+
+#pragma mark - Action Related
+
+// Add an Action associated with an event to the Action Data Store given the Action Type, Action Status, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (void)insertActionOfType:(NSString *)actionType status:(NSString *)actionStatus eventTicker:(NSString *)eventCompanyTicker eventType:(NSString *)associatedEventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the event exists by doing a case insensitive query on parent company Ticker and event type.
+    // TO DO: Current assumption is that an event is uniquely identified by the combination of above 2 fields. This might need to change in the future.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@" listedCompany.ticker =[c] %@ AND type =[c] %@",eventCompanyTicker, associatedEventType];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    Event *existingEvent = nil;
+    existingEvent  = [[dataStoreContext executeFetchRequest:eventFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting an event from data store, to insert an associated action, failed: %@",error.description);
+    }
+    
+    // If the event exists, insert the action associated with it
+    if (existingEvent) {
+        
+        // Insert the action associated with the event
+        Action *action = [NSEntityDescription insertNewObjectForEntityForName:@"Action" inManagedObjectContext:dataStoreContext];
+        action.type = actionType;
+        action.status = actionStatus;
+        action.parentEvent = existingEvent;
+        
+        // Perform the insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Saving action to data store failed: %@",error.description);
+        }
+    }
+    
+    // If the event does not exist, log an error message to the console
+    else {
+        
+        NSLog(@"ERROR: Did not insert an action into data store of type %@ and status %@ for event ticker %@ and event type %@ because the parent event was not found in the data store", actionType,actionStatus,eventCompanyTicker,associatedEventType);
+    }
+}
+
+// Update an Action status in the Action Data Store given the Action Type, Event Company Ticker and Event Type, which uniquely identify the event.
+- (void)updateActionWithStatus:(NSString *)actionStatus type:(NSString *)actionType eventTicker:(NSString *)eventCompanyTicker eventType:(NSString *)associatedEventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the action exists by doing a case insensitive query on Action Type, Event Company Ticker and Event Type.
+    NSFetchRequest *actionFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *actionEntity = [NSEntityDescription entityForName:@"Action" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *actionPredicate = [NSPredicate predicateWithFormat:@" type =[c] %@ parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",actionType, eventCompanyTicker, associatedEventType];
+    [actionFetchRequest setEntity:actionEntity];
+    [actionFetchRequest setPredicate:actionPredicate];
+    NSError *error;
+    Action *existingAction = nil;
+    existingAction  = [[dataStoreContext executeFetchRequest:actionFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting an action from data store, to update it's status, failed: %@",error.description);
+    }
+    
+    // If the action exists update it's status does not exist, insert it
+    if (existingAction) {
+        
+        // Don't need to update type and company as these are the unique identifiers
+        existingAction.status = actionStatus;
+        
+        // Perform the insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Saving action to data store failed: %@",error.description);
+        }
+        
+    }
+    
+    // If the event does not exist, log an error message to the console
+    else {
+        
+        NSLog(@"ERROR: Did not update an action status in data store of type %@ and new status %@ for event ticker %@ and event type %@ because the action was not found in the data store", actionType,actionStatus,eventCompanyTicker,associatedEventType);
     }
 }
 
