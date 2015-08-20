@@ -368,7 +368,7 @@
         // access. Currently it's weird where the action closes and then the access popup is shown.
         else {
             
-            [self requestAccessToUserEventStore];
+            [self requestAccessToUserEventStoreFromCell:cell];
         }
         
         // Slide the row back over the action.
@@ -589,7 +589,7 @@
 
 // Present the user with an access request to their reminders if it's not already been done. This method takes care
 // showing the appropriate warning message if the request has been denied previously.
-- (void)requestAccessToUserEventStore {
+- (void)requestAccessToUserEventStoreFromCell:(FAEventsTableViewCell *)eventCell {
     
     // Get the current access status to the user's event store for event type reminder.
     EKAuthorizationStatus accessStatus = [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder];
@@ -624,6 +624,7 @@
                                             completion:^(BOOL grantedByUser, NSError *error) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     weakPtrToSelf.isAccessToUserEventStoreGranted = grantedByUser;
+                                                    [weakPtrToSelf processReminderForEventInCell:eventCell];
                                                 });
                                             }];
             break;

@@ -54,6 +54,9 @@
 // to 15) objects’ data will be fetched from the data store at a time.
 - (NSFetchedResultsController *)searchCompaniesFor:(NSString *)searchText;
 
+// Get the date for an Event given the Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (NSDate *)getDateForEventOfType:(NSString *)eventType eventTicker:(NSString *)eventCompanyTicker;
+
 #pragma mark - Methods to call Company Data Source APIs
 
 // Get a list of all companies and their tickers. Current algorithm to do this is:

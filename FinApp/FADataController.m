@@ -238,6 +238,40 @@
     return self.resultsController;
 }
 
+// Get the date for an Event given the Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (NSDate *)getDateForEventOfType:(NSString *)eventType eventTicker:(NSString *)eventCompanyTicker
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // TO DO: Current assumption is that an event is uniquely identified by the combination of above 2 fields. This might need to change in the future.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@" listedCompany.ticker =[c] %@ AND type =[c] %@",eventCompanyTicker, eventType];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    Event *existingEvent = nil;
+    existingEvent  = [[dataStoreContext executeFetchRequest:eventFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting an event from data store, for it's date, failed: %@",error.description);
+    }
+    
+    // If the event exists, return it's date
+    if (existingEvent) {
+        
+        return existingEvent.date;
+    }
+    
+    // If the event does not exist, return nil, indicating an error has occurred and log the error.
+    else {
+        
+        NSLog(@"ERROR: Could not return date for event ticker %@ and event type %@ because the event was not found in the data store", eventCompanyTicker,eventType);
+        return nil;
+    }
+}
+
 #pragma mark - Methods to call Company Data Source APIs
 
 // Get a list of all companies and their tickers. The logic here takes care of determining from which point
