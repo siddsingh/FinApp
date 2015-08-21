@@ -33,8 +33,6 @@
 // User's calendar events and reminders data store
 @property (strong, nonatomic) EKEventStore *userEventStore;
 
-// Shows if user has granted access to the app for his/her event store.
-@property (nonatomic) BOOL isAccessToUserEventStoreGranted;
 
 @end
 
@@ -107,9 +105,6 @@
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    // Set the user provided access to the events store as false
-    self.isAccessToUserEventStoreGranted = NO;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -358,18 +353,11 @@
         FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
         NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
         
-        // If the user has already granted access, create the reminder
-        if (self.isAccessToUserEventStoreGranted) {
-            
-            [self processReminderForEventInCell:cell];
-        }
-        // Else present the user with the authorization request
+        
+        // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
         // TO DO: Decide if you want to close the slid out action, before the user has provided
         // access. Currently it's weird where the action closes and then the access popup is shown.
-        else {
-            
-            [self requestAccessToUserEventStoreFromCell:cell];
-        }
+        [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
         
         // Slide the row back over the action.
         // TO DO: See if you can animate the slide back.
@@ -587,9 +575,10 @@
     return _userEventStore;
 }
 
-// Present the user with an access request to their reminders if it's not already been done. This method takes care
-// showing the appropriate warning message if the request has been denied previously.
-- (void)requestAccessToUserEventStoreFromCell:(FAEventsTableViewCell *)eventCell {
+// Present the user with an access request to their reminders if it's not already been done. Once that is done
+// or access is already provided, create the reminder.
+// TO DO: Change the name FinApp to whatever the real name will be.
+- (void)requestAccessToUserEventStoreAndProcessReminderFromCell:(FAEventsTableViewCell *)eventCell {
     
     // Get the current access status to the user's event store for event type reminder.
     EKAuthorizationStatus accessStatus = [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder];
@@ -601,30 +590,32 @@
         // If the user hasn't provided access, show an appropriate error message.
         case EKAuthorizationStatusDenied:
         case EKAuthorizationStatusRestricted: {
-            self.isAccessToUserEventStoreGranted = NO;
             [self sendUserMessageCreatedNotificationWithMessage:@"Enable access to your Reminders under Settings>Finapp and try again!"];
             break;
         }
             
-        // If the user has already provided access, set the appropriate access status for reference
-        // and do nothing.
+        // If the user has already provided access, create the reminder.
         case EKAuthorizationStatusAuthorized: {
-            self.isAccessToUserEventStoreGranted= YES;
+            [self processReminderForEventInCell:eventCell];
             break;
         }
             
         // If the app hasn't requested access or the user hasn't decided yet, present the user with the
-        // authorization dialog.
+        // authorization dialog. If the user approves create the reminder. If user rejects, show error message.
         case EKAuthorizationStatusNotDetermined: {
             
-            // create a weak reference to the controller, since you want to update the access status, in
+            // create a weak reference to the controller, since you want to create the reminder, in
             // a non main thread where the authorization dialog is presented.
             __weak FAEventsViewController *weakPtrToSelf = self;
             [self.userEventStore requestAccessToEntityType:EKEntityTypeReminder
                                             completion:^(BOOL grantedByUser, NSError *error) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    weakPtrToSelf.isAccessToUserEventStoreGranted = grantedByUser;
-                                                    [weakPtrToSelf processReminderForEventInCell:eventCell];
+                                                    if (grantedByUser) {
+                                                        [weakPtrToSelf processReminderForEventInCell:eventCell];
+                                                    } else {
+                                                        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to Create Reminder. Try again after enabling Reminders under Settings>Finapp!"];
+                                                    }
+                                                    
                                                 });
                                             }];
             break;
@@ -643,8 +634,48 @@
         
         // Create the reminder
         
+  /*      // Set its title to the reminder text.
+        EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
+        eventReminder.title = @"Test FinApp Reminder";
+        
+        // For now, create the reminder in the default calendar for new reminders as specified in settings
+        eventReminder.calendar = [self.userEventStore defaultCalendarForNewReminders];
+        
+        // Get the date for the event represented by the cell */
+        
+        
+        NSDateComponents *oneDayComponents = [[NSDateComponents alloc] init];
+        oneDayComponents.day = -1;
+        
+        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        NSDate *yesterday = [gregorianCalendar dateByAddingComponents:oneDayComponents toDate:[NSDate date] options:0];
+        NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+        [eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
+        NSString *yesterdayString = [eventDateFormatter stringFromDate:yesterday];
+        NSLog(@"Yesterday String is Date:%@",yesterdayString);
+        
+       /* NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+        NSDateComponents *tomorrowAt4PM = [gregorianCalendar components:unitFlags fromDate:tomorrow];
+        tomorrowAt4PM.hour = 4;
+        tomorrowAt4PM.minute = 0;
+        tomorrowAt4PM.second = 0;
+        
+        reminder.dueDateComponents = tomorrowAt4PM;
+        
+        // Save and commit.
+        NSError *error = nil;
+        BOOL success = [self.eventStore saveReminder:reminder commit:YES error:&error];
+        if (!success) {
+            // Handle error.
+        }
+        
+        // Give user some feedback!
+        NSString *message = (success) ? @"Reminder was successfully added!" : @"Failed to add reminder!";
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
+        [alertView show];
+        
         // Add to the action data store with status created
-        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:eventCell.companyTicker.text eventType:eventCell.eventDescription.text];
+        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:eventCell.companyTicker.text eventType:eventCell.eventDescription.text]; */
     }
     // If estimated add to action data store for later processing
     else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
