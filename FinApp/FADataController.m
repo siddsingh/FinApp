@@ -1005,6 +1005,36 @@
     }
 }
 
+// Check to see if an Action associated with an event is present, in the Action Data Store, given the Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+// TO DO: Refactor here to add multiple types of actions.
+- (BOOL)doesReminderActionExistForEventWithTicker:(NSString *)eventCompanyTicker eventType:(NSString *)associatedEventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL exists = NO;
+    
+    // Check to see if the action exists by doing a case insensitive query on Action Type, Event Company Ticker and Event Type.
+    NSFetchRequest *actionFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *actionEntity = [NSEntityDescription entityForName:@"Action" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *actionPredicate = [NSPredicate predicateWithFormat:@" type =[c] %@ parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",@"OSReminder", eventCompanyTicker, associatedEventType];
+    [actionFetchRequest setEntity:actionEntity];
+    [actionFetchRequest setPredicate:actionPredicate];
+    NSError *error;
+    NSArray *fetchedActions = [dataStoreContext executeFetchRequest:actionFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting an action from data store, to check if it exists for an associated event, failed: %@",error.description);
+    }
+    if (fetchedActions.count > 1) {
+        NSLog(@"MEDIUM_WARNING: Found more than 1 action of the same type for a unique event in the Action Data Store");
+        exists = YES;
+    }
+    if (fetchedActions.count == 1) {
+        exists = YES;
+    }
+    
+    return exists;
+}
+
 #pragma mark - Notifications
 
 // Send a notification that the list of events has changed (updated)
