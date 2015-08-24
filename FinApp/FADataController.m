@@ -1016,7 +1016,7 @@
     NSFetchRequest *actionFetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *actionEntity = [NSEntityDescription entityForName:@"Action" inManagedObjectContext:dataStoreContext];
     // Case and Diacractic Insensitive Filtering
-    NSPredicate *actionPredicate = [NSPredicate predicateWithFormat:@" type =[c] %@ parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",@"OSReminder", eventCompanyTicker, associatedEventType];
+    NSPredicate *actionPredicate = [NSPredicate predicateWithFormat:@" type =[c] %@ AND parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",@"OSReminder", eventCompanyTicker, associatedEventType];
     [actionFetchRequest setEntity:actionEntity];
     [actionFetchRequest setPredicate:actionPredicate];
     NSError *error;
