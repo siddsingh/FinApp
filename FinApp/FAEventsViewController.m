@@ -651,73 +651,81 @@
 }
 
 // Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
-// TO DO: How do you prevent duplicate reminders ?
 - (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell {
     
-    // Check to see if the event represented by the cell is estimated or confirmed ?
+    NSString *cellEventType = eventCell.eventDescription.text;
+    NSString *cellCompanyTicker = eventCell.companyTicker.text;
+    NSString *cellEventDateText = eventCell.eventDate.text;
     
+    // Check to see if the event represented by the cell is estimated or confirmed ?
     // If confirmed create and save to action data store
     if ([eventCell.eventCertainty.text isEqualToString:@"Confirmed"]) {
         
         NSLog(@"About to create a reminder, since this event is confirmed");
         
-        // Create the reminder
-        
-        // Set its title to the reminder text.
-        EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
-        NSString *reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", eventCell.companyTicker.text,eventCell.eventDescription.text,eventCell.eventDate.text];
-        eventReminder.title = reminderText;
-        NSLog(@"The Reminder title is: %@",reminderText);
-        
-        // For now, create the reminder in the default calendar for new reminders as specified in settings
-        eventReminder.calendar = [self.userEventStore defaultCalendarForNewReminders];
-        
-        // Get the date for the event represented by the cell
-        NSDate *eventDate = [self.primaryDataController getDateForEventOfType:eventCell.eventDescription.text eventTicker:eventCell.companyTicker.text];
-        
-        // Subtract a day as we want to remind the user a day prior and then set the reminder time to noon of the previous day
-        // and set reminder due date to that.
-        NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-        NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-        differenceDayComponents.day = -1;
-        NSDate *reminderDateTime = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:eventDate options:0];
-        NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-        NSDateComponents *reminderDateTimeComponents = [aGregorianCalendar components:unitFlags fromDate:reminderDateTime];
-        reminderDateTimeComponents.hour = 12;
-        reminderDateTimeComponents.minute = 0;
-        reminderDateTimeComponents.second = 0;
-        eventReminder.dueDateComponents = reminderDateTimeComponents;
-        
-        // TO DO: Delete later. For debugging purposes, converting reminder due date components to date, time
-        NSDate *debugEventDate = [aGregorianCalendar dateFromComponents:reminderDateTimeComponents];
-        NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-        [eventDateFormatter setDateFormat:@"yyyy-MM-dd 'at' HH:mm:ss"];
-        NSString *eventDueDateDebugString = [eventDateFormatter stringFromDate:debugEventDate];
-        NSLog(@"Event Reminder Date Time is:%@",eventDueDateDebugString);
-        
-        // Save the Reminder and show user the appropriate message
-        NSError *error = nil;
-        BOOL success = [self.userEventStore saveReminder:eventReminder commit:YES error:&error];
+        // Create the reminder and show user the appropriate message
+        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker andDateText:cellEventDateText];
         if (success) {
-            
             [self sendUserMessageCreatedNotificationWithMessage:@"Rest Easy! You'll be reminded of this event a day before."];
         } else {
-            
             [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
         }
         
         // Add action to the action data store with status created
-        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:eventCell.companyTicker.text eventType:eventCell.eventDescription.text];
+        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
     }
-    
     // If estimated add to action data store for later processing
     else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
         
         NSLog(@"About to queue a reminder for later creation, since this event is not confirmed");
         
         // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
-        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:eventCell.companyTicker.text eventType:eventCell.eventDescription.text];
+        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
     }
+}
+
+// Actually create the reminder in the user's default calendar and return success or failure depending on the outcome.
+- (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker andDateText:(NSString *)eventDateText  {
+    
+    BOOL creationSuccess = NO;
+    
+    // Set title of the reminder to the reminder text.
+    EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
+    NSString *reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
+    eventReminder.title = reminderText;
+    NSLog(@"The Reminder title is: %@",reminderText);
+    
+    // For now, create the reminder in the default calendar for new reminders as specified in settings
+    eventReminder.calendar = [self.userEventStore defaultCalendarForNewReminders];
+    
+    // Get the date for the event represented by the cell
+    NSDate *eventDate = [self.primaryDataController getDateForEventOfType:eventType eventTicker:companyTicker];
+    
+    // Subtract a day as we want to remind the user a day prior and then set the reminder time to noon of the previous day
+    // and set reminder due date to that.
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -1;
+    NSDate *reminderDateTime = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:eventDate options:0];
+    NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+    NSDateComponents *reminderDateTimeComponents = [aGregorianCalendar components:unitFlags fromDate:reminderDateTime];
+    reminderDateTimeComponents.hour = 12;
+    reminderDateTimeComponents.minute = 0;
+    reminderDateTimeComponents.second = 0;
+    eventReminder.dueDateComponents = reminderDateTimeComponents;
+    
+    // TO DO: Delete later. For debugging purposes, converting reminder due date components to date, time
+    NSDate *debugEventDate = [aGregorianCalendar dateFromComponents:reminderDateTimeComponents];
+    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+    [eventDateFormatter setDateFormat:@"yyyy-MM-dd 'at' HH:mm:ss"];
+    NSString *eventDueDateDebugString = [eventDateFormatter stringFromDate:debugEventDate];
+    NSLog(@"Event Reminder Date Time is:%@",eventDueDateDebugString);
+    
+    // Save the Reminder and return success or failure
+    NSError *error = nil;
+    creationSuccess = [self.userEventStore saveReminder:eventReminder commit:YES error:&error];
+    
+    return creationSuccess;
 }
 
 /*
