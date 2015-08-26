@@ -25,6 +25,9 @@
 // Send a notification that the list of events has changed (updated)
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
 
+// Send a notification that a queued reminder associated with an event should be created, since the event date has been confirmed. Send an array of information {eventType,companyTicker,eventDateText} that will be needed by receiver to complete this action.
+- (void)sendCreateReminderNotificationWithEventInformation:(NSArray *)eventInfo;
+
 @end
 
 @implementation FADataController
@@ -639,8 +642,31 @@
         }
         NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
         
-        // Insert events data into the data store
+        // Upsert events data into the data store
         [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
+        
+        // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
+        // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
+        if ([certaintyStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:ticker eventType:eventType]) {
+            
+            // Create array that contains {eventType,companyTicker,eventDateText} to pass on to the notification
+            NSString *notifEventType = [NSString stringWithFormat: @"%@", eventType];
+            NSString *notifCompanyTicker = [NSString stringWithFormat: @"%@", ticker];
+            // Format the eventDateText t include the timing details
+            // Show the event date
+            NSDateFormatter *notifEventDateFormatter = [[NSDateFormatter alloc] init];
+            //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
+            [notifEventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
+            NSString *notifEventDateTxt = [eventDateFormatter stringFromDate:eventDate];
+            NSString *notifEventTimeString = eventDetails;
+            // Append related details (timing information) to the event date if it's known
+            if (![notifEventTimeString isEqualToString:@"Unknown"]) {
+                notifEventDateTxt = [NSString stringWithFormat:@"%@(%@)",notifEventDateTxt,notifEventTimeString];
+            }
+            
+            // Fire the notification, passing on the necessary information
+            [self sendCreateReminderNotificationWithEventInformation:@[notifEventType, notifCompanyTicker, notifEventDateTxt]];
+        }
     }
 }
 
@@ -1035,6 +1061,36 @@
     return exists;
 }
 
+// Check to see if a Queued Action associated with an event is present, in the Action Data Store, given the Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+// TO DO: Refactor this and the method above into one.
+- (BOOL)doesQueuedReminderActionExistForEventWithTicker:(NSString *)eventCompanyTicker eventType:(NSString *)associatedEventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL exists = NO;
+    
+    // Check to see if the action exists by doing a case insensitive query on Action Type, Action Status, Event Company Ticker and Event Type.
+    NSFetchRequest *actionFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *actionEntity = [NSEntityDescription entityForName:@"Action" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *actionPredicate = [NSPredicate predicateWithFormat:@" type =[c] %@ AND status =[c] %@ AND parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@", @"OSReminder", @"Queued", eventCompanyTicker, associatedEventType];
+    [actionFetchRequest setEntity:actionEntity];
+    [actionFetchRequest setPredicate:actionPredicate];
+    NSError *error;
+    NSArray *fetchedActions = [dataStoreContext executeFetchRequest:actionFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting a queued action from data store, to check if it exists for an associated event, failed: %@",error.description);
+    }
+    if (fetchedActions.count > 1) {
+        NSLog(@"MEDIUM_WARNING: Found more than 1 queued action of the same type for a unique event in the Action Data Store");
+        exists = YES;
+    }
+    if (fetchedActions.count == 1) {
+        exists = YES;
+    }
+    
+    return exists;
+}
+
 #pragma mark - Notifications
 
 // Send a notification that the list of events has changed (updated)
@@ -1048,6 +1104,13 @@
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
     NSLog(@"NOTIFICATION FIRED: With User Message: %@",msgContents);
+}
+
+// Send a notification that a queued reminder associated with an event should be created, since the event date has been confirmed. Send an array of information {eventType,companyTicker,eventDateText} that will be needed by receiver to complete this action.
+- (void)sendCreateReminderNotificationWithEventInformation:(NSArray *)eventInfo {
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"CreateQueuedReminder" object:eventInfo];
+    NSLog(@"NOTIFICATION FIRED FOR CREATING QUEUED REMINDER: For eventtype:%@ and eventticker:%@ and eventDateText:%@",[eventInfo objectAtIndex:0],[eventInfo objectAtIndex:1],[eventInfo objectAtIndex:2]);
 }
 
 @end
