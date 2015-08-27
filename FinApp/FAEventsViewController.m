@@ -77,6 +77,12 @@
                                              selector:@selector(userMessageGenerated:)
                                                  name:@"UserMessageCreated" object:nil];
     
+    // Register a listener for queued reminders to be created now that they have been confirmed
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(createQueuedReminder:)
+                                                 name:@"CreateQueuedReminder" object:nil];
+    
+    
     // Seed the company data, the very first time, to get the user started.
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
         [self.primaryDataController performCompanySeedSyncLocally];
@@ -574,7 +580,7 @@
 }
 
 // Show the error message for a temporary period and then fade it if a user message has been generated
-// TO DO: Currently set to 5 seconds. Change as you see fit.
+// TO DO: Currently set to 10 seconds. Change as you see fit.
 - (void)userMessageGenerated:(NSNotification *)notification {
     
     // Make sure the message bar is empty and visible to the user
@@ -583,14 +589,34 @@
     
      NSLog(@"NOTIFICATION ABOUT TO BE SHOWN: With User Message: %@",[notification object]);
     
-    // Show the message that's generated for a period of 5 seconds
-    [UIView animateWithDuration:5 animations:^{
+    // Show the message that's generated for a period of 10 seconds
+    [UIView animateWithDuration:10 animations:^{
         self.messageBar.text = [notification object];
         self.messageBar.alpha = 0;
     }];
     
     NSLog(@"*******************************************User Message Generated listener fired to show error message");
 }
+
+// Take a queued reminder and create it in the user's OS Reminders now that the event has been confirmed.
+// The notification object contains an array of strings representing {eventType,companyTicker,eventDateText}
+- (void)createQueuedReminder:(NSNotification *)notification {
+    
+    NSArray *infoArray = [notification object];
+    
+    // Create the reminder
+    BOOL success = [self createReminderForEventOfType:[infoArray objectAtIndex:0] withTicker:[infoArray objectAtIndex:1] andDateText:[infoArray objectAtIndex:2]];
+    
+    // If successful, update the status of the event in the data store to be "Created" from "Queued"
+    if (success) {
+        [self.primaryDataController updateActionWithStatus:@"Created" type:@"OSReminder" eventTicker:[infoArray objectAtIndex:1] eventType:[infoArray objectAtIndex:0]];
+    }
+    // Else log an error message
+    else {
+        NSLog(@"ERROR:Creating a queued reminder for ticker:%@ and event type:%@ failed", [infoArray objectAtIndex:1], [infoArray objectAtIndex:0]);
+    }
+}
+
 
 #pragma mark - Calendar and Event Related
 
@@ -640,9 +666,8 @@
                                                     if (grantedByUser) {
                                                         [weakPtrToSelf processReminderForEventInCell:eventCell];
                                                     } else {
-                                                        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to Create Reminder. Try again after enabling Reminders under Settings>Finapp!"];
+                                                        [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Unable to Create Reminder. Try again after enabling Reminders under Settings>Finapp!"];
                                                     }
-                                                    
                                                 });
                                             }];
             break;
@@ -667,12 +692,11 @@
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker andDateText:cellEventDateText];
         if (success) {
             [self sendUserMessageCreatedNotificationWithMessage:@"Rest Easy! You'll be reminded of this event a day before."];
+            // Add action to the action data store with status created
+            [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
         } else {
             [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
         }
-        
-        // Add action to the action data store with status created
-        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
     }
     // If estimated add to action data store for later processing
     else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
