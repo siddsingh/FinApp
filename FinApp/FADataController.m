@@ -652,7 +652,7 @@
             // Create array that contains {eventType,companyTicker,eventDateText} to pass on to the notification
             NSString *notifEventType = [NSString stringWithFormat: @"%@", eventType];
             NSString *notifCompanyTicker = [NSString stringWithFormat: @"%@", ticker];
-            // Format the eventDateText t include the timing details
+            // Format the eventDateText to include the timing details
             // Show the event date
             NSDateFormatter *notifEventDateFormatter = [[NSDateFormatter alloc] init];
             //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
@@ -666,6 +666,13 @@
             
             // Fire the notification, passing on the necessary information
             [self sendCreateReminderNotificationWithEventInformation:@[notifEventType, notifCompanyTicker, notifEventDateTxt]];
+        }
+        
+        // If this event just went from confirmed to estimated and there is a created reminder that exists for it, set it's status to
+        // Queued to indicate that a new rimder needs to be created for the next earnings call, when it gets confirmed.
+        if ([certaintyStr isEqualToString:@"Estimated"]&&[self doesReminderActionExistForEventWithTicker:ticker eventType:eventType]) {
+            
+            [self updateActionWithStatus:@"Queued" type:@"OSReminder" eventTicker:ticker eventType:eventType];
         }
     }
 }
