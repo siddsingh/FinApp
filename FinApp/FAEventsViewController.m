@@ -67,6 +67,17 @@
     // Ensure that the remote fetch spinner is not animating thus hidden
     [self.remoteFetchSpinner stopAnimating];
     
+    // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
+    // Get the date for the event represented by the cell
+   /* NSDate *today = [NSDate date];
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -1;
+    NSDate *yesterday = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:today options:0];
+   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"CPB"];
+    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
+    
+    
     // Register a listener for changes to events stored locally
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(eventStoreChanged:)
@@ -256,6 +267,7 @@
     // If no search filter
     else {
         eventAtIndex = [self.eventResultsController objectAtIndexPath:indexPath];
+        NSLog(@"Before cell is set to display when values are being fetched from results controller, company ticker is:%@ and company confirmed is:%@",eventAtIndex.listedCompany.ticker,eventAtIndex.certainty);
     }
     
     // Depending the type of search filter that has been applied, Show the matching companies with events or companies
@@ -312,6 +324,8 @@
         
         // Show the certainty of the event
         [[cell eventCertainty] setText:eventAtIndex.certainty];
+        
+        NSLog(@"After cell is set to display, company ticker is:%@ and company confirmed is:%@",eventAtIndex.listedCompany.ticker,eventAtIndex.certainty);
     } 
     
     return cell;
@@ -572,9 +586,15 @@
 
 #pragma mark - Change Listener Responses
 
-// Refresh the messages table when the message store for the table has changed
+// Refetch the events and refresh the events table when the events store for the table has changed
 - (void)eventStoreChanged:(NSNotification *)notification {
     
+    // Create a new DataController so that this thread has its own MOC
+    // TO DO: Understand at what point does a new thread get spawned off. Seems to me the new thread is being created for
+    // reloading the table. SHouldn't I be creating the new MOC in that thread as opposed to here ? Maybe it doesn't matter
+    // as long as I am not sharing MOCs across threads ? The general rule with Core Data is one Managed Object Context per thread, and one thread per MOC
+    FADataController *secondaryDataController = [[FADataController alloc] init];
+    self.eventResultsController = [secondaryDataController getAllEvents];
     [self.eventsListTable reloadData];
     NSLog(@"*******************************************Event Store Changed listener fired to refresh table");
 }

@@ -141,6 +141,8 @@
         existingEvent.relatedDetails = eventRelatedDetails;
         existingEvent.relatedDate = eventRelatedDate;
         existingEvent.certainty = eventCertainty;
+        
+        NSLog(@"Updating company ticker is:%@ and company confirmed is:%@",existingEvent.listedCompany.ticker,existingEvent.certainty);
     }
     
     // Perform the insert
@@ -168,6 +170,10 @@
     NSError *error;
     if (![self.resultsController performFetch:&error]) {
         NSLog(@"ERROR: Getting all events from data store failed: %@",error.description);
+    }
+    // TO DO: Delete. Currently for debugging only
+    else {
+        NSLog(@"Fetched all events at the db level");
     }
     
     return self.resultsController;
