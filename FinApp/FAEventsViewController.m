@@ -269,18 +269,24 @@
         
         // Show the event date
         NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+        // TO DO: For later different formatting styles.
         //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
-        [eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
+        //[eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
+        [eventDateFormatter setDateFormat:@"EEEE MMMM dd yyyy"];
         NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
         NSString *eventTimeString = eventAtIndex.relatedDetails;
         // Append related details (timing information) to the event date if it's known
         if (![eventTimeString isEqualToString:@"Unknown"]) {
-            eventDateString = [NSString stringWithFormat:@"%@(%@)",eventDateString,eventTimeString];
+            eventDateString = [NSString stringWithFormat:@"%@ %@ ",eventDateString,eventTimeString];
         }
         [[cell eventDate] setText:eventDateString];
         
-        // Show the certainty of the event
-        [[cell eventCertainty] setText:eventAtIndex.certainty];
+        // Show the certainty of the event if it's not Confirmed, else make it blank
+        if (![eventAtIndex.certainty isEqualToString:@"Confirmed"]) {
+            [[cell eventCertainty] setText:eventAtIndex.certainty];
+        } else {
+            [[cell eventCertainty] setText:[NSString stringWithFormat:@" "]];
+        }
         
         NSLog(@"After cell is set to display, company ticker is:%@ and company confirmed is:%@",eventAtIndex.listedCompany.ticker,eventAtIndex.certainty);
     } 
