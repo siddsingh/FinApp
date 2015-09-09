@@ -24,11 +24,14 @@
 // Validate search text entered
 - (BOOL) searchTextValid:(NSString *)text;
 
-// Get events for company given a ticker. Typically called in a background thread
+// Get events for company given a ticker. Typically called in a background thread.
 - (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
 
 // Send a notification that the list of events has changed (updated)
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
+
+// Return a color scheme from darker to lighter based on rwo number with darker on top. Currently returning a dark gray scheme.
+- (UIColor *)getColorForIndexPath:(NSIndexPath *)indexPath;
 
 // User's calendar events and reminders data store
 @property (strong, nonatomic) EKEventStore *userEventStore;
@@ -46,10 +49,11 @@
     // Make the message bar fully transparent so that it's invisible to the user
     self.messageBar.alpha = 0.0;
     
+    
     // Change the color of the events search bar placeholder text and text entered to be white.
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
-    [eventSearchBarInputFld setValue:[UIColor darkGrayColor] forKeyPath:@"_placeholderLabel.textColor"];
-    eventSearchBarInputFld.textColor = [UIColor darkGrayColor];
+    [eventSearchBarInputFld setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+    eventSearchBarInputFld.textColor = [UIColor whiteColor];
     
     // Do the same for the Magnifying glass icon in the search bar.
     UIImageView *magGlassIcon = (UIImageView *)eventSearchBarInputFld.leftView;
@@ -191,56 +195,9 @@
     // Reset color for Event description to dark text, in case it's been set to blue for a "Get Events" display
     cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     
-    // Set the company ticker and name labels to one of 8 colors randomly
-    int randomColor = arc4random_uniform(8);
-    
-    // Purple
-    if (randomColor == 0) {
-        
-        cell.companyTicker.backgroundColor = [UIColor colorWithRed:175.0f/255.0f green:94.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
-    }
-    
-    // Orangish Pink
-    if (randomColor == 1) {
-        
-        cell.companyTicker.backgroundColor = [UIColor colorWithRed:233.0f/255.0f green:141.0f/255.0f blue:112.0f/255.0f alpha:1.0f];
-    }
-    
-    // Bright Blue
-    if (randomColor == 2) {
-        
-        cell.companyTicker.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-    }
-    
-    // Bright Pink
-    if (randomColor == 3) {
-        
-        cell.companyTicker.backgroundColor = [UIColor colorWithRed:224.0f/255.0f green:46.0f/255.0f blue:134.0f/255.0f alpha:1.0f];
-    }
-    
-    // Light Purple
-    if (randomColor == 4) {
-        
-        cell.companyTicker.backgroundColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
-    }
-    
-    // Carrotish Orange
-    if (randomColor == 5) {
-        
-        cell.companyTicker.backgroundColor = [UIColor colorWithRed:222.0f/255.0f green:105.0f/255.0f blue:38.0f/255.0f alpha:1.0f];
-    }
-    
-    // Yellow
-    if (randomColor == 6) {
-        
-        cell.companyTicker.backgroundColor = [UIColor colorWithRed:236.0f/255.0f green:186.0f/255.0f blue:38.0f/255.0f alpha:1.0f];
-    }
-    
-    // Another Blue
-    if (randomColor == 7) {
-        
-        cell.companyTicker.backgroundColor = [UIColor colorWithRed:40.0f/255.0f green:114.0f/255.0f blue:81.0f/255.0f alpha:1.0f];
-    }
+    // Set the compnay ticker background color to a darker to lighter (darker at the top) based on row number.
+    // Currently supporting a dark gray scheme
+    cell.companyTicker.backgroundColor = [self getColorForIndexPath:indexPath];
     
     // Get event or company  to display
     Event *eventAtIndex;
@@ -772,6 +729,56 @@
     return creationSuccess;
 }
 
+#pragma mark - Helper Methods
+
+// Return a color scheme from darker to lighter based on rwo number with darker on top. Currently returning a dark gray scheme.
+- (UIColor *)getColorForIndexPath:(NSIndexPath *)indexPath
+{
+    
+    // Set returned color to the darkest gray to start with
+    UIColor *colorToReturn = [UIColor colorWithRed:45.0f/255.0f green:45.0f/255.0f blue:45.0f/255.0f alpha:1.0f];
+    
+    // Get row number, it's 0 based
+    long rowNumber = indexPath.row;
+    
+    // For the first row go with the darkest color and then make it gradually lighter upto 7rows and then go with the lightest for all the rest
+    if (rowNumber == 0) {
+        
+        colorToReturn = [UIColor colorWithRed:45.0f/255.0f green:45.0f/255.0f blue:45.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 1) {
+        
+        colorToReturn = [UIColor colorWithRed:61.0f/255.0f green:61.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 2) {
+        
+        colorToReturn = [UIColor colorWithRed:77.0f/255.0f green:76.0f/255.0f blue:77.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 3) {
+        
+        colorToReturn = [UIColor colorWithRed:108.0f/255.0f green:107.0f/255.0f blue:108.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 4) {
+        
+        colorToReturn = [UIColor colorWithRed:137.0f/255.0f green:135.0f/255.0f blue:136.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 5) {
+        
+        colorToReturn = [UIColor colorWithRed:157.0f/255.0f green:154.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 6) {
+        
+        colorToReturn = [UIColor colorWithRed:189.0f/255.0f green:185.0f/255.0f blue:187.0f/255.0f alpha:1.0f];
+        
+    } else {
+        
+        colorToReturn = [UIColor colorWithRed:189.0f/255.0f green:185.0f/255.0f blue:187.0f/255.0f alpha:1.0f];
+        
+    }
+    
+    return colorToReturn;
+}
+
 /*
 #pragma mark - Navigation
 
@@ -780,6 +787,62 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
 }
+
+#pragma mark - Code to use later
+ 
+// Set bright colors randomly if needed in the future
+ 
+ // Set the company ticker and name labels to one of 8 colors randomly
+ int randomColor = arc4random_uniform(8);
+ 
+ // Purple
+ if (randomColor == 0) {
+ 
+ cell.companyTicker.backgroundColor = [UIColor colorWithRed:175.0f/255.0f green:94.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
+ }
+ 
+ // Orangish Pink
+ if (randomColor == 1) {
+ 
+ cell.companyTicker.backgroundColor = [UIColor colorWithRed:233.0f/255.0f green:141.0f/255.0f blue:112.0f/255.0f alpha:1.0f];
+ }
+ 
+ // Bright Blue
+ if (randomColor == 2) {
+ 
+ cell.companyTicker.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+ }
+ 
+ // Bright Pink
+ if (randomColor == 3) {
+ 
+ cell.companyTicker.backgroundColor = [UIColor colorWithRed:224.0f/255.0f green:46.0f/255.0f blue:134.0f/255.0f alpha:1.0f];
+ }
+ 
+ // Light Purple
+ if (randomColor == 4) {
+ 
+ cell.companyTicker.backgroundColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+ }
+ 
+ // Carrotish Orange
+ if (randomColor == 5) {
+ 
+ cell.companyTicker.backgroundColor = [UIColor colorWithRed:222.0f/255.0f green:105.0f/255.0f blue:38.0f/255.0f alpha:1.0f];
+ }
+ 
+ // Yellow
+ if (randomColor == 6) {
+ 
+ cell.companyTicker.backgroundColor = [UIColor colorWithRed:236.0f/255.0f green:186.0f/255.0f blue:38.0f/255.0f alpha:1.0f];
+ }
+ 
+ // Another Blue
+ if (randomColor == 7) {
+ 
+ cell.companyTicker.backgroundColor = [UIColor colorWithRed:40.0f/255.0f green:114.0f/255.0f blue:81.0f/255.0f alpha:1.0f];
+ }
+
 */
 
 @end
