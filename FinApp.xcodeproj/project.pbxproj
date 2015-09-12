@@ -11,7 +11,6 @@
 		9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */; };
 		9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */; };
 		9E602D2619E655DF00ACDEC6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9E602D2419E655DF00ACDEC6 /* Main.storyboard */; };
-		9E602D2819E655DF00ACDEC6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9E602D2719E655DF00ACDEC6 /* Images.xcassets */; };
 		9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */; };
 		9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D3619E655DF00ACDEC6 /* FinAppTests.m */; };
 		9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */; };
@@ -23,6 +22,7 @@
 		9E6D807B1AAFDF5800E1F2D3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		9E7586461AF44679009DD7B2 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E7586451AF44679009DD7B2 /* User.m */; };
 		9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE51B82CEB9008A0370 /* Action.m */; };
+		9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,14 +36,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9E602D1419E655DF00ACDEC6 /* FinApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E602D1419E655DF00ACDEC6 /* Knotifi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Knotifi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D1819E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E602D1919E655DF00ACDEC6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9E602D1B19E655DF00ACDEC6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9E602D1F19E655DF00ACDEC6 /* FinApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FinApp.xcdatamodel; sourceTree = "<group>"; };
 		9E602D2519E655DF00ACDEC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		9E602D2719E655DF00ACDEC6 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		9E602D2A19E655DF00ACDEC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D3519E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -65,6 +64,7 @@
 		9E7586451AF44679009DD7B2 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		9EBD8EE41B82CEB9008A0370 /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
 		9EBD8EE51B82CEB9008A0370 /* Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Action.m; sourceTree = "<group>"; };
+		9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = BaseVisualAssets.xcassets; path = ../BaseVisualAssets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +99,7 @@
 		9E602D1519E655DF00ACDEC6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9E602D1419E655DF00ACDEC6 /* FinApp.app */,
+				9E602D1419E655DF00ACDEC6 /* Knotifi.app */,
 				9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */,
 			);
 			name = Products;
@@ -129,7 +129,6 @@
 				9E6D806E1A958C9D00E1F2D3 /* Event.h */,
 				9E6D806F1A958C9D00E1F2D3 /* Event.m */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
-				9E602D2719E655DF00ACDEC6 /* Images.xcassets */,
 				9E602D1719E655DF00ACDEC6 /* Supporting Files */,
 			);
 			path = FinApp;
@@ -138,6 +137,7 @@
 		9E602D1719E655DF00ACDEC6 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */,
 				9E602D1819E655DF00ACDEC6 /* Info.plist */,
 				9E602D1919E655DF00ACDEC6 /* main.m */,
 			);
@@ -164,9 +164,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9E602D1319E655DF00ACDEC6 /* FinApp */ = {
+		9E602D1319E655DF00ACDEC6 /* Knotifi */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9E602D3A19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "FinApp" */;
+			buildConfigurationList = 9E602D3A19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "Knotifi" */;
 			buildPhases = (
 				9E602D1019E655DF00ACDEC6 /* Sources */,
 				9E602D1119E655DF00ACDEC6 /* Frameworks */,
@@ -176,14 +176,14 @@
 			);
 			dependencies = (
 			);
-			name = FinApp;
+			name = Knotifi;
 			productName = FinApp;
-			productReference = 9E602D1419E655DF00ACDEC6 /* FinApp.app */;
+			productReference = 9E602D1419E655DF00ACDEC6 /* Knotifi.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9E602D2F19E655DF00ACDEC6 /* FinAppTests */ = {
+		9E602D2F19E655DF00ACDEC6 /* KnotifiTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9E602D3D19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "FinAppTests" */;
+			buildConfigurationList = 9E602D3D19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "KnotifiTests" */;
 			buildPhases = (
 				9E602D2C19E655DF00ACDEC6 /* Sources */,
 				9E602D2D19E655DF00ACDEC6 /* Frameworks */,
@@ -194,7 +194,7 @@
 			dependencies = (
 				9E602D3219E655DF00ACDEC6 /* PBXTargetDependency */,
 			);
-			name = FinAppTests;
+			name = KnotifiTests;
 			productName = FinAppTests;
 			productReference = 9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -231,8 +231,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9E602D1319E655DF00ACDEC6 /* FinApp */,
-				9E602D2F19E655DF00ACDEC6 /* FinAppTests */,
+				9E602D1319E655DF00ACDEC6 /* Knotifi */,
+				9E602D2F19E655DF00ACDEC6 /* KnotifiTests */,
 			);
 		};
 /* End PBXProject section */
@@ -244,7 +244,7 @@
 			files = (
 				9E602D2619E655DF00ACDEC6 /* Main.storyboard in Resources */,
 				9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */,
-				9E602D2819E655DF00ACDEC6 /* Images.xcassets in Resources */,
+				9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,7 +289,7 @@
 /* Begin PBXTargetDependency section */
 		9E602D3219E655DF00ACDEC6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9E602D1319E655DF00ACDEC6 /* FinApp */;
+			target = 9E602D1319E655DF00ACDEC6 /* Knotifi */;
 			targetProxy = 9E602D3119E655DF00ACDEC6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -396,6 +396,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = FinApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -409,6 +410,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = FinApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -464,7 +466,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9E602D3A19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "FinApp" */ = {
+		9E602D3A19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "Knotifi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9E602D3B19E655DF00ACDEC6 /* Debug */,
@@ -473,7 +475,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9E602D3D19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "FinAppTests" */ = {
+		9E602D3D19E655DF00ACDEC6 /* Build configuration list for PBXNativeTarget "KnotifiTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9E602D3E19E655DF00ACDEC6 /* Debug */,

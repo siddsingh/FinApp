@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9E602D1319E655DF00ACDEC6"
-               BuildableName = "FinApp.app"
-               BlueprintName = "FinApp"
+               BuildableName = "Knotifi.app"
+               BlueprintName = "Knotifi"
                ReferencedContainer = "container:FinApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,8 +29,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9E602D2F19E655DF00ACDEC6"
-               BuildableName = "FinAppTests.xctest"
-               BlueprintName = "FinAppTests"
+               BuildableName = "KnotifiTests.xctest"
+               BlueprintName = "KnotifiTests"
                ReferencedContainer = "container:FinApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,8 +47,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9E602D2F19E655DF00ACDEC6"
-               BuildableName = "FinAppTests.xctest"
-               BlueprintName = "FinAppTests"
+               BuildableName = "KnotifiTests.xctest"
+               BlueprintName = "KnotifiTests"
                ReferencedContainer = "container:FinApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -57,8 +57,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9E602D1319E655DF00ACDEC6"
-            BuildableName = "FinApp.app"
-            BlueprintName = "FinApp"
+            BuildableName = "Knotifi.app"
+            BlueprintName = "Knotifi"
             ReferencedContainer = "container:FinApp.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -72,12 +72,13 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9E602D1319E655DF00ACDEC6"
-            BuildableName = "FinApp.app"
-            BlueprintName = "FinApp"
+            BuildableName = "Knotifi.app"
+            BlueprintName = "Knotifi"
             ReferencedContainer = "container:FinApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -96,12 +97,13 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9E602D1319E655DF00ACDEC6"
-            BuildableName = "FinApp.app"
-            BlueprintName = "FinApp"
+            BuildableName = "Knotifi.app"
+            BlueprintName = "Knotifi"
             ReferencedContainer = "container:FinApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

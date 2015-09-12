@@ -602,18 +602,18 @@
         
         
         // Get Details related to the event which is the 10th item
-        // For Quarterly Earnings: 1 (After market closes), 2 (Before market opens), 3 (During market trading) or 4 (Unknown)
+        // For Quarterly Earnings: 1 (After Market Close), 2 (Before Market Open), 3 (During Market Trading) or 4 (Unknown)
         NSLog(@"The timing details related to the event: %@",[parsedEventsList objectAtIndex:9]);
         NSString *eventDetails = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:9]];
         // Convert to human understandable string
         if ([eventDetails isEqualToString:@"1"]) {
-            eventDetails = [NSString stringWithFormat:@"After market closes"];
+            eventDetails = [NSString stringWithFormat:@"After Market Close"];
         }
         if ([eventDetails isEqualToString:@"2"]) {
-            eventDetails = [NSString stringWithFormat:@"Before market opens"];
+            eventDetails = [NSString stringWithFormat:@"Before Market Open"];
         }
         if ([eventDetails isEqualToString:@"3"]) {
-            eventDetails = [NSString stringWithFormat:@"During market trading"];
+            eventDetails = [NSString stringWithFormat:@"During Market Trading"];
         }
         if ([eventDetails isEqualToString:@"4"]) {
             eventDetails = [NSString stringWithFormat:@"Unknown"];

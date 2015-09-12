@@ -272,11 +272,21 @@
         // TO DO: For later different formatting styles.
         //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
         //[eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
-        [eventDateFormatter setDateFormat:@"EEEE MMMM dd yyyy"];
+        [eventDateFormatter setDateFormat:@"EEEE MMMM dd"];
         NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
         NSString *eventTimeString = eventAtIndex.relatedDetails;
         // Append related details (timing information) to the event date if it's known
         if (![eventTimeString isEqualToString:@"Unknown"]) {
+            //Format "After Market Close","Before Market Open", "During Market Trading" to be "After Close" & "Before Open" & "During Open"
+            if ([eventTimeString isEqualToString:@"After Market Close"]) {
+                eventTimeString = [NSString stringWithFormat:@"After Close"];
+            }
+            if ([eventTimeString isEqualToString:@"Before Market Open"]) {
+                eventTimeString = [NSString stringWithFormat:@"Before Open"];
+            }
+            if ([eventTimeString isEqualToString:@"During Market Trading"]) {
+                eventTimeString = [NSString stringWithFormat:@"While Open"];
+            }
             eventDateString = [NSString stringWithFormat:@"%@ %@ ",eventDateString,eventTimeString];
         }
         [[cell eventDate] setText:eventDateString];
@@ -374,7 +384,7 @@
         }];
         
         // Format the Action UI to be the correct color and everything
-        setReminderAction.backgroundColor = [UIColor blueColor];
+        setReminderAction.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
     }
     
     // TO DO: For future, if you want to add an additional action.
