@@ -322,6 +322,14 @@
         NSLog(@"Fetching Event Data for ticker in the background:%@",(cell.companyTicker).text);
         [self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
     }
+    
+    // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
+    if ([self.eventsSearchBar isFirstResponder] && !(self.filterSpecified)) {
+        
+        NSLog(@"SEARCH BAR CONTEXT SHOULD BE CLEARED");
+        [self.eventsSearchBar resignFirstResponder];
+    }
+
 }
 
 // Make Sure the table row, if it should be, is editable
@@ -546,6 +554,18 @@
         [self sendUserMessageCreatedNotificationWithMessage:@"Fetching Companies. If you can't find a Company, retry in a bit."];
     }
     return YES;
+}
+
+// Handle various user touch scenarios:
+// 1) When user touches outside the search bar, if search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context.
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    
+    //When user touches outside the search bar, if search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context.
+    if ([self.eventsSearchBar isFirstResponder] && !(self.filterSpecified)) {
+        NSLog(@"SEARCH BAR CONTEXT SHOULD BE CLEARED");
+        [self.eventsSearchBar resignFirstResponder];
+    }
+    
 }
 
 #pragma mark - Notifications

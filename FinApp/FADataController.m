@@ -485,7 +485,9 @@
     NSString *endpointURL = @"https://www.quandl.com/api/v1/datasets/ZEA";
         
     // Append ticker for the company to the API endpoint URL
-    endpointURL = [NSString stringWithFormat:@"%@/%@.json",endpointURL,companyTicker];
+    // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
+    NSString *formattedCompanyTicker  = [companyTicker stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+    endpointURL = [NSString stringWithFormat:@"%@/%@.json",endpointURL,formattedCompanyTicker];
         
     // Append auth token to the call
     endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
