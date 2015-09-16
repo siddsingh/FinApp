@@ -67,6 +67,8 @@
     // Saves changes in the application's managed object context before the application terminates.
     // [self saveContext];
     
+    NSLog(@"APPLICATION WILL TERMINATE FIRED");
+    
     // Create a new generic Data Controller
     FADataController *genericDataController = [[FADataController alloc] init];
     

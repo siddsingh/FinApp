@@ -355,6 +355,8 @@
             // If there is an error set the company sync status to "FullSyncAttemptedButFailed", meaning a full company sync was attempted but failed before it could complete
             [self upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[NSNumber numberWithInteger:(pageNo-1)]];
             NSLog(@"ERROR: Could not get companies data from the API Data Source. Error description: %@",error.description);
+            // TO DO: Test this, break out of this loop if say the connection timed out.
+            break;
         }
         
         ++pageNo;
