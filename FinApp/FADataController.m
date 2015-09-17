@@ -665,13 +665,22 @@
             // Format the eventDateText to include the timing details
             // Show the event date
             NSDateFormatter *notifEventDateFormatter = [[NSDateFormatter alloc] init];
-            //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
-            [notifEventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
-            NSString *notifEventDateTxt = [eventDateFormatter stringFromDate:eventDate];
+            [notifEventDateFormatter setDateFormat:@"EEEE MMMM dd"];
+            NSString *notifEventDateTxt = [notifEventDateFormatter stringFromDate:eventDate];
             NSString *notifEventTimeString = eventDetails;
             // Append related details (timing information) to the event date if it's known
             if (![notifEventTimeString isEqualToString:@"Unknown"]) {
-                notifEventDateTxt = [NSString stringWithFormat:@"%@(%@)",notifEventDateTxt,notifEventTimeString];
+                //Format "After Market Close","Before Market Open", "During Market Trading" to be "After Close" & "Before Open" & "During Open"
+                if ([notifEventTimeString isEqualToString:@"After Market Close"]) {
+                    notifEventTimeString = [NSString stringWithFormat:@"After Close"];
+                }
+                if ([notifEventTimeString isEqualToString:@"Before Market Open"]) {
+                    notifEventTimeString = [NSString stringWithFormat:@"Before Open"];
+                }
+                if ([notifEventTimeString isEqualToString:@"During Market Trading"]) {
+                    notifEventTimeString = [NSString stringWithFormat:@"While Open"];
+                }
+                notifEventDateTxt = [NSString stringWithFormat:@"%@ %@ ",notifEventDateTxt,notifEventTimeString];
             }
             
             // Fire the notification, passing on the necessary information

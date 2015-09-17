@@ -73,13 +73,13 @@
     
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
     // Get the date for the event represented by the cell
-   /* NSDate *today = [NSDate date];
+/*    NSDate *today = [NSDate date];
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
     differenceDayComponents.day = -1;
     NSDate *yesterday = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:today options:0];
-   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"CPB"];
-    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
+   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"AA"]; */
+ //   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
     
     
     // Register a listener for changes to events stored locally
@@ -186,6 +186,7 @@
 }
 
 // Return a cell configured to display an event or a company with a fetch event
+// TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
@@ -291,12 +292,15 @@
         }
         [[cell eventDate] setText:eventDateString];
         
-        // Show the certainty of the event if it's not Confirmed, else make it blank
-        if (![eventAtIndex.certainty isEqualToString:@"Confirmed"]) {
+        // TO DO: FIX LATER. If we show the certainty of the event only if it's not Confirmed, else make it blank, the reminder functionality doesn't work, thus commenting this for now.
+        /* if (![eventAtIndex.certainty isEqualToString:@"Confirmed"]) {
             [[cell eventCertainty] setText:eventAtIndex.certainty];
         } else {
             [[cell eventCertainty] setText:[NSString stringWithFormat:@" "]];
-        }
+        } */
+        
+        // Show event certainty
+        [[cell eventCertainty] setText:eventAtIndex.certainty];
         
         NSLog(@"After cell is set to display, company ticker is:%@ and company confirmed is:%@",eventAtIndex.listedCompany.ticker,eventAtIndex.certainty);
     } 
@@ -616,13 +620,16 @@
 - (void)createQueuedReminder:(NSNotification *)notification {
     
     NSArray *infoArray = [notification object];
+    // Create a new DataController so that this thread has its own MOC
+    // TO DO: Understand at what point does a new thread get spawned off. Shouldn't I be creating the new MOC in that thread as opposed to here ? Maybe it doesn't matter as long as I am not sharing MOCs across threads ? The general rule with Core Data is one Managed Object Context per thread, and one thread per MOC
+    FADataController *thirdDataController = [[FADataController alloc] init];
     
     // Create the reminder
-    BOOL success = [self createReminderForEventOfType:[infoArray objectAtIndex:0] withTicker:[infoArray objectAtIndex:1] andDateText:[infoArray objectAtIndex:2]];
+    BOOL success = [self createReminderForEventOfType:[infoArray objectAtIndex:0] withTicker:[infoArray objectAtIndex:1] dateText:[infoArray objectAtIndex:2] andDataController:thirdDataController];
     
     // If successful, update the status of the event in the data store to be "Created" from "Queued"
     if (success) {
-        [self.primaryDataController updateActionWithStatus:@"Created" type:@"OSReminder" eventTicker:[infoArray objectAtIndex:1] eventType:[infoArray objectAtIndex:0]];
+        [thirdDataController updateActionWithStatus:@"Created" type:@"OSReminder" eventTicker:[infoArray objectAtIndex:1] eventType:[infoArray objectAtIndex:0]];
     }
     // Else log an error message
     else {
@@ -656,12 +663,14 @@
         // If the user hasn't provided access, show an appropriate error message.
         case EKAuthorizationStatusDenied:
         case EKAuthorizationStatusRestricted: {
-            [self sendUserMessageCreatedNotificationWithMessage:@"Enable access to your Reminders under Settings>Finapp and try again!"];
+            NSLog(@"Authorization Status for Reminders is Denied or Restricted");
+            [self sendUserMessageCreatedNotificationWithMessage:@"Enable access to your Reminders under Settings>Knotifi and try again!"];
             break;
         }
             
         // If the user has already provided access, create the reminder.
         case EKAuthorizationStatusAuthorized: {
+            NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
             [self processReminderForEventInCell:eventCell];
             break;
         }
@@ -677,9 +686,11 @@
                                             completion:^(BOOL grantedByUser, NSError *error) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     if (grantedByUser) {
+                                                        NSLog(@"Authorization Status for Reminders was enabled by user. About to create the reminder");
                                                         [weakPtrToSelf processReminderForEventInCell:eventCell];
                                                     } else {
-                                                        [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Unable to Create Reminder. Try again after enabling Reminders under Settings>Finapp!"];
+                                                        NSLog(@"Authorization Status for Reminderswas rejected by user.");
+                                                        [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Unable to Create Reminder. Try again after enabling Reminders under Settings>Knotifi!"];
                                                     }
                                                 });
                                             }];
@@ -694,6 +705,9 @@
     NSString *cellEventType = eventCell.eventDescription.text;
     NSString *cellCompanyTicker = eventCell.companyTicker.text;
     NSString *cellEventDateText = eventCell.eventDate.text;
+    NSString *cellEventCertainty = eventCell.eventCertainty.text;
+    
+    NSLog(@"Event Cell type is:%@ Ticker is:%@ DateText is:%@ and Certainty is:%@", cellEventType, cellCompanyTicker, cellEventDateText, cellEventCertainty);
     
     // Check to see if the event represented by the cell is estimated or confirmed ?
     // If confirmed create and save to action data store
@@ -702,12 +716,14 @@
         NSLog(@"About to create a reminder, since this event is confirmed");
         
         // Create the reminder and show user the appropriate message
-        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker andDateText:cellEventDateText];
+        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:self.primaryDataController];
         if (success) {
+            NSLog(@"Successfully created the reminder");
             [self sendUserMessageCreatedNotificationWithMessage:@"Rest Easy! You'll be reminded of this event a day before."];
             // Add action to the action data store with status created
             [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
         } else {
+            NSLog(@"Actual Reminder Creation failed");
             [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
         }
     }
@@ -722,7 +738,7 @@
 }
 
 // Actually create the reminder in the user's default calendar and return success or failure depending on the outcome.
-- (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker andDateText:(NSString *)eventDateText  {
+- (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker dateText:(NSString *)eventDateText andDataController:(FADataController *)reminderDataController  {
     
     BOOL creationSuccess = NO;
     
@@ -736,7 +752,7 @@
     eventReminder.calendar = [self.userEventStore defaultCalendarForNewReminders];
     
     // Get the date for the event represented by the cell
-    NSDate *eventDate = [self.primaryDataController getDateForEventOfType:eventType eventTicker:companyTicker];
+    NSDate *eventDate = [reminderDataController getDateForEventOfType:eventType eventTicker:companyTicker];
     
     // Subtract a day as we want to remind the user a day prior and then set the reminder time to noon of the previous day
     // and set reminder due date to that.
