@@ -73,7 +73,7 @@
     
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
     // Get the date for the event represented by the cell
-/*    NSDate *today = [NSDate date];
+   /* NSDate *today = [NSDate date];
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
     differenceDayComponents.day = -1;
@@ -325,6 +325,10 @@
         // Fetch the event for the related parent company in the background
         NSLog(@"Fetching Event Data for ticker in the background:%@",(cell.companyTicker).text);
         [self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
+    }
+    // If not then just show a helper user message about reminder creation
+    else {
+        [self sendUserMessageCreatedNotificationWithMessage:@"Psst! Swipe Left to create a Reminder."];
     }
     
     // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
@@ -664,14 +668,14 @@
         case EKAuthorizationStatusDenied:
         case EKAuthorizationStatusRestricted: {
             NSLog(@"Authorization Status for Reminders is Denied or Restricted");
-            [self sendUserMessageCreatedNotificationWithMessage:@"Enable access to your Reminders under Settings>Knotifi and try again!"];
+            [self sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
             break;
         }
             
         // If the user has already provided access, create the reminder.
         case EKAuthorizationStatusAuthorized: {
             NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
-            [self processReminderForEventInCell:eventCell];
+            [self processReminderForEventInCell:eventCell withDataController:self.primaryDataController];
             break;
         }
             
@@ -687,10 +691,12 @@
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     if (grantedByUser) {
                                                         NSLog(@"Authorization Status for Reminders was enabled by user. About to create the reminder");
-                                                        [weakPtrToSelf processReminderForEventInCell:eventCell];
+                                                        // Create a new Data Controller so that this thread has it's own MOC
+                                                        FADataController *afterAccessDataController = [[FADataController alloc] init];
+                                                        [weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
                                                     } else {
                                                         NSLog(@"Authorization Status for Reminderswas rejected by user.");
-                                                        [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Unable to Create Reminder. Try again after enabling Reminders under Settings>Knotifi!"];
+                                                        [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
                                                     }
                                                 });
                                             }];
@@ -700,7 +706,7 @@
 }
 
 // Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
-- (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell {
+- (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell withDataController:(FADataController *)appropriateDataController {
     
     NSString *cellEventType = eventCell.eventDescription.text;
     NSString *cellCompanyTicker = eventCell.companyTicker.text;
@@ -716,12 +722,12 @@
         NSLog(@"About to create a reminder, since this event is confirmed");
         
         // Create the reminder and show user the appropriate message
-        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:self.primaryDataController];
+        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
         if (success) {
             NSLog(@"Successfully created the reminder");
-            [self sendUserMessageCreatedNotificationWithMessage:@"Rest Easy! You'll be reminded of this event a day before."];
+            [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
             // Add action to the action data store with status created
-            [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
+            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
         } else {
             NSLog(@"Actual Reminder Creation failed");
             [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
@@ -733,7 +739,8 @@
         NSLog(@"About to queue a reminder for later creation, since this event is not confirmed");
         
         // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
-        [self.primaryDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
+        [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
+        [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
     }
 }
 

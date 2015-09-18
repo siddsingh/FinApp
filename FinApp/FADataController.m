@@ -518,7 +518,7 @@
         NSLog(@"ERROR: Could not get events data from the API Data Source. Error description: %@",error.description);
         
         // Show user an error message
-        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to get events. Check Connection."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get events. Check Connection."];
     }
 }
 
@@ -580,7 +580,7 @@
     // If response is not correct, show the user an error message
     if (parsedDataSets == NULL)
     {
-        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to get events. Try again later."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get events. Try again later."];
     }
     // Else process response to enter event
     else
