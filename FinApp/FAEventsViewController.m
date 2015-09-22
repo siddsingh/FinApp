@@ -15,6 +15,7 @@
 #import "Company.h"
 @import EventKit;
 #import <stdlib.h>
+#import "Reachability.h"
 
 @interface FAEventsViewController ()
 
@@ -33,9 +34,11 @@
 // Return a color scheme from darker to lighter based on rwo number with darker on top. Currently returning a dark gray scheme.
 - (UIColor *)getColorForIndexPath:(NSIndexPath *)indexPath;
 
+// Check if there is internet connectivity
+- (BOOL) checkForInternetConnectivity;
+
 // User's calendar events and reminders data store
 @property (strong, nonatomic) EKEventStore *userEventStore;
-
 
 @end
 
@@ -43,6 +46,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    NSLog(@"VIEW LOADEDDDDDDDDDDDDDDDDDDDDDDDDDDD");
     
     // Do any additional setup after loading the view.
     
@@ -103,15 +108,24 @@
         [self.primaryDataController performCompanySeedSyncLocally];
     }
     
-    // Seed the events data, the very first time, to get the user started.
-    if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
-        [self.primaryDataController performEventSeedSyncRemotely];
+    // Check for connectivity. If yes, sync data from remote data source
+    if ([self checkForInternetConnectivity]) {
+        
+        // Seed the events data, the very first time, to get the user started.
+        if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+            [self.primaryDataController performEventSeedSyncRemotely];
+        }
+        
+        // If the initial company data has been seeded, perform the full company data sync from the API
+        // in the background
+        if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
+            [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
+        }
     }
-    
-    // If the initial company data has been seeded, perform the full company data sync from the API
-    // in the background
-    if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
-        [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
+    // If not, show error message
+    else {
+        
+        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
     }
     
     // Set the Filter Specified flag to false, indicating that no search filter has been specified
@@ -318,16 +332,26 @@
     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
     if (cell.eventRemoteFetch) {
         
-        // Set the remote fetch spinner to animating to show a fetch is in progress
-        NSLog(@"Starting to animate spinner");
-        [self.remoteFetchSpinner startAnimating];
-        
-        // Fetch the event for the related parent company in the background
-        NSLog(@"Fetching Event Data for ticker in the background:%@",(cell.companyTicker).text);
-        [self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
+        // Check for connectivity. If yes, process the fetch
+        if ([self checkForInternetConnectivity]) {
+            
+            // Set the remote fetch spinner to animating to show a fetch is in progress
+            NSLog(@"Starting to animate spinner");
+            [self.remoteFetchSpinner startAnimating];
+            
+            // Fetch the event for the related parent company in the background
+            NSLog(@"Fetching Event Data for ticker in the background:%@",(cell.companyTicker).text);
+            [self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
+        }
+        // If not, show error message
+        else {
+            
+            [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+        }
     }
     // If not then just show a helper user message about reminder creation
     else {
+        
         [self sendUserMessageCreatedNotificationWithMessage:@"Psst! Swipe Left to create a Reminder."];
     }
     
@@ -555,12 +579,22 @@
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar*)searchBar {
     
     NSLog(@"SEARCH BAR EDITING BEGIN FIRED:");
-    // If the companies data is still being synced, give the user a warning message
-    if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
-        NSLog(@"NOTIFICATION ABOUT TO BE FIRED: With User Message: %@",@"Fetching Companies. If you can't find a Company, retry in a bit.");
-        // Show user a message that companies data is being synced
-        [self sendUserMessageCreatedNotificationWithMessage:@"Fetching Companies. If you can't find a Company, retry in a bit."];
+    
+    // Check for connectivity. If yes, give user information message
+    if ([self checkForInternetConnectivity]) {
+        // If the companies data is still being synced, give the user a warning message
+        if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
+            NSLog(@"NOTIFICATION ABOUT TO BE FIRED: With User Message: %@",@"Fetching Companies. If you can't find a Company, retry in a bit.");
+            // Show user a message that companies data is being synced
+            [self sendUserMessageCreatedNotificationWithMessage:@"Fetching Companies. If you can't find a Company, retry in a bit."];
+        }
     }
+    // If not, show error message,
+    else {
+        
+        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to fetch all companies. Check Connection and retry."];
+    }
+    
     return YES;
 }
 
@@ -786,6 +820,25 @@
     creationSuccess = [self.userEventStore saveReminder:eventReminder commit:YES error:&error];
     
     return creationSuccess;
+}
+
+#pragma mark - Connectivity Methods
+
+// Check if there is internet connectivity
+- (BOOL) checkForInternetConnectivity {
+    
+    // Get internet access status
+    Reachability *internetReachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus internetStatus = [internetReachability currentReachabilityStatus];
+    
+    // If there is no internet access
+    if (internetStatus == NotReachable) {
+        return NO;
+    }
+    // If there is internet access
+    else {
+        return YES;
+    }
 }
 
 #pragma mark - Helper Methods

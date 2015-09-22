@@ -704,7 +704,39 @@
     // Add the 20 most used company tickers and name to the company database.
     // TO DO: CAPABILITY: Expand to include at least 50 most used companies.
     // TO DO: OPTIMIZATION: Since the seed sync will be done when the company data store is empty, add a write to store without checking for duplicates method.
-    // TO DO: TEST: How do you handle different kinds of shares like GOOGLE
+    
+    // NYSE Most Active - Sep 21, 2015
+    [self insertUniqueCompanyWithTicker:@"BAC" name:@"Bank Of America"];
+    [self insertUniqueCompanyWithTicker:@"RAD" name:@"Rite Aid"];
+    [self insertUniqueCompanyWithTicker:@"FCX" name:@"Freeport-McMoRan"];
+    [self insertUniqueCompanyWithTicker:@"GE" name:@"General Electric"];
+    [self insertUniqueCompanyWithTicker:@"S" name:@"Sprint"];
+    [self insertUniqueCompanyWithTicker:@"P" name:@"Pandora Media"];
+    [self insertUniqueCompanyWithTicker:@"PFE" name:@"Pfizer"];
+    [self insertUniqueCompanyWithTicker:@"BABA" name:@"Alibaba Group Holding ADR"];
+    [self insertUniqueCompanyWithTicker:@"DOW" name:@"Dow Chemical"];
+    [self insertUniqueCompanyWithTicker:@"F" name:@"Ford Motor"];
+    [self insertUniqueCompanyWithTicker:@"T" name:@"AT&T"];
+    [self insertUniqueCompanyWithTicker:@"AA" name:@"Alcoa"];
+    [self insertUniqueCompanyWithTicker:@"MRK" name:@"Merck&Co"];
+    [self insertUniqueCompanyWithTicker:@"ABX" name:@"Barrick Gold"];
+    [self insertUniqueCompanyWithTicker:@"WFC" name:@"Wells Fargo"];
+    [self insertUniqueCompanyWithTicker:@"HPQ" name:@"Hewlett-Packard"];
+    [self insertUniqueCompanyWithTicker:@"ORCL" name:@"Oracle"];
+    [self insertUniqueCompanyWithTicker:@"C" name:@"Citigroup"];
+    [self insertUniqueCompanyWithTicker:@"SUNE" name:@"SunEdison"];
+    [self insertUniqueCompanyWithTicker:@"GM" name:@"General Motors"];
+    [self insertUniqueCompanyWithTicker:@"CHK" name:@"Chesapeake Energy"];
+    [self insertUniqueCompanyWithTicker:@"JPM" name:@"JPMorgan Chase"];
+    [self insertUniqueCompanyWithTicker:@"KO" name:@"Coca-Cola"];
+    [self insertUniqueCompanyWithTicker:@"XRX" name:@"Xerox"];
+    [self insertUniqueCompanyWithTicker:@"EMC" name:@"EMC"];
+    [self insertUniqueCompanyWithTicker:@"VZ" name:@"Verizon Communications, Inc"];
+    [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike, Inc"];
+    [self insertUniqueCompanyWithTicker:@"SBUX" name:@"Starbucks Corporation"];
+
+    
+    // NASDAQ Most Active - Sep 21, 2015
     [self insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple Inc"];
     [self insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla Motors Inc"];
     [self insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts Inc"];
@@ -716,7 +748,21 @@
     [self insertUniqueCompanyWithTicker:@"TWTR" name:@"Twitter Inc"];
     [self insertUniqueCompanyWithTicker:@"TGT" name:@"Target Corp"];
     [self insertUniqueCompanyWithTicker:@"QCOM" name:@"Qualcomm Inc"];
-    [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike Inc"];
+    [self insertUniqueCompanyWithTicker:@"INTC" name:@"Intel Corp"];
+    [self insertUniqueCompanyWithTicker:@"CSCO" name:@"Cisco Systems"];
+    [self insertUniqueCompanyWithTicker:@"SIRI" name:@"Sirius XM Holdings Inc"];
+    [self insertUniqueCompanyWithTicker:@"FOXA" name:@"Twenty-First Century Fox, Inc"];
+    [self insertUniqueCompanyWithTicker:@"MU" name:@"Micron Technology, Inc"];
+    [self insertUniqueCompanyWithTicker:@"FTR" name:@"Frontier Communications Corporation"];
+    [self insertUniqueCompanyWithTicker:@"NFLX" name:@"Netflix, Inc"];
+    [self insertUniqueCompanyWithTicker:@"YHOO" name:@"Yahoo! Inc"];
+    [self insertUniqueCompanyWithTicker:@"GILD" name:@"Gilead Sciences, Inc"];
+    [self insertUniqueCompanyWithTicker:@"AMAT" name:@"Applied Materials, Inc"];
+    [self insertUniqueCompanyWithTicker:@"GPRO" name:@"GoPro, Inc"];
+    [self insertUniqueCompanyWithTicker:@"CMCSA" name:@"Comcast Corporation"];
+    [self insertUniqueCompanyWithTicker:@"PYPL" name:@"PayPal Holdings, Inc"];
+    [self insertUniqueCompanyWithTicker:@"FIT" name:@"Fitbit, Inc"];
+    [self insertUniqueCompanyWithTicker:@"GOOG" name:@"Google, Inc"];
     
     
     // Add or Update the Company Data Sync status to SeedSyncDone.
@@ -727,21 +773,12 @@
 // API based on the set of companies that are included in the Company Seed Sync.
 - (void)performEventSeedSyncRemotely {
     
-    // Add the events for the 20 most used companies to the events database.
-    // TO DO: CAPABILITY: Expand to include at least 50 most used companies.
-   // [self getAllEventsFromApiWithTicker:@"AAPL"];
-    [self getAllEventsFromApiWithTicker:@"TSLA"];
-    // TO DO: Commenting to not expire the API test limits. Uncomment when ready to finally test for shipping.
-   // [self getAllEventsFromApiWithTicker:@"EA"];
-    [self getAllEventsFromApiWithTicker:@"CRM"];
-   /* [self getAllEventsFromApiWithTicker:@"NFLX"];
+    // Add the events for the 5 most used companies to the events database.
+    [self getAllEventsFromApiWithTicker:@"AAPL"];
     [self getAllEventsFromApiWithTicker:@"FB"];
-    [self getAllEventsFromApiWithTicker:@"EA"];
     [self getAllEventsFromApiWithTicker:@"MSFT"];
-    [self getAllEventsFromApiWithTicker:@"TWTR"];
-    [self getAllEventsFromApiWithTicker:@"TGT"];
-    [self getAllEventsFromApiWithTicker:@"QCOM"];
-    [self getAllEventsFromApiWithTicker:@"NKE"]; */
+    [self getAllEventsFromApiWithTicker:@"BAC"];
+    [self getAllEventsFromApiWithTicker:@"GM"];
     
     // Add or Update the Company Data Sync status to SeedSyncDone.
     [self updateUserWithEventSyncStatus:@"SeedSyncDone"];

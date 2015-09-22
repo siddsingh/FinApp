@@ -23,6 +23,9 @@
 		9E7586461AF44679009DD7B2 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E7586451AF44679009DD7B2 /* User.m */; };
 		9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE51B82CEB9008A0370 /* Action.m */; };
 		9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */; };
+		9EBD8EEA1BAC9DAB008A0370 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */; };
+		9EBD8EED1BAC9EA0008A0370 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */; };
+		9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +47,7 @@
 		9E602D1F19E655DF00ACDEC6 /* FinApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FinApp.xcdatamodel; sourceTree = "<group>"; };
 		9E602D2519E655DF00ACDEC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9E602D2A19E655DF00ACDEC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = FinAppTests.xctest; path = KnotifiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D3519E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E602D3619E655DF00ACDEC6 /* FinAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinAppTests.m; sourceTree = "<group>"; };
 		9E681D4B1A43B08F00FC5E5D /* FAEventsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventsViewController.h; sourceTree = "<group>"; };
@@ -65,6 +68,9 @@
 		9EBD8EE41B82CEB9008A0370 /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
 		9EBD8EE51B82CEB9008A0370 /* Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Action.m; sourceTree = "<group>"; };
 		9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = BaseVisualAssets.xcassets; path = ../BaseVisualAssets.xcassets; sourceTree = "<group>"; };
+		9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		9EBD8EEB1BAC9EA0008A0370 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EBD8EEA1BAC9DAB008A0370 /* SystemConfiguration.framework in Frameworks */,
 				9E6D807B1AAFDF5800E1F2D3 /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,8 +96,9 @@
 		9E602D0B19E655DF00ACDEC6 = {
 			isa = PBXGroup;
 			children = (
-				9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */,
 				9E602D1619E655DF00ACDEC6 /* FinApp */,
+				9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */,
+				9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */,
 				9E602D3319E655DF00ACDEC6 /* FinAppTests */,
 				9E602D1519E655DF00ACDEC6 /* Products */,
 			);
@@ -119,6 +127,7 @@
 				9E6D80741A9EB49700E1F2D3 /* FADataStore.h */,
 				9E6D80751A9EB49700E1F2D3 /* FADataStore.m */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
+				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
 				9EBD8EE41B82CEB9008A0370 /* Action.h */,
 				9EBD8EE51B82CEB9008A0370 /* Action.m */,
@@ -128,7 +137,8 @@
 				9E6D80721A958C9E00E1F2D3 /* Company.m */,
 				9E6D806E1A958C9D00E1F2D3 /* Event.h */,
 				9E6D806F1A958C9D00E1F2D3 /* Event.m */,
-				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
+				9EBD8EEB1BAC9EA0008A0370 /* Reachability.h */,
+				9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */,
 				9E602D1719E655DF00ACDEC6 /* Supporting Files */,
 			);
 			path = FinApp;
@@ -272,6 +282,7 @@
 				9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */,
 				9E6D80761A9EB49700E1F2D3 /* FADataStore.m in Sources */,
 				9E6D80731A958C9E00E1F2D3 /* Company.m in Sources */,
+				9EBD8EED1BAC9EA0008A0370 /* Reachability.m in Sources */,
 				9E6D80791AA4E07100E1F2D3 /* FADataController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -280,6 +291,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */,
 				9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

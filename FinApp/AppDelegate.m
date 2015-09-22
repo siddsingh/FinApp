@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "FADataController.h"
+#import "Reachability.h"
 
 @interface AppDelegate ()
 
@@ -16,6 +17,15 @@
 
 // Redo fetching of company data from the API, in case the full sync of company data had failed. Typically called in a background thread.
 - (void)refreshCompanyInfoIfNeededFromApiInBackground;
+
+// Send a notification that the list of messages has changed (updated)
+- (void)sendEventsChangeNotification;
+
+// Send a notification that the list of events has changed (updated)
+- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
+
+// Check if there is internet connectivity
+- (BOOL) checkForInternetConnectivity;
 
 @end
 
@@ -51,12 +61,28 @@
     
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
-    // Check and Refresh any events from the API that are likely to have updated information
-    [self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
-    
-    // TO DO: Do I really need to spawn off a new thread every time just to check if an update is needed. Shouldn't I just create a new MOC and check here and then spawn the thread if neeeded ?
-    // If the full sync of company data has failed, retry it
-    [self performSelectorInBackground:@selector(refreshCompanyInfoIfNeededFromApiInBackground) withObject:nil];
+    // Check for connectivity. If yes, sync data from remote data source
+    if ([self checkForInternetConnectivity]) {
+        
+        // If this hasn't already been done, seed the events data, the very first time, to get the user started.
+        FADataController *eventSeedSyncController = [[FADataController alloc] init];
+        if ([[eventSeedSyncController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+            [eventSeedSyncController performEventSeedSyncRemotely];
+            [self sendEventsChangeNotification];
+        }
+        // If seed sync has already been done, check and refresh any events from the API that are likely to have updated information
+        else {
+            [self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
+        }
+        
+        // If the full sync of company data has failed, retry it
+        [self performSelectorInBackground:@selector(refreshCompanyInfoIfNeededFromApiInBackground) withObject:nil];
+    }
+    // If not, show error message
+    else {
+        
+        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+    }
     
     NSLog(@"******************************************Active State Fired****************************************");
 }
@@ -94,7 +120,7 @@
     [eventDataController updateEventsFromRemoteIfNeeded];
 }
 
-// Redo fetching of company data from the API, in case the full sync of company data had failed. Typically called in a background thread.
+// Redo fetching of company data from the API, in case the full sync of company data had failed or not started. Typically called in a background thread.
 - (void)refreshCompanyInfoIfNeededFromApiInBackground
 {
     // Create a new FADataController so that this thread has its own MOC
@@ -102,11 +128,48 @@
     
     NSLog(@"******************************************About to Processed the Get All Companies from API in the background since last sync was incomplete**************************************** with Company sync status:%@",[companyDataController getCompanySyncStatus]);
     
-    if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"]) {
+    if ([[companyDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]||[[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"]) {
         [companyDataController getAllCompaniesFromApi];
          NSLog(@"******************************************Processed the Get All Companies from API in the background since last sync was incomplete****************************************");
     }
 }
+
+#pragma mark - Notifications
+
+// Send a notification that the list of events has changed (updated)
+- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
+    NSLog(@"NOTIFICATION FIRED: With User Message: %@",msgContents);
+}
+
+#pragma mark - Connectivity Methods
+
+// Check if there is internet connectivity
+- (BOOL) checkForInternetConnectivity {
+    
+    // Get internet access status
+    Reachability *internetReachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus internetStatus = [internetReachability currentReachabilityStatus];
+    
+    // If there is no internet access
+    if (internetStatus == NotReachable) {
+        return NO;
+    }
+    // If there is internet access
+    else {
+        return YES;
+    }
+}
+
+#pragma mark - Notifications
+
+// Send a notification that the list of events has changed (updated)
+- (void)sendEventsChangeNotification {
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
+}
+
 
 #pragma mark - Core Data stack
 
