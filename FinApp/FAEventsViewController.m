@@ -16,6 +16,7 @@
 @import EventKit;
 #import <stdlib.h>
 #import "Reachability.h"
+#import <UIKit/UIKit.h>
 
 @interface FAEventsViewController ()
 
@@ -119,13 +120,14 @@
         // If the initial company data has been seeded, perform the full company data sync from the API
         // in the background
         if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
+            
             [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
         }
     }
     // If not, show error message
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Click home to exit, fix connection and retry."];
     }
     
     // Set the Filter Specified flag to false, indicating that no search filter has been specified
@@ -442,10 +444,48 @@
 // Get all companies from API. Typically called in a background thread
 - (void)getAllCompaniesFromApiInBackground
 {
+    
+    // TO DO: Delete once you have background tasking figured out
     // Create a new FADataController so that this thread has its own MOC
+   /* FADataController *companiesDataController = [[FADataController alloc] init];
+    
+    [companiesDataController getAllCompaniesFromApi]; */
+    
+    // Get a data controller for data store interactions
     FADataController *companiesDataController = [[FADataController alloc] init];
     
-    [companiesDataController getAllCompaniesFromApi];
+    // Creating a task that continues to process in the background.
+    __block UIBackgroundTaskIdentifier bgFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"bgCompaniesFetch" expirationHandler:^{
+        
+        // Clean up any unfinished task business before it's about to be terminated
+        // In our case, check if all pages of companies data has been synced. If not, mark status to failed
+        // so that another thread can pick up the completion on restart. Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi in FADataController. Also change in Search Bar Began Editing in the Events View Controller.
+        if ([[companiesDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companiesDataController getCompanySyncedUptoPage] integerValue] < 25)
+        {
+            [companiesDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[companiesDataController getCompanySyncedUptoPage]];
+        }
+        NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld before terminating the background thread to update companies",[companiesDataController getCompanySyncStatus],[[companiesDataController getCompanySyncedUptoPage] longValue]);
+        // TO DO: Delete timing information.
+        NSTimeInterval timeRemaining = [UIApplication sharedApplication].backgroundTimeRemaining;
+        NSLog(@"****Background time remaining: %f seconds (%d mins) and ending task", timeRemaining, (int)(timeRemaining / 60));
+        
+        // Stopped or ending the task outright.
+        [[UIApplication sharedApplication] endBackgroundTask:bgFetchTask];
+        bgFetchTask = UIBackgroundTaskInvalid;
+    }];
+    
+    // Start the long-running task and return immediately.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        // TO DO: Delete. Just outputting the time
+        NSTimeInterval timeRemaining = [UIApplication sharedApplication].backgroundTimeRemaining;
+        NSLog(@"****Background time remaining: %f seconds (%d mins) and about to begin company sync from bg thread", timeRemaining, (int)(timeRemaining / 60));
+        
+        [companiesDataController getAllCompaniesFromApi];
+        
+        [[UIApplication sharedApplication] endBackgroundTask:bgFetchTask];
+        bgFetchTask = UIBackgroundTaskInvalid;
+    });
 }
 
 // Get events for company given a ticker. Typically called in a background thread
@@ -582,17 +622,24 @@
     
     // Check for connectivity. If yes, give user information message
     if ([self checkForInternetConnectivity]) {
+        
         // If the companies data is still being synced, give the user a warning message
         if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
-            NSLog(@"NOTIFICATION ABOUT TO BE FIRED: With User Message: %@",@"Fetching Companies. If you can't find a Company, retry in a bit.");
             // Show user a message that companies data is being synced
-            [self sendUserMessageCreatedNotificationWithMessage:@"Fetching Companies. If you can't find a Company, retry in a bit."];
+            // Give the user an informational message
+            int pagesDone = [[self.primaryDataController getCompanySyncedUptoPage] intValue];
+            int totalPages = 25;
+            float percentageDone = (100 * pagesDone)/totalPages;
+            NSString *userMessage = [NSString stringWithFormat:@"Fetching Tickers(%.f%% Done)! Can't find one,retry in a bit.", percentageDone];
+            [self sendUserMessageCreatedNotificationWithMessage:userMessage];
+            // TO DO: Delete Later after testing.
+            //[self sendUserMessageCreatedNotificationWithMessage:@"Fetching Tickers! Can't find one, retry in a bit."];
         }
     }
     // If not, show error message,
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to fetch all companies. Check Connection and retry."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection. Click home to exit, fix connection and retry."];
     }
     
     return YES;

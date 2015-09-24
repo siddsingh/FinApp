@@ -47,7 +47,7 @@
 		9E602D1F19E655DF00ACDEC6 /* FinApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FinApp.xcdatamodel; sourceTree = "<group>"; };
 		9E602D2519E655DF00ACDEC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9E602D2A19E655DF00ACDEC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = FinAppTests.xctest; path = KnotifiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E602D3019E655DF00ACDEC6 /* KnotifiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KnotifiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D3519E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E602D3619E655DF00ACDEC6 /* FinAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FinAppTests.m; sourceTree = "<group>"; };
 		9E681D4B1A43B08F00FC5E5D /* FAEventsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventsViewController.h; sourceTree = "<group>"; };
@@ -108,7 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				9E602D1419E655DF00ACDEC6 /* Knotifi.app */,
-				9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */,
+				9E602D3019E655DF00ACDEC6 /* KnotifiTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -206,7 +206,7 @@
 			);
 			name = KnotifiTests;
 			productName = FinAppTests;
-			productReference = 9E602D3019E655DF00ACDEC6 /* FinAppTests.xctest */;
+			productReference = 9E602D3019E655DF00ACDEC6 /* KnotifiTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */

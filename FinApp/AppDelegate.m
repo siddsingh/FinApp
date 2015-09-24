@@ -76,12 +76,12 @@
         }
         
         // If the full sync of company data has failed, retry it
-        [self performSelectorInBackground:@selector(refreshCompanyInfoIfNeededFromApiInBackground) withObject:nil];
+        [self refreshCompanyInfoIfNeededFromApiInBackground];
     }
     // If not, show error message
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Click home to exit, fix connection and retry."];
     }
     
     NSLog(@"******************************************Active State Fired****************************************");
@@ -100,7 +100,7 @@
     
     // Check to see if all the company data has been synced before terminating. This is done by checking if 25 pages of information
     // have been processed.
-    // TO DO: Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi in FADataController.
+    // TO DO: Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi in FADataController. Also change in Search Bar Began Editing in the Events View Controller. Also change in getAllCompaniesFromApiInBachground in FA Events View Controller.
     if ([[genericDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[genericDataController getCompanySyncedUptoPage] integerValue] < 25)
     {
         [genericDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[genericDataController getCompanySyncedUptoPage]];
@@ -129,8 +129,47 @@
     NSLog(@"******************************************About to Processed the Get All Companies from API in the background since last sync was incomplete**************************************** with Company sync status:%@",[companyDataController getCompanySyncStatus]);
     
     if ([[companyDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]||[[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"]) {
-        [companyDataController getAllCompaniesFromApi];
-         NSLog(@"******************************************Processed the Get All Companies from API in the background since last sync was incomplete****************************************");
+        
+        NSLog(@"******************************************About to start syncing companies from the restarted main thread****************************************");
+        
+        // Get Companies
+        // TO DO: Delete this
+        //[companyDataController getAllCompaniesFromApi];
+        
+        
+        // Creating a task that continues to process in the background.
+        __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundCompaniesFetch" expirationHandler:^{
+            
+            // Clean up any unfinished task business before it's about to be terminated
+            // In our case, check if all pages of companies data has been synced. If not, mark status to failed
+            // so that another thread can pick up the completion on restart. Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi in FADataController. Also change in Search Bar Began Editing in the Events View Controller.
+            if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companyDataController getCompanySyncedUptoPage] integerValue] < 25)
+            {
+                [companyDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[companyDataController getCompanySyncedUptoPage]];
+            }
+            NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld before terminating the background thread from restart to update companies",[companyDataController getCompanySyncStatus],[[companyDataController getCompanySyncedUptoPage] longValue]);
+            
+            // TO DO: Delete timing information.
+            NSTimeInterval timeRemaining = [UIApplication sharedApplication].backgroundTimeRemaining;
+            NSLog(@"****Background time remaining: %f seconds (%d mins) and ending task", timeRemaining, (int)(timeRemaining / 60));
+            
+            // Stopped or ending the task outright.
+            [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
+            backgroundFetchTask = UIBackgroundTaskInvalid;
+        }];
+        
+        // Start the long-running task and return immediately.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            // TO DO: Delete. Just outputting the time
+            NSTimeInterval timeRemaining = [UIApplication sharedApplication].backgroundTimeRemaining;
+            NSLog(@"****Background time remaining: %f seconds (%d mins) and about to begin company sync from bg thread", timeRemaining, (int)(timeRemaining / 60));
+            
+            [companyDataController getAllCompaniesFromApi];
+            
+            [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
+            backgroundFetchTask = UIBackgroundTaskInvalid;
+        });
     }
 }
 
