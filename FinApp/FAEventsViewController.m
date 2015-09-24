@@ -854,12 +854,14 @@
     reminderDateTimeComponents.minute = 0;
     reminderDateTimeComponents.second = 0;
     eventReminder.dueDateComponents = reminderDateTimeComponents;
+    // Additionally add an alarm for the same time as due date/time so that the reminder actually pops up.
+    NSDate *alarmDateTime = [aGregorianCalendar dateFromComponents:reminderDateTimeComponents];
+    [eventReminder addAlarm:[EKAlarm alarmWithAbsoluteDate:alarmDateTime]];
     
-    // TO DO: Delete later. For debugging purposes, converting reminder due date components to date, time
-    NSDate *debugEventDate = [aGregorianCalendar dateFromComponents:reminderDateTimeComponents];
+    // TO DO: For debugging. Delete later.
     NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
     [eventDateFormatter setDateFormat:@"yyyy-MM-dd 'at' HH:mm:ss"];
-    NSString *eventDueDateDebugString = [eventDateFormatter stringFromDate:debugEventDate];
+    NSString *eventDueDateDebugString = [eventDateFormatter stringFromDate:alarmDateTime];
     NSLog(@"Event Reminder Date Time is:%@",eventDueDateDebugString);
     
     // Save the Reminder and return success or failure
