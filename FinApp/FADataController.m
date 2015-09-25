@@ -702,6 +702,7 @@
 
 #pragma mark - Data Syncing Related
 
+// DEPRECATED: In favor of performBatchedCompanySeedSyncLocally. Delete after testing.
 // Add the most basic set of most used company information to the company data store. This is done locally.
 - (void)performCompanySeedSyncLocally {
     
@@ -768,10 +769,194 @@
     [self insertUniqueCompanyWithTicker:@"FIT" name:@"Fitbit, Inc"];
     [self insertUniqueCompanyWithTicker:@"GOOG" name:@"Google, Inc"];
     
-    
     // Add or Update the Company Data Sync status to SeedSyncDone.
     [self upsertUserWithCompanySyncStatus:@"SeedSyncDone" syncedPageNo:[NSNumber numberWithInteger: 0]];
 }
+
+// Add the most basic set of most used company information to the company data store. This is done in a batch.
+- (void)performBatchedCompanySeedSyncLocally {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Add the 200 most used company tickers and name to the company database.
+    
+    // NYSE Most Active - Sep, Oct 2015
+    Company *companyNyse1 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse1.ticker = @"BAC";
+    companyNyse1.name = @"Bank Of America";
+    Company *companyNyse2 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse2.ticker = @"RAD";
+    companyNyse2.name = @"Rite Aid";
+    Company *companyNyse3 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse3.ticker = @"FCX";
+    companyNyse3.name = @"Freeport-McMoRan";
+    Company *companyNyse4 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse4.ticker = @"GE";
+    companyNyse4.name = @"General Electric";
+    Company *companyNyse5 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse5.ticker = @"S";
+    companyNyse5.name = @"Sprint";
+    Company *companyNyse6 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse6.ticker = @"P";
+    companyNyse6.name = @"Pandora Media";
+    Company *companyNyse7 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse7.ticker = @"PFE";
+    companyNyse7.name = @"Pfizer";
+    Company *companyNyse8 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse8.ticker = @"BABA";
+    companyNyse8.name = @"Alibaba Group Holding ADR";
+    Company *companyNyse9 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse9.ticker = @"DOW";
+    companyNyse9.name = @"Dow Chemical";
+    Company *companyNyse10 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse10.ticker = @"F";
+    companyNyse10.name = @"Ford Motor";
+    Company *companyNyse11 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse11.ticker = @"T";
+    companyNyse11.name = @"AT&T";
+    Company *companyNyse12 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse12.ticker = @"AA";
+    companyNyse12.name = @"Alcoa";
+    Company *companyNyse13 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse13.ticker = @"MRK";
+    companyNyse13.name = @"Merck&Co";
+    Company *companyNyse14 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse14.ticker = @"ABX";
+    companyNyse14.name = @"Barrick Gold";
+    Company *companyNyse15 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse15.ticker = @"WFC";
+    companyNyse15.name = @"Wells Fargo";
+    Company *companyNyse16 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse16.ticker = @"HPQ";
+    companyNyse16.name = @"Hewlett-Packard";
+    Company *companyNyse17 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse17.ticker = @"ORCL";
+    companyNyse17.name = @"Oracle";
+    Company *companyNyse18 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse18.ticker = @"C";
+    companyNyse18.name = @"Citigroup";
+    Company *companyNyse19 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse19.ticker = @"SUNE";
+    companyNyse19.name = @"SunEdison";
+    Company *companyNyse20 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse20.ticker = @"GM";
+    companyNyse20.name = @"General Motors";
+    Company *companyNyse21 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse21.ticker = @"CHK";
+    companyNyse21.name = @"Chesapeake Energy";
+    Company *companyNyse22 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse22.ticker = @"JPM";
+    companyNyse22.name = @"JPMorgan Chase";
+    Company *companyNyse23 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse23.ticker = @"KO";
+    companyNyse23.name = @"Coca-Cola";
+    Company *companyNyse24 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse24.ticker = @"XRX";
+    companyNyse24.name = @"Xerox";
+    Company *companyNyse25 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse25.ticker = @"EMC";
+    companyNyse25.name = @"EMC";
+    Company *companyNyse26 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse26.ticker = @"VZ";
+    companyNyse26.name = @"Verizon Communications, Inc";
+    Company *companyNyse27 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse27.ticker = @"NKE";
+    companyNyse27.name = @"Nike, Inc";
+    Company *companyNyse28 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNyse28.ticker = @"SBUX";
+    companyNyse28.name = @"Starbucks Corporation";
+    
+    
+    // NASDAQ Most Active - Sep, Oct 2015
+    Company *companyNasdaq1 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq1.ticker = @"AAPL";
+    companyNasdaq1.name = @"Apple Inc";
+    Company *companyNasdaq2 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq2.ticker = @"TSLA";
+    companyNasdaq2.name = @"Tesla Motors Inc";
+    Company *companyNasdaq3 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq3.ticker = @"EA";
+    companyNasdaq3.name = @"Electronic Arts Inc";
+    Company *companyNasdaq4 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq4.ticker = @"CRM";
+    companyNasdaq4.name = @"Salesforce.com Inc";
+    Company *companyNasdaq5 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq5.ticker = @"NFLX";
+    companyNasdaq5.name = @"Netflix Inc";
+    Company *companyNasdaq6 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq6.ticker = @"FB";
+    companyNasdaq6.name = @"Facebook Inc";
+    Company *companyNasdaq7 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq7.ticker = @"AMAT";
+    companyNasdaq7.name = @"Applied Materials Inc";
+    Company *companyNasdaq8 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq8.ticker = @"MSFT";
+    companyNasdaq8.name = @"Microsoft Corp";
+    Company *companyNasdaq9 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq9.ticker = @"TWTR";
+    companyNasdaq9.name = @"Twitter Inc";
+    Company *companyNasdaq10 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq10.ticker = @"QCOM";
+    companyNasdaq10.name = @"Qualcomm Inc";
+    Company *companyNasdaq11 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq11.ticker = @"INTC";
+    companyNasdaq11.name = @"Intel Corp";
+    Company *companyNasdaq12 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq12.ticker = @"CSCO";
+    companyNasdaq12.name = @"Cisco Systems";
+    Company *companyNasdaq13 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq13.ticker = @"SIRI";
+    companyNasdaq13.name = @"Sirius XM Holdings Inc";
+    Company *companyNasdaq14 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq14.ticker = @"FOXA";
+    companyNasdaq14.name = @"Twenty-First Century Fox, Inc";
+    Company *companyNasdaq15 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq15.ticker = @"MU";
+    companyNasdaq15.name = @"Micron Technology, Inc";
+    Company *companyNasdaq16 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq16.ticker = @"FTR";
+    companyNasdaq16.name = @"Frontier Communications Corporation";
+    Company *companyNasdaq17 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq17.ticker = @"SPLS";
+    companyNasdaq17.name = @"Staples Inc";
+    Company *companyNasdaq18 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq18.ticker = @"YHOO";
+    companyNasdaq18.name = @"Yahoo! Inc";
+    Company *companyNasdaq19 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq19.ticker = @"GILD";
+    companyNasdaq19.name = @"Gilead Sciences, Inc";
+    Company *companyNasdaq20 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq20.ticker = @"ODP";
+    companyNasdaq20.name = @"Office Depot Inc";
+    Company *companyNasdaq21 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq21.ticker = @"GPRO";
+    companyNasdaq21.name = @"GoPro, Inc";
+    Company *companyNasdaq22 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq22.ticker = @"CMCSA";
+    companyNasdaq22.name = @"Comcast Corporation";
+    Company *companyNasdaq23 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq23.ticker = @"PYPL";
+    companyNasdaq23.name = @"PayPal Holdings, Inc";
+    Company *companyNasdaq24 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq24.ticker = @"FIT";
+    companyNasdaq24.name = @"Fitbit, Inc";
+    Company *companyNasdaq25 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq25.ticker = @"GOOG";
+    companyNasdaq25.name = @"Google, Inc";
+    Company *companyNasdaq26 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyNasdaq26.ticker = @"AMZN";
+    companyNasdaq26.name = @"Amazon.com, Inc";
+    
+    // Insert
+    NSError *error;
+    if (![dataStoreContext save:&error]) {
+        NSLog(@"ERROR: Batch Saving companies during seed sync failed: %@",error.description);
+    } else {
+        // Add or Update the Company Data Sync status to SeedSyncDone.
+        [self upsertUserWithCompanySyncStatus:@"SeedSyncDone" syncedPageNo:[NSNumber numberWithInteger: 0]];
+    }
+}
+
 
 // Add the most basic set of most used events to the event data store. This is fetched from the data source
 // API based on the set of companies that are included in the Company Seed Sync.

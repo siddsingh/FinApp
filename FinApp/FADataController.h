@@ -123,8 +123,12 @@
 
 #pragma mark - Data Syncing Related
 
+// DEPRECATED: In favor of performBatchedCompanySeedSyncLocally. Delete after testing.
 // Add the most basic set of most used company information to the company data store. This is done locally
 - (void)performCompanySeedSyncLocally;
+
+// Add the most basic set of most used company information to the company data store. This is done in a batch.
+- (void)performBatchedCompanySeedSyncLocally;
 
 // Add the most basic set of most used events to the event data store. This is done locally and is dependent on the
 // set of companies that are included in the Company Seed Sync.

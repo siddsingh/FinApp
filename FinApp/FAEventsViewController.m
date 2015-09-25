@@ -106,7 +106,9 @@
     
     // Seed the company data, the very first time, to get the user started.
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
-        [self.primaryDataController performCompanySeedSyncLocally];
+        // TO DO: Deprecated. Delete after testing.
+        //[self.primaryDataController performCompanySeedSyncLocally];
+        [self.primaryDataController performBatchedCompanySeedSyncLocally];
     }
     
     // Check for connectivity. If yes, sync data from remote data source
