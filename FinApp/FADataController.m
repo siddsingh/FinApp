@@ -702,77 +702,6 @@
 
 #pragma mark - Data Syncing Related
 
-// DEPRECATED: In favor of performBatchedCompanySeedSyncLocally. Delete after testing.
-// Add the most basic set of most used company information to the company data store. This is done locally.
-- (void)performCompanySeedSyncLocally {
-    
-    // Add the 20 most used company tickers and name to the company database.
-    // TO DO: CAPABILITY: Expand to include at least 50 most used companies.
-    // TO DO: OPTIMIZATION: Since the seed sync will be done when the company data store is empty, add a write to store without checking for duplicates method.
-    
-    // NYSE Most Active - Sep 21, 2015
-    [self insertUniqueCompanyWithTicker:@"BAC" name:@"Bank Of America"];
-    [self insertUniqueCompanyWithTicker:@"RAD" name:@"Rite Aid"];
-    [self insertUniqueCompanyWithTicker:@"FCX" name:@"Freeport-McMoRan"];
-    [self insertUniqueCompanyWithTicker:@"GE" name:@"General Electric"];
-    [self insertUniqueCompanyWithTicker:@"S" name:@"Sprint"];
-    [self insertUniqueCompanyWithTicker:@"P" name:@"Pandora Media"];
-    [self insertUniqueCompanyWithTicker:@"PFE" name:@"Pfizer"];
-    [self insertUniqueCompanyWithTicker:@"BABA" name:@"Alibaba Group Holding ADR"];
-    [self insertUniqueCompanyWithTicker:@"DOW" name:@"Dow Chemical"];
-    [self insertUniqueCompanyWithTicker:@"F" name:@"Ford Motor"];
-    [self insertUniqueCompanyWithTicker:@"T" name:@"AT&T"];
-    [self insertUniqueCompanyWithTicker:@"AA" name:@"Alcoa"];
-    [self insertUniqueCompanyWithTicker:@"MRK" name:@"Merck&Co"];
-    [self insertUniqueCompanyWithTicker:@"ABX" name:@"Barrick Gold"];
-    [self insertUniqueCompanyWithTicker:@"WFC" name:@"Wells Fargo"];
-    [self insertUniqueCompanyWithTicker:@"HPQ" name:@"Hewlett-Packard"];
-    [self insertUniqueCompanyWithTicker:@"ORCL" name:@"Oracle"];
-    [self insertUniqueCompanyWithTicker:@"C" name:@"Citigroup"];
-    [self insertUniqueCompanyWithTicker:@"SUNE" name:@"SunEdison"];
-    [self insertUniqueCompanyWithTicker:@"GM" name:@"General Motors"];
-    [self insertUniqueCompanyWithTicker:@"CHK" name:@"Chesapeake Energy"];
-    [self insertUniqueCompanyWithTicker:@"JPM" name:@"JPMorgan Chase"];
-    [self insertUniqueCompanyWithTicker:@"KO" name:@"Coca-Cola"];
-    [self insertUniqueCompanyWithTicker:@"XRX" name:@"Xerox"];
-    [self insertUniqueCompanyWithTicker:@"EMC" name:@"EMC"];
-    [self insertUniqueCompanyWithTicker:@"VZ" name:@"Verizon Communications, Inc"];
-    [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike, Inc"];
-    [self insertUniqueCompanyWithTicker:@"SBUX" name:@"Starbucks Corporation"];
-
-    
-    // NASDAQ Most Active - Sep 21, 2015
-    [self insertUniqueCompanyWithTicker:@"AAPL" name:@"Apple Inc"];
-    [self insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla Motors Inc"];
-    [self insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts Inc"];
-    [self insertUniqueCompanyWithTicker:@"CRM" name:@"Salesforce.com Inc"];
-    [self insertUniqueCompanyWithTicker:@"NFLX" name:@"Netflix Inc"];
-    [self insertUniqueCompanyWithTicker:@"FB" name:@"Facebook Inc"];
-    [self insertUniqueCompanyWithTicker:@"EA" name:@"Electronic Arts Inc"];
-    [self insertUniqueCompanyWithTicker:@"MSFT" name:@"Microsoft Corp"];
-    [self insertUniqueCompanyWithTicker:@"TWTR" name:@"Twitter Inc"];
-    [self insertUniqueCompanyWithTicker:@"TGT" name:@"Target Corp"];
-    [self insertUniqueCompanyWithTicker:@"QCOM" name:@"Qualcomm Inc"];
-    [self insertUniqueCompanyWithTicker:@"INTC" name:@"Intel Corp"];
-    [self insertUniqueCompanyWithTicker:@"CSCO" name:@"Cisco Systems"];
-    [self insertUniqueCompanyWithTicker:@"SIRI" name:@"Sirius XM Holdings Inc"];
-    [self insertUniqueCompanyWithTicker:@"FOXA" name:@"Twenty-First Century Fox, Inc"];
-    [self insertUniqueCompanyWithTicker:@"MU" name:@"Micron Technology, Inc"];
-    [self insertUniqueCompanyWithTicker:@"FTR" name:@"Frontier Communications Corporation"];
-    [self insertUniqueCompanyWithTicker:@"NFLX" name:@"Netflix, Inc"];
-    [self insertUniqueCompanyWithTicker:@"YHOO" name:@"Yahoo! Inc"];
-    [self insertUniqueCompanyWithTicker:@"GILD" name:@"Gilead Sciences, Inc"];
-    [self insertUniqueCompanyWithTicker:@"AMAT" name:@"Applied Materials, Inc"];
-    [self insertUniqueCompanyWithTicker:@"GPRO" name:@"GoPro, Inc"];
-    [self insertUniqueCompanyWithTicker:@"CMCSA" name:@"Comcast Corporation"];
-    [self insertUniqueCompanyWithTicker:@"PYPL" name:@"PayPal Holdings, Inc"];
-    [self insertUniqueCompanyWithTicker:@"FIT" name:@"Fitbit, Inc"];
-    [self insertUniqueCompanyWithTicker:@"GOOG" name:@"Google, Inc"];
-    
-    // Add or Update the Company Data Sync status to SeedSyncDone.
-    [self upsertUserWithCompanySyncStatus:@"SeedSyncDone" syncedPageNo:[NSNumber numberWithInteger: 0]];
-}
-
 // Add the most basic set of most used company information to the company data store. This is done in a batch.
 - (void)performBatchedCompanySeedSyncLocally {
     
@@ -947,6 +876,71 @@
     companyNasdaq26.ticker = @"AMZN";
     companyNasdaq26.name = @"Amazon.com, Inc";
     
+    // DOW 30 Companies not covered above
+    Company *companyDow1 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow1.ticker = @"MMM";
+    companyDow1.name = @"3M";
+    Company *companyDow2 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow2.ticker = @"AXP";
+    companyDow2.name = @"American Express";
+    Company *companyDow3 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow3.ticker = @"BA";
+    companyDow3.name = @"Boeing";
+    Company *companyDow4 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow4.ticker = @"CAT";
+    companyDow4.name = @"Caterpillar";
+    Company *companyDow5 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow5.ticker = @"CVX";
+    companyDow5.name = @"Chevron";
+    Company *companyDow6 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow6.ticker = @"DIS";
+    companyDow6.name = @"Disney";
+    Company *companyDow7 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow7.ticker = @"DD";
+    companyDow7.name = @"DuPont Co";
+    Company *companyDow8 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow8.ticker = @"XOM";
+    companyDow8.name = @"Exxon Mobil";
+    Company *companyDow9 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow9.ticker = @"GS";
+    companyDow9.name = @"Goldman Sachs";
+    Company *companyDow10 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow10.ticker = @"HD";
+    companyDow10.name = @"Home Depot";
+    Company *companyDow11 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow11.ticker = @"IBM";
+    companyDow11.name = @"IBM";
+    Company *companyDow12 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow12.ticker = @"JNJ";
+    companyDow12.name = @"Johnson & Johnson";
+    Company *companyDow13 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow13.ticker = @"MCD";
+    companyDow13.name = @"McDonald's";
+    Company *companyDow14 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow14.ticker = @"PG";
+    companyDow14.name = @"Procter & Gamble";
+    Company *companyDow15 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow15.ticker = @"TRV";
+    companyDow15.name = @"Travelers Companies Inc";
+    Company *companyDow16 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow16.ticker = @"UTX";
+    companyDow16.name = @"United Technologies";
+    Company *companyDow17 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow17.ticker = @"UNH";
+    companyDow17.name = @" UnitedHealth";
+    Company *companyDow18 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow18.ticker = @"V";
+    companyDow18.name = @"Visa";
+    Company *companyDow19 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyDow19.ticker = @"WMT";
+    companyDow19.name = @"Walmart";
+    
+    // Others not covered above
+    // TO DO: Add more as you come along
+    /*Company *companyOther1 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyOther1.ticker = @"MMM";
+    companyOther1.name = @"3M"; */
+    
     // Insert
     NSError *error;
     if (![dataStoreContext save:&error]) {
@@ -966,8 +960,8 @@
     [self getAllEventsFromApiWithTicker:@"AAPL"];
     [self getAllEventsFromApiWithTicker:@"FB"];
     [self getAllEventsFromApiWithTicker:@"MSFT"];
-    [self getAllEventsFromApiWithTicker:@"BAC"];
-    [self getAllEventsFromApiWithTicker:@"GM"];
+    /*[self getAllEventsFromApiWithTicker:@"BAC"];
+    [self getAllEventsFromApiWithTicker:@"GM"]; */
     
     // Add or Update the Company Data Sync status to SeedSyncDone.
     [self updateUserWithEventSyncStatus:@"SeedSyncDone"];
