@@ -52,9 +52,21 @@
     
     // Do any additional setup after loading the view.
     
+    // Visual styling setup
+    
     // Make the message bar fully transparent so that it's invisible to the user
     self.messageBar.alpha = 0.0;
     
+    // Make sure the app icon is hidden on startup
+    self.appIconBar.alpha = 0.0;
+    // Make sure the section header bar is visible
+    self.headerBar.alpha = 1.0;
+    // Fade out the header bar message
+    [UIView animateWithDuration:20 animations:^{
+        self.headerBar.alpha = 0;
+    }];
+    // Bring in the App Icon
+    [UIView animateWithDuration:20 delay:14 options:UIViewAnimationOptionBeginFromCurrentState animations:^{self.appIconBar.alpha = 1.0;} completion:^(BOOL finished){}];
     
     // Change the color of the events search bar placeholder text and text entered to be white.
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
@@ -319,6 +331,12 @@
         
         // Show event certainty
         [[cell eventCertainty] setText:eventAtIndex.certainty];
+        // Set it's color based on certainty. Confirmed is -> Knotifi Purple, Others -> Dark Gray
+        if ([cell.eventCertainty.text isEqualToString:@"Confirmed"]) {
+            cell.eventCertainty.textColor = [UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+        } else {
+            cell.eventCertainty.textColor = [UIColor darkGrayColor];
+        }
         
         NSLog(@"After cell is set to display, company ticker is:%@ and company confirmed is:%@",eventAtIndex.listedCompany.ticker,eventAtIndex.certainty);
     } 
