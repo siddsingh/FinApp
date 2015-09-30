@@ -311,8 +311,8 @@
     else if (([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||[[self getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"])&&[[self getCompanySyncedUptoPage] integerValue] != 0) {
         
         pageNo = ([[self getCompanySyncedUptoPage] integerValue] + 1);
-        // TO DO: Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value below and in applicationWillTerminate in AppDelegate as well.
-        noOfPages = 25;
+        // TO DO: Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value below and in applicationWillTerminate in AppDelegate as well.
+        noOfPages = 26;
         
         NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
     }
@@ -369,8 +369,8 @@
     }
     
     // Add or Update the Company Data Sync status to SeedSyncDone. Check that all pages have been processed before doing so.
-    // TO DO: Currently this is hardcoded to 25 as 25 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value above and in applicationWillTerminate in AppDelegate as well.
-    if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= 25))
+    // TO DO: Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value above and in applicationWillTerminate in AppDelegate as well.
+    if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= 26))
     {
         [self upsertUserWithCompanySyncStatus:@"FullSyncDone" syncedPageNo:[NSNumber numberWithInteger:(pageNo-1)]];
     }
@@ -426,7 +426,7 @@
             -- noOfPages;
         }
     }
-    
+    NSLog(@"Total Number of pages dynamically computed: %ld ", (long)noOfPages);
     return noOfPages;
 }
 

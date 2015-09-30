@@ -18,11 +18,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UPCOMING EARNINGS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lH9-rm-JDu">
-                                <rect key="frame" x="219" y="23" width="162" height="21"/>
+                                <rect key="frame" x="219" y="28" width="162" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="CAA-8i-PX1"/>
                                     <constraint firstAttribute="height" constant="21" id="LKS-na-rUg"/>
-                                    <constraint firstAttribute="height" constant="21" id="ZJW-uY-3aR"/>
+                                    <constraint firstAttribute="height" constant="16" id="ZJW-uY-3aR"/>
                                     <constraint firstAttribute="width" constant="162" id="cIj-gj-FWC"/>
                                     <constraint firstAttribute="width" constant="86" id="lWh-TG-SSE"/>
                                 </constraints>
@@ -33,16 +33,17 @@
                                     <mask key="constraints">
                                         <exclude reference="CAA-8i-PX1"/>
                                         <exclude reference="LKS-na-rUg"/>
+                                        <exclude reference="ZJW-uY-3aR"/>
                                         <exclude reference="lWh-TG-SSE"/>
                                     </mask>
                                 </variation>
                             </label>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="kvC-1T-x6w">
-                                <rect key="frame" x="292" y="89" width="20" height="20"/>
+                                <rect key="frame" x="292" y="95" width="20" height="20"/>
                                 <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </activityIndicatorView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" sectionIndexMinimumDisplayRowCount="-1" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
-                                <rect key="frame" x="-5" y="112" width="612" height="488"/>
+                                <rect key="frame" x="-5" y="118" width="612" height="482"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="separatorInset" minX="50" minY="0.0" maxX="50" maxY="0.0"/>
                                 <prototypes>
@@ -149,7 +150,7 @@
                                 </connections>
                             </tableView>
                             <searchBar contentMode="redraw" searchBarStyle="minimal" text="" placeholder="COMPANY OR TICKER" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
-                                <rect key="frame" x="162" y="44" width="281" height="44"/>
+                                <rect key="frame" x="162" y="50" width="281" height="44"/>
                                 <color key="backgroundColor" red="0.47450980390000003" green="0.71372549019999998" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="281" id="EYj-il-hhd"/>
@@ -162,7 +163,7 @@
                                 </connections>
                             </searchBar>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fetching Companies. If you can't find a Company, retry in a bit." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RVP-gf-zre">
-                                <rect key="frame" x="160" y="88" width="281" height="21"/>
+                                <rect key="frame" x="160" y="94" width="281" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="281" id="GiC-uX-vhk"/>
                                     <constraint firstAttribute="height" constant="21" id="VW0-7p-zBZ"/>
@@ -172,7 +173,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="k" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3A3-9M-ap9">
-                                <rect key="frame" x="290" y="21" width="20" height="25"/>
+                                <rect key="frame" x="290" y="21" width="20" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="20" id="ldb-So-OAy"/>
                                 </constraints>
@@ -194,7 +195,7 @@
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" id="QJJ-ft-4SW"/>
                             <constraint firstItem="RVP-gf-zre" firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" constant="-2" id="UtF-aA-mCT"/>
                             <constraint firstItem="3A3-9M-ap9" firstAttribute="centerX" secondItem="RVP-gf-zre" secondAttribute="centerX" id="VOf-Zg-mhQ"/>
-                            <constraint firstItem="nfw-0u-xss" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" id="VUT-Gs-jZe"/>
+                            <constraint firstItem="nfw-0u-xss" firstAttribute="top" secondItem="lH9-rm-JDu" secondAttribute="bottom" constant="5" id="VUT-Gs-jZe"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="24" id="Vdc-k8-H6G"/>
                             <constraint firstItem="RVP-gf-zre" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" id="Y1m-ha-GMZ"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" constant="-21" id="YIU-ya-UOA"/>
@@ -202,7 +203,7 @@
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" id="YYc-TA-BAy"/>
                             <constraint firstAttribute="trailing" secondItem="KbY-6m-WGH" secondAttribute="trailing" id="Yel-CZ-VCU"/>
                             <constraint firstAttribute="centerX" secondItem="KbY-6m-WGH" secondAttribute="centerX" id="ZPx-EN-Zmh"/>
-                            <constraint firstItem="lH9-rm-JDu" firstAttribute="top" secondItem="QkD-j3-H2X" secondAttribute="bottom" constant="3" id="ZUe-g5-vYJ"/>
+                            <constraint firstItem="lH9-rm-JDu" firstAttribute="top" secondItem="QkD-j3-H2X" secondAttribute="bottom" constant="8" id="ZUe-g5-vYJ"/>
                             <constraint firstItem="lH9-rm-JDu" firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" constant="-5.5" id="Zhp-Z4-IPS"/>
                             <constraint firstItem="nfw-0u-xss" firstAttribute="centerX" secondItem="kvC-1T-x6w" secondAttribute="centerX" id="a1j-OX-KCO"/>
                             <constraint firstAttribute="centerX" secondItem="lH9-rm-JDu" secondAttribute="centerX" constant="5" id="anK-za-GYh"/>
