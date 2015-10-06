@@ -57,16 +57,22 @@
     // Make the message bar fully transparent so that it's invisible to the user
     self.messageBar.alpha = 0.0;
     
-    // Make sure the app icon is hidden on startup
-    self.appIconBar.alpha = 0.0;
+    // Make sure the app icon is shown on startup
+    self.appIconBar.alpha = 1.0;
+    // Make sure the section header bar is hidden on startup
+    self.headerBar.alpha = 0.0;
+    
+    // TO DO: Reuse when displaying today's date. Also change the hidden state of the section header bar.
+    /*
     // Make sure the section header bar is visible
     self.headerBar.alpha = 1.0;
     // Fade out the header bar message
     [UIView animateWithDuration:20 animations:^{
         self.headerBar.alpha = 0;
     }];
+    
     // Bring in the App Icon
-    [UIView animateWithDuration:20 delay:14 options:UIViewAnimationOptionBeginFromCurrentState animations:^{self.appIconBar.alpha = 1.0;} completion:^(BOOL finished){}];
+    [UIView animateWithDuration:20 delay:14 options:UIViewAnimationOptionBeginFromCurrentState animations:^{self.appIconBar.alpha = 1.0;} completion:^(BOOL finished){}]; */
     
     // Change the color of the events search bar placeholder text and text entered to be white.
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
@@ -173,6 +179,15 @@
     return 1;
     
     
+}
+
+// Set the header for the table view to a special table cell that serves as header.
+-(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    
+    UITableViewCell *headerView = nil;
+
+    headerView = [tableView dequeueReusableCellWithIdentifier:@"EventsTableHeader"];
+    return headerView;
 }
 
 // Return number of rows in the events list table view
