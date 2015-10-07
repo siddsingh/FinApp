@@ -21,8 +21,11 @@
 // Send a notification that the list of messages has changed (updated)
 - (void)sendEventsChangeNotification;
 
-// Send a notification that the list of events has changed (updated)
+// Send a notification that a user message should be displayed
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
+
+// Send a notification that the text of the header on the Events screen should be changed. Currently to today's date.
+- (void)sendEventsHeaderChangeNotification;
 
 // Check if there is internet connectivity
 - (BOOL) checkForInternetConnectivity;
@@ -55,6 +58,8 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    
+    NSLog(@"APP WILL ENTER FOREGROUND FIRED");
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -83,6 +88,9 @@
         
         [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Click home to exit, fix connection and retry."];
     }
+    
+    // Fire a notification to set the screen header for the events view to today's date.
+    [self sendEventsHeaderChangeNotification];
     
     NSLog(@"******************************************Active State Fired****************************************");
 }
@@ -176,10 +184,22 @@
 #pragma mark - Notifications
 
 // Send a notification that the list of events has changed (updated)
+- (void)sendEventsChangeNotification {
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
+}
+
+// Send a notification that a user message should be displayed
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
     NSLog(@"NOTIFICATION FIRED: With User Message: %@",msgContents);
+}
+
+// Send a notification that the text of the header on the Events screen should be changed. Currently to today's date.
+- (void)sendEventsHeaderChangeNotification {
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"UpdateScreenHeader" object:self];
 }
 
 #pragma mark - Connectivity Methods
@@ -200,15 +220,6 @@
         return YES;
     }
 }
-
-#pragma mark - Notifications
-
-// Send a notification that the list of events has changed (updated)
-- (void)sendEventsChangeNotification {
-    
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
-}
-
 
 #pragma mark - Core Data stack
 

@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UPCOMING EARNINGS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lH9-rm-JDu">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Upcoming" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lH9-rm-JDu">
                                 <rect key="frame" x="219" y="28" width="162" height="17"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="CAA-8i-PX1"/>
@@ -27,7 +27,7 @@
                                     <constraint firstAttribute="width" constant="86" id="lWh-TG-SSE"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
-                                <color key="textColor" red="0.31764705879999999" green="0.21176470589999999" blue="0.49803921569999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                                 <variation key="default">
                                     <mask key="constraints">
@@ -53,9 +53,10 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kaV-62-EHJ" id="rKq-Hf-cMV">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="center" text="UPCOMING EARNINGS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="DrK-lS-eMj">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="center" text="Upcoming Earnings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="DrK-lS-eMj">
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
                                                     <color key="textColor" red="0.31764705879999999" green="0.21176470589999999" blue="0.49803921569999998" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -86,27 +87,13 @@
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Event Information Description" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r65-ua-5Pc">
-                                                    <rect key="frame" x="92" y="8" width="494" height="27"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="487" id="jdP-jn-yXN"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
-                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                    <variation key="default">
-                                                        <mask key="constraints">
-                                                            <exclude reference="jdP-jn-yXN"/>
-                                                        </mask>
-                                                    </variation>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thursday September 18 Before Open" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jou-oj-rjb">
-                                                    <rect key="frame" x="92" y="36" width="255" height="18"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thu September 18 Before Open" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jou-oj-rjb">
+                                                    <rect key="frame" x="92" y="8" width="255" height="25"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="255" id="Yja-NE-duE"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="13.699999809265137"/>
-                                                    <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="15"/>
+                                                    <color key="textColor" red="0.1764705882352941" green="0.1764705882352941" blue="0.1764705882352941" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Confirmed" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y7j-P2-Lf8">
@@ -118,15 +105,29 @@
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Event Information Description" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r65-ua-5Pc">
+                                                    <rect key="frame" x="92" y="34" width="494" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="487" id="jdP-jn-yXN"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="13"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <variation key="default">
+                                                        <mask key="constraints">
+                                                            <exclude reference="jdP-jn-yXN"/>
+                                                        </mask>
+                                                    </variation>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="trailingMargin" secondItem="r65-ua-5Pc" secondAttribute="trailing" constant="18" id="1yS-iJ-xaL"/>
-                                                <constraint firstItem="r65-ua-5Pc" firstAttribute="top" secondItem="Bou-Yt-hGl" secondAttribute="top" id="8i9-8O-y3D"/>
+                                                <constraint firstItem="r65-ua-5Pc" firstAttribute="top" secondItem="Bou-Yt-hGl" secondAttribute="top" constant="26" id="8i9-8O-y3D"/>
                                                 <constraint firstItem="Y7j-P2-Lf8" firstAttribute="leading" secondItem="s1x-IM-BDA" secondAttribute="trailing" constant="3" id="9rB-Y7-UOe"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="Jou-oj-rjb" secondAttribute="bottom" constant="17" id="DQa-ZF-AdS"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="Jou-oj-rjb" secondAttribute="bottom" constant="38" id="DQa-ZF-AdS"/>
                                                 <constraint firstItem="s1x-IM-BDA" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" constant="48" id="Etb-81-0BA"/>
                                                 <constraint firstItem="Bou-Yt-hGl" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" id="HdH-ls-FhF"/>
-                                                <constraint firstItem="Y7j-P2-Lf8" firstAttribute="top" secondItem="Jou-oj-rjb" secondAttribute="bottom" constant="4" id="Hku-QY-I4i"/>
+                                                <constraint firstItem="Y7j-P2-Lf8" firstAttribute="top" secondItem="Jou-oj-rjb" secondAttribute="bottom" constant="25" id="Hku-QY-I4i"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="Y7j-P2-Lf8" secondAttribute="bottom" constant="-3" id="MiL-by-rnx"/>
                                                 <constraint firstItem="r65-ua-5Pc" firstAttribute="leading" secondItem="Jou-oj-rjb" secondAttribute="leading" id="On9-TU-cHP"/>
                                                 <constraint firstItem="Bou-Yt-hGl" firstAttribute="leading" secondItem="EdO-do-03K" secondAttribute="leadingMargin" constant="16" id="PE1-3T-jfj"/>
@@ -137,14 +138,14 @@
                                                 <constraint firstAttribute="trailingMargin" secondItem="r65-ua-5Pc" secondAttribute="trailing" constant="-40" id="iWW-wf-qtp"/>
                                                 <constraint firstItem="Y7j-P2-Lf8" firstAttribute="leading" secondItem="Jou-oj-rjb" secondAttribute="trailing" constant="277" id="jO5-fx-DPU"/>
                                                 <constraint firstItem="Jou-oj-rjb" firstAttribute="baseline" secondItem="Y7j-P2-Lf8" secondAttribute="baseline" constant="-16" id="oDV-3R-erJ"/>
-                                                <constraint firstItem="Jou-oj-rjb" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" constant="28" id="rdq-EF-ysQ"/>
-                                                <constraint firstItem="Jou-oj-rjb" firstAttribute="top" secondItem="r65-ua-5Pc" secondAttribute="bottom" constant="1" id="yc7-Kj-w5V"/>
+                                                <constraint firstItem="Jou-oj-rjb" firstAttribute="top" secondItem="EdO-do-03K" secondAttribute="topMargin" id="rdq-EF-ysQ"/>
+                                                <constraint firstItem="Jou-oj-rjb" firstAttribute="top" secondItem="r65-ua-5Pc" secondAttribute="bottom" constant="-47" id="yc7-Kj-w5V"/>
                                                 <constraint firstItem="r65-ua-5Pc" firstAttribute="leading" secondItem="Bou-Yt-hGl" secondAttribute="trailing" constant="20" id="yua-Oe-fbB"/>
                                             </constraints>
                                             <variation key="default">
                                                 <mask key="constraints">
-                                                    <exclude reference="iWW-wf-qtp"/>
                                                     <exclude reference="oDV-3R-erJ"/>
+                                                    <exclude reference="iWW-wf-qtp"/>
                                                     <exclude reference="jO5-fx-DPU"/>
                                                 </mask>
                                             </variation>
@@ -188,7 +189,7 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="k" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3A3-9M-ap9">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="k" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3A3-9M-ap9">
                                 <rect key="frame" x="290" y="21" width="20" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="20" id="ldb-So-OAy"/>

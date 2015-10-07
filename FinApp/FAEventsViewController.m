@@ -57,22 +57,13 @@
     // Make the message bar fully transparent so that it's invisible to the user
     self.messageBar.alpha = 0.0;
     
-    // Make sure the app icon is shown on startup
-    self.appIconBar.alpha = 1.0;
-    // Make sure the section header bar is hidden on startup
-    self.headerBar.alpha = 0.0;
+    // TO DO: Use it later for hamburger menu button. Make sure the app icon is hidden on startup
+    self.appIconBar.alpha = 0.0;
     
-    // TO DO: Reuse when displaying today's date. Also change the hidden state of the section header bar.
-    /*
-    // Make sure the section header bar is visible
-    self.headerBar.alpha = 1.0;
-    // Fade out the header bar message
-    [UIView animateWithDuration:20 animations:^{
-        self.headerBar.alpha = 0;
-    }];
-    
-    // Bring in the App Icon
-    [UIView animateWithDuration:20 delay:14 options:UIViewAnimationOptionBeginFromCurrentState animations:^{self.appIconBar.alpha = 1.0;} completion:^(BOOL finished){}]; */
+    // Show today's date in the Screen Header.
+    NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
+    [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
+    self.headerBar.text = [todayDateFormatter stringFromDate:[NSDate date]];
     
     // Change the color of the events search bar placeholder text and text entered to be white.
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
@@ -120,6 +111,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(createQueuedReminder:)
                                                  name:@"CreateQueuedReminder" object:nil];
+    
+    // Register a listener for refreshing the overall screen header, currently with today's date
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateScreenHeader:)
+                                                 name:@"UpdateScreenHeader" object:nil];
     
     
     // Seed the company data, the very first time, to get the user started.
@@ -310,15 +306,16 @@
         // be a unique identifier for each event ?
         cell.eventRemoteFetch = NO;
         
-        // Show the event type
-        [[cell  eventDescription] setText:eventAtIndex.type];
+        // Show the event type. Format it for display. Currently map "Quarterly Earnings" to Quarterly.
+        if ([eventAtIndex.type isEqualToString:@"Quarterly Earnings"])
+        [[cell  eventDescription] setText:@"Quarterly"];
         
         // Show the event date
         NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
         // TO DO: For later different formatting styles.
         //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
         //[eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
-        [eventDateFormatter setDateFormat:@"EEEE MMMM dd"];
+        [eventDateFormatter setDateFormat:@"EEE MMMM dd"];
         NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
         NSString *eventTimeString = eventAtIndex.relatedDetails;
         // Append related details (timing information) to the event date if it's known
@@ -346,9 +343,12 @@
         
         // Show event certainty
         [[cell eventCertainty] setText:eventAtIndex.certainty];
-        // Set it's color based on certainty. Confirmed is -> Knotifi Purple, Others -> Dark Gray
+        // Set it's color based on certainty. Confirmed is -> Knotifi Purple, Others -> Light Gray
         if ([cell.eventCertainty.text isEqualToString:@"Confirmed"]) {
+            
             cell.eventCertainty.textColor = [UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+            // TO DO: Delete this bright blue later
+            //cell.eventCertainty.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
         } else {
             cell.eventCertainty.textColor = [UIColor darkGrayColor];
         }
@@ -758,6 +758,14 @@
     }
 }
 
+// Process the notification to update screen header. Currently just set it to today's date.
+- (void)updateScreenHeader:(NSNotification *)notification {
+    
+    NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
+    [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
+    self.headerBar.text = [todayDateFormatter stringFromDate:[NSDate date]];
+}
+
 
 #pragma mark - Calendar and Event Related
 
@@ -1039,7 +1047,17 @@
  
  cell.companyTicker.backgroundColor = [UIColor colorWithRed:40.0f/255.0f green:114.0f/255.0f blue:81.0f/255.0f alpha:1.0f];
  }
-
+ 
+ // Reuse when displaying today's date. Also change the hidden state of the section header bar.
+ // Make sure the section header bar is visible
+ self.headerBar.alpha = 1.0;
+ // Fade out the header bar message
+ [UIView animateWithDuration:20 animations:^{
+ self.headerBar.alpha = 0;
+ }];
+ 
+ // Bring in the App Icon
+ [UIView animateWithDuration:20 delay:14 options:UIViewAnimationOptionBeginFromCurrentState animations:^{self.appIconBar.alpha = 1.0;} completion:^(BOOL finished){}]; 
 */
 
 @end
