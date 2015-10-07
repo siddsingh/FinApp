@@ -297,6 +297,8 @@
     NSInteger noOfCompaniesPerPage = 300;
     // Set no of results pages to 1
     NSInteger noOfPages = 1;
+    //  Temporary Storage for noOfPages
+    NSInteger noOfPagesTemp = 1;
     // Set page no to 1
     NSInteger pageNo = 1;
     
@@ -311,8 +313,9 @@
     else if (([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||[[self getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"])&&[[self getCompanySyncedUptoPage] integerValue] != 0) {
         
         pageNo = ([[self getCompanySyncedUptoPage] integerValue] + 1);
-        // TO DO: Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value below and in applicationWillTerminate in AppDelegate as well.
-        noOfPages = 26;
+        // TO DO: Delete the hardcoded value. Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value below and in applicationWillTerminate in AppDelegate as well.
+        //noOfPages = 26;
+        noOfPages = [[self getTotalNoOfCompanyPagesToSync] integerValue];
         
         NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
     }
@@ -343,8 +346,14 @@
         if (error == nil)
         {
             // Process the response that contains the first page of companies.
+            // If it's not already been entered, enter the total no of pages of companies to sync in the user data store. This should only be done once.
+            noOfPagesTemp = [self processCompaniesResponse:responseData];
+            if ([[self getTotalNoOfCompanyPagesToSync] integerValue] == -1) {
+                [self updateUserWithTotalNoOfCompanyPagesToSync:[NSNumber numberWithInteger: noOfPagesTemp]];
+            }
+            // TO DO: Optimize to not hit the db everytime.
             // Get back total no of pages of companies in the response.
-            noOfPages = [self processCompaniesResponse:responseData];
+            noOfPages = [[self getTotalNoOfCompanyPagesToSync] integerValue];
             
             // Keep the company sync status to "FullSyncStarted" but update the page number of the API response to the page that just finished.
             [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger: pageNo]];
@@ -370,7 +379,9 @@
     
     // Add or Update the Company Data Sync status to SeedSyncDone. Check that all pages have been processed before doing so.
     // TO DO: Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value above and in applicationWillTerminate in AppDelegate as well.
-    if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= 26))
+    // TO DO: Delete Later as now getting the value of the total no of companies to sync from db.
+    //if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= 26))
+    if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= [[self getTotalNoOfCompanyPagesToSync] integerValue]))
     {
         [self upsertUserWithCompanySyncStatus:@"FullSyncDone" syncedPageNo:[NSNumber numberWithInteger:(pageNo-1)]];
     }
@@ -948,6 +959,8 @@
     } else {
         // Add or Update the Company Data Sync status to SeedSyncDone.
         [self upsertUserWithCompanySyncStatus:@"SeedSyncDone" syncedPageNo:[NSNumber numberWithInteger: 0]];
+        // Set Total Number of Company Pages to -1, to indicate that the valid value has not yet been fetched
+        [self updateUserWithTotalNoOfCompanyPagesToSync:[NSNumber numberWithInteger: -1]];
     }
 }
 
@@ -1074,6 +1087,30 @@
     return fetchedUser.companyPageNumber;
 }
 
+// Get the total number of pages of company data that needs to be synced from the company data API response.
+- (NSNumber *)getTotalNoOfCompanyPagesToSync {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    NSFetchRequest *noPagesFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [noPagesFetchRequest setEntity:userEntity];
+    
+    NSError *error;
+    NSArray *fetchedUsers = [dataStoreContext executeFetchRequest:noPagesFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store, for getting total no of company pages to sync, failed: %@",error.description);
+    }
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store, while getting total no of company pages to sync.");
+    }
+    
+    // Return the page number
+    User *fetchedUser = [fetchedUsers lastObject];
+    return fetchedUser.companyTotalPages;
+}
+
 // Get the Event Data Sync Status for the one user in the data store. Returns the following values:
 // "SeedSyncDone" means the most basic set of events information has been added to the event data store.
 // "NoSyncPerformed" means no event information has been added to the event data store.
@@ -1150,6 +1187,45 @@
     // Update the user
     if (![dataStoreContext save:&error]) {
         NSLog(@"ERROR: Saving user company data sync status to data store failed: %@",error.description);
+    }
+}
+
+// Update the total number of company pages to be synced to the user data store. This method updates the user with the given number. If the user doesn't exist, it logs an error. Since the user is created the first time a company event sync is performed, CALL THIS METHOD AFTER THE UPSERT COMPANY SYNC STATUS METHOD IS CALLED AT LEAST ONCE.
+- (void)updateUserWithTotalNoOfCompanyPagesToSync:(NSNumber *)noOfPages
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the user object exists by querying for it
+    NSFetchRequest *userFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [userFetchRequest setEntity:userEntity];
+    NSError *error;
+    User *existingUser = nil;
+    NSArray *fetchedUsers= [dataStoreContext executeFetchRequest:userFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store, for updating total number of company pages failed: %@",error.description);
+    }
+    
+    existingUser = [fetchedUsers lastObject];
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store, when trying to update total number of company pages");
+    }
+    
+    // If the user does not exist
+    else if (!existingUser) {
+        NSLog(@"SEVERE_WARNING: No user found for updating the total number of company pages. Make sure the update user with total company pages method is not called before the upsert company sync status method has been called at least once.");
+    }
+    
+    // If the user exists
+    else {
+        // Update the total number of pages value.
+        existingUser.companyTotalPages = noOfPages;
+    }
+    
+    // Update the user
+    if (![dataStoreContext save:&error]) {
+        NSLog(@"ERROR: Updating user's total number of companies to fetch to data store failed: %@",error.description);
     }
 }
 

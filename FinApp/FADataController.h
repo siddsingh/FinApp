@@ -150,6 +150,9 @@
 // Get the Page number to which the company data sync was completed, ranges from 0 to total no of pages in the company data API response.
 - (NSNumber *)getCompanySyncedUptoPage;
 
+// Get the total number of pages of company data that needs to be synced from the company data API response.
+- (NSNumber *)getTotalNoOfCompanyPagesToSync;
+
 // Get the Event Data Sync Status for the one user in the data store. Returns the following values:
 // "SeedSyncDone" means the most basic set of events information has been added to the event data store.
 // "NoSyncPerformed" means no event information has been added to the event data store.
@@ -162,6 +165,9 @@
 // status for the user to "NoSyncPerformed" when creating the user, not for the update.
 // Synced Page number is the page to which the company data sync was completed, ranges from 0 to total no of pages in the company data API response
 - (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus syncedPageNo: (NSNumber *)pageNo;
+
+// Update the total number of company pages to be synced to the user data store. This method updates the user with the given number. If the user doesn't exist, it logs an error. Since the user is created the first time a company event sync is performed, CALL THIS METHOD AFTER THE UPSERT COMPANY SYNC STATUS METHOD IS CALLED AT LEAST ONCE.
+- (void)updateUserWithTotalNoOfCompanyPagesToSync:(NSNumber *)noOfPages;
 
 // Add events data sync status to the user data store. This method updates the user with the given events sync
 // status. If the user doesn't exist, it logs an error. Since the user is created the first time a company

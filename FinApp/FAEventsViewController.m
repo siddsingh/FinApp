@@ -495,7 +495,9 @@
         // Clean up any unfinished task business before it's about to be terminated
         // In our case, check if all pages of companies data has been synced. If not, mark status to failed
         // so that another thread can pick up the completion on restart. Currently this is hardcoded to 26 as 26 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi in FADataController. Also change in Search Bar Began Editing in the Events View Controller.
-        if ([[companiesDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companiesDataController getCompanySyncedUptoPage] integerValue] < 26)
+        // TO DO: Delete Later as now getting the value of the total no of companies to sync from db.
+        // if ([[companiesDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companiesDataController getCompanySyncedUptoPage] integerValue] < 26)
+        if ([[companiesDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companiesDataController getCompanySyncedUptoPage] integerValue] < [[companiesDataController getTotalNoOfCompanyPagesToSync] integerValue])
         {
             [companiesDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[companiesDataController getCompanySyncedUptoPage]];
         }
@@ -664,7 +666,10 @@
             // Give the user an informational message
             int pagesDone = [[self.primaryDataController getCompanySyncedUptoPage] intValue];
             // TO DO: Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi(2 places) in FADataController. Also change in Search Bar Began Editing in the Events View Controller. Also change in getAllCompaniesFromApiInBackground in FA Events View Controller. Also Change in refreshCompanyInfoIfNeededFromApiInBackground in AppDelegate.
-            int totalPages = 26;
+            // TO DO: Delete this later
+            // int totalPages = 26;
+            // TO DO: Account for the case where total no of company pages to sync might be -1.
+            int totalPages = (int)[[self.primaryDataController getTotalNoOfCompanyPagesToSync] integerValue];
             float percentageDone = (100 * pagesDone)/totalPages;
             NSString *userMessage = [NSString stringWithFormat:@"Fetching Tickers(%.f%% Done)! Can't find one,retry in a bit.", percentageDone];
             [self sendUserMessageCreatedNotificationWithMessage:userMessage];

@@ -109,7 +109,10 @@
     // Check to see if all the company data has been synced before terminating. This is done by checking if 25 pages of information
     // have been processed.
     // TO DO: Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi(2 places) in FADataController. Also change in Search Bar Began Editing in the Events View Controller. Also change in getAllCompaniesFromApiInBackground in FA Events View Controller. Also Change in refreshCompanyInfoIfNeededFromApiInBackground in AppDelegate.
-    if ([[genericDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[genericDataController getCompanySyncedUptoPage] integerValue] < 26)
+    // TO DO: Delete later after testing.
+    //if ([[genericDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[genericDataController getCompanySyncedUptoPage] integerValue] < 26)
+    // Using the total number of company pages to sync from user data store
+    if ([[genericDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[genericDataController getCompanySyncedUptoPage] integerValue] < [[genericDataController getTotalNoOfCompanyPagesToSync] integerValue])
     {
         [genericDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[genericDataController getCompanySyncedUptoPage]];
     }
@@ -151,7 +154,9 @@
             // Clean up any unfinished task business before it's about to be terminated
             // In our case, check if all pages of companies data has been synced. If not, mark status to failed
             // so that another thread can pick up the completion on restart. Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi(2 places) in FADataController. Also change in Search Bar Began Editing in the Events View Controller.
-            if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companyDataController getCompanySyncedUptoPage] integerValue] < 26)
+            // TO DO: Delete Later as now getting the value of the total no of companies to sync from db.
+            // if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companyDataController getCompanySyncedUptoPage] integerValue] < 26)
+            if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companyDataController getCompanySyncedUptoPage] integerValue] < [[companyDataController getTotalNoOfCompanyPagesToSync] integerValue])
             {
                 [companyDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[companyDataController getCompanySyncedUptoPage]];
             }

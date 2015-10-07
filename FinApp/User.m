@@ -32,6 +32,9 @@
 // 0 to total no of pages in the company data API response
 @dynamic companyPageNumber;
 
+// Total number of pages of company data that needs to be synced from the company data API.
+@dynamic companyTotalPages;
+
 // Represents the event data sync status for this user
 // "SeedSyncDone" means the most basic set of events information has been added to
 // the event data store.
