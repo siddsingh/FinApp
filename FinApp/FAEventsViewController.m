@@ -227,15 +227,17 @@
 }
 
 // Return a cell configured to display an event or a company with a fetch event
-// TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
+// TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
     // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
     
-    // Reset color for Event description to dark text, in case it's been set to blue for a "Get Events" display
-    cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    //TO DO: Delete Later. Reset color for Event description to dark text, in case it's been set to blue for a "Get Events" display
+    //cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    // Reset color for Event Date to dark text, in case it's been set to blue for a "Get Earnings" display.
+    cell.eventDate.textColor = [UIColor colorWithRed:45.0f/255.0f green:45.0f/255.0f blue:45.0f/255.0f alpha:1.0f];
     
     // Set the compnay ticker background color to a darker to lighter (darker at the top) based on row number.
     // Currently supporting a dark gray scheme
@@ -280,9 +282,12 @@
         [[cell  companyName] setText:companyAtIndex.name];
         
         // Show the "Get Events" text in the event display area.
-        [[cell  eventDescription] setText:@"Get Events"];
+        // TO DO: Delete Later. With the reformatting, the Get text should be shown in the event date column
+        //[[cell  eventDescription] setText:@"Get Events"];
+        //cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+        [[cell eventDate] setText:@"Get Earnings"];
         // Set color to a link blue to provide a visual cue to click
-        cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+        cell.eventDate.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
         
         // Set the fetch state of the event cell to true
         // TO DO: Should you really be holding logic state at the cell level or should there
@@ -290,10 +295,14 @@
         cell.eventRemoteFetch = YES;
         
         // Set all other fields to empty
-        [[cell eventDate] setText:@" "];
+        // TO DO: Delete Later since we will show the "Get Earnings" Message in the Event Date.
+        //[[cell eventDate] setText:@" "];
+        [[cell eventDescription] setText:@" "];
         [[cell eventCertainty] setText:@" "];
     }
     else {
+        
+        // TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
@@ -838,7 +847,9 @@
 // Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
 - (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell withDataController:(FADataController *)appropriateDataController {
     
-    NSString *cellEventType = eventCell.eventDescription.text;
+    // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
+    // If the formatting changes, it needs to be changed here to accomodate as well.
+    NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", eventCell.eventDescription.text];
     NSString *cellCompanyTicker = eventCell.companyTicker.text;
     NSString *cellEventDateText = eventCell.eventDate.text;
     NSString *cellEventCertainty = eventCell.eventCertainty.text;
