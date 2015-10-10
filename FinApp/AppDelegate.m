@@ -69,6 +69,8 @@
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
         
+        // TO DO: OPTIONAL UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to do a company/event sync due to preseeded data.
+        /*
         // If this hasn't already been done, seed the events data, the very first time, to get the user started.
         FADataController *eventSeedSyncController = [[FADataController alloc] init];
         if ([[eventSeedSyncController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
@@ -81,12 +83,15 @@
         }
         
         // If the full sync of company data has failed, retry it
-        [self refreshCompanyInfoIfNeededFromApiInBackground];
+        [self refreshCompanyInfoIfNeededFromApiInBackground]; */
+        
+        // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data.
+        [self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
     }
     // If not, show error message
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Click home to exit, fix connection and retry."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Limited functionality available."];
     }
     
     // Fire a notification to set the screen header for the events view to today's date.
@@ -101,22 +106,16 @@
     // Saves changes in the application's managed object context before the application terminates.
     // [self saveContext];
     
-    NSLog(@"APPLICATION WILL TERMINATE FIRED");
-    
+    // Check to see if all the company data has been synced before terminating. This is done by checking if all pages of information
+    // have been processed. Using the total number of company pages to sync from user data store.
+    // TO DO: OPTIONAL UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to do a company/event sync due to preseeded data.
     // Create a new generic Data Controller
-    FADataController *genericDataController = [[FADataController alloc] init];
-    
-    // Check to see if all the company data has been synced before terminating. This is done by checking if 25 pages of information
-    // have been processed.
-    // TO DO: Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi(2 places) in FADataController. Also change in Search Bar Began Editing in the Events View Controller. Also change in getAllCompaniesFromApiInBackground in FA Events View Controller. Also Change in refreshCompanyInfoIfNeededFromApiInBackground in AppDelegate.
-    // TO DO: Delete later after testing.
-    //if ([[genericDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[genericDataController getCompanySyncedUptoPage] integerValue] < 26)
-    // Using the total number of company pages to sync from user data store
+    /*FADataController *genericDataController = [[FADataController alloc] init];
     if ([[genericDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[genericDataController getCompanySyncedUptoPage] integerValue] < [[genericDataController getTotalNoOfCompanyPagesToSync] integerValue])
     {
         [genericDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[genericDataController getCompanySyncedUptoPage]];
     }
-    NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld",[genericDataController getCompanySyncStatus],[[genericDataController getCompanySyncedUptoPage] longValue]);
+    NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld",[genericDataController getCompanySyncStatus],[[genericDataController getCompanySyncedUptoPage] longValue]); */
     NSLog(@"******************************************App Termination Fired****************************************");
 }
 
@@ -144,10 +143,6 @@
         NSLog(@"******************************************About to start syncing companies from the restarted main thread****************************************");
         
         // Get Companies
-        // TO DO: Delete this
-        //[companyDataController getAllCompaniesFromApi];
-        
-        
         // Creating a task that continues to process in the background.
         __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundCompaniesFetch" expirationHandler:^{
             

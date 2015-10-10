@@ -69,7 +69,11 @@
     [companyFetchRequest setPredicate:companyPredicate];
     NSError *error;
     Company *existingCompany = nil;
-    existingCompany  = [[dataStoreContext executeFetchRequest:companyFetchRequest error:&error] lastObject];
+    NSArray *fetchedCompanies = [dataStoreContext executeFetchRequest:companyFetchRequest error:&error];
+    existingCompany  = [fetchedCompanies lastObject];
+    if (fetchedCompanies.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found %ld(more than 1) duplicate tickers for %@ when inserting a company to the Data Store",(long)fetchedCompanies.count,companyTicker);
+    }
     if (error) {
         NSLog(@"ERROR: Getting a company from data store, to check uniqueness when inserting, failed: %@",error.description);
     }
@@ -83,7 +87,43 @@
         if (![dataStoreContext save:&error]) {
             NSLog(@"ERROR: Saving a company that is unique, to the data store, failed: %@",error.description);
         }
+        // TO DO: Delete Later.
+        else {
+            NSLog(@"Saved Unique Company with ticker %@",companyTicker);
+        }
     }
+    // TO DO: Delete Later
+    else {
+        NSLog(@"Found a duplicate of ticker %@",companyTicker);
+    }
+}
+
+// Get all Companies. Returns a results controller with identities of all Companies recorded, but no more
+// than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllCompanies
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get all comapnies
+    NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    [companyFetchRequest setEntity:companyEntity];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"ticker" ascending:YES];
+    [companyFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [companyFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:companyFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all companies from data store failed: %@",error.description);
+    }
+    // TO DO: Delete. Currently for debugging only
+    else {
+        NSLog(@"Fetched a total of %ld companies from the data store.",self.resultsController.fetchedObjects.count);
+    }
+    
+    return self.resultsController;
 }
 
 #pragma mark - Events Data Related
@@ -288,13 +328,13 @@
 - (void)getAllCompaniesFromApi
 {
     // To get all the companies use the metadata call of the Zacks Earnings Announcements (ZEA) database using
-    // the following API: www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ
+    // the following API: www.quandl.com/api/v3/datasets.json?database_code=ZEA&per_page=100&sort_by=id&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ
     
     // The API endpoint URL
-    NSString *endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
+    NSString *endpointURL = @"https://www.quandl.com/api/v3/datasets.json?database_code=ZEA";
     
-    // Set no of messages being returned per page to 300
-    NSInteger noOfCompaniesPerPage = 300;
+    // Set no of messages being returned per page to 100
+    NSInteger noOfCompaniesPerPage = 100;
     // Set no of results pages to 1
     NSInteger noOfPages = 1;
     //  Temporary Storage for noOfPages
@@ -325,6 +365,9 @@
         
         // Append no of messages per page to the endpoint URL &per_page=300&page=1
         endpointURL = [NSString stringWithFormat:@"%@&per_page=%ld",endpointURL,(long)noOfCompaniesPerPage];
+        
+        // Append the &sort_by=id
+        endpointURL = [NSString stringWithFormat:@"%@&sort_by=id",endpointURL];
         
         // Append page number to the API endpoint URL
         endpointURL = [NSString stringWithFormat:@"%@&page=%ld",endpointURL,(long)pageNo];
@@ -373,7 +416,7 @@
         }
         
         ++pageNo;
-        endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA";
+        endpointURL = @"https://www.quandl.com/api/v3/datasets.json?database_code=ZEA";
         NSLog(@"Page Number is:%ld and NoOfPages is:%ld",(long)pageNo,(long)noOfPages);
     }
     
@@ -396,18 +439,30 @@
     // Set no of results pages to 1
     NSInteger noOfPages = 1;
     
-    // Here's the format of the companies query response
-    // {
-    //   "total_count":7439,
-    //   "current_page":1,
-    //   "per_page":300,
-    //   "docs":[
-    //        {
-    //          "id":15533777,
-    //          "source_id":12930,
-    //          "source_code":"ZEA",
-    //          "code":"AVD",
-    //          "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)",
+    /* Here's the format of the v3 API response
+     {
+     "datasets":[
+     {
+     "id":15532344,
+     "dataset_code":"CLDT",
+     "database_code":"ZEA",
+     "name":"Earnings Announcement Dates for Chatham Lodging Trust (CLDT)"
+     }
+     {......
+     }]
+     "meta":{
+     "per_page":100,
+     "query":"",
+     "current_page":1,
+     "prev_page":null,
+     "total_pages":75,
+     "total_count":7404,
+     "next_page":2,
+     "current_first_item":1,
+     "current_last_item":100
+     }
+     }
+    */
     
     // Get the response into a parsed object
     NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:response
@@ -417,26 +472,10 @@
     // Call on to formatting and adding companies data to the core data store.
     [self formatAddCompanies:parsedResponse];
     
-    // Get the total no of companies from the parsed response
-    NSString *parsedNoOfCompanies = [parsedResponse objectForKey:@"total_count"];
-    NSInteger noOfCompanies = [parsedNoOfCompanies integerValue];
+    // Get total no of pages of company data
+    NSDictionary *metaInformation = [parsedResponse objectForKey:@"meta"];
+    noOfPages = [[metaInformation objectForKey:@"total_pages"] integerValue];
     
-    // Get the no of companies per page from the parsed response
-    NSString *parsedNoOfCompaniesPerPage = [parsedResponse objectForKey:@"per_page"];
-    NSInteger noOfCompaniesPerPage = [parsedNoOfCompaniesPerPage integerValue];
-    
-    // Compute total no of pages of companies;
-    if ((noOfCompanies == 0)||(noOfCompaniesPerPage == 0)) {
-        NSLog(@"ERROR: API Data Source returned an incorrect 0 value for either noOfCompanies or noOfCompaniesPerPage while getting all companies. Raw Response Data from the API was: %@",[[NSString alloc]initWithData:response encoding:NSUTF8StringEncoding]);
-        //NSLog(@"The raw response from the API is:%@", responseDataStr);
-    } else
-    {
-        NSLog(@"No Of Companies: %ld and No of Companies Per Page: %ld", (long)noOfCompanies, (long)noOfCompaniesPerPage);
-        noOfPages = (noOfCompanies/noOfCompaniesPerPage) + 1;
-        if ((noOfCompanies%noOfCompaniesPerPage)== 0){
-            -- noOfPages;
-        }
-    }
     NSLog(@"Total Number of pages dynamically computed: %ld ", (long)noOfPages);
     return noOfPages;
 }
@@ -444,27 +483,39 @@
 // Parse the list of companies and their tickers, format them and add them to the core data message store.
 - (void)formatAddCompanies:(NSDictionary *)parsedResponse {
     
-    // Here's the format of the companies query response
-    // {
-    //   "total_count":7439,
-    //   "current_page":1,
-    //   "per_page":300,
-    //   "docs":[
-    //        {
-    //          "id":15533777,
-    //          "source_id":12930,
-    //          "source_code":"ZEA",
-    //          "code":"AVD",
-    //          "name":"Earnings Announcement Dates for American Vanguard Corp. (AVD)",
+    /* Here's the format of the v3 API response
+     {
+     "datasets":[
+     {
+     "id":15532344,
+     "dataset_code":"CLDT",
+     "database_code":"ZEA",
+     "name":"Earnings Announcement Dates for Chatham Lodging Trust (CLDT)"
+     }
+     {......
+     }]
+     "meta":{
+     "per_page":100,
+     "query":"",
+     "current_page":1,
+     "prev_page":null,
+     "total_pages":75,
+     "total_count":7404,
+     "next_page":2,
+     "current_first_item":1,
+     "current_last_item":100
+     }
+     }
+    */
     
     // Get the list of companies first from the overall response
-    NSArray *parsedCompanies = [parsedResponse objectForKey:@"docs"];
+    NSArray *parsedCompanies = [parsedResponse objectForKey:@"datasets"];
     
     // Then loop through the companies, get the appropriate fields and insert them into the data store
     for (NSDictionary *company in parsedCompanies) {
         
         // Get the company ticker and company name string
-        NSString *companyTicker = [company objectForKey:@"code"];
+        NSString *companyTicker = [company objectForKey:@"dataset_code"];
         // Replace underscore in certain ticker names with . e.g.GRP_U -> GRP.U
         companyTicker = [companyTicker stringByReplacingOccurrencesOfString:@"_" withString:@"."];
         NSString *companyNameString = [company objectForKey:@"name"];
@@ -496,10 +547,10 @@
 - (void)getAllEventsFromApiWithTicker:(NSString *)companyTicker
 {
     // Get the event details for a company given it's ticker. Call the following API:
-    // www.quandl.com/api/v1/datasets/ZEA/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ
+    // www.quandl.com/api/v3/datasets/ZEA/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ
     
     // The API endpoint URL
-    NSString *endpointURL = @"https://www.quandl.com/api/v1/datasets/ZEA";
+    NSString *endpointURL = @"https://www.quandl.com/api/v3/datasets/ZEA";
         
     // Append ticker for the company to the API endpoint URL
     // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
@@ -509,7 +560,7 @@
     // Append auth token to the call
     endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
     
-    // DELETE: Use this endpoint for testing an incorrect API response.
+    // TO DO: DELETE: Use this endpoint for testing an incorrect API response.
     // NSString *endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ";
         
     NSError * error = nil;
@@ -550,10 +601,8 @@
     // c) Date related to the event. "Quarterly Earnings" would have the end date of the next fiscal
     // quarter to be reported
     // d) Indicator if this event is "confirmed" or "speculated" or "unknown"
-    // {
-    //  "errors":{},
-    //  "id":15532680,
-    //  "source_code":"ZEA",....
+    //   {
+    //   "dataset":{
     //  "data":[
     //     [
     //       "2015-04-09",
@@ -585,8 +634,11 @@
                                                                    options:kNilOptions
                                                                      error:&error];
     
-    // Get the list of data sets first from the overall response
-    NSArray *parsedDataSets = [parsedResponse objectForKey:@"data"];
+    // Get the overall Data Set from the response
+    NSDictionary *parsedDataSet = [parsedResponse objectForKey:@"dataset"];
+    
+    // Get the list of data slices from the overall data set
+    NSArray *parsedDataSets = [parsedDataSet objectForKey:@"data"];
     
     NSLog(@"The parsed data set is:%@",parsedDataSets.description);
     
@@ -948,9 +1000,12 @@
     
     // Others not covered above
     // TO DO: Add more as you come along
-    /*Company *companyOther1 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    companyOther1.ticker = @"MMM";
-    companyOther1.name = @"3M"; */
+    Company *companyOther1 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyOther1.ticker = @"RUBI";
+    companyOther1.name = @"Rubicon Project";
+    Company *companyOther2 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    companyOther2.ticker = @"RT";
+    companyOther2.name = @"Ruby Tuesday";
     
     // Insert
     NSError *error;
@@ -964,7 +1019,6 @@
     }
 }
 
-
 // Add the most basic set of most used events to the event data store. This is fetched from the data source
 // API based on the set of companies that are included in the Company Seed Sync.
 - (void)performEventSeedSyncRemotely {
@@ -973,8 +1027,8 @@
     [self getAllEventsFromApiWithTicker:@"AAPL"];
     [self getAllEventsFromApiWithTicker:@"FB"];
     [self getAllEventsFromApiWithTicker:@"MSFT"];
-    /*[self getAllEventsFromApiWithTicker:@"BAC"];
-    [self getAllEventsFromApiWithTicker:@"GM"]; */
+    [self getAllEventsFromApiWithTicker:@"BAC"];
+    [self getAllEventsFromApiWithTicker:@"GM"];
     
     // Add or Update the Company Data Sync status to SeedSyncDone.
     [self updateUserWithEventSyncStatus:@"SeedSyncDone"];

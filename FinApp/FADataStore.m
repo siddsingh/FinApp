@@ -59,8 +59,25 @@ static FADataStore *sharedInstance;
     
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"FinApp.sqlite"];
     
+    // TO DO: COMMENT FOR PRE SEEDING DB: When preseeding we don't want to use the existing db. We want a new one created.
+    // Check to see if a sqlite db already exists. If not, find the path to the preloaded DB and use that.
+    // Post ios7 you need to add the code for copying the sqlite-wal and sqlite-shm files as well.
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
+        
+        // Copy the .sqlite file
+        NSURL *preloadURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"FinApp" ofType:@"sqlite"]];
+        // TO DO: Delete Later after testing
+        NSLog(@"Preload URL from where the sqlite files will be copied before SQLite is:%@",preloadURL.absoluteString);
+        NSError* err = nil;
+        if (![[NSFileManager defaultManager] copyItemAtURL:preloadURL toURL:storeURL error:&err]) {
+            NSLog(@"ERROR: Could not copy the Preloaded SQL Database .sqlite file for use.");
+        }
+    }
+    
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+    // TO DO: UNCOMMENT FOR PRE SEEDING DB: Setting WAL off for SQLite so that we don't have to worry about copying the WAL and SHM files.
+    //NSDictionary *walOffOptions = @{ NSSQLitePragmasOption : @{@"journal_mode" : @"DELETE"} };
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
         /*
          Replace this implementation with code to handle the error appropriately.
@@ -95,6 +112,8 @@ static FADataStore *sharedInstance;
 // Returns the URL to the application's Documents directory.
 - (NSURL *)applicationDocumentsDirectory
 {
+    // TO DO: UNCOMMENT FOR PRE SEEDING DB: We want to know the path where the files are generated
+    //NSLog(@"SQLite Database Location: %@",[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory  inDomains:NSUserDomainMask] lastObject]);
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 

@@ -119,17 +119,19 @@
     
     
     // Seed the company data, the very first time, to get the user started.
-    if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
-        // TO DO: Deprecated. Delete after testing.
-        //[self.primaryDataController performCompanySeedSyncLocally];
+    // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
+    /*if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+        
         [self.primaryDataController performBatchedCompanySeedSyncLocally];
-    }
+    }*/
     
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
         
+        // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
+    
         // Seed the events data, the very first time, to get the user started.
-        if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+        /*if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
             [self.primaryDataController performEventSeedSyncRemotely];
         }
         
@@ -138,13 +140,16 @@
         if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
             
             [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
-        }
+        }*/
     }
     // If not, show error message
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Click home to exit, fix connection and retry."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Limited functionality available."];
     }
+    
+    // TO DO: Delete Later. In here for Testing.
+    [self.primaryDataController getAllCompanies];
     
     // Set the Filter Specified flag to false, indicating that no search filter has been specified
     self.filterSpecified = NO;
@@ -227,7 +232,7 @@
 }
 
 // Return a cell configured to display an event or a company with a fetch event
-// TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
+// TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
@@ -302,7 +307,7 @@
     }
     else {
         
-        // TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
+        // TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
@@ -429,11 +434,15 @@
     // Get the cell for the row on which the action is being exercised
     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
     
+    // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
+    // If the formatting changes, it needs to be changed here to accomodate as well.
+    NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", cell.eventDescription.text];
+    
     UITableViewRowAction *setReminderAction;
     
     // Check to see if a reminder action has already been created for the event represented by the cell.
     // If yes, show a appropriately formatted status action.
-    if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cell.eventDescription.text])
+    if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
     {
         // Create the "Reimder Already Set" Action and handle it being exercised.
         setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Reminder Set" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
@@ -669,6 +678,8 @@
     // Check for connectivity. If yes, give user information message
     if ([self checkForInternetConnectivity]) {
         
+        // TO DO: OPTIONAL UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
+        /*
         // If the companies data is still being synced, give the user a warning message
         if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
             // Show user a message that companies data is being synced
@@ -684,12 +695,12 @@
             [self sendUserMessageCreatedNotificationWithMessage:userMessage];
             // TO DO: Delete Later after testing.
             //[self sendUserMessageCreatedNotificationWithMessage:@"Fetching Tickers! Can't find one, retry in a bit."];
-        }
+        } */
     }
     // If not, show error message,
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection. Click home to exit, fix connection and retry."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection. Limited functionality available."];
     }
     
     return YES;
