@@ -9,6 +9,8 @@
 //
 
 #import "Event.h"
+#import "Action.h"
+#import "Company.h"
 
 // Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 @implementation Event
@@ -30,10 +32,23 @@
 // to be reported
 @dynamic relatedDate;
 
+// End date of previously reported quarter for now. or fiscal year later.
+@dynamic priorEndDate;
+
 // Indicator if this event is "Confirmed" or "Estimated" or "Unknown"
 @dynamic certainty;
+
+// Estimated EPS for the upcoming event
+@dynamic estimatedEps;
+
+// Actual EPS for the previously reported quarter for now. or fiscal year later.
+@dynamic actualEpsPrior;
+
+// Actions associated with the event
+@dynamic actions;
 
 // Company associated with this event
 @dynamic listedCompany;
 
 @end
+

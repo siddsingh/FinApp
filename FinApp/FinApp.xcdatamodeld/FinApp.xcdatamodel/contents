@@ -11,8 +11,11 @@
         <relationship name="events" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Event" inverseName="listedCompany" inverseEntity="Event" syncable="YES"/>
     </entity>
     <entity name="Event" representedClassName="Event" syncable="YES">
+        <attribute name="actualEpsPrior" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="certainty" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="estimatedEps" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="priorEndDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="relatedDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="relatedDetails" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
@@ -30,7 +33,7 @@
     <elements>
         <element name="Action" positionX="-128" positionY="323" width="128" height="88"/>
         <element name="Company" positionX="-270" positionY="-9" width="128" height="88"/>
-        <element name="Event" positionX="88" positionY="113" width="128" height="148"/>
+        <element name="Event" positionX="88" positionY="113" width="128" height="193"/>
         <element name="User" positionX="-272" positionY="144" width="128" height="135"/>
     </elements>
 </model>

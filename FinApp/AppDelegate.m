@@ -85,7 +85,7 @@
         // If the full sync of company data has failed, retry it
         [self refreshCompanyInfoIfNeededFromApiInBackground]; */
         
-        // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data.
+        // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data. Don't comment if you re just developing.
         [self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
     }
     // If not, show error message

@@ -609,6 +609,7 @@
     //        20140930.0,
     //   Date related to the event
     //        20150331.0,
+    //   Estimated EPS for the event
     //        2.13,
     //   Date on which the event takes place
     //        20150427.0,
@@ -621,7 +622,9 @@
     // Details related to the event
     // 1 (After market close), 2 (Before the open), 3 (During market trading) or 4 (Unknown)
     //        1.0,
+    // Actual EPS for previously reported quarter
     //        3.06,
+    // End date of previously reported quarter
     //        20141231.0,
     //        1.66,
     //        20140331.0
@@ -695,6 +698,7 @@
         // Get the Date related to the event which is the 3rd item
         // 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
         // to be reported
+        // TO DO: For optimizing later: Can't I just reuse the event date formatter
         NSLog(@"The quarter end date related to the event: %@",[parsedEventsList objectAtIndex:2]);
         NSString *relatedDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:2]];
         // Convert from string to Date
@@ -702,6 +706,21 @@
         [relatedDateFormatter setDateFormat:@"yyyyMMdd"];
         NSDate *relatedDate = [relatedDateFormatter dateFromString:relatedDateStr];
         NSLog(@"The quarter end date related to the event formatted as a Date: %@",relatedDate);
+        
+        // Get the end date of the previously reported quarter which is the 12th item
+        NSString *priorEndDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:11]];
+        NSDate *priorEndDate = [relatedDateFormatter dateFromString:priorEndDateStr];
+        
+        // Get the Estimated EPS for the event, which is the 4th item
+        NSString *estimatedEps=  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:3]];
+        // Convert from string to number
+        NSNumberFormatter *epsFormatter = [[NSNumberFormatter alloc] init];
+        epsFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+        NSNumber *estEpsNumber = [epsFormatter numberFromString:estimatedEps];
+        
+        // Get Actual EPS for previously reported quarter which is the 11th item
+        NSString *actualPriorEps=  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:10]];
+        NSNumber *actualPriorEpsNumber = [epsFormatter numberFromString:actualPriorEps];
         
         // Get Indicator if this event is "Confirmed" or "Estimated" or "Unknown" which is the 9th item
         // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)

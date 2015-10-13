@@ -120,10 +120,10 @@
     
     // Seed the company data, the very first time, to get the user started.
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
-    /*if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+    if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
         
         [self.primaryDataController performBatchedCompanySeedSyncLocally];
-    }*/
+    }
     
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
@@ -131,7 +131,7 @@
         // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
     
         // Seed the events data, the very first time, to get the user started.
-        /*if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+        if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
             [self.primaryDataController performEventSeedSyncRemotely];
         }
         
@@ -140,7 +140,7 @@
         if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
             
             [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
-        }*/
+        }
     }
     // If not, show error message
     else {

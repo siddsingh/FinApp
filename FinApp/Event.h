@@ -10,7 +10,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-@class Company;
+@class Action, Company;
 
 // Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 @interface Event : NSManagedObject
@@ -32,10 +32,31 @@
 // to be reported
 @property (nonatomic, retain) NSDate * relatedDate;
 
+// End date of previously reported quarter for now. or fiscal year later.
+@property (nonatomic, retain) NSDate * priorEndDate;
+
 // Indicator if this event is "Confirmed" or "Estimated" or "Unknown"
 @property (nonatomic, retain) NSString * certainty;
 
+// Estimated EPS for the upcoming event
+@property (nonatomic, retain) NSNumber * estimatedEps;
+
+// Actual EPS for the previously reported quarter for now. or fiscal year later
+@property (nonatomic, retain) NSNumber * actualEpsPrior;
+
+// Actions associated with the event
+@property (nonatomic, retain) NSSet *actions;
+
 // Company associated with this event
 @property (nonatomic, retain) Company *listedCompany;
+
+@end
+
+@interface Event (CoreDataGeneratedAccessors)
+
+- (void)addActionsObject:(Action *)value;
+- (void)removeActionsObject:(Action *)value;
+- (void)addActions:(NSSet *)values;
+- (void)removeActions:(NSSet *)values;
 
 @end
