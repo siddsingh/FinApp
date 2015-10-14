@@ -368,7 +368,12 @@
         }
         
         NSLog(@"After cell is set to display, company ticker is:%@ and company confirmed is:%@",eventAtIndex.listedCompany.ticker,eventAtIndex.certainty);
-    } 
+    }
+    // TO DO: Delete after testing
+    NSDateFormatter *testDateFormatter = [[NSDateFormatter alloc] init];
+    [testDateFormatter setDateFormat:@"EEE MMMM dd"];
+    NSString *priorDateString = [testDateFormatter stringFromDate:eventAtIndex.priorEndDate];
+    NSLog(@"ADDITIONAL INFORMATION FOR TICKER:%@ is EstimatedEPS:%f Prior End Date:%@ Actual Prior EPS:%f",eventAtIndex.listedCompany.ticker,[eventAtIndex.estimatedEps floatValue],priorDateString,[eventAtIndex.actualEpsPrior floatValue]);
     
     return cell;
 }

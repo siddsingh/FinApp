@@ -50,6 +50,9 @@
 // Company associated with this event
 @property (nonatomic, retain) Company *listedCompany;
 
+// Event history related to this event
+@property (nonatomic, retain) NSManagedObject *relatedEventHistory;
+
 @end
 
 @interface Event (CoreDataGeneratedAccessors)

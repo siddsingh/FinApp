@@ -16,6 +16,7 @@
 #import "Event.h"
 #import "User.h"
 #import "Action.h"
+#import "EventHistory.h"
 
 @interface FADataController ()
 
@@ -129,7 +130,7 @@
 #pragma mark - Events Data Related
 
 // Upsert an Event along with a parent company to the Event Data Store i.e. If the specified event type for that particular company exists, update it. If not insert it.
-- (void)upsertEventWithDate:(NSDate *)eventDate relatedDetails:(NSString *)eventRelatedDetails relatedDate:(NSDate *)eventRelatedDate type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker
+- (void)upsertEventWithDate:(NSDate *)eventDate relatedDetails:(NSString *)eventRelatedDetails relatedDate:(NSDate *)eventRelatedDate type:(NSString *)eventType certainty:(NSString *)eventCertainty listedCompany:(NSString *)listedCompanyTicker estimatedEps:(NSNumber *)eventEstEps priorEndDate:(NSDate *)eventPriorEndDate actualEpsPrior:(NSNumber *)eventActualEpsPrior
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -171,6 +172,9 @@
         event.relatedDate = eventRelatedDate;
         event.certainty = eventCertainty;
         event.listedCompany = parentCompany;
+        event.estimatedEps = eventEstEps;
+        event.priorEndDate = eventPriorEndDate;
+        event.actualEpsPrior = eventActualEpsPrior;
     }
     
     // If the event exists update it
@@ -181,6 +185,9 @@
         existingEvent.relatedDetails = eventRelatedDetails;
         existingEvent.relatedDate = eventRelatedDate;
         existingEvent.certainty = eventCertainty;
+        existingEvent.estimatedEps = eventEstEps;
+        existingEvent.priorEndDate = eventPriorEndDate;
+        existingEvent.actualEpsPrior = eventActualEpsPrior;
         
         NSLog(@"Updating company ticker is:%@ and company confirmed is:%@",existingEvent.listedCompany.ticker,existingEvent.certainty);
     }
@@ -318,6 +325,53 @@
         
         NSLog(@"ERROR: Could not return date for event ticker %@ and event type %@ because the event was not found in the data store", eventCompanyTicker,eventType);
         return nil;
+    }
+}
+
+#pragma mark - Event History related DB Methods
+
+// Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, previous event 1 date stock price, previous event 1 related date stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (void)insertHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate previousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the event exists by doing a case insensitive query on parent company Ticker and event type.
+    // TO DO: Current assumption is that an event is uniquely identified by the combination of above 2 fields. This might need to change in the future.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type =[c] %@",eventTicker, eventType];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    Event *existingEvent = nil;
+    existingEvent  = [[dataStoreContext executeFetchRequest:eventFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting an event from data store, to insert associated history, failed: %@",error.description);
+    }
+    
+    // If the event exists, insert the history associated with it
+    if (existingEvent) {
+        
+        // Insert the history associated with the event
+        EventHistory *history = [NSEntityDescription insertNewObjectForEntityForName:@"EventHistory" inManagedObjectContext:dataStoreContext];
+        history.previous1Date = previousEv1Date;
+        history.previous1Status = previousEv1Status;
+        history.previous1RelatedDate = previousEv1RelatedDate;
+        history.previous1Price = previousEv1Price;
+        history.previous1RelatedPrice = previousEv1RelatedPrice;
+        history.parentEvent = existingEvent;
+        
+        // Perform the insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Saving event history to data store failed: %@",error.description);
+        }
+    }
+    
+    // If the event does not exist, log an error message to the console
+    else {
+        
+        NSLog(@"ERROR: Did not insert event history into data store because the parent event was not found in the data store");
     }
 }
 
@@ -739,7 +793,7 @@
         NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
         
         // Upsert events data into the data store
-        [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker];
+        [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker estimatedEps:estEpsNumber priorEndDate:priorEndDate actualEpsPrior:actualPriorEpsNumber];
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.

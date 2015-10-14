@@ -21,6 +21,15 @@
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="actions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Action" inverseName="parentEvent" inverseEntity="Action" syncable="YES"/>
         <relationship name="listedCompany" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="events" inverseEntity="Company" syncable="YES"/>
+        <relationship name="relatedEventHistory" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="EventHistory" inverseName="parentEvent" inverseEntity="EventHistory" syncable="YES"/>
+    </entity>
+    <entity name="EventHistory" representedClassName="EventHistory" syncable="YES">
+        <attribute name="previous1Date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="previous1Price" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="previous1RelatedDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="previous1RelatedPrice" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="previous1Status" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="parentEvent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="relatedEventHistory" inverseEntity="Event" syncable="YES"/>
     </entity>
     <entity name="User" representedClassName="User" syncable="YES">
         <attribute name="companyPageNumber" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -31,9 +40,10 @@
         <attribute name="eventSyncStatus" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Action" positionX="-128" positionY="323" width="128" height="88"/>
+        <element name="Action" positionX="-414" positionY="297" width="128" height="88"/>
         <element name="Company" positionX="-270" positionY="-9" width="128" height="88"/>
-        <element name="Event" positionX="88" positionY="113" width="128" height="193"/>
+        <element name="Event" positionX="-45" positionY="-9" width="128" height="208"/>
         <element name="User" positionX="-272" positionY="144" width="128" height="135"/>
+        <element name="EventHistory" positionX="-54" positionY="308" width="128" height="133"/>
     </elements>
 </model>

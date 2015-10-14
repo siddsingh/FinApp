@@ -50,5 +50,8 @@
 // Company associated with this event
 @dynamic listedCompany;
 
+// Event history related to this event
+@dynamic relatedEventHistory;
+
 @end
 

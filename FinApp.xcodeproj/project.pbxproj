@@ -23,6 +23,8 @@
 		9E7586461AF44679009DD7B2 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E7586451AF44679009DD7B2 /* User.m */; };
 		9E79C9181BC8FCCD007E17B6 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9E79C9171BC8FCCD007E17B6 /* FinApp.sqlite */; };
 		9E79C9191BC8FCCD007E17B6 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9E79C9171BC8FCCD007E17B6 /* FinApp.sqlite */; };
+		9E79C9241BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
+		9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
 		9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE51B82CEB9008A0370 /* Action.m */; };
 		9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */; };
 		9EBD8EEA1BAC9DAB008A0370 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */; };
@@ -68,6 +70,8 @@
 		9E7586441AF44679009DD7B2 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		9E7586451AF44679009DD7B2 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		9E79C9171BC8FCCD007E17B6 /* FinApp.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = FinApp.sqlite; sourceTree = "<group>"; };
+		9E79C9221BCDE3B9007E17B6 /* EventHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventHistory.h; sourceTree = "<group>"; };
+		9E79C9231BCDE3B9007E17B6 /* EventHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventHistory.m; sourceTree = "<group>"; };
 		9EBD8EE41B82CEB9008A0370 /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
 		9EBD8EE51B82CEB9008A0370 /* Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Action.m; sourceTree = "<group>"; };
 		9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = BaseVisualAssets.xcassets; path = ../BaseVisualAssets.xcassets; sourceTree = "<group>"; };
@@ -141,6 +145,8 @@
 				9E6D80721A958C9E00E1F2D3 /* Company.m */,
 				9E6D806E1A958C9D00E1F2D3 /* Event.h */,
 				9E6D806F1A958C9D00E1F2D3 /* Event.m */,
+				9E79C9221BCDE3B9007E17B6 /* EventHistory.h */,
+				9E79C9231BCDE3B9007E17B6 /* EventHistory.m */,
 				9EBD8EEB1BAC9EA0008A0370 /* Reachability.h */,
 				9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */,
 				9E602D1719E655DF00ACDEC6 /* Supporting Files */,
@@ -279,6 +285,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E7586461AF44679009DD7B2 /* User.m in Sources */,
+				9E79C9241BCDE3B9007E17B6 /* EventHistory.m in Sources */,
 				9E6D80701A958C9D00E1F2D3 /* Event.m in Sources */,
 				9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */,
 				9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */,
@@ -297,6 +304,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */,
 				9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */,
 				9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */,
 			);
