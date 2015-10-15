@@ -24,9 +24,11 @@
 @dynamic previous1RelatedDate;
 
 // Stock price on the previous event 1 date.
+// NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
 @dynamic previous1Price;
 
 // Stock price on previous 1 related event date.
+// NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
 @dynamic previous1RelatedPrice;
 
 // Parent event for which this is the history.

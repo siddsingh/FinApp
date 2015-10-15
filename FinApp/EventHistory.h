@@ -23,9 +23,11 @@
 // Date related to the previous event.
 // 1. "Quarterly Earnings" would have the end date of the previous fiscal quarter
 // that was reported.
+// NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
 @property (nonatomic, retain) NSDate * previous1RelatedDate;
 
 // Stock price on the previous event 1 date.
+// NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
 @property (nonatomic, retain) NSNumber * previous1Price;
 
 // Stock price on previous 1 related event date.

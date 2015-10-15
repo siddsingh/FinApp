@@ -366,6 +366,10 @@
         if (![dataStoreContext save:&error]) {
             NSLog(@"ERROR: Saving event history to data store failed: %@",error.description);
         }
+        // TO DO: Delete later. Currently for testing
+        else {
+            NSLog(@"Inserted history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and previous event price:%@ and previous related event price:%@",existingEvent.listedCompany.ticker,history.previous1Date,history.previous1Status,history.previous1RelatedDate,[history.previous1Price stringValue],history.previous1RelatedPrice);
+        }
     }
     
     // If the event does not exist, log an error message to the console
@@ -794,6 +798,17 @@
         
         // Upsert events data into the data store
         [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker estimatedEps:estEpsNumber priorEndDate:priorEndDate actualEpsPrior:actualPriorEpsNumber];
+        
+        // Add whatever data you have for event history here as well
+        
+        // Compute the likely date for the previous event
+        NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:eventDate currentEventRelatedDate:relatedDate previousEventRelatedDate:priorEndDate];
+        NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",ticker,previousEvent1LikelyDate);
+        
+        // Insert history.
+        // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
+        NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
+        [self insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:priorEndDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder parentEventTicker:ticker parentEventType:eventType];
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
@@ -1560,6 +1575,53 @@
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"CreateQueuedReminder" object:eventInfo];
     NSLog(@"NOTIFICATION FIRED FOR CREATING QUEUED REMINDER: For eventtype:%@ and eventticker:%@ and eventDateText:%@",[eventInfo objectAtIndex:0],[eventInfo objectAtIndex:1],[eventInfo objectAtIndex:2]);
+}
+
+#pragma mark - Utility Methods
+
+// Compute the likely date for the previous event based on current event type (currently only Quarterly), previous event related date (e.g. quarter end related to the quarterly earnings), current event date and current event related date.
+- (NSDate *)computePreviousEventDateWithCurrentEventType:(NSString *)currentType currentEventDate:(NSDate *)currentDate currentEventRelatedDate:(NSDate *)currentRelatedDate previousEventRelatedDate:(NSDate *)previousRelatedDate
+{
+    
+    // TO DO: Use Earnings type later
+    
+    // Calculate the number of days between current event date (quarterly earnings) and current event related date (end of quarter being reported)
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:currentRelatedDate toDate:currentDate options:0];
+    NSInteger difference = [diffDateComponents day];
+    
+    // Add the no of days to the previous related event date (previously reported quarter end)
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = difference;
+    NSDate *previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousRelatedDate options:0];
+    
+    // Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Thursday for Friday and following Monday for Saturday and Sunday.
+    // Convert from string to Date
+    NSDateFormatter *previousDayFormatter = [[NSDateFormatter alloc] init];
+    [previousDayFormatter setDateFormat:@"EEE"];
+    NSString *previousDayString = [previousDayFormatter stringFromDate:previousEventDate];
+    NSLog(@"PREVIOUS EARNINGS DATE is computed to be: %@",previousEventDate);
+    if ([previousDayString isEqualToString:@"Fri"]) {
+        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
+        NSLog(@"CHECK DATA: Computed a friday prior event date that was shifted to a day earlier");
+        differenceDayComponents.day = -1;
+        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
+    }
+    if ([previousDayString isEqualToString:@"Sat"]) {
+        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
+        NSLog(@"CHECK DATA: Computed a friday prior event date that was shifted to a day earlier");
+        differenceDayComponents.day = 2;
+        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
+    }
+    if ([previousDayString isEqualToString:@"Sun"]) {
+        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
+        NSLog(@"CHECK DATA: Computed a friday prior event date that was shifted to a day earlier");
+        differenceDayComponents.day = 1;
+        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
+    }
+    
+    return previousEventDate;
 }
 
 @end
