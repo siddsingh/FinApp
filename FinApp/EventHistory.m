@@ -31,6 +31,9 @@
 // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
 @dynamic previous1RelatedPrice;
 
+// Current stock price which right now is yesterday's price
+@dynamic currentPrice;
+
 // Parent event for which this is the history.
 @dynamic parentEvent;
 

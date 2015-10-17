@@ -33,6 +33,9 @@
 // Stock price on previous 1 related event date.
 @property (nonatomic, retain) NSNumber * previous1RelatedPrice;
 
+// Current stock price which right now is yesterday's price
+@property (nonatomic, retain) NSNumber * currentPrice;
+
 // Parent event for which this is the history.
 @property (nonatomic, retain) Event *parentEvent;
 

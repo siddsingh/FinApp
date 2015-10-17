@@ -328,10 +328,10 @@
     }
 }
 
-#pragma mark - Event History related DB Methods
+#pragma mark - Event History related Methods
 
-// Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, previous event 1 date stock price, previous event 1 related date stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
-- (void)insertHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate previousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+// Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (void)insertHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate previousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice currentPrice:(NSNumber *)currentEvPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -360,6 +360,7 @@
         history.previous1RelatedDate = previousEv1RelatedDate;
         history.previous1Price = previousEv1Price;
         history.previous1RelatedPrice = previousEv1RelatedPrice;
+        history.currentPrice = currentEvPrice;
         history.parentEvent = existingEvent;
         
         // Perform the insert
@@ -368,7 +369,7 @@
         }
         // TO DO: Delete later. Currently for testing
         else {
-            NSLog(@"Inserted history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and previous event price:%@ and previous related event price:%@",existingEvent.listedCompany.ticker,history.previous1Date,history.previous1Status,history.previous1RelatedDate,[history.previous1Price stringValue],history.previous1RelatedPrice);
+            NSLog(@"Inserted history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and previous event price:%@ and previous related event price:%@ and current price:%@",existingEvent.listedCompany.ticker,history.previous1Date,history.previous1Status,history.previous1RelatedDate,[history.previous1Price stringValue],history.previous1RelatedPrice,history.currentPrice);
         }
     }
     
@@ -377,6 +378,51 @@
         
         NSLog(@"ERROR: Did not insert event history into data store because the parent event was not found in the data store");
     }
+}
+
+// Update event history with the given previous event 1 date (prior quarterly earnings) stock price, previous event 1 related date (prior quarter end) stock price, current (right now yesterday's) stock price for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (void)updateEventHistoryWithPreviousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice currentPrice:(NSNumber *)currentEvPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the event history exists by doing a case insensitive query on the parent Event Company Ticker and Event Type.
+    NSFetchRequest *historyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *historyEntity = [NSEntityDescription entityForName:@"EventHistory" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *historyPredicate = [NSPredicate predicateWithFormat:@"parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",eventTicker, eventType];
+    [historyFetchRequest setEntity:historyEntity];
+    [historyFetchRequest setPredicate:historyPredicate];
+    NSError *error;
+    EventHistory *existingHistory = nil;
+    existingHistory  = [[dataStoreContext executeFetchRequest:historyFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting event history from data store, to update prices, failed: %@",error.description);
+    }
+    
+    // If the event history exists update with given prices
+    if (existingHistory) {
+        
+        // Only update the price attributes, leaving the others untouched
+        existingHistory.previous1Price = previousEv1Price;
+        existingHistory.previous1RelatedPrice = previousEv1RelatedPrice;
+        existingHistory.currentPrice = currentEvPrice;
+        
+        // Perform the insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Saving event history to data store failed: %@",error.description);
+        }
+        // TO DO: Delete later. Currently for testing
+        else {
+            NSLog(@"Updated history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and previous event price:%@ and previous related event price:%@ and current price:%@",existingHistory.parentEvent.listedCompany.ticker,existingHistory.previous1Date,existingHistory.previous1Status,existingHistory.previous1RelatedDate,[existingHistory.previous1Price stringValue],existingHistory.previous1RelatedPrice,existingHistory.currentPrice);
+        }
+    }
+    
+    // If the event does not exist, log an error message to the console
+    else {
+        
+        NSLog(@"ERROR: Did not update event history prices in data store for event ticker %@ and event type %@ because the history was not found in the data store", eventTicker,eventType);
+    }
+
 }
 
 #pragma mark - Methods to call Company Data Source APIs
@@ -632,8 +678,9 @@
     // Process the response
     if (error == nil)
     {
-        NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
-        NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
+        // TO DO: Delete Later, for testing
+        //NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
+        //NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         // Process the response that contains the events for the company.
         [self processEventsResponse:responseData forTicker:companyTicker];
             
@@ -808,7 +855,7 @@
         // Insert history.
         // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
         NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
-        [self insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:priorEndDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder parentEventTicker:ticker parentEventType:eventType];
+        [self insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:priorEndDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:ticker parentEventType:eventType];
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
@@ -848,6 +895,59 @@
             
             [self updateActionWithStatus:@"Queued" type:@"OSReminder" eventTicker:ticker eventType:eventType];
         }
+    }
+}
+
+#pragma mark - Methods to call Company Stock Data Source APIs
+
+// Get the historical and current stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.
+- (void)getStockPricesFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType fromDateInclusive:(NSDate *)fromDate toDateInclusive:(NSDate *)toDate {
+    
+    // Get the event details for a company given it's ticker. Call the following API:
+    // www.quandl.com/api/v3/datasets/WIKI/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ&start_date=2015-01-01&end_date=2015-01-10
+    
+    // The API endpoint URL
+    NSString *endpointURL = @"www.quandl.com/api/v3/datasets/WIKI";
+    
+    // Append ticker for the company to the API endpoint URL
+    // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
+    NSString *formattedCompanyTicker  = [companyTicker stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+    endpointURL = [NSString stringWithFormat:@"%@/%@.json",endpointURL,formattedCompanyTicker];
+    
+    // Append auth token to the call
+    endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
+    
+    // Append formatted start date and end date to the call
+    // Show the event date
+    NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
+    [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDate];
+    NSString *toDateInclusiveString = [priceDateFormatter stringFromDate:toDate];
+    endpointURL = [NSString stringWithFormat:@"%@&start_date=%@&end_date=%@",endpointURL,fromDateInclusiveString,toDateInclusiveString];
+    
+    NSError * error = nil;
+    NSURLResponse *response = nil;
+    
+    // Make the call synchronously
+    NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+                                                             error:&error];
+    
+    // Process the response
+    if (error == nil)
+    {
+        // TO DO: Delete Later, for testing
+        NSLog(@"The endpoint being called for getting price information is:%@",endpointURL);
+        NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
+        // Process the response that contains the events for the company.
+        //[self processStockPricesResponse:responseData forTicker:companyTicker forEventType:eventType];
+        
+    } else {
+        // Log error to console
+        NSLog(@"ERROR: Could not get events data from the API Data Source. Error description: %@",error.description);
+        
+        // Show user an error message
+        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get events. Check Connection."];
     }
 }
 

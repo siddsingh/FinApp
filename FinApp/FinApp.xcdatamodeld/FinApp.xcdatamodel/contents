@@ -24,6 +24,7 @@
         <relationship name="relatedEventHistory" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="EventHistory" inverseName="parentEvent" inverseEntity="EventHistory" syncable="YES"/>
     </entity>
     <entity name="EventHistory" representedClassName="EventHistory" syncable="YES">
+        <attribute name="currentPrice" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="previous1Date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="previous1Price" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="previous1RelatedDate" optional="YES" attributeType="Date" syncable="YES"/>
@@ -44,6 +45,6 @@
         <element name="Company" positionX="-270" positionY="-9" width="128" height="88"/>
         <element name="Event" positionX="-45" positionY="-9" width="128" height="208"/>
         <element name="User" positionX="-272" positionY="144" width="128" height="135"/>
-        <element name="EventHistory" positionX="-54" positionY="308" width="128" height="133"/>
+        <element name="EventHistory" positionX="-54" positionY="308" width="128" height="148"/>
     </elements>
 </model>
