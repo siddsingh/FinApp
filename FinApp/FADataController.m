@@ -330,8 +330,8 @@
 
 #pragma mark - Event History related Methods
 
-// Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
-- (void)insertHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate previousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice currentPrice:(NSNumber *)currentEvPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+// Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (void)insertHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate currentDate:(NSDate *)currDate previousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice currentPrice:(NSNumber *)currentEvPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -358,6 +358,7 @@
         history.previous1Date = previousEv1Date;
         history.previous1Status = previousEv1Status;
         history.previous1RelatedDate = previousEv1RelatedDate;
+        history.currentDate = currDate;
         history.previous1Price = previousEv1Price;
         history.previous1RelatedPrice = previousEv1RelatedPrice;
         history.currentPrice = currentEvPrice;
@@ -369,7 +370,7 @@
         }
         // TO DO: Delete later. Currently for testing
         else {
-            NSLog(@"Inserted history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and previous event price:%@ and previous related event price:%@ and current price:%@",existingEvent.listedCompany.ticker,history.previous1Date,history.previous1Status,history.previous1RelatedDate,[history.previous1Price stringValue],history.previous1RelatedPrice,history.currentPrice);
+            NSLog(@"Inserted history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and current date:%@ and previous event price:%@ and previous related event price:%@ and current price:%@",existingEvent.listedCompany.ticker,history.previous1Date,history.previous1Status,history.previous1RelatedDate,history.currentDate,[history.previous1Price stringValue],history.previous1RelatedPrice,history.currentPrice);
         }
     }
     
@@ -882,10 +883,15 @@
         NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:eventDate currentEventRelatedDate:relatedDate previousEventRelatedDate:priorEndDate];
         NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",ticker,previousEvent1LikelyDate);
         
+        // Get today's date
+        NSDate *todaysDate = [NSDate date];
+        
         // Insert history.
         // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
         NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
-        [self insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:priorEndDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:ticker parentEventType:eventType];
+        [self insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:priorEndDate currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:ticker parentEventType:eventType];
+        // TO DO: Delete later. For testing. Call price API to get price history
+        [self getStockPricesFromApiForTicker:ticker companyEventType:eventType fromDateInclusive:priorEndDate toDateInclusive:todaysDate];
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
@@ -985,7 +991,7 @@
     }
 }
 
-// Parse the stock prices API response and add the historical and current prices to the event history.
+// Parse the stock prices API response and add the historical and current prices to the event history.Currently recording only previous event 1 (prior quarterly earnings) date closing stock price, previous related event 1 (prior quarter end date closing price and current price (yesterday's closing price).NOTE: Yesterday's closing price is based on what the current date is on the history object.
 - (void)processStockPricesResponse:(NSData *)response forTicker:(NSString *)ticker forEventType:(NSString *)type {
     
     NSError *error;
@@ -995,6 +1001,7 @@
      1) The from date in the response is one day after the given from date in the call. Thus make the call with a day earlier.
      2) Get the adjusted close price as the stock price for that day.
      Currently recording only previous event 1 (prior quarterly earnings) date closing stock price, previous related event 1 (prior quarter end date closing price and current price (yesterday's closing price).
+     NOTE: Yesterday's closing price is based on what the current date is on the history object
      {
      "dataset":{
      "id":9775409,
@@ -1092,8 +1099,10 @@
         NSString *prevEvent1Date = nil;
         NSString *prevRelatedEvent1Date = nil;
         NSString *currentDate = nil;
+        NSString *currentDateMinus1Day = nil;
         NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
         [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
+        NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         
         // Iterate through price/details arrays within the parsed data set
         for (NSArray *parsedDetailsList in parsedDataSets) {
@@ -1106,9 +1115,13 @@
             historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
             prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
             prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
-            currentDate = [priceDateFormatter stringFromDate:historyForDates];
+            // Subtract 1 from the current day to get yesterday's date, since currently only yesterday's price data is available
+            currentDate = [priceDateFormatter stringFromDate:historyForDates.currentDate];
+            NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+            differenceDayComponents.day = -1;
+            currentDateMinus1Day = [priceDateFormatter stringFromDate:[aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:historyForDates.currentDate options:0]];
             
-            
+            // Get the prices for the various dates and write them to the history data store
         }
     }
 }

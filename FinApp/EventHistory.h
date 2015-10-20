@@ -26,6 +26,9 @@
 // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
 @property (nonatomic, retain) NSDate * previous1RelatedDate;
 
+// Date which is considered to be the current date.
+@property (nonatomic, retain) NSDate * currentDate;
+
 // Stock price on the previous event 1 date.
 // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
 @property (nonatomic, retain) NSNumber * previous1Price;
