@@ -425,6 +425,36 @@
 
 }
 
+// Get Event History for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (EventHistory *)getEventHistoryForParentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the event history exists by doing a case insensitive query on the parent Event Company Ticker and Event Type.
+    NSFetchRequest *historyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *historyEntity = [NSEntityDescription entityForName:@"EventHistory" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *historyPredicate = [NSPredicate predicateWithFormat:@"parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",eventTicker, eventType];
+    [historyFetchRequest setEntity:historyEntity];
+    [historyFetchRequest setPredicate:historyPredicate];
+    NSError *error;
+    EventHistory *existingHistory = nil;
+    NSArray *eventHistories = [dataStoreContext executeFetchRequest:historyFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting event history from data store failed: %@",error.description);
+    }
+    if (eventHistories.count > 1) {
+        NSLog(@"ERROR: Found more than 1 event history for ticker:%@ and event type:%@ in the Event History Data Store", eventTicker, eventType);
+    }
+    // If the event history exists return it
+    if (eventHistories) {
+        existingHistory = [eventHistories lastObject];
+    }
+    
+    return existingHistory;
+}
+
+
 #pragma mark - Methods to call Company Data Source APIs
 
 // Get a list of all companies and their tickers. The logic here takes care of determining from which point
@@ -918,10 +948,14 @@
     endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
     
     // Append formatted start date and end date to the call
-    // Show the event date
+    // Note: The from date in the response is one day after the given from date in the call. Thus make the call with a day earlier. Thus subtract a day from the from date.
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -1;
+    NSDate *fromDateMinus1Day = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:fromDate options:0];
     NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
     [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
-    NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDate];
+    NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDateMinus1Day];
     NSString *toDateInclusiveString = [priceDateFormatter stringFromDate:toDate];
     endpointURL = [NSString stringWithFormat:@"%@&start_date=%@&end_date=%@",endpointURL,fromDateInclusiveString,toDateInclusiveString];
     
@@ -948,6 +982,134 @@
         
         // Show user an error message
         [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get events. Check Connection."];
+    }
+}
+
+// Parse the stock prices API response and add the historical and current prices to the event history.
+- (void)processStockPricesResponse:(NSData *)response forTicker:(NSString *)ticker forEventType:(NSString *)type {
+    
+    NSError *error;
+    
+    /*
+     This is the ticker API response. Please note:
+     1) The from date in the response is one day after the given from date in the call. Thus make the call with a day earlier.
+     2) Get the adjusted close price as the stock price for that day.
+     Currently recording only previous event 1 (prior quarterly earnings) date closing stock price, previous related event 1 (prior quarter end date closing price and current price (yesterday's closing price).
+     {
+     "dataset":{
+     "id":9775409,
+     "dataset_code":"AAPL",
+     "database_code":"WIKI",
+     "name":"Apple Inc. (AAPL)",
+     "description":"blahblah.....",
+     "refreshed_at":"2015-10-16T21:46:47.729Z",
+     "newest_available_date":"2015-10-16",
+     "oldest_available_date":"1980-12-12",
+     "column_names":[
+     "Date",
+     "Open",
+     "High",
+     "Low",
+     "Close",
+     "Volume",
+     "Ex-Dividend",
+     "Split Ratio",
+     "Adj. Open",
+     "Adj. High",
+     "Adj. Low",
+     "Adj. Close",
+     "Adj. Volume"
+     ],
+     "frequency":"daily",
+     "type":"Time Series",
+     "premium":false,
+     "limit":null,
+     "transform":null,
+     "column_index":null,
+     "start_date":"2013-06-30",
+     "end_date":"2015-10-15",
+     "data":[
+     [
+     "2015-10-15",
+     110.93,
+     112.1,
+     110.49,
+     111.8,
+     37270444.0,
+     0.0,
+     1.0,
+     110.93,
+     112.1,
+     110.49,
+     111.8,
+     37270444.0
+     ],
+     .....
+     
+     [
+     "2013-07-01",
+     402.69,
+     412.27,
+     401.22,
+     409.22,
+     13966200.0,
+     0.0,
+     1.0,
+     54.95288588449,
+     56.260215708358,
+     54.752283082706,
+     55.84399901078,
+     97763400.0
+     ]
+     */
+    
+    // Get the response into a parsed object
+    NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:response
+                                                                   options:kNilOptions
+                                                                     error:&error];
+    
+    // Get the overall Data Set from the response
+    NSDictionary *parsedDataSet = [parsedResponse objectForKey:@"dataset"];
+    
+    // Get the list of data slices from the overall data set
+    NSArray *parsedDataSets = [parsedDataSet objectForKey:@"data"];
+    
+    // TO DO: Delete Later
+    //NSLog(@"The parsed data set is:%@",parsedDataSets.description);
+    
+    // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
+    // then you don't want to process the data and enter as events.
+    // If response is not correct, show the user an error message
+    if (parsedDataSets == NULL)
+    {
+        // TO DO: Replace with error message for the event detail screen
+        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get stock prices. Try again later."];
+    }
+    // Else process response to enter event
+    else
+    {
+        EventHistory *historyForDates = nil;
+        NSString *prevEvent1Date = nil;
+        NSString *prevRelatedEvent1Date = nil;
+        NSString *currentDate = nil;
+        NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
+        [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
+        
+        // Iterate through price/details arrays within the parsed data set
+        for (NSArray *parsedDetailsList in parsedDataSets) {
+            
+            // TO DO: Delete later.
+            NSLog(@"The date for the stock price is:%@",[parsedDetailsList objectAtIndex:0]);
+            
+            // Get the event history dates for which we want to record the stock prices
+            // Currently recording only previous event 1 (prior quarterly earnings) date closing stock price, previous related event 1 (prior quarter end date closing price and current price (yesterday's closing price).
+            historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
+            prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
+            prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
+            currentDate = [priceDateFormatter stringFromDate:historyForDates];
+            
+            
+        }
     }
 }
 

@@ -14,6 +14,7 @@
 @class FADataStore;
 @class NSFetchedResultsController;
 @class NSManagedObjectContext;
+@class EventHistory;
 
 @interface FADataController : NSObject
 
@@ -68,6 +69,9 @@
 
 // Update event history with the given previous event 1 date (prior quarterly earnings) stock price, previous event 1 related date (prior quarter end) stock price, current (right now yesterday's) stock price for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (void)updateEventHistoryWithPreviousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice currentPrice:(NSNumber *)currentEvPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType;
+
+// Get Event History for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (EventHistory *)getEventHistoryForParentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType;
 
 #pragma mark - Methods to call Company Data Source APIs
 
