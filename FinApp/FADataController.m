@@ -880,6 +880,7 @@
         // Add whatever data you have for event history here as well
         
         // Compute the likely date for the previous event
+        NSLog(@"ABOUT TO COMPUTE PREVIOUS EVENT for ticker:%@",ticker);
         NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:eventDate currentEventRelatedDate:relatedDate previousEventRelatedDate:priorEndDate];
         NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",ticker,previousEvent1LikelyDate);
         
@@ -943,7 +944,7 @@
     // www.quandl.com/api/v3/datasets/WIKI/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ&start_date=2015-01-01&end_date=2015-01-10
     
     // The API endpoint URL
-    NSString *endpointURL = @"www.quandl.com/api/v3/datasets/WIKI";
+    NSString *endpointURL = @"https://www.quandl.com/api/v3/datasets/WIKI";
     
     // Append ticker for the company to the API endpoint URL
     // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
@@ -978,13 +979,13 @@
     {
         // TO DO: Delete Later, for testing
         NSLog(@"The endpoint being called for getting price information is:%@",endpointURL);
-        NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
+        //NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         // Process the response that contains the events for the company.
-        //[self processStockPricesResponse:responseData forTicker:companyTicker forEventType:eventType];
+        [self processStockPricesResponse:responseData forTicker:companyTicker forEventType:eventType];
         
     } else {
         // Log error to console
-        NSLog(@"ERROR: Could not get events data from the API Data Source. Error description: %@",error.description);
+        NSLog(@"ERROR: Could not get price data from the API Data Source. Error description: %@",error.description);
         
         // Show user an error message
         [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get events. Check Connection."];
@@ -1013,6 +1014,7 @@
      "newest_available_date":"2015-10-16",
      "oldest_available_date":"1980-12-12",
      "column_names":[
+     // Date for the corresponding stock price
      "Date",
      "Open",
      "High",
@@ -1024,6 +1026,7 @@
      "Adj. Open",
      "Adj. High",
      "Adj. Low",
+     // Stock price to get 12th item
      "Adj. Close",
      "Adj. Volume"
      ],
@@ -1085,14 +1088,14 @@
     //NSLog(@"The parsed data set is:%@",parsedDataSets.description);
     
     // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
-    // then you don't want to process the data and enter as events.
+    // then you don't want to process the data and enter as historical prices.
     // If response is not correct, show the user an error message
     if (parsedDataSets == NULL)
     {
         // TO DO: Replace with error message for the event detail screen
         [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get stock prices. Try again later."];
     }
-    // Else process response to enter event
+    // Else process response to enter historical prices
     else
     {
         EventHistory *historyForDates = nil;
@@ -1100,6 +1103,11 @@
         NSString *prevRelatedEvent1Date = nil;
         NSString *currentDate = nil;
         NSString *currentDateMinus1Day = nil;
+        
+        NSNumber *prevEvent1Price = nil;
+        NSNumber *prevRelatedEvent1Price = nil;
+        NSNumber *currentDateMinus1DayPrice = nil;
+        
         NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
         [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
         NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -1122,7 +1130,27 @@
             currentDateMinus1Day = [priceDateFormatter stringFromDate:[aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:historyForDates.currentDate options:0]];
             
             // Get the prices for the various dates and write them to the history data store
+            
+            // If the details array contains the previousRelatedEvent1 date, get the split adjusted closing price, which is the 12th item in the array
+            if ([parsedDetailsList containsObject:prevRelatedEvent1Date]) {
+                prevRelatedEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectAtIndex:11] doubleValue]];
+                NSLog(@"Stock price for ticker:%@ previous related event date:%@ is:%@",ticker, prevRelatedEvent1Date,prevRelatedEvent1Price);
+            }
+            
+            // If the details array contains the previousEvent1 date, get the split adjusted closing price, which is the 12th item in the array
+            if ([parsedDetailsList containsObject:prevEvent1Date]) {
+                prevEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectAtIndex:11] doubleValue]];
+                NSLog(@"Stock price for ticker:%@ previous event date:%@ is:%@", ticker, prevEvent1Date,prevEvent1Price);
+            }
+            
+            // If the details array contains the current date minus 1 day, get the split adjusted closing price, which is the 12th item in the array
+            if ([parsedDetailsList containsObject:currentDateMinus1Day]) {
+                currentDateMinus1DayPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectAtIndex:11] doubleValue]];
+                NSLog(@"Stock price for ticker:%@ yesterday's date:%@ is:%@",ticker, currentDateMinus1Day,currentDateMinus1DayPrice);
+            }
         }
+        
+        // Enter the historical prices to the database
     }
 }
 
@@ -1860,11 +1888,17 @@
     
     // TO DO: Use Earnings type later
     
+    // TO DO: Delete later. For testing
+    NSLog(@"For computing prior earnings date the current earnings date is:%@ and current end of quarter is:%@",currentDate,currentRelatedDate);
+    
     // Calculate the number of days between current event date (quarterly earnings) and current event related date (end of quarter being reported)
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+   // NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+    NSUInteger unitFlags =  NSCalendarUnitDay;
     NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:currentRelatedDate toDate:currentDate options:0];
     NSInteger difference = [diffDateComponents day];
+    
+    NSLog(@"The difference from the end of quarter is:%ld",(long)difference);
     
     // Add the no of days to the previous related event date (previously reported quarter end)
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
@@ -1885,13 +1919,13 @@
     }
     if ([previousDayString isEqualToString:@"Sat"]) {
         // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
-        NSLog(@"CHECK DATA: Computed a friday prior event date that was shifted to a day earlier");
+        NSLog(@"CHECK DATA: Computed a saturday prior event date that was shifted to 2 days later");
         differenceDayComponents.day = 2;
         previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
     }
     if ([previousDayString isEqualToString:@"Sun"]) {
         // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
-        NSLog(@"CHECK DATA: Computed a friday prior event date that was shifted to a day earlier");
+        NSLog(@"CHECK DATA: Computed a sunday prior event date that was shifted to a day later");
         differenceDayComponents.day = 1;
         previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
     }
