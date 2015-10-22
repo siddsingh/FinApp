@@ -290,28 +290,57 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="TCKR" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s99-x7-gMK">
-                                <rect key="frame" x="270" y="58" width="60" height="60"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GOOGL" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s99-x7-gMK">
+                                <rect key="frame" x="270" y="54" width="53" height="52"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="53" id="6YZ-AS-yaq"/>
+                                    <constraint firstAttribute="height" constant="52" id="qht-Dp-IqW"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="53" id="zLA-8K-hro"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Wed Oct 21" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3V9-Xd-Cyh">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wed Oct 21" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3V9-Xd-Cyh">
                                 <rect key="frame" x="173" y="28" width="254" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="254" id="4UG-1e-dX7"/>
+                                    <constraint firstAttribute="height" constant="21" id="FZG-fa-Rrv"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Quarterly Earnings : Thu September 18 Before Open" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="skv-Z2-igx">
-                                <rect key="frame" x="119" y="126" width="362" height="21"/>
-                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="15"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thu September 18 Before Open" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="skv-Z2-igx">
+                                <rect key="frame" x="166" y="130" width="269" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="QYf-WF-Anv"/>
+                                    <constraint firstAttribute="width" constant="269" id="b54-PO-H7S"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="16"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GSC-fM-PEJ">
-                                <rect key="frame" x="119" y="161" width="362" height="37"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Quarterly Earnings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l00-YB-Mlc">
+                                <rect key="frame" x="195" y="111" width="211" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="211" id="BEW-tk-VaQ"/>
+                                    <constraint firstAttribute="height" constant="21" id="U1d-sG-ca9"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GSC-fM-PEJ">
+                                <rect key="frame" x="186" y="159" width="229" height="37"/>
                                 <color key="backgroundColor" red="0.13543157820000001" green="0.49654292859999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="37" id="9K8-BA-Y6K"/>
+                                    <constraint firstAttribute="width" constant="229" id="CMs-Fe-lKO"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="229" id="cWz-hx-9aB"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="37" id="hfF-rN-xGU"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="15"/>
                                 <state key="normal" title="REMIND ME">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -320,6 +349,18 @@
                         </subviews>
                         <color key="backgroundColor" red="0.47450980390000003" green="0.71372549019999998" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="l00-YB-Mlc" firstAttribute="centerX" secondItem="skv-Z2-igx" secondAttribute="centerX" id="CaE-Yb-Deb"/>
+                            <constraint firstItem="l00-YB-Mlc" firstAttribute="centerX" secondItem="s99-x7-gMK" secondAttribute="centerX" constant="4" id="Exw-Zo-Wgc"/>
+                            <constraint firstItem="3V9-Xd-Cyh" firstAttribute="centerX" secondItem="8bm-ia-MpB" secondAttribute="centerX" id="JT6-lq-Edc"/>
+                            <constraint firstAttribute="centerX" secondItem="GSC-fM-PEJ" secondAttribute="centerX" id="W8V-sa-Fd5"/>
+                            <constraint firstItem="l00-YB-Mlc" firstAttribute="top" secondItem="s99-x7-gMK" secondAttribute="bottom" constant="5" id="f0U-mL-ThG"/>
+                            <constraint firstItem="3V9-Xd-Cyh" firstAttribute="top" secondItem="jPr-Yw-ogI" secondAttribute="bottom" constant="8" symbolic="YES" id="jsu-vR-oUK"/>
+                            <constraint firstItem="GSC-fM-PEJ" firstAttribute="top" secondItem="skv-Z2-igx" secondAttribute="bottom" constant="8" id="lyp-AU-HZz"/>
+                            <constraint firstItem="s99-x7-gMK" firstAttribute="centerX" secondItem="3V9-Xd-Cyh" secondAttribute="centerX" constant="-3.5" id="qbS-pz-aEQ"/>
+                            <constraint firstItem="skv-Z2-igx" firstAttribute="top" secondItem="l00-YB-Mlc" secondAttribute="bottom" constant="-2" id="s0a-9E-ZUJ"/>
+                            <constraint firstItem="s99-x7-gMK" firstAttribute="top" secondItem="3V9-Xd-Cyh" secondAttribute="bottom" constant="5" id="y0w-qV-FLj"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PpK-dv-Xnd" userLabel="First Responder" sceneMemberID="firstResponder"/>
