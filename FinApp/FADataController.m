@@ -414,7 +414,7 @@
         }
         // TO DO: Delete later. Currently for testing
         else {
-            NSLog(@"Updated history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and previous event price:%@ and previous related event price:%@ and current price:%@",existingHistory.parentEvent.listedCompany.ticker,existingHistory.previous1Date,existingHistory.previous1Status,existingHistory.previous1RelatedDate,[existingHistory.previous1Price stringValue],existingHistory.previous1RelatedPrice,existingHistory.currentPrice);
+            NSLog(@"Updated history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and previous event price:%@ and previous related event price:%@ and current price:%@ and current date:%@",existingHistory.parentEvent.listedCompany.ticker,existingHistory.previous1Date,existingHistory.previous1Status,existingHistory.previous1RelatedDate,[existingHistory.previous1Price stringValue],existingHistory.previous1RelatedPrice,existingHistory.currentPrice,existingHistory.currentDate);
         }
     }
     
@@ -892,7 +892,7 @@
         NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
         [self insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:priorEndDate currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:ticker parentEventType:eventType];
         // TO DO: Delete later. For testing. Call price API to get price history
-        [self getStockPricesFromApiForTicker:ticker companyEventType:eventType fromDateInclusive:priorEndDate toDateInclusive:todaysDate];
+        // [self getStockPricesFromApiForTicker:ticker companyEventType:eventType fromDateInclusive:priorEndDate toDateInclusive:todaysDate];
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
@@ -1104,9 +1104,11 @@
         NSString *currentDate = nil;
         NSString *currentDateMinus1Day = nil;
         
-        NSNumber *prevEvent1Price = nil;
-        NSNumber *prevRelatedEvent1Price = nil;
-        NSNumber *currentDateMinus1DayPrice = nil;
+        // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
+        NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
+        NSNumber *prevEvent1Price = emptyPlaceholder;
+        NSNumber *prevRelatedEvent1Price = emptyPlaceholder;
+        NSNumber *currentDateMinus1DayPrice = emptyPlaceholder;
         
         NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
         [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
@@ -1151,6 +1153,7 @@
         }
         
         // Enter the historical prices to the database
+        [self updateEventHistoryWithPreviousEvent1Price:prevEvent1Price previousEvent1RelatedPrice:prevRelatedEvent1Price currentPrice:currentDateMinus1DayPrice parentEventTicker:ticker parentEventType:type];
     }
 }
 
