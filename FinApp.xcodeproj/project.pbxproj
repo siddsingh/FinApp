@@ -27,6 +27,8 @@
 		9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
 		9E79C92B1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */; };
 		9E79C92C1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */; };
+		9E79C9371BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */; };
+		9E79C9381BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */; };
 		9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE51B82CEB9008A0370 /* Action.m */; };
 		9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */; };
 		9EBD8EEA1BAC9DAB008A0370 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */; };
@@ -76,6 +78,8 @@
 		9E79C9231BCDE3B9007E17B6 /* EventHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventHistory.m; sourceTree = "<group>"; };
 		9E79C9291BD85C46007E17B6 /* FAEventDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventDetailsViewController.h; sourceTree = "<group>"; };
 		9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsViewController.m; sourceTree = "<group>"; };
+		9E79C9351BDAC78F007E17B6 /* FAEventDetailsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventDetailsTableViewCell.h; sourceTree = "<group>"; };
+		9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsTableViewCell.m; sourceTree = "<group>"; };
 		9EBD8EE41B82CEB9008A0370 /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
 		9EBD8EE51B82CEB9008A0370 /* Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Action.m; sourceTree = "<group>"; };
 		9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = BaseVisualAssets.xcassets; path = ../BaseVisualAssets.xcassets; sourceTree = "<group>"; };
@@ -135,6 +139,8 @@
 				9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */,
 				9E79C9291BD85C46007E17B6 /* FAEventDetailsViewController.h */,
 				9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */,
+				9E79C9351BDAC78F007E17B6 /* FAEventDetailsTableViewCell.h */,
+				9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */,
 				9E6D80771AA4E07100E1F2D3 /* FADataController.h */,
 				9E6D80781AA4E07100E1F2D3 /* FADataController.m */,
 				9E6D80741A9EB49700E1F2D3 /* FADataStore.h */,
@@ -296,6 +302,7 @@
 				9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */,
 				9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */,
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
+				9E79C9371BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */,
 				9E602D1A19E655DF00ACDEC6 /* main.m in Sources */,
 				9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */,
 				9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */,
@@ -312,6 +319,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */,
+				9E79C9381BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */,
 				9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */,
 				9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */,
 				9E79C92C1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */,
