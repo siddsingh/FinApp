@@ -12,4 +12,23 @@
 
 @interface FAEventDetailsTableViewCell : UITableViewCell
 
+// First part of the description of the data being displayed
+@property (weak, nonatomic) IBOutlet UILabel *descriptionPart1;
+
+// Second part of the description of the data being displayed
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionPart2;
+
+// Additional part of the description of the data being displayed
+@property (weak, nonatomic) IBOutlet UILabel *descriptionAddtlPart;
+
+// First value representing the data
+@property (weak, nonatomic) IBOutlet UILabel *associatedValue1;
+
+// Second value representing the data
+@property (weak, nonatomic) IBOutlet UILabel *associatedValue2;
+
+// Additional value/s representing the data
+@property (weak, nonatomic) IBOutlet UILabel *additionalValue;
+
 @end
+

@@ -21,6 +21,10 @@
 // Event Related Details Table
 @property (weak, nonatomic) IBOutlet UITableView *eventDetailsTable;
 
+// Spinner to show activity related to this view
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *busySpinner;
 
+// Area to show user information messages.
+@property (weak, nonatomic) IBOutlet UILabel *messagesArea;
 
 @end

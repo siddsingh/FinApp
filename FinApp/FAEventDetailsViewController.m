@@ -18,7 +18,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     // Do any additional setup after loading the view.
+    
+    // Make the information messages area fully transparent so that it's invisible to the user
+    self.messagesArea.alpha = 0.0;
+    
+    // Ensure that the busy spinner is not animating thus hidden
+    [self.busySpinner stopAnimating];
 }
 
 - (void)didReceiveMemoryWarning {
