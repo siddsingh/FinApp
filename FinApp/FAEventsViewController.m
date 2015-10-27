@@ -57,13 +57,10 @@
     // Make the message bar fully transparent so that it's invisible to the user
     self.messageBar.alpha = 0.0;
     
-    // TO DO: Use it later for hamburger menu button. Make sure the app icon is hidden on startup
-    self.appIconBar.alpha = 0.0;
-    
-    // Show today's date in the Screen Header.
+    // Show today's date in the navigation bar header.
     NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
     [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
-    self.headerBar.text = [todayDateFormatter stringFromDate:[NSDate date]];
+    [self.navigationController.navigationBar.topItem setTitle:[todayDateFormatter stringFromDate:[NSDate date]]];
     
     // Change the color of the events search bar placeholder text and text entered to be white.
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
@@ -163,6 +160,7 @@
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -788,12 +786,12 @@
     }
 }
 
-// Process the notification to update screen header. Currently just set it to today's date.
+// Process the notification to update screen header which is the navigation bar title. Currently just set it to today's date.
 - (void)updateScreenHeader:(NSNotification *)notification {
     
     NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
     [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
-    self.headerBar.text = [todayDateFormatter stringFromDate:[NSDate date]];
+    [self.navigationController.navigationBar.topItem setTitle:[todayDateFormatter stringFromDate:[NSDate date]]];
 }
 
 

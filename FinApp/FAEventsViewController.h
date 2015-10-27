@@ -44,10 +44,4 @@
 // Label to show error and informational messages
 @property (weak, nonatomic) IBOutlet UILabel *messageBar;
 
-// Label to show Header for this section
-@property (weak, nonatomic) IBOutlet UILabel *headerBar;
-
-// Label to show app Icon
-@property (weak, nonatomic) IBOutlet UILabel *appIconBar;
-
 @end

@@ -12,9 +12,6 @@
 
 @interface FAEventDetailsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-// Ticker Logo for the event's parent company
-@property (weak, nonatomic) IBOutlet UILabel *companyIdentifier;
-
 // Title indicating the kind of event
 @property (weak, nonatomic) IBOutlet UILabel *eventTitle;
 
