@@ -463,7 +463,7 @@
                                             <outlet property="associatedValue2" destination="DRe-pW-ZhJ" id="l4W-7c-eGO"/>
                                             <outlet property="descriptionAddtlPart" destination="DS1-SI-oRb" id="0JO-yO-0i0"/>
                                             <outlet property="descriptionPart1" destination="tlP-p7-T0X" id="1er-2y-ZJ0"/>
-                                            <outlet property="descriptionPart2" destination="Jwj-X7-9uX" id="gnC-1X-Ccq"/>
+                                            <outlet property="descriptionPart2" destination="q5m-AP-WvZ" id="JUj-JB-pqR"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

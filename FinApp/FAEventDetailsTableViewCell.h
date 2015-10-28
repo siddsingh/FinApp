@@ -16,7 +16,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *descriptionPart1;
 
 // Second part of the description of the data being displayed
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionPart2;
+@property (weak, nonatomic) IBOutlet UILabel *descriptionPart2;
 
 // Additional part of the description of the data being displayed
 @property (weak, nonatomic) IBOutlet UILabel *descriptionAddtlPart;

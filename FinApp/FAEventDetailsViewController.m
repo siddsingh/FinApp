@@ -77,6 +77,12 @@
     // 1. Jun 30 2015
     NSDateFormatter *monthDateYearFormatter = [[NSDateFormatter alloc] init];
     [monthDateYearFormatter setDateFormat:@"MMM dd yyyy"];
+    
+    // Define number formatters to be used later.
+    NSNumberFormatter *decimal2Formatter = [[NSNumberFormatter alloc] init];
+    [decimal2Formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    [decimal2Formatter setMaximumFractionDigits:2];
+    [decimal2Formatter setRoundingMode: NSNumberFormatterRoundUp];
 
     // Get Row no
     int rowNo = (int)indexPath.row;
@@ -85,7 +91,7 @@
     FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
     
     // Get the event details parts of which will be displayed in the details table
-    Event *eventData = [self.primaryDetailsDataController ]
+    Event *eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:self.eventType];
     
     // Get the event history to be displayed as the details based on parent company ticker and event type. Assumption is that ticker and event type uniquely identify an event.
     EventHistory *eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
@@ -97,11 +103,13 @@
             
             [[cell descriptionPart1] setText:@"Expected Earnings Per Share for"];
             // Get the related date from the event which is the quarter end that is going to be reported
-            
-            NSString *relatedDateString = [NSString stringWithFormat:@"Quarter ended %@", [monthDateYearFormatter stringFromDate:eventDetailsData]];
-            
-            ;
-            [[cell descriptionPart1] setText:@"Quarter ended %@"];
+            NSString *relatedDateString = [NSString stringWithFormat:@"Quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.relatedDate]];
+            [[cell descriptionPart2] setText:relatedDateString];
+            [[cell descriptionAddtlPart] setText:@"Estimated"];
+            [[cell associatedValue1] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+            // Hide other value labels as they are empty
+            [[cell associatedValue2] setHidden:YES];
+            [[cell additionalValue] setHidden:YES];
             
             break;
             

@@ -15,6 +15,7 @@
 @class NSFetchedResultsController;
 @class NSManagedObjectContext;
 @class EventHistory;
+@class Event;
 
 @interface FADataController : NSObject
 
@@ -61,6 +62,9 @@
 
 // Get the date for an Event given the Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (NSDate *)getDateForEventOfType:(NSString *)eventType eventTicker:(NSString *)eventCompanyTicker;
+
+// Get Event Details for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (Event *)getEventForParentEventTicker:(NSString *)eventCompanyTicker andEventType:(NSString *)eventType;
 
 #pragma mark - Event History related Methods
 
