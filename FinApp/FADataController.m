@@ -328,6 +328,42 @@
     }
 }
 
+// Get Event Details for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (Event *)getEventForParentEventTicker:(NSString *)eventCompanyTicker andEventType:(NSString *)eventType {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // TO DO: Current assumption is that an event is uniquely identified by the combination of above 2 fields. This might need to change in the future.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type =[c] %@",eventCompanyTicker, eventType];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    Event *existingEvent = nil;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting an event from data store failed: %@",error.description);
+    }
+    if (events.count > 1) {
+        NSLog(@"ERROR: Found more than 1 event for ticker:%@ and event type:%@ in the Event Data Store", eventCompanyTicker, eventType);
+    }
+    // If the event exists, return it.
+    if (events) {
+        
+        existingEvent = [events lastObject];
+    }
+    // If the event does not exist, return nil, indicating an error has occurred and log the error.
+    else {
+        
+        NSLog(@"ERROR: Could not return date for event ticker %@ and event type %@ because the event was not found in the data store", eventCompanyTicker,eventType);
+    }
+    
+    return existingEvent;
+}
+
 #pragma mark - Event History related Methods
 
 // Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.

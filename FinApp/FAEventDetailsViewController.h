@@ -9,6 +9,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class FADataController;
 
 @interface FAEventDetailsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
@@ -26,5 +27,14 @@
 
 // Area to show user information messages.
 @property (weak, nonatomic) IBOutlet UILabel *messagesArea;
+
+// Assumption is that ticker and event type uniquely identify an event
+// Ticker of the parent company for this event
+@property (strong,nonatomic) NSString *parentTicker;
+// Type of event. Currently support only "Quarterly Earnings"
+@property (strong,nonatomic) NSString *eventType;
+
+// Primary Data Controller to add/access data in the data store
+@property (strong, nonatomic) FADataController *primaryDetailsDataController;
 
 @end

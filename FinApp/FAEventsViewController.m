@@ -176,8 +176,6 @@
     NSLog(@"Number of sections in table view returned");
     // There's only one section for now
     return 1;
-    
-    
 }
 
 // Set the header for the table view to a special table cell that serves as header.
