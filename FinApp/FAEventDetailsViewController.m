@@ -66,6 +66,12 @@
 // Return a cell configured to display the event details based on the cell number. Currently 4 types of data points are available.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
+    FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
+    [[cell associatedValue2] setHidden:NO];
+    [[cell additionalValue] setHidden:NO];
+    cell.associatedValue1.textColor = [UIColor darkGrayColor];
+    cell.associatedValue2.textColor = [UIColor darkGrayColor];
     
     // Assign a row no to the type of event detail row. Currently number of rows of events related data is 4: Expected EPS, Prior EPS, Change in price since end of prior quarter, Change in price since previous earnings call.
     #define expectedEpsRow  0
@@ -87,9 +93,6 @@
     // Get Row no
     int rowNo = (int)indexPath.row;
     
-    // Get a custom cell to display details
-    FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
-    
     // Get the event details parts of which will be displayed in the details table
     Event *eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:self.eventType];
     
@@ -106,6 +109,8 @@
             NSString *relatedDateString = [NSString stringWithFormat:@"Quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.relatedDate]];
             [[cell descriptionPart2] setText:relatedDateString];
             [[cell descriptionAddtlPart] setText:@"Estimated"];
+            // Set color to the bright blue
+            cell.associatedValue1.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
             [[cell associatedValue1] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
             // Hide other value labels as they are empty
             [[cell associatedValue2] setHidden:YES];
@@ -114,16 +119,130 @@
         break;
             
         case priorEpsRow:
-            //
-            break;
+        {
+            [[cell descriptionPart1] setText:@"Earnings Per Share for Prior"];
+            // Get the prior end date from the event which is the end date of previously reported quarter
+            NSString *priorEndDateString = [NSString stringWithFormat:@"Quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
+            [[cell descriptionPart2] setText:priorEndDateString];
+            [[cell descriptionAddtlPart] setText:@"Reported"];
+            // Set color to the bright blue
+            cell.associatedValue1.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            [[cell associatedValue1] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
+            // Hide other value labels as they are empty
+            [[cell associatedValue2] setHidden:YES];
+            [[cell additionalValue] setHidden:YES];
+        }
+        break;
             
         case changeSincePrevQuarter:
-            //
-            break;
+        {
+            [[cell descriptionPart1] setText:@"Change in stock price since"];
+            [[cell descriptionPart2] setText:@"end of Prior Reported Quarter"];
+            // Get the prior end date from the event which is the end date of previously reported quarter
+            NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
+            [[cell descriptionAddtlPart] setText:priorEndDateToYestString];
+            // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
+            // Note 999999.9 indicates a value is not available
+            double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+            double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+            if ((prev1RelatedPriceDbl != 999999.9)&&(currentPriceDbl != 999999.9))
+            {
+                double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
+                double priceDiffAbs = fabs(priceDiff);
+                double percentageDiff = (100 * priceDiff)/prev1RelatedPriceDbl;
+                NSString *priceDiffString = nil;
+                NSString *percentageDiffString = nil;
+                NSString *pricesString = nil;
+                if(priceDiff < 0)
+                {
+                    priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
+                    percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                    // Set color to Red
+                    cell.associatedValue1.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    cell.associatedValue2.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    [[cell associatedValue1] setText:priceDiffString];
+                    [[cell associatedValue2] setText:percentageDiffString];
+                }
+                else
+                {
+                    priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
+                    percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                    // Set color to Green
+                    cell.associatedValue1.textColor = [UIColor colorWithRed:121.0f/255.0f green:182.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
+                    cell.associatedValue2.textColor = [UIColor colorWithRed:121.0f/255.0f green:182.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
+                    [[cell associatedValue1] setText:priceDiffString];
+                    [[cell associatedValue2] setText:percentageDiffString];
+                }
+                pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1RelatedPriceDbl, currentPriceDbl];
+                [[cell additionalValue] setText:pricesString];
+            }
+            // If not available, display an appropriately formatted NA
+            else
+            {
+                [[cell associatedValue1] setText:@"NA"];
+                // Hide other value labels as they are empty
+                [[cell associatedValue2] setHidden:YES];
+                [[cell additionalValue] setHidden:YES];
+            }
+        }
+        break;
+            
+        case changeSincePrevEarnings:
+        {
+            [[cell descriptionPart1] setText:@"Change in stock price since"];
+            [[cell descriptionPart2] setText:@"estimated Prior Earnings Day"];
+            // Get the prior end date from the event which is the end date of previously reported quarter
+            NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
+            [[cell descriptionAddtlPart] setText:priorEarningsDateToYestString];
+            // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
+            // Note 999999.9 indicates a value is not available
+            double prev1PriceDbl = [[eventHistoryData previous1Price] doubleValue];
+            double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+            if ((prev1PriceDbl != 999999.9)&&(currentPriceDbl != 999999.9))
+            {
+                double priceDiff = currentPriceDbl - prev1PriceDbl;
+                double priceDiffAbs = fabs(priceDiff);
+                double percentageDiff = (100 * priceDiff)/prev1PriceDbl;
+                NSString *priceDiffString = nil;
+                NSString *percentageDiffString = nil;
+                NSString *pricesString = nil;
+                if(priceDiff < 0)
+                {
+                    priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
+                    percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                    // Set color to Red
+                    cell.associatedValue1.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    cell.associatedValue2.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    [[cell associatedValue1] setText:priceDiffString];
+                    [[cell associatedValue2] setText:percentageDiffString];
+                }
+                else
+                {
+                    priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
+                    percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                    // Set color to Green
+                    cell.associatedValue1.textColor = [UIColor colorWithRed:121.0f/255.0f green:182.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
+                    cell.associatedValue2.textColor = [UIColor colorWithRed:121.0f/255.0f green:182.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
+                    [[cell associatedValue1] setText:priceDiffString];
+                    [[cell associatedValue2] setText:percentageDiffString];
+                }
+                pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1PriceDbl, currentPriceDbl];
+                [[cell additionalValue] setText:pricesString];
+            }
+            // If not available, display an appropriately formatted NA
+            else
+            {
+                [[cell associatedValue1] setText:@"NA"];
+                // Hide other value labels as they are empty
+                [[cell associatedValue2] setHidden:YES];
+                [[cell additionalValue] setHidden:YES];
+            }
+        }
+        break;
             
         default:
             
-            break;
+        break;
     }
     
     return cell;
