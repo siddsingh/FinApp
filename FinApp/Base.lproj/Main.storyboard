@@ -206,7 +206,7 @@
                                             <outlet property="eventCertainty" destination="Y7j-P2-Lf8" id="oaG-yw-h8e"/>
                                             <outlet property="eventDate" destination="Jou-oj-rjb" id="Ch0-PJ-9Gz"/>
                                             <outlet property="eventDescription" destination="r65-ua-5Pc" id="0Vs-fp-VsU"/>
-                                            <segue destination="4jH-eb-uDY" kind="show" id="1LI-5f-UUQ"/>
+                                            <segue destination="4jH-eb-uDY" kind="show" identifier="ShowEventDetails" id="1LI-5f-UUQ"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -591,7 +591,6 @@
                         <outlet property="eventSchedule" destination="skv-Z2-igx" id="stj-7W-ZQ5"/>
                         <outlet property="eventTitle" destination="l00-YB-Mlc" id="kvf-Y1-bPg"/>
                         <outlet property="messagesArea" destination="THB-3X-wjS" id="jQW-du-hOq"/>
-                        <outlet property="view" destination="l00-YB-Mlc" id="PvN-wA-5DJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PpK-dv-Xnd" userLabel="First Responder" sceneMemberID="firstResponder"/>

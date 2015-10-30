@@ -33,6 +33,10 @@
     
     // Get a primary data controller that you will use later
     self.primaryDetailsDataController = [[FADataController alloc] init];
+    
+    // Set the labels to the strings that hold their text. These strings will be set in the prepare for segue method when called. This is necessary since the label outlets are still nil when prepare for segue is called, so can't be set directly.
+    [self.eventTitle setText:self.eventTitleStr];
+    [self.eventSchedule setText:self.eventScheduleStr];
 }
 
 #pragma mark - Event Details Table
@@ -70,6 +74,7 @@
     FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
     [[cell associatedValue2] setHidden:NO];
     [[cell additionalValue] setHidden:NO];
+    [[cell descriptionAddtlPart] setHidden:NO];
     cell.associatedValue1.textColor = [UIColor darkGrayColor];
     cell.associatedValue2.textColor = [UIColor darkGrayColor];
     
@@ -89,6 +94,10 @@
     [decimal2Formatter setNumberStyle:NSNumberFormatterDecimalStyle];
     [decimal2Formatter setMaximumFractionDigits:2];
     [decimal2Formatter setRoundingMode: NSNumberFormatterRoundUp];
+    
+    // Set a value indicating that a value is not available. Currently a Not Available value
+    // is represented by
+    double notAvailable = 999999.9f;
 
     // Get Row no
     int rowNo = (int)indexPath.row;
@@ -142,10 +151,12 @@
             NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
             [[cell descriptionAddtlPart] setText:priorEndDateToYestString];
             // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
-            // Note 999999.9 indicates a value is not available
             double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
             double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
-            if ((prev1RelatedPriceDbl != 999999.9)&&(currentPriceDbl != 999999.9))
+            // TO DO: Delete Later after testing
+            NSLog(@"For Ticker %@ Previous Related Event 1 Price is %f and current price is %f",self.parentTicker,prev1RelatedPriceDbl,currentPriceDbl);
+            NSLog(@"Not available double value is %f",notAvailable);
+            if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
             {
                 double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
                 double priceDiffAbs = fabs(priceDiff);
@@ -183,6 +194,8 @@
                 // Hide other value labels as they are empty
                 [[cell associatedValue2] setHidden:YES];
                 [[cell additionalValue] setHidden:YES];
+                // Hide the additional description as that is not valid as well
+                [[cell descriptionAddtlPart] setHidden:YES];
             }
         }
         break;
@@ -195,10 +208,11 @@
             NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
             [[cell descriptionAddtlPart] setText:priorEarningsDateToYestString];
             // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
-            // Note 999999.9 indicates a value is not available
             double prev1PriceDbl = [[eventHistoryData previous1Price] doubleValue];
             double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
-            if ((prev1PriceDbl != 999999.9)&&(currentPriceDbl != 999999.9))
+            // TO DO: For Testing Delete Later
+            NSLog(@"For Ticker %@ Previous Event 1 Price is %f and current price is %f",self.parentTicker,prev1PriceDbl,currentPriceDbl);
+            if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
             {
                 double priceDiff = currentPriceDbl - prev1PriceDbl;
                 double priceDiffAbs = fabs(priceDiff);
@@ -236,6 +250,8 @@
                 // Hide other value labels as they are empty
                 [[cell associatedValue2] setHidden:YES];
                 [[cell additionalValue] setHidden:YES];
+                // Hide the additional description as that is not valid as well
+                [[cell descriptionAddtlPart] setHidden:YES];
             }
         }
         break;
@@ -253,14 +269,14 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
+
+/* #pragma mark - Navigation
+
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-}
-*/
+} */
 
 @end

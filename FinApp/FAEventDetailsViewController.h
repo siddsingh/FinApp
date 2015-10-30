@@ -28,6 +28,12 @@
 // Area to show user information messages.
 @property (weak, nonatomic) IBOutlet UILabel *messagesArea;
 
+// Store the text for the eventTitle label
+@property (strong,nonatomic) NSString *eventTitleStr;
+
+// Store the text for the eventSchedule label
+@property (strong,nonatomic) NSString *eventScheduleStr;
+
 // Assumption is that ticker and event type uniquely identify an event
 // Ticker of the parent company for this event
 @property (strong,nonatomic) NSString *parentTicker;

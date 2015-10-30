@@ -17,6 +17,7 @@
 #import <stdlib.h>
 #import "Reachability.h"
 #import <UIKit/UIKit.h>
+#import "FAEventDetailsViewController.h"
 
 @interface FAEventsViewController ()
 
@@ -303,7 +304,7 @@
     }
     else {
         
-        // TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
+        // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!!: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
@@ -317,6 +318,7 @@
         cell.eventRemoteFetch = NO;
         
         // Show the event type. Format it for display. Currently map "Quarterly Earnings" to Quarterly.
+        // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!! If you are making a change here, reconcile with prepareForSegue in addition to the methods mentioned above.
         if ([eventAtIndex.type isEqualToString:@"Quarterly Earnings"])
         [[cell  eventDescription] setText:@"Quarterly"];
         
@@ -1012,15 +1014,61 @@
     return colorToReturn;
 }
 
-/*
+
 #pragma mark - Navigation
+
+// Check to see if the table cell press is for a "Get Earnings" cell. If yes, then don't perform the table segue
+- (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender {
+    
+    BOOL returnVal = YES;
+    
+    // Check the segue is "ShowEventDetails"
+    if ([identifier isEqualToString:@"ShowEventDetails" ]) {
+        
+        // If the cell is the "Get Earnings" cell identified by if Remote Fetch indicator is true, set return value to false indicating no swguw should be performed
+        NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
+        FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
+        if (selectedCell.eventRemoteFetch) {
+            returnVal = NO;
+        }
+    }
+
+    return returnVal;
+}
+
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    
+    if ([[segue identifier] isEqualToString:@"ShowEventDetails"]) {
+        
+        FAEventDetailsViewController *eventDetailsViewController = [segue destinationViewController];
+        
+        // Get the currently selected cell
+        NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
+        FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
+        
+        // Send the needed information to the destination view
+        NSString *tempValueStorer = nil;
+        
+        // Event Title
+        tempValueStorer = [NSString stringWithFormat:@"%@ Quarterly Earnings",selectedCell.companyTicker.text];
+        [eventDetailsViewController setEventTitleStr:tempValueStorer];
+         
+        // Event Schedule
+        [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
+        
+        // Event Parent Ticker
+        [eventDetailsViewController setParentTicker:selectedCell.companyTicker.text];
+        
+        // Event Type
+        tempValueStorer = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
+        [eventDetailsViewController setEventType: tempValueStorer];
+    }
 }
 
+
+/*
 #pragma mark - Code to use later
  
 // Set bright colors randomly if needed in the future
