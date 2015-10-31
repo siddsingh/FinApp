@@ -23,6 +23,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    NSLog(@"Event Details View Controller View Did Load called");
+    
     // Do any additional setup after loading the view.
     
     // Make the information messages area fully transparent so that it's invisible to the user
@@ -72,7 +74,7 @@
 {
     // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
     FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
-    [[cell associatedValue2] setHidden:NO];
+    [[cell associatedValue1] setHidden:NO];
     [[cell additionalValue] setHidden:NO];
     [[cell descriptionAddtlPart] setHidden:NO];
     cell.associatedValue1.textColor = [UIColor darkGrayColor];
@@ -113,32 +115,32 @@
             
         case expectedEpsRow:
         {
-            [[cell descriptionPart1] setText:@"Expected Earnings Per Share for"];
+            [[cell descriptionPart1] setText:@"Expected earnings per share for"];
             // Get the related date from the event which is the quarter end that is going to be reported
-            NSString *relatedDateString = [NSString stringWithFormat:@"Quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.relatedDate]];
+            NSString *relatedDateString = [NSString stringWithFormat:@"quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.relatedDate]];
             [[cell descriptionPart2] setText:relatedDateString];
             [[cell descriptionAddtlPart] setText:@"Estimated"];
             // Set color to the bright blue
-            cell.associatedValue1.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-            [[cell associatedValue1] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+            cell.associatedValue2.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            [[cell associatedValue2] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
             // Hide other value labels as they are empty
-            [[cell associatedValue2] setHidden:YES];
+            [[cell associatedValue1] setHidden:YES];
             [[cell additionalValue] setHidden:YES];
         }
         break;
             
         case priorEpsRow:
         {
-            [[cell descriptionPart1] setText:@"Earnings Per Share for Prior"];
+            [[cell descriptionPart1] setText:@"Earnings per share for prior"];
             // Get the prior end date from the event which is the end date of previously reported quarter
-            NSString *priorEndDateString = [NSString stringWithFormat:@"Quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
+            NSString *priorEndDateString = [NSString stringWithFormat:@"quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
             [[cell descriptionPart2] setText:priorEndDateString];
             [[cell descriptionAddtlPart] setText:@"Reported"];
             // Set color to the bright blue
-            cell.associatedValue1.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-            [[cell associatedValue1] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
+            cell.associatedValue2.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            [[cell associatedValue2] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
             // Hide other value labels as they are empty
-            [[cell associatedValue2] setHidden:YES];
+            [[cell associatedValue1] setHidden:YES];
             [[cell additionalValue] setHidden:YES];
         }
         break;
@@ -146,7 +148,7 @@
         case changeSincePrevQuarter:
         {
             [[cell descriptionPart1] setText:@"Change in stock price since"];
-            [[cell descriptionPart2] setText:@"end of Prior Reported Quarter"];
+            [[cell descriptionPart2] setText:@"end of prior reported quarter"];
             // Get the prior end date from the event which is the end date of previously reported quarter
             NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
             [[cell descriptionAddtlPart] setText:priorEndDateToYestString];
@@ -179,8 +181,8 @@
                     priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
                     percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                     // Set color to Green
-                    cell.associatedValue1.textColor = [UIColor colorWithRed:121.0f/255.0f green:182.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
-                    cell.associatedValue2.textColor = [UIColor colorWithRed:121.0f/255.0f green:182.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
+                    cell.associatedValue1.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    cell.associatedValue2.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
                     [[cell associatedValue1] setText:priceDiffString];
                     [[cell associatedValue2] setText:percentageDiffString];
                 }
@@ -190,9 +192,9 @@
             // If not available, display an appropriately formatted NA
             else
             {
-                [[cell associatedValue1] setText:@"NA"];
+                [[cell associatedValue2] setText:@"NA"];
                 // Hide other value labels as they are empty
-                [[cell associatedValue2] setHidden:YES];
+                [[cell associatedValue1] setHidden:YES];
                 [[cell additionalValue] setHidden:YES];
                 // Hide the additional description as that is not valid as well
                 [[cell descriptionAddtlPart] setHidden:YES];
@@ -203,7 +205,7 @@
         case changeSincePrevEarnings:
         {
             [[cell descriptionPart1] setText:@"Change in stock price since"];
-            [[cell descriptionPart2] setText:@"estimated Prior Earnings Day"];
+            [[cell descriptionPart2] setText:@"estimated prior earnings day"];
             // Get the prior end date from the event which is the end date of previously reported quarter
             NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
             [[cell descriptionAddtlPart] setText:priorEarningsDateToYestString];
@@ -235,8 +237,8 @@
                     priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
                     percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                     // Set color to Green
-                    cell.associatedValue1.textColor = [UIColor colorWithRed:121.0f/255.0f green:182.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
-                    cell.associatedValue2.textColor = [UIColor colorWithRed:121.0f/255.0f green:182.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
+                    cell.associatedValue1.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    cell.associatedValue2.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
                     [[cell associatedValue1] setText:priceDiffString];
                     [[cell associatedValue2] setText:percentageDiffString];
                 }
@@ -246,9 +248,9 @@
             // If not available, display an appropriately formatted NA
             else
             {
-                [[cell associatedValue1] setText:@"NA"];
+                [[cell associatedValue2] setText:@"NA"];
                 // Hide other value labels as they are empty
-                [[cell associatedValue2] setHidden:YES];
+                [[cell associatedValue1] setHidden:YES];
                 [[cell additionalValue] setHidden:YES];
                 // Hide the additional description as that is not valid as well
                 [[cell descriptionAddtlPart] setHidden:YES];

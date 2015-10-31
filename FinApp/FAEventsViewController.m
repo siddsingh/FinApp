@@ -161,7 +161,6 @@
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-
 }
 
 - (void)didReceiveMemoryWarning {
@@ -1044,6 +1043,9 @@
         
         FAEventDetailsViewController *eventDetailsViewController = [segue destinationViewController];
         
+        // Set the title on the destination view controller to be the same as that of the current view controller which is today's date
+        [eventDetailsViewController.navigationItem setTitle:self.navigationController.navigationBar.topItem.title];
+        
         // Get the currently selected cell
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
@@ -1052,7 +1054,7 @@
         NSString *tempValueStorer = nil;
         
         // Event Title
-        tempValueStorer = [NSString stringWithFormat:@"%@ Quarterly Earnings",selectedCell.companyTicker.text];
+        tempValueStorer = [NSString stringWithFormat:@"%@   -   Quarterly Earnings",selectedCell.companyTicker.text];
         [eventDetailsViewController setEventTitleStr:tempValueStorer];
          
         // Event Schedule
