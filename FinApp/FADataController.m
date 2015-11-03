@@ -462,6 +462,47 @@
 
 }
 
+// Update event history with the current date
+- (void)updateEventHistoryWithCurrentDate:(NSDate *)currDate parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the event history exists by doing a case insensitive query on the parent Event Company Ticker and Event Type.
+    NSFetchRequest *historyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *historyEntity = [NSEntityDescription entityForName:@"EventHistory" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *historyPredicate = [NSPredicate predicateWithFormat:@"parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",eventTicker, eventType];
+    [historyFetchRequest setEntity:historyEntity];
+    [historyFetchRequest setPredicate:historyPredicate];
+    NSError *error;
+    EventHistory *existingHistory = nil;
+    existingHistory  = [[dataStoreContext executeFetchRequest:historyFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting event history from data store, to update current date, failed: %@",error.description);
+    }
+    
+    // If the event history exists update with the current date
+    if (existingHistory) {
+        
+        existingHistory.currentDate = currDate;
+        
+        // Perform the insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Updating current date on event history to data store failed: %@",error.description);
+        }
+        // TO DO: Delete later. Currently for testing
+        else {
+            NSLog(@"Updated history for ticker:%@ with current date:%@", eventTicker, existingHistory.currentDate);
+        }
+    }
+    
+    // If the event does not exist, log an error message to the console
+    else {
+        
+        NSLog(@"ERROR: Did not update event history current date in data store for event ticker %@ and event type %@ because the history was not found in the data store", eventTicker,eventType);
+    }
+}
+
 // Get Event History for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (EventHistory *)getEventHistoryForParentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType {
     
@@ -928,7 +969,7 @@
         NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
         [self insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:priorEndDate currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:ticker parentEventType:eventType];
         // TO DO: Delete later. For testing. Call price API to get price history
-        [self getStockPricesFromApiForTicker:ticker companyEventType:eventType fromDateInclusive:priorEndDate toDateInclusive:todaysDate];
+        //[self getStockPricesFromApiForTicker:ticker companyEventType:eventType fromDateInclusive:priorEndDate toDateInclusive:todaysDate];
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
@@ -1139,6 +1180,8 @@
         NSString *prevRelatedEvent1Date = nil;
         NSString *currentDate = nil;
         NSString *currentDateMinus1Day = nil;
+        NSString *previousDayString = nil;
+        NSDate *currentMinus1Date = nil;
         
         // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
         NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
@@ -1149,6 +1192,8 @@
         NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
         [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
         NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        NSDateFormatter *previousDayFormatter = [[NSDateFormatter alloc] init];
+        [previousDayFormatter setDateFormat:@"EEE"];
         
         // Iterate through price/details arrays within the parsed data set
         for (NSArray *parsedDetailsList in parsedDataSets) {
@@ -1165,7 +1210,7 @@
             currentDate = [priceDateFormatter stringFromDate:historyForDates.currentDate];
             NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
             differenceDayComponents.day = -1;
-            currentDateMinus1Day = [priceDateFormatter stringFromDate:[aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:historyForDates.currentDate options:0]];
+            currentMinus1Date = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:historyForDates.currentDate options:0];
             
             // Get the prices for the various dates and write them to the history data store
             
@@ -1182,6 +1227,20 @@
             }
             
             // If the details array contains the current date minus 1 day, get the split adjusted closing price, which is the 12th item in the array
+            // Make sure the previous date doesn't fall on a Saturday, Sunday. In these cases move it to the previous Friday.
+            previousDayString = [previousDayFormatter stringFromDate:currentMinus1Date];
+            if ([previousDayString isEqualToString:@"Sat"]) {
+                // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
+                differenceDayComponents.day = -1;
+                currentMinus1Date = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:currentMinus1Date options:0];
+            }
+            if ([previousDayString isEqualToString:@"Sun"]) {
+                // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
+                differenceDayComponents.day = -2;
+                currentMinus1Date = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:currentMinus1Date options:0];
+            }
+            // Check for the adjusted previous day and get the price
+            currentDateMinus1Day = [priceDateFormatter stringFromDate:currentMinus1Date];
             if ([parsedDetailsList containsObject:currentDateMinus1Day]) {
                 currentDateMinus1DayPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectAtIndex:11] doubleValue]];
                 NSLog(@"Stock price for ticker:%@ yesterday's date:%@ is:%@",ticker, currentDateMinus1Day,currentDateMinus1DayPrice);

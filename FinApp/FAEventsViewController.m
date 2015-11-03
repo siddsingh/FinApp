@@ -30,6 +30,10 @@
 // Get events for company given a ticker. Typically called in a background thread.
 - (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
 
+// getPricesInBackground
+// Get stock prices for company given a ticker. Typically called in a background thread.
+- (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
+
 // Send a notification that the list of events has changed (updated)
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
 
@@ -1046,26 +1050,34 @@
         // Set the title on the destination view controller to be the same as that of the current view controller which is today's date
         [eventDetailsViewController.navigationItem setTitle:self.navigationController.navigationBar.topItem.title];
         
-        // Get the currently selected cell
+        // Get the currently selected cell and details
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
+        NSString *eventTicker = selectedCell.companyTicker.text;
+        NSString *eventType = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
+        
+        // Update the current date in the event history data store for the ticker and event type (which currently identifies the event uniquely).
+        [self.primaryDataController updateEventHistoryWithCurrentDate:[NSDate date] parentEventTicker:eventTicker parentEventType:eventType];
+        
+        // Call price API, in a background thread, to get price history
+        [self performSelectorInBackground:@selector(getPricesInBackground) withObject:@[eventTicker,eventType];
+        
+        //[self getStockPricesFromApiForTicker:ticker companyEventType:eventType fromDateInclusive:priorEndDate toDateInclusive:todaysDate];
         
         // Send the needed information to the destination view
         NSString *tempValueStorer = nil;
         
         // Event Title
-        tempValueStorer = [NSString stringWithFormat:@"%@   -   Quarterly Earnings",selectedCell.companyTicker.text];
-        [eventDetailsViewController setEventTitleStr:tempValueStorer];
+        [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@   -   %@", eventTicker, eventType]];
          
         // Event Schedule
         [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
         
         // Event Parent Ticker
-        [eventDetailsViewController setParentTicker:selectedCell.companyTicker.text];
+        [eventDetailsViewController setParentTicker:eventTicker];
         
         // Event Type
-        tempValueStorer = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
-        [eventDetailsViewController setEventType: tempValueStorer];
+        [eventDetailsViewController setEventType: eventType];
     }
 }
 
