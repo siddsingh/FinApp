@@ -18,6 +18,7 @@
 #import "Reachability.h"
 #import <UIKit/UIKit.h>
 #import "FAEventDetailsViewController.h"
+#import "EventHistory.h"
 
 @interface FAEventsViewController ()
 
@@ -30,15 +31,17 @@
 // Get events for company given a ticker. Typically called in a background thread.
 - (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
 
-// getPricesInBackground
-// Get stock prices for company given a ticker. Typically called in a background thread.
-- (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
+// Get stock prices for company given a ticker and event type (event info). Typically called in a background thread.
+- (void)getPricesInBackgroundWithEventInfo:(NSArray *)eventInfo;
 
 // Send a notification that the list of events has changed (updated)
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
 
 // Return a color scheme from darker to lighter based on rwo number with darker on top. Currently returning a dark gray scheme.
 - (UIColor *)getColorForIndexPath:(NSIndexPath *)indexPath;
+
+// Compute the likely date for the previous event based on current event type (currently only Quarterly), previous event related date (e.g. quarter end related to the quarterly earnings), current event date and current event related date.
+- (NSDate *)computePreviousEventDateWithCurrentEventType:(NSString *)currentType currentEventDate:(NSDate *)currentDate currentEventRelatedDate:(NSDate *)currentRelatedDate previousEventRelatedDate:(NSDate *)previousRelatedDate;
 
 // Check if there is internet connectivity
 - (BOOL) checkForInternetConnectivity;
@@ -53,7 +56,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSLog(@"VIEW LOADEDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+    NSLog(@"EVENTS VIEW LOADED");
     
     // Do any additional setup after loading the view.
     
@@ -568,6 +571,26 @@
     NSLog(@"Finished researching with updated event");
 }
 
+// Get stock prices for company given a ticker and event type (event info). Typically called in a background thread.
+//- (void)getPricesInBackgroundWithEventInfo:(NSArray *)eventInfo
+- (void)getPricesInBackgroundWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type
+{
+    // Create a new FADataController so that this thread has its own MOC
+    FADataController *pricesDataController = [[FADataController alloc] init];
+    
+    //NSString *eventTicker = [eventInfo objectAtIndex:0];
+    //NSString *eventType = [eventInfo objectAtIndex:1];
+    
+    //EventHistory *eventForPricesFetch = [pricesDataController getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
+    EventHistory *eventForPricesFetch = [pricesDataController getEventHistoryForParentEventTicker:ticker parentEventType:type];
+    
+    //[pricesDataController getStockPricesFromApiForTicker:eventTicker companyEventType:eventType fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
+    [pricesDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventHistoryUpdated" object:nil];
+    NSLog(@"NOTIFICATION FIRED: For Event History Refresh");
+}
+
 #pragma mark - Search Bar Delegate Methods, Related
 
 // When Search button associated with the search bar is clicked, search the ticker and name
@@ -1056,16 +1079,46 @@
         NSString *eventTicker = selectedCell.companyTicker.text;
         NSString *eventType = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
         
-        // Update the current date in the event history data store for the ticker and event type (which currently identifies the event uniquely).
-        [self.primaryDataController updateEventHistoryWithCurrentDate:[NSDate date] parentEventTicker:eventTicker parentEventType:eventType];
+        // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
+        // Get today's date
+        NSDate *todaysDate = [NSDate date];
+        Event *selectedEvent = [self.primaryDataController getEventForParentEventTicker:eventTicker andEventType:eventType];
+        // Compute the likely date for the previous event
+        NSLog(@"ABOUT TO COMPUTE PREVIOUS EVENT for ticker:%@",eventTicker);
+        NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:selectedEvent.date currentEventRelatedDate:selectedEvent.relatedDate previousEventRelatedDate:selectedEvent.priorEndDate];
+        NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",eventTicker,previousEvent1LikelyDate);
+        NSLog(@"Before deciding to create or update event history, history exists is:%d",[self.primaryDataController doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType]);
+        if (![self.primaryDataController doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
+        {
+            // Insert history.
+            // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
+            NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
+            [self.primaryDataController insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:selectedEvent.priorEndDate currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
+            NSLog(@"Inserted event history for ticker:%@", eventTicker);
+        }
+        // Else update the non price related data, except current date, on the event history from the event, in case the event info has been refreshed
+        else
+        {
+            [self.primaryDataController updateEventHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:selectedEvent.priorEndDate parentEventTicker:eventTicker parentEventType:eventType];
+            NSLog(@"Updated event history for ticker:%@", eventTicker);
+        }
         
-        // Call price API, in a background thread, to get price history
-        [self performSelectorInBackground:@selector(getPricesInBackground) withObject:@[eventTicker,eventType];
-        
-        //[self getStockPricesFromApiForTicker:ticker companyEventType:eventType fromDateInclusive:priorEndDate toDateInclusive:todaysDate];
-        
-        // Send the needed information to the destination view
-        NSString *tempValueStorer = nil;
+        // Call price API, in a background thread, to get price history, if the current date is not today or if any of the price values are not available.
+        EventHistory *selectedEventHistory = [self.primaryDataController getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
+        // Set a value indicating that a value is not available. Currently a Not Available value
+        // is represented by 999999.9
+        double notAvailable = 999999.9f;
+        double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
+        double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
+        double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
+        NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
+        if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison == NSOrderedSame))
+        {
+            NSLog(@"Getting prices from API for ticker: %@ with prev event price:%f and prev related event price:%f current price:%f and date comparison:%ld and stored current date:%@ and actual todays date:%@", eventTicker, prev1PriceDbl,prev1RelatedPriceDbl,currentPriceDbl,(long)currDateComparison,selectedEventHistory.currentDate,todaysDate);
+            //[self performSelectorInBackground:@selector(getPricesInBackgroundWithEventInfo:) withObject:@[eventTicker,eventType]];
+            [self getPricesInBackgroundWithCompanyTicker:eventTicker eventType:eventType];
+            
+        }
         
         // Event Title
         [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@   -   %@", eventTicker, eventType]];
@@ -1078,9 +1131,62 @@
         
         // Event Type
         [eventDetailsViewController setEventType: eventType];
-    }
+        
+        }
 }
 
+#pragma mark - Utility Methods
+
+// Compute the likely date for the previous event based on current event type (currently only Quarterly), previous event related date (e.g. quarter end related to the quarterly earnings), current event date and current event related date.
+- (NSDate *)computePreviousEventDateWithCurrentEventType:(NSString *)currentType currentEventDate:(NSDate *)currentDate currentEventRelatedDate:(NSDate *)currentRelatedDate previousEventRelatedDate:(NSDate *)previousRelatedDate
+{
+    
+    // TO DO: Use Earnings type later
+    
+    // TO DO: Delete later. For testing
+    NSLog(@"For computing prior earnings date the current earnings date is:%@ and current end of quarter is:%@",currentDate,currentRelatedDate);
+    
+    // Calculate the number of days between current event date (quarterly earnings) and current event related date (end of quarter being reported)
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    // NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+    NSUInteger unitFlags =  NSCalendarUnitDay;
+    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:currentRelatedDate toDate:currentDate options:0];
+    NSInteger difference = [diffDateComponents day];
+    
+    NSLog(@"The difference from the end of quarter is:%ld",(long)difference);
+    
+    // Add the no of days to the previous related event date (previously reported quarter end)
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = difference;
+    NSDate *previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousRelatedDate options:0];
+    
+    // Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Thursday for Friday and following Monday for Saturday and Sunday.
+    // Convert from string to Date
+    NSDateFormatter *previousDayFormatter = [[NSDateFormatter alloc] init];
+    [previousDayFormatter setDateFormat:@"EEE"];
+    NSString *previousDayString = [previousDayFormatter stringFromDate:previousEventDate];
+    NSLog(@"PREVIOUS EARNINGS DATE is computed to be: %@",previousEventDate);
+    if ([previousDayString isEqualToString:@"Fri"]) {
+        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
+        NSLog(@"CHECK DATA: Computed a friday prior event date that was shifted to a day earlier");
+        differenceDayComponents.day = -1;
+        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
+    }
+    if ([previousDayString isEqualToString:@"Sat"]) {
+        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
+        NSLog(@"CHECK DATA: Computed a saturday prior event date that was shifted to 2 days later");
+        differenceDayComponents.day = 2;
+        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
+    }
+    if ([previousDayString isEqualToString:@"Sun"]) {
+        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
+        NSLog(@"CHECK DATA: Computed a sunday prior event date that was shifted to a day later");
+        differenceDayComponents.day = 1;
+        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
+    }
+    
+    return previousEventDate;
+}
 
 /*
 #pragma mark - Code to use later

@@ -39,6 +39,11 @@
     // Set the labels to the strings that hold their text. These strings will be set in the prepare for segue method when called. This is necessary since the label outlets are still nil when prepare for segue is called, so can't be set directly.
     [self.eventTitle setText:self.eventTitleStr];
     [self.eventSchedule setText:self.eventScheduleStr];
+    
+    // Register a listener for changes to the event history that's stored locally
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(eventHistoryDataChanged:)
+                                                 name:@"EventHistoryUpdated" object:nil];
 }
 
 #pragma mark - Event Details Table
@@ -264,6 +269,21 @@
     }
     
     return cell;
+}
+
+#pragma mark - Change Listener Responses
+
+// Refresh the Events Data Table when newer data is available
+- (void)eventHistoryDataChanged:(NSNotification *)notification {
+    
+    // Create a new DataController so that this thread has its own MOC
+    // TO DO: Understand at what point does a new thread get spawned off. Seems to me the new thread is being created for
+    // reloading the table. SHouldn't I be creating the new MOC in that thread as opposed to here ? Maybe it doesn't matter
+    // as long as I am not sharing MOCs across threads ? The general rule with Core Data is one Managed Object Context per thread, and one thread per MOC
+    // FADataController *historyDataController = [[FADataController alloc] init];
+    // self.eventResultsController = [secondaryDataController getAllEvents];
+    [self.eventDetailsTable reloadData];
+    NSLog(@"*******************************************Event History Changed listener fired to refresh table");
 }
 
 - (void)didReceiveMemoryWarning {

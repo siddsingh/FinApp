@@ -417,7 +417,51 @@
     }
 }
 
-// Update event history with the given previous event 1 date (prior quarterly earnings) stock price, previous event 1 related date (prior quarter end) stock price, current (right now yesterday's) stock price for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+// Update non price related history, except current date, associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+-(void)updateEventHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the event history exists by doing a case insensitive query on the parent Event Company Ticker and Event Type.
+    NSFetchRequest *historyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *historyEntity = [NSEntityDescription entityForName:@"EventHistory" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *historyPredicate = [NSPredicate predicateWithFormat:@"parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",eventTicker, eventType];
+    [historyFetchRequest setEntity:historyEntity];
+    [historyFetchRequest setPredicate:historyPredicate];
+    NSError *error;
+    EventHistory *existingHistory = nil;
+    existingHistory  = [[dataStoreContext executeFetchRequest:historyFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting event history from data store, to update non price related data, failed: %@",error.description);
+    }
+    
+    // If the event history exists update with given prices
+    if (existingHistory) {
+        
+        // Only update the non price attributes, except the current date, leaving the others untouched
+        existingHistory.previous1Date = previousEv1Date;
+        existingHistory.previous1Status = previousEv1Status;
+        existingHistory.previous1RelatedDate = previousEv1RelatedDate;
+        
+        // Perform the insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Saving event history, when updating the non price data, to data store failed: %@",error.description);
+        }
+        // TO DO: Delete later. Currently for testing
+        else {
+            NSLog(@"Updated history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and current date:%@",existingHistory.parentEvent.listedCompany.ticker,existingHistory.previous1Date,existingHistory.previous1Status,existingHistory.previous1RelatedDate,existingHistory.currentDate);
+        }
+    }
+    
+    // If the event does not exist, log an error message to the console
+    else {
+        
+        NSLog(@"ERROR: Did not update event history no price data in data store for event ticker %@ and event type %@ because the history was not found in the data store", eventTicker,eventType);
+    }
+}
+
+// Update event history prices with the given previous event 1 date (prior quarterly earnings) stock price, previous event 1 related date (prior quarter end) stock price, current (right now yesterday's) stock price for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (void)updateEventHistoryWithPreviousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice currentPrice:(NSNumber *)currentEvPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -459,7 +503,6 @@
         
         NSLog(@"ERROR: Did not update event history prices in data store for event ticker %@ and event type %@ because the history was not found in the data store", eventTicker,eventType);
     }
-
 }
 
 // Update event history with the current date
@@ -532,6 +575,34 @@
     return existingHistory;
 }
 
+// Check to see if Event History exists for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (BOOL)doesEventHistoryExistForParentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL exists = NO;
+    
+    // Check to see if the event history exists by doing a case insensitive query on the parent Event Company Ticker and Event Type.
+    NSFetchRequest *historyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *historyEntity = [NSEntityDescription entityForName:@"EventHistory" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *historyPredicate = [NSPredicate predicateWithFormat:@"parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",eventTicker, eventType];
+    [historyFetchRequest setEntity:historyEntity];
+    [historyFetchRequest setPredicate:historyPredicate];
+    NSError *error;
+    NSArray *eventHistories = [dataStoreContext executeFetchRequest:historyFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Retrieving event history, to check if it exists, from data store failed: %@",error.description);
+    }
+    if (eventHistories.count > 1) {
+        NSLog(@"ERROR: Found more than 1 event history for ticker:%@ and event type:%@ in the Event History Data Store", eventTicker, eventType);
+        exists = YES;
+    }
+    if (eventHistories.count == 1) {
+        exists = YES;
+    }
+    
+    return exists;
+}
 
 #pragma mark - Methods to call Company Data Source APIs
 
@@ -953,23 +1024,6 @@
         
         // Upsert events data into the data store
         [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker estimatedEps:estEpsNumber priorEndDate:priorEndDate actualEpsPrior:actualPriorEpsNumber];
-        
-        // Add whatever data you have for event history here as well
-        
-        // Compute the likely date for the previous event
-        NSLog(@"ABOUT TO COMPUTE PREVIOUS EVENT for ticker:%@",ticker);
-        NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:eventDate currentEventRelatedDate:relatedDate previousEventRelatedDate:priorEndDate];
-        NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",ticker,previousEvent1LikelyDate);
-        
-        // Get today's date
-        NSDate *todaysDate = [NSDate date];
-        
-        // Insert history.
-        // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
-        NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
-        [self insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:priorEndDate currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:ticker parentEventType:eventType];
-        // TO DO: Delete later. For testing. Call price API to get price history
-        //[self getStockPricesFromApiForTicker:ticker companyEventType:eventType fromDateInclusive:priorEndDate toDateInclusive:todaysDate];
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
@@ -1978,58 +2032,6 @@
     NSLog(@"NOTIFICATION FIRED FOR CREATING QUEUED REMINDER: For eventtype:%@ and eventticker:%@ and eventDateText:%@",[eventInfo objectAtIndex:0],[eventInfo objectAtIndex:1],[eventInfo objectAtIndex:2]);
 }
 
-#pragma mark - Utility Methods
-
-// Compute the likely date for the previous event based on current event type (currently only Quarterly), previous event related date (e.g. quarter end related to the quarterly earnings), current event date and current event related date.
-- (NSDate *)computePreviousEventDateWithCurrentEventType:(NSString *)currentType currentEventDate:(NSDate *)currentDate currentEventRelatedDate:(NSDate *)currentRelatedDate previousEventRelatedDate:(NSDate *)previousRelatedDate
-{
-    
-    // TO DO: Use Earnings type later
-    
-    // TO DO: Delete later. For testing
-    NSLog(@"For computing prior earnings date the current earnings date is:%@ and current end of quarter is:%@",currentDate,currentRelatedDate);
-    
-    // Calculate the number of days between current event date (quarterly earnings) and current event related date (end of quarter being reported)
-    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-   // NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-    NSUInteger unitFlags =  NSCalendarUnitDay;
-    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:currentRelatedDate toDate:currentDate options:0];
-    NSInteger difference = [diffDateComponents day];
-    
-    NSLog(@"The difference from the end of quarter is:%ld",(long)difference);
-    
-    // Add the no of days to the previous related event date (previously reported quarter end)
-    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = difference;
-    NSDate *previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousRelatedDate options:0];
-    
-    // Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Thursday for Friday and following Monday for Saturday and Sunday.
-    // Convert from string to Date
-    NSDateFormatter *previousDayFormatter = [[NSDateFormatter alloc] init];
-    [previousDayFormatter setDateFormat:@"EEE"];
-    NSString *previousDayString = [previousDayFormatter stringFromDate:previousEventDate];
-    NSLog(@"PREVIOUS EARNINGS DATE is computed to be: %@",previousEventDate);
-    if ([previousDayString isEqualToString:@"Fri"]) {
-        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
-        NSLog(@"CHECK DATA: Computed a friday prior event date that was shifted to a day earlier");
-        differenceDayComponents.day = -1;
-        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
-    }
-    if ([previousDayString isEqualToString:@"Sat"]) {
-        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
-        NSLog(@"CHECK DATA: Computed a saturday prior event date that was shifted to 2 days later");
-        differenceDayComponents.day = 2;
-        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
-    }
-    if ([previousDayString isEqualToString:@"Sun"]) {
-        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
-        NSLog(@"CHECK DATA: Computed a sunday prior event date that was shifted to a day later");
-        differenceDayComponents.day = 1;
-        previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
-    }
-    
-    return previousEventDate;
-}
 
 @end
 
