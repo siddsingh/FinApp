@@ -31,8 +31,8 @@
 // Get events for company given a ticker. Typically called in a background thread.
 - (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
 
-// Get stock prices for company given a ticker and event type (event info). Typically called in a background thread.
-- (void)getPricesInBackgroundWithEventInfo:(NSArray *)eventInfo;
+// Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
+- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type;
 
 // Send a notification that the list of events has changed (updated)
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
@@ -571,24 +571,15 @@
     NSLog(@"Finished researching with updated event");
 }
 
-// Get stock prices for company given a ticker and event type (event info). Typically called in a background thread.
-//- (void)getPricesInBackgroundWithEventInfo:(NSArray *)eventInfo
-- (void)getPricesInBackgroundWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type
+// Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
+- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type
 {
-    // Create a new FADataController so that this thread has its own MOC
-    FADataController *pricesDataController = [[FADataController alloc] init];
+    EventHistory *eventForPricesFetch = [self.primaryDataController getEventHistoryForParentEventTicker:ticker parentEventType:type];
     
-    //NSString *eventTicker = [eventInfo objectAtIndex:0];
-    //NSString *eventType = [eventInfo objectAtIndex:1];
+    [self.primaryDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
     
-    //EventHistory *eventForPricesFetch = [pricesDataController getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
-    EventHistory *eventForPricesFetch = [pricesDataController getEventHistoryForParentEventTicker:ticker parentEventType:type];
-    
-    //[pricesDataController getStockPricesFromApiForTicker:eventTicker companyEventType:eventType fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
-    [pricesDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
-    
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventHistoryUpdated" object:nil];
-    NSLog(@"NOTIFICATION FIRED: For Event History Refresh");
+    // Use this if you move this operation to a background thread
+    //[[NSNotificationCenter defaultCenter]postNotificationName:@"EventHistoryUpdated" object:nil];
 }
 
 #pragma mark - Search Bar Delegate Methods, Related
@@ -1112,12 +1103,14 @@
         double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
         NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
-        if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison == NSOrderedSame))
+        // Note: NSOrderedSame has the value 0
+        if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison != NSOrderedSame))
         {
             NSLog(@"Getting prices from API for ticker: %@ with prev event price:%f and prev related event price:%f current price:%f and date comparison:%ld and stored current date:%@ and actual todays date:%@", eventTicker, prev1PriceDbl,prev1RelatedPriceDbl,currentPriceDbl,(long)currDateComparison,selectedEventHistory.currentDate,todaysDate);
+            // It's important to update the date here cause the get prices call gets the current date for the API call from the event history.
+            [self.primaryDataController updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
             //[self performSelectorInBackground:@selector(getPricesInBackgroundWithEventInfo:) withObject:@[eventTicker,eventType]];
-            [self getPricesInBackgroundWithCompanyTicker:eventTicker eventType:eventType];
-            
+            [self getPricesWithCompanyTicker:eventTicker eventType:eventType];
         }
         
         // Event Title
