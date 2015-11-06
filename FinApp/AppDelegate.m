@@ -131,6 +131,7 @@
     // Create a new FADataController so that this thread has its own MOC
     FADataController *eventDataController = [[FADataController alloc] init];
     
+    // TO DO: Uncomment for actual use. Comment for test data for event update testing.
     [eventDataController updateEventsFromRemoteIfNeeded];
 }
 

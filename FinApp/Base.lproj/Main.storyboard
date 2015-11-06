@@ -303,7 +303,7 @@
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Knotifi" id="Rre-Iz-HOH">
-                        <barButtonItem key="backBarButtonItem" title="Upcoming" id="78w-is-WPS"/>
+                        <barButtonItem key="backBarButtonItem" title="Back" id="78w-is-WPS"/>
                     </navigationItem>
                     <connections>
                         <outlet property="eventsListTable" destination="KbY-6m-WGH" id="U1B-qA-4Xm"/>

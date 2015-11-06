@@ -32,7 +32,7 @@
 - (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
 
 // Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
-- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type;
+- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type dataController:(FADataController *)specificDataController;
 
 // Send a notification that the list of events has changed (updated)
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
@@ -93,14 +93,14 @@
     
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
     // Get the date for the event represented by the cell
-   /* NSDate *today = [NSDate date];
+    /*NSDate *today = [NSDate date];
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
     differenceDayComponents.day = -1;
     NSDate *yesterday = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:today options:0];
-   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"AA"]; */
- //   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
-    
+   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"TSLA" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
+    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"AAPL" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
+    //[self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
     
     // Register a listener for changes to events stored locally
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -409,13 +409,82 @@
             [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
         }
     }
-    // If not then just show a helper user message about reminder creation
+    // If not then, fetch event details before segueing to the details view
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"Psst! Swipe Left to create a Reminder."];
+        // Check for connectivity. If yes, process the fetch
+        if ([self checkForInternetConnectivity]) {
+            
+            // Set the busy spinner to show that details are being fetched
+            NSLog(@"Starting to animate price fetch spinner");
+            [self.remoteFetchSpinner startAnimating];
+            
+            // Read whatever history details are available from event and fetch additional ones from the API to get ready to segue to
+            // the event detail view
+            FADataController *historyDataController1 = [[FADataController alloc] init];
+            
+            // Get the currently selected cell and details
+            NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
+            FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
+            NSString *eventTicker = selectedCell.companyTicker.text;
+            NSString *eventType = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
+            
+            // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
+            // Get today's date
+            NSDate *todaysDate = [NSDate date];
+            Event *selectedEvent = [historyDataController1 getEventForParentEventTicker:eventTicker andEventType:eventType];
+            NSLog(@"Before Segueing for ticker:%@ the event current quarter end date is:%@ and prior quarter end date is:%@",eventTicker, selectedEvent.relatedDate,selectedEvent.priorEndDate);
+            // Compute the likely date for the previous event
+            NSLog(@"ABOUT TO COMPUTE PREVIOUS EVENT for ticker:%@",eventTicker);
+            NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:selectedEvent.date currentEventRelatedDate:selectedEvent.relatedDate previousEventRelatedDate:selectedEvent.priorEndDate];
+            NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",eventTicker,previousEvent1LikelyDate);
+            NSLog(@"Before deciding to create or update event history for ticker:%@, history exists is:%d and prior end date is:%@ and current end date is:%@",eventTicker, [historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType], selectedEvent.priorEndDate,selectedEvent.relatedDate);
+            if (![historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
+            {
+                // Insert history.
+                // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
+                NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
+                [historyDataController1 insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:selectedEvent.priorEndDate currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
+                NSLog(@"Inserted event history for ticker:%@ with previous end date:%@", eventTicker,selectedEvent.priorEndDate);
+            }
+            // Else update the non price related data, except current date, on the event history from the event, in case the event info has been refreshed
+            else
+            {
+                [historyDataController1 updateEventHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:selectedEvent.priorEndDate parentEventTicker:eventTicker parentEventType:eventType];
+                NSLog(@"Updated event history for ticker:%@ with previous end date:%@", eventTicker,selectedEvent.priorEndDate);
+            }
+            
+            // Call price API, in the main thread, to get price history, if the current date is not today or if any of the price values are not available.
+            EventHistory *selectedEventHistory = [historyDataController1 getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
+            // Set a value indicating that a value is not available. Currently a Not Available value
+            // is represented by 999999.9
+            double notAvailable = 999999.9f;
+            double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
+            double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
+            double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
+            NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
+            // Note: NSOrderedSame has the value 0
+            if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison != NSOrderedSame))
+            {
+                NSLog(@"Getting prices from API for ticker: %@ with prev event price:%f and prev related event price:%f current price:%f and date comparison:%ld and stored current date:%@ and actual todays date:%@", eventTicker, prev1PriceDbl,prev1RelatedPriceDbl,currentPriceDbl,(long)currDateComparison,selectedEventHistory.currentDate,todaysDate);
+                // It's important to update the date here cause the get prices call gets the current date for the API call from the event history.
+                [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
+                //[self performSelectorInBackground:@selector(getPricesInBackgroundWithEventInfo:) withObject:@[eventTicker,eventType]];
+                [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1];
+            }
+            
+            // Set the busy spinner to show that details are being fetched
+            NSLog(@"Stopping animation of price fetch spinner");
+            [self.remoteFetchSpinner stopAnimating];
+        }
+        // If not, show error message
+        else {
+            
+            [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+        }
     }
     
-    // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
+    // If search bar is in edit mode but the user has not entered any character xto search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
     if ([self.eventsSearchBar isFirstResponder] && !(self.filterSpecified)) {
         
         NSLog(@"SEARCH BAR CONTEXT SHOULD BE CLEARED");
@@ -572,11 +641,11 @@
 }
 
 // Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
-- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type
+- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type dataController:(FADataController *)specificDataController;
 {
-    EventHistory *eventForPricesFetch = [self.primaryDataController getEventHistoryForParentEventTicker:ticker parentEventType:type];
+    EventHistory *eventForPricesFetch = [specificDataController getEventHistoryForParentEventTicker:ticker parentEventType:type];
     
-    [self.primaryDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
+    [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
     
     // Use this if you move this operation to a background thread
     //[[NSNotificationCenter defaultCenter]postNotificationName:@"EventHistoryUpdated" object:nil];
@@ -1053,7 +1122,6 @@
     return returnVal;
 }
 
-
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
@@ -1069,49 +1137,6 @@
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
         NSString *eventTicker = selectedCell.companyTicker.text;
         NSString *eventType = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
-        
-        // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
-        // Get today's date
-        NSDate *todaysDate = [NSDate date];
-        Event *selectedEvent = [self.primaryDataController getEventForParentEventTicker:eventTicker andEventType:eventType];
-        // Compute the likely date for the previous event
-        NSLog(@"ABOUT TO COMPUTE PREVIOUS EVENT for ticker:%@",eventTicker);
-        NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:selectedEvent.date currentEventRelatedDate:selectedEvent.relatedDate previousEventRelatedDate:selectedEvent.priorEndDate];
-        NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",eventTicker,previousEvent1LikelyDate);
-        NSLog(@"Before deciding to create or update event history, history exists is:%d",[self.primaryDataController doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType]);
-        if (![self.primaryDataController doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
-        {
-            // Insert history.
-            // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
-            NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
-            [self.primaryDataController insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:selectedEvent.priorEndDate currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
-            NSLog(@"Inserted event history for ticker:%@", eventTicker);
-        }
-        // Else update the non price related data, except current date, on the event history from the event, in case the event info has been refreshed
-        else
-        {
-            [self.primaryDataController updateEventHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:selectedEvent.priorEndDate parentEventTicker:eventTicker parentEventType:eventType];
-            NSLog(@"Updated event history for ticker:%@", eventTicker);
-        }
-        
-        // Call price API, in a background thread, to get price history, if the current date is not today or if any of the price values are not available.
-        EventHistory *selectedEventHistory = [self.primaryDataController getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
-        // Set a value indicating that a value is not available. Currently a Not Available value
-        // is represented by 999999.9
-        double notAvailable = 999999.9f;
-        double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
-        double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
-        double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
-        NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
-        // Note: NSOrderedSame has the value 0
-        if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison != NSOrderedSame))
-        {
-            NSLog(@"Getting prices from API for ticker: %@ with prev event price:%f and prev related event price:%f current price:%f and date comparison:%ld and stored current date:%@ and actual todays date:%@", eventTicker, prev1PriceDbl,prev1RelatedPriceDbl,currentPriceDbl,(long)currDateComparison,selectedEventHistory.currentDate,todaysDate);
-            // It's important to update the date here cause the get prices call gets the current date for the API call from the event history.
-            [self.primaryDataController updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
-            //[self performSelectorInBackground:@selector(getPricesInBackgroundWithEventInfo:) withObject:@[eventTicker,eventType]];
-            [self getPricesWithCompanyTicker:eventTicker eventType:eventType];
-        }
         
         // Event Title
         [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@   -   %@", eventTicker, eventType]];

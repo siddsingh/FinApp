@@ -1024,6 +1024,7 @@
         
         // Upsert events data into the data store
         [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker estimatedEps:estEpsNumber priorEndDate:priorEndDate actualEpsPrior:actualPriorEpsNumber];
+        NSLog(@"After updating event for ticker:%@ the event current quarter end date is:%@ and prior quarter end date is:%@",ticker, relatedDate,priorEndDate);
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
@@ -1258,6 +1259,7 @@
             // Get the event history dates for which we want to record the stock prices
             // Currently recording only previous event 1 (prior quarterly earnings) date closing stock price, previous related event 1 (prior quarter end date closing price and current price (yesterday's closing price).
             historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
+            NSLog(@"While processing the prices API response for ticker:%@ the event prior quarter end date is:%@",ticker, historyForDates.previous1RelatedDate);
             prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
             prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
             // Subtract 1 from the current day to get yesterday's date, since currently only yesterday's price data is available
