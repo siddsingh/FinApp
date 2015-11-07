@@ -39,8 +39,18 @@
 @property (strong,nonatomic) NSString *parentTicker;
 // Type of event. Currently support only "Quarterly Earnings"
 @property (strong,nonatomic) NSString *eventType;
+// This event's scheduled date as text
+@property (strong,nonatomic) NSString *eventDateText;
+// This event's certainty status. Currently "Confirmed" or "Estimated"
+@property (strong,nonatomic) NSString *eventCertainty;
 
 // Primary Data Controller to add/access data in the data store
 @property (strong, nonatomic) FADataController *primaryDetailsDataController;
+
+// Button for setting the Reminder
+@property (weak, nonatomic) IBOutlet UIButton *reminderButton;
+
+// Action to take when Reminder button is pressed
+- (IBAction)reminderAction:(id)sender;
 
 @end

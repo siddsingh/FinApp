@@ -13,7 +13,6 @@
 #import "FADataController.h"
 #import "Event.h"
 #import "Company.h"
-@import EventKit;
 #import <stdlib.h>
 #import "Reachability.h"
 #import <UIKit/UIKit.h>
@@ -34,7 +33,7 @@
 // Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
 - (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type dataController:(FADataController *)specificDataController;
 
-// Send a notification that the list of events has changed (updated)
+// Send a notification that there is a user message to be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
 
 // Return a color scheme from darker to lighter based on rwo number with darker on top. Currently returning a dark gray scheme.
@@ -45,9 +44,6 @@
 
 // Check if there is internet connectivity
 - (BOOL) checkForInternetConnectivity;
-
-// User's calendar events and reminders data store
-@property (strong, nonatomic) EKEventStore *userEventStore;
 
 @end
 
@@ -112,16 +108,10 @@
                                              selector:@selector(userMessageGenerated:)
                                                  name:@"UserMessageCreated" object:nil];
     
-    // Register a listener for queued reminders to be created now that they have been confirmed
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(createQueuedReminder:)
-                                                 name:@"CreateQueuedReminder" object:nil];
-    
     // Register a listener for refreshing the overall screen header, currently with today's date
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateScreenHeader:)
                                                  name:@"UpdateScreenHeader" object:nil];
-    
     
     // Seed the company data, the very first time, to get the user started.
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
@@ -493,83 +483,6 @@
 
 }
 
-// Make Sure the table row, if it should be, is editable
-// TO DO: Check to see that the row has event information. Only then, make it editable
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return YES;
-}
-
-// TO DO: Understand this method better. Basically need this to be able to use the custom UITableViewRowAction
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-}
-
-// Add the following actions on swiping each event row: 1) "Set Reminder" if reminder hasn't already been created, else
-// display a message that reminder has aleady been set.
-- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    // Get the cell for the row on which the action is being exercised
-    FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
-    
-    // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
-    // If the formatting changes, it needs to be changed here to accomodate as well.
-    NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", cell.eventDescription.text];
-    
-    UITableViewRowAction *setReminderAction;
-    
-    // Check to see if a reminder action has already been created for the event represented by the cell.
-    // If yes, show a appropriately formatted status action.
-    if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
-    {
-        // Create the "Reimder Already Set" Action and handle it being exercised.
-        setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Reminder Set" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-            
-            // Slide the row back over the action.
-            // TO DO: See if you can animate the slide back.
-            [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-            
-            // Let the user know a reminder is already set for this ticker.
-            [self sendUserMessageCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
-        }];
-        
-        // Format the Action UI to be the correct color and everything
-        setReminderAction.backgroundColor = [UIColor grayColor];
-    }
-    // If not, create the set reminder action
-    else
-    {
-        // Create the "Set Reminder" Action and handle it being exercised.
-        setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Set Reminder" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-            
-            // Get the cell for the row on which the action is being exercised
-            FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
-            NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
-            
-            // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
-            // TO DO: Decide if you want to close the slid out action, before the user has provided
-            // access. Currently it's weird where the action closes and then the access popup is shown.
-            [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
-            
-            // Slide the row back over the action.
-            // TO DO: See if you can animate the slide back.
-            [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        }];
-        
-        // Format the Action UI to be the correct color and everything
-        setReminderAction.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-    }
-    
-    // TO DO: For future, if you want to add an additional action.
-    /* UITableViewRowAction *anotherAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Another Action" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-        // Handle exercising the action
-    }];
-    anotherAction.backgroundColor = [UIColor blueColor];
-    return @[setReminderAction, anotherAction]; */
-    
-    return @[setReminderAction];
-}
-
 #pragma mark - Data Source API
 
 // Get all companies from API. Typically called in a background thread
@@ -809,7 +722,7 @@
 
 #pragma mark - Notifications
 
-// Send a notification that the list of events has changed (updated)
+// Send a notification that there is a message that should be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
@@ -832,7 +745,7 @@
 }
 
 // Show the error message for a temporary period and then fade it if a user message has been generated
-// TO DO: Currently set to 10 seconds. Change as you see fit.
+// TO DO: Currently set to 20 seconds. Change as you see fit.
 - (void)userMessageGenerated:(NSNotification *)notification {
     
     // Make sure the message bar is empty and visible to the user
@@ -841,35 +754,11 @@
     
      NSLog(@"NOTIFICATION ABOUT TO BE SHOWN: With User Message: %@",[notification object]);
     
-    // Show the message that's generated for a period of 10 seconds
-    [UIView animateWithDuration:10 animations:^{
+    // Show the message that's generated for a period of 20 seconds
+    [UIView animateWithDuration:20 animations:^{
         self.messageBar.text = [notification object];
         self.messageBar.alpha = 0;
     }];
-    
-    NSLog(@"*******************************************User Message Generated listener fired to show error message");
-}
-
-// Take a queued reminder and create it in the user's OS Reminders now that the event has been confirmed.
-// The notification object contains an array of strings representing {eventType,companyTicker,eventDateText}
-- (void)createQueuedReminder:(NSNotification *)notification {
-    
-    NSArray *infoArray = [notification object];
-    // Create a new DataController so that this thread has its own MOC
-    // TO DO: Understand at what point does a new thread get spawned off. Shouldn't I be creating the new MOC in that thread as opposed to here ? Maybe it doesn't matter as long as I am not sharing MOCs across threads ? The general rule with Core Data is one Managed Object Context per thread, and one thread per MOC
-    FADataController *thirdDataController = [[FADataController alloc] init];
-    
-    // Create the reminder
-    BOOL success = [self createReminderForEventOfType:[infoArray objectAtIndex:0] withTicker:[infoArray objectAtIndex:1] dateText:[infoArray objectAtIndex:2] andDataController:thirdDataController];
-    
-    // If successful, update the status of the event in the data store to be "Created" from "Queued"
-    if (success) {
-        [thirdDataController updateActionWithStatus:@"Created" type:@"OSReminder" eventTicker:[infoArray objectAtIndex:1] eventType:[infoArray objectAtIndex:0]];
-    }
-    // Else log an error message
-    else {
-        NSLog(@"ERROR:Creating a queued reminder for ticker:%@ and event type:%@ failed", [infoArray objectAtIndex:1], [infoArray objectAtIndex:0]);
-    }
 }
 
 // Process the notification to update screen header which is the navigation bar title. Currently just set it to today's date.
@@ -878,157 +767,6 @@
     NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
     [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
     [self.navigationController.navigationBar.topItem setTitle:[todayDateFormatter stringFromDate:[NSDate date]]];
-}
-
-
-#pragma mark - Calendar and Event Related
-
-// Set the getter for the user event store property so that only one event store object gets created
-- (EKEventStore *)userEventStore {
-    if (!_userEventStore) {
-        _userEventStore = [[EKEventStore alloc] init];
-    }
-    return _userEventStore;
-}
-
-// Present the user with an access request to their reminders if it's not already been done. Once that is done
-// or access is already provided, create the reminder.
-// TO DO: Change the name FinApp to whatever the real name will be.
-- (void)requestAccessToUserEventStoreAndProcessReminderFromCell:(FAEventsTableViewCell *)eventCell {
-    
-    // Get the current access status to the user's event store for event type reminder.
-    EKAuthorizationStatus accessStatus = [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder];
-    
-    // Depending on the current access status, choose what to do. Idea is to request access from a user
-    // only if he hasn't granted it before.
-    switch (accessStatus) {
-        
-        // If the user hasn't provided access, show an appropriate error message.
-        case EKAuthorizationStatusDenied:
-        case EKAuthorizationStatusRestricted: {
-            NSLog(@"Authorization Status for Reminders is Denied or Restricted");
-            [self sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
-            break;
-        }
-            
-        // If the user has already provided access, create the reminder.
-        case EKAuthorizationStatusAuthorized: {
-            NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
-            [self processReminderForEventInCell:eventCell withDataController:self.primaryDataController];
-            break;
-        }
-            
-        // If the app hasn't requested access or the user hasn't decided yet, present the user with the
-        // authorization dialog. If the user approves create the reminder. If user rejects, show error message.
-        case EKAuthorizationStatusNotDetermined: {
-            
-            // create a weak reference to the controller, since you want to create the reminder, in
-            // a non main thread where the authorization dialog is presented.
-            __weak FAEventsViewController *weakPtrToSelf = self;
-            [self.userEventStore requestAccessToEntityType:EKEntityTypeReminder
-                                            completion:^(BOOL grantedByUser, NSError *error) {
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    if (grantedByUser) {
-                                                        NSLog(@"Authorization Status for Reminders was enabled by user. About to create the reminder");
-                                                        // Create a new Data Controller so that this thread has it's own MOC
-                                                        FADataController *afterAccessDataController = [[FADataController alloc] init];
-                                                        [weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
-                                                    } else {
-                                                        NSLog(@"Authorization Status for Reminderswas rejected by user.");
-                                                        [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
-                                                    }
-                                                });
-                                            }];
-            break;
-        }
-    }
-}
-
-// Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
-- (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell withDataController:(FADataController *)appropriateDataController {
-    
-    // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
-    // If the formatting changes, it needs to be changed here to accomodate as well.
-    NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", eventCell.eventDescription.text];
-    NSString *cellCompanyTicker = eventCell.companyTicker.text;
-    NSString *cellEventDateText = eventCell.eventDate.text;
-    NSString *cellEventCertainty = eventCell.eventCertainty.text;
-    
-    NSLog(@"Event Cell type is:%@ Ticker is:%@ DateText is:%@ and Certainty is:%@", cellEventType, cellCompanyTicker, cellEventDateText, cellEventCertainty);
-    
-    // Check to see if the event represented by the cell is estimated or confirmed ?
-    // If confirmed create and save to action data store
-    if ([eventCell.eventCertainty.text isEqualToString:@"Confirmed"]) {
-        
-        NSLog(@"About to create a reminder, since this event is confirmed");
-        
-        // Create the reminder and show user the appropriate message
-        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
-        if (success) {
-            NSLog(@"Successfully created the reminder");
-            [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
-            // Add action to the action data store with status created
-            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
-        } else {
-            NSLog(@"Actual Reminder Creation failed");
-            [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
-        }
-    }
-    // If estimated add to action data store for later processing
-    else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
-        
-        NSLog(@"About to queue a reminder for later creation, since this event is not confirmed");
-        
-        // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
-        [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-        [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
-    }
-}
-
-// Actually create the reminder in the user's default calendar and return success or failure depending on the outcome.
-- (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker dateText:(NSString *)eventDateText andDataController:(FADataController *)reminderDataController  {
-    
-    BOOL creationSuccess = NO;
-    
-    // Set title of the reminder to the reminder text.
-    EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
-    NSString *reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
-    eventReminder.title = reminderText;
-    NSLog(@"The Reminder title is: %@",reminderText);
-    
-    // For now, create the reminder in the default calendar for new reminders as specified in settings
-    eventReminder.calendar = [self.userEventStore defaultCalendarForNewReminders];
-    
-    // Get the date for the event represented by the cell
-    NSDate *eventDate = [reminderDataController getDateForEventOfType:eventType eventTicker:companyTicker];
-    
-    // Subtract a day as we want to remind the user a day prior and then set the reminder time to noon of the previous day
-    // and set reminder due date to that.
-    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = -1;
-    NSDate *reminderDateTime = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:eventDate options:0];
-    NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-    NSDateComponents *reminderDateTimeComponents = [aGregorianCalendar components:unitFlags fromDate:reminderDateTime];
-    reminderDateTimeComponents.hour = 12;
-    reminderDateTimeComponents.minute = 0;
-    reminderDateTimeComponents.second = 0;
-    eventReminder.dueDateComponents = reminderDateTimeComponents;
-    // Additionally add an alarm for the same time as due date/time so that the reminder actually pops up.
-    NSDate *alarmDateTime = [aGregorianCalendar dateFromComponents:reminderDateTimeComponents];
-    [eventReminder addAlarm:[EKAlarm alarmWithAbsoluteDate:alarmDateTime]];
-    
-    // TO DO: For debugging. Delete later.
-    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-    [eventDateFormatter setDateFormat:@"yyyy-MM-dd 'at' HH:mm:ss"];
-    NSString *eventDueDateDebugString = [eventDateFormatter stringFromDate:alarmDateTime];
-    NSLog(@"Event Reminder Date Time is:%@",eventDueDateDebugString);
-    
-    // Save the Reminder and return success or failure
-    NSError *error = nil;
-    creationSuccess = [self.userEventStore saveReminder:eventReminder commit:YES error:&error];
-    
-    return creationSuccess;
 }
 
 #pragma mark - Connectivity Methods
@@ -1132,25 +870,26 @@
         // Set the title on the destination view controller to be the same as that of the current view controller which is today's date
         [eventDetailsViewController.navigationItem setTitle:self.navigationController.navigationBar.topItem.title];
         
-        // Get the currently selected cell and details
+        // Get the currently selected cell and set details for the destination.
+        // IMPORTANT: If the format here or in the events UI is changed, reminder creation in the details screen will break.
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
         NSString *eventTicker = selectedCell.companyTicker.text;
         NSString *eventType = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
-        
-        // Event Title
-        [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@   -   %@", eventTicker, eventType]];
-         
-        // Event Schedule
-        [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
-        
-        // Event Parent Ticker
+        // Set Event Parent Ticker for processing in destination
         [eventDetailsViewController setParentTicker:eventTicker];
-        
-        // Event Type
+        // Set Event Type for processing in destination
         [eventDetailsViewController setEventType: eventType];
+        // Set Event Schedule as text for processing in destination
+        [eventDetailsViewController setEventDateText:selectedCell.eventDate.text];
+        // Set Event certainty status for processing in destination
+        [eventDetailsViewController setEventCertainty:selectedCell.eventCertainty.text];
         
-        }
+        // Set Event Title for display in destination
+        [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@   -   %@", eventTicker, eventType]];
+        // Set Event Schedule for display in destination
+        [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
+    }
 }
 
 #pragma mark - Utility Methods
@@ -1272,6 +1011,229 @@
  
  // Bring in the App Icon
  [UIView animateWithDuration:20 delay:14 options:UIViewAnimationOptionBeginFromCurrentState animations:^{self.appIconBar.alpha = 1.0;} completion:^(BOOL finished){}]; 
-*/
+
+ // Make Sure the table row, if it should be, is editable
+ // TO DO: Check to see that the row has event information. Only then, make it editable
+ // TO DO: Move to unused once reminder creation is ported to details screen.
+ - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+ 
+ return YES;
+ }
+
+// TO DO: Understand this method better. Basically need this to be able to use the custom UITableViewRowAction
+// TO DO: Move to unused once reminder creation is ported to details screen.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+ 
+ }
+
+// TO DO: Move to unused once reminder creation is ported to details screen.
+// Add the following actions on swiping each event row: 1) "Set Reminder" if reminder hasn't already been created, else
+// display a message that reminder has aleady been set.
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+ 
+ // Get the cell for the row on which the action is being exercised
+ FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+ 
+ // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
+ // If the formatting changes, it needs to be changed here to accomodate as well.
+ NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", cell.eventDescription.text];
+ 
+ UITableViewRowAction *setReminderAction;
+ 
+ // Check to see if a reminder action has already been created for the event represented by the cell.
+ // If yes, show a appropriately formatted status action.
+ if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
+ {
+ // Create the "Reimder Already Set" Action and handle it being exercised.
+ setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Reminder Set" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+ 
+ // Slide the row back over the action.
+ // TO DO: See if you can animate the slide back.
+ [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+ 
+ // Let the user know a reminder is already set for this ticker.
+ [self sendUserMessageCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
+ }];
+ 
+ // Format the Action UI to be the correct color and everything
+ setReminderAction.backgroundColor = [UIColor grayColor];
+ }
+ // If not, create the set reminder action
+ else
+ {
+ // Create the "Set Reminder" Action and handle it being exercised.
+ setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Set Reminder" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+ 
+ // Get the cell for the row on which the action is being exercised
+ FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+ NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
+ 
+ // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+ // TO DO: Decide if you want to close the slid out action, before the user has provided
+ // access. Currently it's weird where the action closes and then the access popup is shown.
+ [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
+ 
+ // Slide the row back over the action.
+ // TO DO: See if you can animate the slide back.
+ [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+ }];
+ 
+ // Format the Action UI to be the correct color and everything
+ setReminderAction.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+ }
+ 
+ return @[setReminderAction];
+ }
+ 
+ // TO DO: Move to unused once reminder creation is ported to details screen.
+  #pragma mark - Calendar and Event Related
+ 
+ // Set the getter for the user event store property so that only one event store object gets created
+ - (EKEventStore *)userEventStore {
+ if (!_userEventStore) {
+ _userEventStore = [[EKEventStore alloc] init];
+ }
+ return _userEventStore;
+ }
+ 
+ // Present the user with an access request to their reminders if it's not already been done. Once that is done
+ // or access is already provided, create the reminder.
+ // TO DO: Change the name FinApp to whatever the real name will be.
+ - (void)requestAccessToUserEventStoreAndProcessReminderFromCell:(FAEventsTableViewCell *)eventCell {
+ 
+ // Get the current access status to the user's event store for event type reminder.
+ EKAuthorizationStatus accessStatus = [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder];
+ 
+ // Depending on the current access status, choose what to do. Idea is to request access from a user
+ // only if he hasn't granted it before.
+ switch (accessStatus) {
+ 
+ // If the user hasn't provided access, show an appropriate error message.
+ case EKAuthorizationStatusDenied:
+ case EKAuthorizationStatusRestricted: {
+ NSLog(@"Authorization Status for Reminders is Denied or Restricted");
+ [self sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
+ break;
+ }
+ 
+ // If the user has already provided access, create the reminder.
+ case EKAuthorizationStatusAuthorized: {
+ NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
+ [self processReminderForEventInCell:eventCell withDataController:self.primaryDataController];
+ break;
+ }
+ 
+ // If the app hasn't requested access or the user hasn't decided yet, present the user with the
+ // authorization dialog. If the user approves create the reminder. If user rejects, show error message.
+ case EKAuthorizationStatusNotDetermined: {
+ 
+ // create a weak reference to the controller, since you want to create the reminder, in
+ // a non main thread where the authorization dialog is presented.
+ __weak FAEventsViewController *weakPtrToSelf = self;
+ [self.userEventStore requestAccessToEntityType:EKEntityTypeReminder
+ completion:^(BOOL grantedByUser, NSError *error) {
+ dispatch_async(dispatch_get_main_queue(), ^{
+ if (grantedByUser) {
+ NSLog(@"Authorization Status for Reminders was enabled by user. About to create the reminder");
+ // Create a new Data Controller so that this thread has it's own MOC
+ FADataController *afterAccessDataController = [[FADataController alloc] init];
+ [weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
+ } else {
+ NSLog(@"Authorization Status for Reminderswas rejected by user.");
+ [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
+ }
+ });
+ }];
+ break;
+ }
+ }
+ }
+ 
+ // Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
+ - (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell withDataController:(FADataController *)appropriateDataController {
+ 
+ // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
+ // If the formatting changes, it needs to be changed here to accomodate as well.
+ NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", eventCell.eventDescription.text];
+ NSString *cellCompanyTicker = eventCell.companyTicker.text;
+ NSString *cellEventDateText = eventCell.eventDate.text;
+ NSString *cellEventCertainty = eventCell.eventCertainty.text;
+ 
+ NSLog(@"Event Cell type is:%@ Ticker is:%@ DateText is:%@ and Certainty is:%@", cellEventType, cellCompanyTicker, cellEventDateText, cellEventCertainty);
+ 
+ // Check to see if the event represented by the cell is estimated or confirmed ?
+ // If confirmed create and save to action data store
+ if ([eventCell.eventCertainty.text isEqualToString:@"Confirmed"]) {
+ 
+ NSLog(@"About to create a reminder, since this event is confirmed");
+ 
+ // Create the reminder and show user the appropriate message
+ BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
+ if (success) {
+ NSLog(@"Successfully created the reminder");
+ [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+ // Add action to the action data store with status created
+ [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
+ } else {
+ NSLog(@"Actual Reminder Creation failed");
+ [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
+ }
+ }
+ // If estimated add to action data store for later processing
+ else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
+ 
+ NSLog(@"About to queue a reminder for later creation, since this event is not confirmed");
+ 
+ // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+ [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
+ [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+ }
+ }
+ 
+ // Actually create the reminder in the user's default calendar and return success or failure depending on the outcome.
+ - (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker dateText:(NSString *)eventDateText andDataController:(FADataController *)reminderDataController  {
+ 
+ BOOL creationSuccess = NO;
+ 
+ // Set title of the reminder to the reminder text.
+ EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
+ NSString *reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
+ eventReminder.title = reminderText;
+ NSLog(@"The Reminder title is: %@",reminderText);
+ 
+ // For now, create the reminder in the default calendar for new reminders as specified in settings
+ eventReminder.calendar = [self.userEventStore defaultCalendarForNewReminders];
+ 
+ // Get the date for the event represented by the cell
+ NSDate *eventDate = [reminderDataController getDateForEventOfType:eventType eventTicker:companyTicker];
+ 
+ // Subtract a day as we want to remind the user a day prior and then set the reminder time to noon of the previous day
+ // and set reminder due date to that.
+ NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+ NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+ differenceDayComponents.day = -1;
+ NSDate *reminderDateTime = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:eventDate options:0];
+ NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+ NSDateComponents *reminderDateTimeComponents = [aGregorianCalendar components:unitFlags fromDate:reminderDateTime];
+ reminderDateTimeComponents.hour = 12;
+ reminderDateTimeComponents.minute = 0;
+ reminderDateTimeComponents.second = 0;
+ eventReminder.dueDateComponents = reminderDateTimeComponents;
+ // Additionally add an alarm for the same time as due date/time so that the reminder actually pops up.
+ NSDate *alarmDateTime = [aGregorianCalendar dateFromComponents:reminderDateTimeComponents];
+ [eventReminder addAlarm:[EKAlarm alarmWithAbsoluteDate:alarmDateTime]];
+ 
+ // TO DO: For debugging. Delete later.
+ NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+ [eventDateFormatter setDateFormat:@"yyyy-MM-dd 'at' HH:mm:ss"];
+ NSString *eventDueDateDebugString = [eventDateFormatter stringFromDate:alarmDateTime];
+ NSLog(@"Event Reminder Date Time is:%@",eventDueDateDebugString);
+ 
+ // Save the Reminder and return success or failure
+ NSError *error = nil;
+ creationSuccess = [self.userEventStore saveReminder:eventReminder commit:YES error:&error];
+ 
+ return creationSuccess;
+ } */
 
 @end

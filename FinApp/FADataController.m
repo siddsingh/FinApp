@@ -1027,8 +1027,9 @@
         NSLog(@"After updating event for ticker:%@ the event current quarter end date is:%@ and prior quarter end date is:%@",ticker, relatedDate,priorEndDate);
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
+        // Similarly if this event just went from confirmed to confirmed and there is a created reminder that exists for it, fire a notification to create a new reminder.
         // TO DO: Optimize to not make this datastore call, when the user gets events for a ticker for the first time.
-        if ([certaintyStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:ticker eventType:eventType]) {
+        if (([certaintyStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:ticker eventType:eventType])||([certaintyStr isEqualToString:@"Confirmed"]&&[self doesReminderActionExistForEventWithTicker:ticker eventType:eventType])) {
             
             // Create array that contains {eventType,companyTicker,eventDateText} to pass on to the notification
             NSString *notifEventType = [NSString stringWithFormat: @"%@", eventType];
