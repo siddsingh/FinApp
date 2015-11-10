@@ -316,12 +316,17 @@
         [self sendUserGuidanceCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
     }
     
-    // If not, create the reminder
+    // If not, create the reminder and style the button to post set styling
     else
     {
         NSLog(@"Clicked the Set Reminder Action with ticker %@",self.parentTicker);
         // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
         [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
+        
+        // Style the button to post set styling
+        [self.reminderButton setBackgroundColor:[UIColor grayColor]];
+        [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
+        [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     }
 }
 

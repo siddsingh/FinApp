@@ -52,8 +52,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSLog(@"EVENTS VIEW LOADED");
-    
     // Do any additional setup after loading the view.
     
     // Visual styling setup
@@ -113,7 +111,7 @@
                                              selector:@selector(updateScreenHeader:)
                                                  name:@"UpdateScreenHeader" object:nil];
     
-    // Seed the company data, the very first time, to get the user started.
+   // Seed the company data, the very first time, to get the user started.
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
     if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
         
@@ -179,7 +177,7 @@
 -(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     
     UITableViewCell *headerView = nil;
-
+    
     headerView = [tableView dequeueReusableCellWithIdentifier:@"EventsTableHeader"];
     return headerView;
 }
@@ -405,9 +403,9 @@
         // Check for connectivity. If yes, process the fetch
         if ([self checkForInternetConnectivity]) {
             
-            // Set the busy spinner to show that details are being fetched
-            NSLog(@"Starting to animate price fetch spinner");
-            [self.remoteFetchSpinner startAnimating];
+            // Set the busy spinner to show that details are being fetched. Do this in a background thread as the main
+            // thread is being taken up by the table view. It's a best practice.
+            [self.remoteFetchSpinner performSelectorInBackground:@selector(startAnimating) withObject:self];
             
             // Read whatever history details are available from event and fetch additional ones from the API to get ready to segue to
             // the event detail view
@@ -462,25 +460,24 @@
                 //[self performSelectorInBackground:@selector(getPricesInBackgroundWithEventInfo:) withObject:@[eventTicker,eventType]];
                 [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1];
             }
-            
-            // Set the busy spinner to show that details are being fetched
-            NSLog(@"Stopping animation of price fetch spinner");
-            [self.remoteFetchSpinner stopAnimating];
         }
         // If not, show error message
         else {
             
             [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
         }
+        
+        // Stop the remote fetch spinner animation to indicate fetch is complete. Do this in a background thread as the main
+        // thread is being taken up by the table view. It's a best practice.
+        [self.remoteFetchSpinner performSelectorInBackground:@selector(stopAnimating) withObject:self];
     }
     
-    // If search bar is in edit mode but the user has not entered any character xto search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
+    // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
     if ([self.eventsSearchBar isFirstResponder] && !(self.filterSpecified)) {
         
         NSLog(@"SEARCH BAR CONTEXT SHOULD BE CLEARED");
         [self.eventsSearchBar resignFirstResponder];
     }
-
 }
 
 #pragma mark - Data Source API
@@ -642,6 +639,8 @@
     // If not valid
     else {
         
+        NSLog(@"Entered the search text not valid loop in text did change");
+        
         //Query all events as that is the default view
         self.eventResultsController = [self.primaryDataController getAllEvents];
         
@@ -712,12 +711,19 @@
 // 1) When user touches outside the search bar, if search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context.
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
+    NSLog(@"Tap recognized by Touches Began with first responder:%d", [self isFirstResponder]);
+    
     //When user touches outside the search bar, if search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context.
     if ([self.eventsSearchBar isFirstResponder] && !(self.filterSpecified)) {
-        NSLog(@"SEARCH BAR CONTEXT SHOULD BE CLEARED");
         [self.eventsSearchBar resignFirstResponder];
     }
     
+    // When user touches outside the search bar, when a fetch event is displayed or in progress, clear out of the search context.
+    if ([self.eventsSearchBar isFirstResponder] && (self.filterSpecified)) {
+        NSLog(@"Entered touch outside to clear search bar context");
+        [self.eventsSearchBar setText:@""];
+        [self searchBar:self.eventsSearchBar textDidChange:@""];
+    }
 }
 
 #pragma mark - Notifications
@@ -886,7 +892,7 @@
         [eventDetailsViewController setEventCertainty:selectedCell.eventCertainty.text];
         
         // Set Event Title for display in destination
-        [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@   -   %@", eventTicker, eventType]];
+        [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@ %@", eventTicker, [eventType uppercaseString]]];
         // Set Event Schedule for display in destination
         [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
     }
