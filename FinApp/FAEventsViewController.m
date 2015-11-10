@@ -349,13 +349,17 @@
         
         // Show event certainty
         [[cell eventCertainty] setText:eventAtIndex.certainty];
-        // Set it's color based on certainty. Confirmed is -> Knotifi Purple, Others -> Light Gray
+        // Set it's color based on certainty. Confirmed is -> Bright Blue, Others -> Dark Gray
         if ([cell.eventCertainty.text isEqualToString:@"Confirmed"]) {
             
-            cell.eventCertainty.textColor = [UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-            // TO DO: Delete this bright blue later
-            //cell.eventCertainty.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            // TO DO: Delete this purple,blue later
+            //cell.eventCertainty.textColor = [UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+            //cell.eventCertainty.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+            cell.eventCertainty.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            
         } else {
+            // TO DO: Delete Later Red Color
+            //cell.eventCertainty.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
             cell.eventCertainty.textColor = [UIColor darkGrayColor];
         }
         
