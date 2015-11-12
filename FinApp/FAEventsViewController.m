@@ -33,7 +33,7 @@
 // Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
 - (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type dataController:(FADataController *)specificDataController;
 
-// Send a notification that there is a user message to be shown to the user
+// Send a notification to the events list controller with a message that should be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
 
 // Return a color scheme from darker to lighter based on rwo number with darker on top. Currently returning a dark gray scheme.
@@ -65,19 +65,23 @@
     [self.navigationController.navigationBar.topItem setTitle:[todayDateFormatter stringFromDate:[NSDate date]]];
     
     // Change the color of the events search bar placeholder text and text entered to be white.
+    [self.eventsSearchBar setBackgroundImage:[UIImage new]];
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
     [eventSearchBarInputFld setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
     eventSearchBarInputFld.textColor = [UIColor whiteColor];
+    // TO DO: Finally decide between this currently set blue or purple color.
+    //eventSearchBarInputFld.backgroundColor = [UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+    eventSearchBarInputFld.backgroundColor = [UIColor colorWithRed:78.0f/255.0f green:132.0f/255.0f blue:216.0f/255.0f alpha:1.0f];
     
     // Do the same for the Magnifying glass icon in the search bar.
     UIImageView *magGlassIcon = (UIImageView *)eventSearchBarInputFld.leftView;
     magGlassIcon.image = [magGlassIcon.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    magGlassIcon.tintColor = [UIColor darkGrayColor];
+    magGlassIcon.tintColor = [UIColor whiteColor];
     
     // Do the same for the Clear button in the search bar.
     UIButton *searchClearBtn = [eventSearchBarInputFld valueForKey:@"_clearButton"];
     [searchClearBtn setImage:[searchClearBtn.imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-    searchClearBtn.tintColor = [UIColor darkGrayColor];
+    searchClearBtn.tintColor = [UIColor whiteColor];
     
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
@@ -105,6 +109,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(userMessageGenerated:)
                                                  name:@"UserMessageCreated" object:nil];
+    
     
     // Register a listener for refreshing the overall screen header, currently with today's date
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -349,14 +354,14 @@
         
         // Show event certainty
         [[cell eventCertainty] setText:eventAtIndex.certainty];
-        // Set it's color based on certainty. Confirmed is -> Bright Blue, Others -> Dark Gray
+        // Set it's color based on certainty. Confirmed is -> Dark Gray, Others -> Dark Gray
         if ([cell.eventCertainty.text isEqualToString:@"Confirmed"]) {
             
-            // TO DO: Delete this purple,blue later
+            // TO DO: Delete this purple,blue, bright blue later
             //cell.eventCertainty.textColor = [UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
             //cell.eventCertainty.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-            cell.eventCertainty.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-            
+            //cell.eventCertainty.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            cell.eventCertainty.textColor = [UIColor darkGrayColor];
         } else {
             // TO DO: Delete Later Red Color
             //cell.eventCertainty.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
@@ -468,7 +473,7 @@
         // If not, show error message
         else {
             
-            [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+            //  Currently for simplicity, we are handling this in the event details controller as that's where the user is transitioning to on click.
         }
         
         // Stop the remote fetch spinner animation to indicate fetch is complete. Do this in a background thread as the main
@@ -732,7 +737,7 @@
 
 #pragma mark - Notifications
 
-// Send a notification that there is a message that should be shown to the user
+// Send a notification to the events list controller with a message that should be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];

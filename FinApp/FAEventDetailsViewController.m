@@ -13,6 +13,7 @@
 #import "EventHistory.h"
 #import "FADataController.h"
 #import "Event.h"
+#import "Reachability.h"
 @import EventKit;
 
 @interface FAEventDetailsViewController ()
@@ -58,7 +59,9 @@
     // If not, show the appropriate styling
     else
     {
-        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f]];
+        // TO DO: Finally decide between this currently set blue and purple color
+        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:78.0f/255.0f green:132.0f/255.0f blue:216.0f/255.0f alpha:1.0f]];
+        //[self.reminderButton setBackgroundColor:[UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f]];
         [self.reminderButton setTitle:@"REMIND ME" forState:UIControlStateNormal];
         [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     }
@@ -77,6 +80,16 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(eventHistoryDataChanged:)
                                                  name:@"EventHistoryUpdated" object:nil];
+    
+    // If there is no connectivity, it's safe to assume that it wasn't there when the user segued so today's data, might not be available. Show a guidance message to the user accordingly
+    if (![self checkForInternetConnectivity]) {
+        
+        NSLog(@"ENTERED THE CHECK FOR NO CONNECTION.");
+        [self sendUserGuidanceCreatedNotificationWithMessage:@"Hmm! No Connection. Data might be outdated."];
+    }
+    
+    // This will remove extra separators from the bottom of the tableview which doesn't have any cells
+    self.eventDetailsTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 #pragma mark - Event Details Table
@@ -542,6 +555,25 @@
         self.messagesArea.text = [notification object];
         self.messagesArea.alpha = 0;
     }];
+}
+
+#pragma mark - Connectivity Methods
+
+// Check if there is internet connectivity
+- (BOOL) checkForInternetConnectivity {
+    
+    // Get internet access status
+    Reachability *internetReachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus internetStatus = [internetReachability currentReachabilityStatus];
+    
+    // If there is no internet access
+    if (internetStatus == NotReachable) {
+        return NO;
+    }
+    // If there is internet access
+    else {
+        return YES;
+    }
 }
 
 - (void)didReceiveMemoryWarning {

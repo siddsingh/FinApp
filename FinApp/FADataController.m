@@ -23,7 +23,7 @@
 // Send a notification that the list of messages has changed (updated)
 - (void)sendEventsChangeNotification;
 
-// Send a notification that the list of events has changed (updated)
+// Send a notification to the events list controller with a message that should be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
 
 // Send a notification that a queued reminder associated with an event should be created, since the event date has been confirmed. Send an array of information {eventType,companyTicker,eventDateText} that will be needed by receiver to complete this action.
@@ -1120,8 +1120,7 @@
         // Log error to console
         NSLog(@"ERROR: Could not get price data from the API Data Source. Error description: %@",error.description);
         
-        // Show user an error message
-        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get events. Check Connection."];
+        // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
     }
 }
 
@@ -1225,8 +1224,8 @@
     // If response is not correct, show the user an error message
     if (parsedDataSets == NULL)
     {
-        // TO DO: Replace with error message for the event detail screen
-        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get stock prices. Try again later."];
+        // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
+        
     }
     // Else process response to enter historical prices
     else
@@ -2021,7 +2020,7 @@
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 
-// Send a notification that the list of events has changed (updated)
+// Send a notification to the events list controller with a message that should be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
