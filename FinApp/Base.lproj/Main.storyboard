@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="4aJ-Kn-nti">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="4aJ-Kn-nti">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -16,11 +17,12 @@
                         <viewControllerLayoutGuide type="bottom" id="Nql-41-vTF"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="fPu-sh-VAw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="kvC-1T-x6w">
                                 <rect key="frame" x="285" y="49" width="30" height="30"/>
+                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Ba3-Ry-Pdi"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="30" id="OfC-Mo-i6S"/>
@@ -40,6 +42,7 @@
                             </activityIndicatorView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fetching Companies. If you can't find a Company, retry in a bit." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RVP-gf-zre">
                                 <rect key="frame" x="0.0" y="49" width="600" height="28"/>
+                                <animations/>
                                 <color key="backgroundColor" red="0.80392156859999997" green="0.59215686270000001" blue="0.23921568630000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="335" id="EUU-gM-mqv">
@@ -70,6 +73,7 @@
                             </label>
                             <searchBar contentMode="redraw" text="" placeholder="COMPANY OR TICKER" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
                                 <rect key="frame" x="160" y="5" width="281" height="44"/>
+                                <animations/>
                                 <color key="backgroundColor" red="0.47450980390000003" green="0.71372549019999998" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="281" id="jnJ-Ta-4AT"/>
@@ -97,38 +101,46 @@
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" sectionIndexMinimumDisplayRowCount="-1" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
                                 <rect key="frame" x="0.0" y="85" width="600" height="451"/>
+                                <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="separatorColor" red="0.81139520197171722" green="0.81139520197171722" blue="0.81139520197171722" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="separatorInset" minX="50" minY="0.0" maxX="50" maxY="0.0"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EventsTableHeader" textLabel="DrK-lS-eMj" rowHeight="32" style="IBUITableViewCellStyleDefault" id="kaV-62-EHJ">
-                                        <rect key="frame" x="0.0" y="0.0" width="612" height="44"/>
+                                        <rect key="frame" x="0.0" y="22" width="600" height="32"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" tableViewCell="kaV-62-EHJ" id="rKq-Hf-cMV">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="31"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="center" text="Upcoming Earnings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="DrK-lS-eMj">
+                                                    <rect key="frame" x="15" y="0.0" width="570" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
                                                     <color key="backgroundColor" red="0.5568627451" green="0.78039215689999997" blue="0.45098039220000002" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="15"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <animations/>
                                             <color key="backgroundColor" red="0.5568627451" green="0.78039215689999997" blue="0.45098039220000002" alpha="1" colorSpace="calibratedRGB"/>
                                         </tableViewCellContentView>
+                                        <animations/>
                                         <color key="backgroundColor" red="0.5568627451" green="0.78039215689999997" blue="0.45098039220000002" alpha="1" colorSpace="calibratedRGB"/>
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="EventCell" rowHeight="80" id="GMC-5M-9zB" customClass="FAEventsTableViewCell">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="54" width="600" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GMC-5M-9zB" id="EdO-do-03K">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="79"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TCKR" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bou-Yt-hGl">
                                                     <rect key="frame" x="24" y="8" width="48" height="47"/>
+                                                    <animations/>
                                                     <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="48" id="U3d-ql-ZhH"/>
@@ -139,6 +151,7 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Company Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s1x-IM-BDA">
                                                     <rect key="frame" x="6" y="56" width="85" height="19"/>
+                                                    <animations/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="10"/>
                                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -146,6 +159,7 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thu September 18 Before Open" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jou-oj-rjb">
                                                     <rect key="frame" x="92" y="8" width="255" height="25"/>
+                                                    <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="255" id="Yja-NE-duE"/>
                                                     </constraints>
@@ -155,6 +169,7 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Confirmed" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y7j-P2-Lf8">
                                                     <rect key="frame" x="94" y="58" width="47" height="16"/>
+                                                    <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="47" id="NnT-YS-8Et"/>
                                                     </constraints>
@@ -164,6 +179,7 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Event Information Description" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r65-ua-5Pc">
                                                     <rect key="frame" x="92" y="34" width="482" height="21"/>
+                                                    <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="487" id="jdP-jn-yXN"/>
                                                     </constraints>
@@ -177,6 +193,7 @@
                                                     </variation>
                                                 </label>
                                             </subviews>
+                                            <animations/>
                                             <constraints>
                                                 <constraint firstAttribute="trailingMargin" secondItem="r65-ua-5Pc" secondAttribute="trailing" constant="18" id="1yS-iJ-xaL"/>
                                                 <constraint firstItem="r65-ua-5Pc" firstAttribute="top" secondItem="Bou-Yt-hGl" secondAttribute="top" constant="26" id="8i9-8O-y3D"/>
@@ -207,6 +224,7 @@
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
+                                        <animations/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <inset key="separatorInset" minX="50" minY="0.0" maxX="50" maxY="0.0"/>
                                         <connections>
@@ -228,6 +246,7 @@
                                 </connections>
                             </tableView>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" red="0.47450980390000003" green="0.71372549019999998" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -364,11 +383,12 @@
                         <viewControllerLayoutGuide type="bottom" id="OM1-NC-wj3"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bm-ia-MpB">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Earnings Full Schedule" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="skv-Z2-igx">
                                 <rect key="frame" x="166" y="31" width="269" height="21"/>
+                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="269" id="Jiz-v5-Ete"/>
                                     <constraint firstAttribute="height" constant="21" id="qLN-AK-i3p"/>
@@ -379,6 +399,7 @@
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="QUARTERLY EARNINGS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l00-YB-Mlc">
                                 <rect key="frame" x="195" y="9" width="211" height="21"/>
+                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="211" id="25y-HC-PcL"/>
                                     <constraint firstAttribute="height" constant="21" id="R0i-ES-T0y"/>
@@ -389,39 +410,47 @@
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="103" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="DqT-nh-mSd">
                                 <rect key="frame" x="0.0" y="132" width="600" height="404"/>
+                                <animations/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="separatorColor" red="0.81139520200000004" green="0.81139520200000004" blue="0.81139520200000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="separatorInset" minX="50" minY="0.0" maxX="50" maxY="0.0"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EventDetailsTableHeader" textLabel="vcO-R3-emp" rowHeight="29" style="IBUITableViewCellStyleDefault" id="iBj-iU-rs0">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="22" width="600" height="29"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iBj-iU-rs0" id="7m0-LQ-WPZ">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="28"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="center" text="Related Data" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vcO-R3-emp">
+                                                    <rect key="frame" x="15" y="0.0" width="570" height="28"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
                                                     <color key="backgroundColor" red="0.5568627451" green="0.78039215689999997" blue="0.45098039220000002" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="15"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <animations/>
                                             <color key="backgroundColor" red="0.5568627451" green="0.78039215689999997" blue="0.45098039220000002" alpha="1" colorSpace="calibratedRGB"/>
                                         </tableViewCellContentView>
+                                        <animations/>
                                         <color key="backgroundColor" red="0.5568627451" green="0.78039215689999997" blue="0.45098039220000002" alpha="1" colorSpace="calibratedRGB"/>
                                         <color key="tintColor" red="0.5568627451" green="0.78039215689999997" blue="0.45098039220000002" alpha="1" colorSpace="calibratedRGB"/>
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EventDetailsCell" rowHeight="103" id="Ddn-pS-oQ7" customClass="FAEventDetailsTableViewCell">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="51" width="600" height="103"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ddn-pS-oQ7" id="je5-AC-cFC">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="102"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Expected earnings per share for" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tlP-p7-T0X">
                                                     <rect key="frame" x="23" y="23" width="208" height="15"/>
+                                                    <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="208" id="Ava-lb-dRD"/>
                                                     </constraints>
@@ -431,6 +460,7 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sep 30 2015 - Sep 30 2015" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DS1-SI-oRb">
                                                     <rect key="frame" x="23" y="73" width="162" height="16"/>
+                                                    <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="16" id="AM8-Ol-UO3"/>
                                                         <constraint firstAttribute="width" constant="162" id="fwT-7r-t79"/>
@@ -441,6 +471,7 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+100.3" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LcH-0q-aBa">
                                                     <rect key="frame" x="518" y="13" width="59" height="30"/>
+                                                    <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="59" id="BzK-62-XOO"/>
                                                     </constraints>
@@ -450,18 +481,21 @@
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10.8%" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DRe-pW-ZhJ">
                                                     <rect key="frame" x="518" y="44" width="59" height="18"/>
+                                                    <animations/>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="15"/>
                                                     <color key="textColor" red="0.0" green="0.65995896460000003" blue="0.00020202914179999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="quarter ended Jun 30 2015" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q5m-AP-WvZ">
                                                     <rect key="frame" x="23" y="41" width="208" height="24"/>
+                                                    <animations/>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
                                                     <color key="textColor" red="0.1764705882" green="0.1764705882" blue="0.1764705882" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5000.02 - 5600.40" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wvc-mO-Dfo">
                                                     <rect key="frame" x="456" y="74" width="121" height="15"/>
+                                                    <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="121" id="47E-kQ-joe"/>
                                                     </constraints>
@@ -470,6 +504,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <animations/>
                                             <constraints>
                                                 <constraint firstAttribute="trailingMargin" secondItem="LcH-0q-aBa" secondAttribute="trailing" constant="15" id="0n8-Lx-0ve">
                                                     <variation key="heightClass=regular-widthClass=regular" constant="16"/>
@@ -521,6 +556,7 @@
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
+                                        <animations/>
                                         <inset key="separatorInset" minX="50" minY="0.0" maxX="50" maxY="0.0"/>
                                         <connections>
                                             <outlet property="additionalValue" destination="wvc-mO-Dfo" id="UIG-as-sIm"/>
@@ -539,6 +575,7 @@
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GSC-fM-PEJ">
                                 <rect key="frame" x="186" y="58" width="229" height="37"/>
+                                <animations/>
                                 <color key="backgroundColor" red="0.30603890290000002" green="0.51945941120000005" blue="0.84742809529999996" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="229" id="Tm3-iZ-RdQ"/>
@@ -555,6 +592,7 @@
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Already set to be reminded of this event a day before." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="THB-3X-wjS">
                                 <rect key="frame" x="0.0" y="98" width="600" height="30"/>
+                                <animations/>
                                 <color key="backgroundColor" red="0.80392156859999997" green="0.59215686270000001" blue="0.23921568630000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="335" id="8Mw-0J-PVx">
@@ -585,6 +623,7 @@
                             </label>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="J9r-wr-TpZ">
                                 <rect key="frame" x="285" y="98" width="30" height="30"/>
+                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="30" id="0rO-qQ-Xvb"/>
                                     <constraint firstAttribute="height" constant="30" id="5eY-hw-Rb9"/>
@@ -603,6 +642,7 @@
                                 </variation>
                             </activityIndicatorView>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" red="0.47450980390000003" green="0.71372549019999998" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -712,6 +752,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="HkX-OL-YN2">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
                         <color key="backgroundColor" red="0.47450980390000003" green="0.71372549019999998" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" red="0.30588235294117649" green="0.51764705882352935" blue="0.84705882352941175" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="barTintColor" red="0.47450980390000003" green="0.71372549019999998" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
