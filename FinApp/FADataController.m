@@ -697,8 +697,10 @@
             // TO DO: Test this, break out of this loop if say the connection timed out.
             break;
         }
-        
-        ++pageNo;
+        // TO DO: Solidify later when implementing incremental company sync: Checking if the call for a page of company data has failed (currently indicated by no of pages = 0)
+        if (noOfPagesTemp != 0) {
+            ++pageNo;
+        }
         endpointURL = @"https://www.quandl.com/api/v3/datasets.json?database_code=ZEA";
         NSLog(@"Page Number is:%ld and NoOfPages is:%ld",(long)pageNo,(long)noOfPages);
     }

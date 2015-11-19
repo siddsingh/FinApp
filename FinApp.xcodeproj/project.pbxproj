@@ -21,8 +21,6 @@
 		9E6D80791AA4E07100E1F2D3 /* FADataController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80781AA4E07100E1F2D3 /* FADataController.m */; };
 		9E6D807B1AAFDF5800E1F2D3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		9E7586461AF44679009DD7B2 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E7586451AF44679009DD7B2 /* User.m */; };
-		9E79C9181BC8FCCD007E17B6 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9E79C9171BC8FCCD007E17B6 /* FinApp.sqlite */; };
-		9E79C9191BC8FCCD007E17B6 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9E79C9171BC8FCCD007E17B6 /* FinApp.sqlite */; };
 		9E79C9241BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
 		9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
 		9E79C92B1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */; };
@@ -34,6 +32,8 @@
 		9EBD8EEA1BAC9DAB008A0370 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */; };
 		9EBD8EED1BAC9EA0008A0370 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */; };
 		9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */; };
+		9ED7B1DA1BFCF17A00C80D3A /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9ED7B1D91BFCF17A00C80D3A /* FinApp.sqlite */; };
+		9ED7B1DB1BFCF17A00C80D3A /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9ED7B1D91BFCF17A00C80D3A /* FinApp.sqlite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,7 +73,6 @@
 		9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		9E7586441AF44679009DD7B2 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		9E7586451AF44679009DD7B2 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
-		9E79C9171BC8FCCD007E17B6 /* FinApp.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = FinApp.sqlite; sourceTree = "<group>"; };
 		9E79C9221BCDE3B9007E17B6 /* EventHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventHistory.h; sourceTree = "<group>"; };
 		9E79C9231BCDE3B9007E17B6 /* EventHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventHistory.m; sourceTree = "<group>"; };
 		9E79C9291BD85C46007E17B6 /* FAEventDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventDetailsViewController.h; sourceTree = "<group>"; };
@@ -86,6 +85,7 @@
 		9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		9EBD8EEB1BAC9EA0008A0370 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		9ED7B1D91BFCF17A00C80D3A /* FinApp.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = FinApp.sqlite; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,7 +148,7 @@
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
-				9E79C9171BC8FCCD007E17B6 /* FinApp.sqlite */,
+				9ED7B1D91BFCF17A00C80D3A /* FinApp.sqlite */,
 				9EBD8EE41B82CEB9008A0370 /* Action.h */,
 				9EBD8EE51B82CEB9008A0370 /* Action.m */,
 				9E7586441AF44679009DD7B2 /* User.h */,
@@ -277,7 +277,7 @@
 				9E602D2619E655DF00ACDEC6 /* Main.storyboard in Resources */,
 				9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */,
 				9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */,
-				9E79C9181BC8FCCD007E17B6 /* FinApp.sqlite in Resources */,
+				9ED7B1DA1BFCF17A00C80D3A /* FinApp.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,7 +285,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9E79C9191BC8FCCD007E17B6 /* FinApp.sqlite in Resources */,
+				9ED7B1DB1BFCF17A00C80D3A /* FinApp.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

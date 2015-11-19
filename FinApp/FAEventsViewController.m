@@ -118,16 +118,16 @@
     
    // Seed the company data, the very first time, to get the user started.
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
-    if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
+    /*if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
         
         [self.primaryDataController performBatchedCompanySeedSyncLocally];
-    }
+    }*/
     
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
         
         // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
-    
+        /*
         // Seed the events data, the very first time, to get the user started.
         if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
             [self.primaryDataController performEventSeedSyncRemotely];
@@ -138,7 +138,7 @@
         if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]) {
             
             [self performSelectorInBackground:@selector(getAllCompaniesFromApiInBackground) withObject:nil];
-        }
+        }*/
     }
     // If not, show error message
     else {
@@ -436,19 +436,20 @@
             NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:selectedEvent.date currentEventRelatedDate:selectedEvent.relatedDate previousEventRelatedDate:selectedEvent.priorEndDate];
             NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",eventTicker,previousEvent1LikelyDate);
             NSLog(@"Before deciding to create or update event history for ticker:%@, history exists is:%d and prior end date is:%@ and current end date is:%@",eventTicker, [historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType], selectedEvent.priorEndDate,selectedEvent.relatedDate);
+            // If Event history doesn't exist insert it
             if (![historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
             {
                 // Insert history.
                 // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
                 NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
-                [historyDataController1 insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:selectedEvent.priorEndDate currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
-                NSLog(@"Inserted event history for ticker:%@ with previous end date:%@", eventTicker,selectedEvent.priorEndDate);
+                [historyDataController1 insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
+                NSLog(@"Inserted event history for ticker:%@ with previous end date:%@", eventTicker,[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate]);
             }
             // Else update the non price related data, except current date, on the event history from the event, in case the event info has been refreshed
             else
             {
-                [historyDataController1 updateEventHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:selectedEvent.priorEndDate parentEventTicker:eventTicker parentEventType:eventType];
-                NSLog(@"Updated event history for ticker:%@ with previous end date:%@", eventTicker,selectedEvent.priorEndDate);
+                [historyDataController1 updateEventHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate] parentEventTicker:eventTicker parentEventType:eventType];
+                NSLog(@"Updated event history for ticker:%@ with previous end date:%@", eventTicker,[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate]);
             }
             
             // Call price API, in the main thread, to get price history, if the current date is not today or if any of the price values are not available.
@@ -932,7 +933,7 @@
     differenceDayComponents.day = difference;
     NSDate *previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousRelatedDate options:0];
     
-    // Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Thursday for Friday and following Monday for Saturday and Sunday.
+    // Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Thursday for Friday and following Monday for Saturday and Sunday. TO DO LATER: Factor in holidays here.
     // Convert from string to Date
     NSDateFormatter *previousDayFormatter = [[NSDateFormatter alloc] init];
     [previousDayFormatter setDateFormat:@"EEE"];
@@ -958,6 +959,33 @@
     }
     
     return previousEventDate;
+}
+
+// Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Friday for Saturday and following Monday for Sunday. TO DO LATER: Factor in holidays here.
+- (NSDate *)scrubDateToNotBeWeekendOrHoliday:(NSDate *)dateToScrub
+{
+    // Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Friday for Saturday and following Monday for Sunday. TO DO LATER: Factor in holidays here.
+    // Convert from string to Date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateFormatter *dayFormatter = [[NSDateFormatter alloc] init];
+    [dayFormatter setDateFormat:@"EEE"];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    NSDate *scrubbedDate = dateToScrub;
+    NSString *dayString = [dayFormatter stringFromDate:dateToScrub];
+    NSLog(@"UNSCRUBBED DATE is computed to be: %@",dateToScrub);
+
+    if ([dayString isEqualToString:@"Sat"]) {
+        differenceDayComponents.day = -1;
+        scrubbedDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:dateToScrub options:0];
+    }
+    
+    if ([dayString isEqualToString:@"Sun"]) {
+        differenceDayComponents.day = 1;
+        scrubbedDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:dateToScrub options:0];
+    }
+    
+    NSLog(@"SCRUBBED DATE is computed to be: %@",scrubbedDate);
+    return scrubbedDate;
 }
 
 /*

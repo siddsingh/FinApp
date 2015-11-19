@@ -61,8 +61,8 @@ static FADataStore *sharedInstance;
     
     // TO DO: COMMENT FOR PRE SEEDING DB: When preseeding we don't want to use the existing db. We want a new one created.
     // Check to see if a sqlite db already exists. If not, find the path to the preloaded DB and use that.
-    // Post ios7 you need to add the code for copying the sqlite-wal and sqlite-shm files as well.
-    /*if (![[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
+    // Post ios7 you need to add the code for copying the sqlite-wal and sqlite-shm files as well if you decide to generate the preseeded file with wal journalling on. Currently we switch that off while generating the preseeded db.
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
         
         // Copy the .sqlite file
         NSURL *preloadURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"FinApp" ofType:@"sqlite"]];
@@ -72,13 +72,14 @@ static FADataStore *sharedInstance;
         if (![[NSFileManager defaultManager] copyItemAtURL:preloadURL toURL:storeURL error:&err]) {
             NSLog(@"ERROR: Could not copy the Preloaded SQL Database .sqlite file for use.");
         }
-    }*/
+    }
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    // TO DO: UNCOMMENT FOR PRE SEEDING DB: Setting WAL off for SQLite so that we don't have to worry about copying the WAL and SHM files.
-    NSDictionary *walOffOptions = @{ NSSQLitePragmasOption : @{@"journal_mode" : @"DELETE"} };
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:walOffOptions error:&error]) {
+    // TO DO: UNCOMMENT FOR PRE SEEDING DB: Setting WAL off for SQLite so that we don't have to worry about copying the WAL and SHM files. note: you need to set the options in the next instruction from nil to walOffOptions.
+    //NSDictionary *walOffOptions = @{ NSSQLitePragmasOption : @{@"journal_mode" : @"DELETE"} };
+    
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
         /*
          Replace this implementation with code to handle the error appropriately.
          
@@ -113,7 +114,8 @@ static FADataStore *sharedInstance;
 - (NSURL *)applicationDocumentsDirectory
 {
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: We want to know the path where the files are generated
-    NSLog(@"SQLite Database Location: %@",[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory  inDomains:NSUserDomainMask] lastObject]);
+    //NSLog(@"SQLite Database Location: %@",[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory  inDomains:NSUserDomainMask] lastObject]);
+    
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
