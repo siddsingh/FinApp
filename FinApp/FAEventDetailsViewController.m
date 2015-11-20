@@ -31,8 +31,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSLog(@"Event Details View Controller View Did Load called");
-    
     // Do any additional setup after loading the view.
     
     // Make the information messages area fully transparent so that it's invisible to the user
@@ -84,7 +82,6 @@
     // If there is no connectivity, it's safe to assume that it wasn't there when the user segued so today's data, might not be available. Show a guidance message to the user accordingly
     if (![self checkForInternetConnectivity]) {
         
-        NSLog(@"ENTERED THE CHECK FOR NO CONNECTION.");
         [self sendUserGuidanceCreatedNotificationWithMessage:@"Hmm! No Connection. Data might be outdated."];
     }
     
@@ -97,7 +94,6 @@
 // Return number of sections in the events list table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSLog(@"Number of sections in event details table view returned");
     // There's only one section for now
     return 1;
 }
@@ -207,9 +203,6 @@
             // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
             double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
             double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
-            // TO DO: Delete Later after testing
-            NSLog(@"For Ticker %@ Previous Related Event 1 Price is %f and current price is %f",self.parentTicker,prev1RelatedPriceDbl,currentPriceDbl);
-            NSLog(@"Not available double value is %f",notAvailable);
             if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
             {
                 double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
@@ -264,8 +257,6 @@
             // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
             double prev1PriceDbl = [[eventHistoryData previous1Price] doubleValue];
             double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
-            // TO DO: For Testing Delete Later
-            NSLog(@"For Ticker %@ Previous Event 1 Price is %f and current price is %f",self.parentTicker,prev1PriceDbl,currentPriceDbl);
             if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
             {
                 double priceDiff = currentPriceDbl - prev1PriceDbl;
@@ -333,7 +324,6 @@
     // If not, create the reminder and style the button to post set styling
     else
     {
-        NSLog(@"Clicked the Set Reminder Action with ticker %@",self.parentTicker);
         // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
         [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
         
@@ -368,14 +358,12 @@
             // If the user hasn't provided access, show an appropriate error message.
         case EKAuthorizationStatusDenied:
         case EKAuthorizationStatusRestricted: {
-            NSLog(@"Authorization Status for Reminders is Denied or Restricted");
             [self sendUserGuidanceCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
             break;
         }
             
             // If the user has already provided access, create the reminder.
         case EKAuthorizationStatusAuthorized: {
-            NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
             [self processReminderForEventType:eventType companyTicker:parentTicker eventDateText:evtDateText eventCertainty:evtCertainty withDataController:appropriateDataController];
             break;
         }
@@ -391,13 +379,11 @@
                                                 completion:^(BOOL grantedByUser, NSError *error) {
                                                     dispatch_async(dispatch_get_main_queue(), ^{
                                                         if (grantedByUser) {
-                                                            NSLog(@"Authorization Status for Reminders was enabled by user. About to create the reminder");
                                                             // Create a new Data Controller so that this thread has it's own MOC
                                                             FADataController *afterAccessDataController = [[FADataController alloc] init];
                                                             //[weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
                                                             [weakPtrToSelf processReminderForEventType:eventType companyTicker:parentTicker eventDateText:evtDateText eventCertainty:evtCertainty withDataController:afterAccessDataController];
                                                         } else {
-                                                            NSLog(@"Authorization Status for Reminderswas rejected by user.");
                                                             [weakPtrToSelf sendUserGuidanceCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
                                                         }
                                                     });
@@ -417,30 +403,22 @@
     NSString *cellEventDateText = evtDateText;
     NSString *cellEventCertainty = evtCertainty;
     
-    NSLog(@"Event Cell type is:%@ Ticker is:%@ DateText is:%@ and Certainty is:%@", cellEventType, cellCompanyTicker, cellEventDateText, cellEventCertainty);
-    
     // Check to see if the event represented by the cell is estimated or confirmed ?
     // If confirmed create and save to action data store
     if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
         
-        NSLog(@"About to create a reminder, since this event is confirmed");
-        
         // Create the reminder and show user the appropriate message
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
         if (success) {
-            NSLog(@"Successfully created the reminder");
             [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
             // Add action to the action data store with status created
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
         } else {
-            NSLog(@"Actual Reminder Creation failed");
             [self sendUserGuidanceCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
         }
     }
     // If estimated add to action data store for later processing
     else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
-        
-        NSLog(@"About to queue a reminder for later creation, since this event is not confirmed");
         
         // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
         [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
@@ -457,7 +435,6 @@
     EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
     NSString *reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
     eventReminder.title = reminderText;
-    NSLog(@"The Reminder title is: %@",reminderText);
     
     // For now, create the reminder in the default calendar for new reminders as specified in settings
     eventReminder.calendar = [self.userEventStore defaultCalendarForNewReminders];
@@ -481,12 +458,6 @@
     NSDate *alarmDateTime = [aGregorianCalendar dateFromComponents:reminderDateTimeComponents];
     [eventReminder addAlarm:[EKAlarm alarmWithAbsoluteDate:alarmDateTime]];
     
-    // TO DO: For debugging. Delete later.
-    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-    [eventDateFormatter setDateFormat:@"yyyy-MM-dd 'at' HH:mm:ss"];
-    NSString *eventDueDateDebugString = [eventDateFormatter stringFromDate:alarmDateTime];
-    NSLog(@"Event Reminder Date Time is:%@",eventDueDateDebugString);
-    
     // Save the Reminder and return success or failure
     NSError *error = nil;
     creationSuccess = [self.userEventStore saveReminder:eventReminder commit:YES error:&error];
@@ -501,7 +472,6 @@
 - (void)sendUserGuidanceCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserGuidanceCreated" object:msgContents];
-    NSLog(@"NOTIFICATION FIRED: With Guidance Message: %@",msgContents);
 }
 
 #pragma mark - Change Listener Responses
@@ -516,7 +486,6 @@
     // FADataController *historyDataController = [[FADataController alloc] init];
     // self.eventResultsController = [secondaryDataController getAllEvents];
     [self.eventDetailsTable reloadData];
-    NSLog(@"*******************************************Event History Changed listener fired to refresh table");
 }
 
 // Take a queued reminder and create it in the user's OS Reminders now that the event has been confirmed.
@@ -548,8 +517,6 @@
     // Make sure the message bar is empty and visible to the user
     self.messagesArea.text = @"";
     self.messagesArea.alpha = 1.0;
-    
-    NSLog(@"NOTIFICATION ABOUT TO BE SHOWN: With User Guidance Message: %@",[notification object]);
     
     // Show the message that's generated for a period of 20 seconds
     [UIView animateWithDuration:20 animations:^{

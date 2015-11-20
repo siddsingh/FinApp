@@ -66,8 +66,6 @@ static FADataStore *sharedInstance;
         
         // Copy the .sqlite file
         NSURL *preloadURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"FinApp" ofType:@"sqlite"]];
-        // TO DO: Delete Later after testing
-        NSLog(@"Preload URL from where the sqlite files will be copied before SQLite is:%@",preloadURL.absoluteString);
         NSError* err = nil;
         if (![[NSFileManager defaultManager] copyItemAtURL:preloadURL toURL:storeURL error:&err]) {
             NSLog(@"ERROR: Could not copy the Preloaded SQL Database .sqlite file for use.");

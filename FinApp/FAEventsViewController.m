@@ -157,7 +157,6 @@
     
     // Query all events as that is the default view first shown
     self.eventResultsController = [self.primaryDataController getAllEvents];
-    NSLog(@"Data Setup and Query done in viewdidload");
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -173,7 +172,6 @@
 // Return number of sections in the events list table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSLog(@"Number of sections in table view returned");
     // There's only one section for now
     return 1;
 }
@@ -200,8 +198,6 @@
         // has been specified.
         if ([self.filterType isEqualToString:@"Match_Companies_Events"]) {
             id filteredEventSection = [[self.filteredResultsController sections] objectAtIndex:section];
-            // TO DO: Testing Delete
-            NSLog(@"**********Number of Events:%lu",(unsigned long)[filteredEventSection numberOfObjects]);
             numberOfRows = [filteredEventSection numberOfObjects];
         }
         
@@ -209,8 +205,6 @@
         // has been specified.
         if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]) {
             id filteredCompaniesSection = [[self.filteredResultsController sections] objectAtIndex:section];
-            // TO DO: Testing Delete
-            NSLog(@"**********Number of Companies:%lu",(unsigned long)[filteredCompaniesSection numberOfObjects]);
             numberOfRows = [filteredCompaniesSection numberOfObjects];
         }
     }
@@ -219,8 +213,6 @@
     else {
         // Use all events results set
         id eventSection = [[self.eventResultsController sections] objectAtIndex:section];
-        // TO DO: Testing Delete
-        NSLog(@"**********Number of Events:%lu",(unsigned long)[eventSection numberOfObjects]);
         numberOfRows = [eventSection numberOfObjects];
     }
 
@@ -269,7 +261,6 @@
     // If no search filter
     else {
         eventAtIndex = [self.eventResultsController objectAtIndexPath:indexPath];
-        NSLog(@"Before cell is set to display when values are being fetched from results controller, company ticker is:%@ and company confirmed is:%@",eventAtIndex.listedCompany.ticker,eventAtIndex.certainty);
     }
     
     // Depending the type of search filter that has been applied, Show the matching companies with events or companies
@@ -367,14 +358,7 @@
             //cell.eventCertainty.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
             cell.eventCertainty.textColor = [UIColor darkGrayColor];
         }
-        
-        NSLog(@"After cell is set to display, company ticker is:%@ and company confirmed is:%@",eventAtIndex.listedCompany.ticker,eventAtIndex.certainty);
     }
-    // TO DO: Delete after testing
-    NSDateFormatter *testDateFormatter = [[NSDateFormatter alloc] init];
-    [testDateFormatter setDateFormat:@"EEE MMMM dd"];
-    NSString *priorDateString = [testDateFormatter stringFromDate:eventAtIndex.priorEndDate];
-    NSLog(@"ADDITIONAL INFORMATION FOR TICKER:%@ is EstimatedEPS:%f Prior End Date:%@ Actual Prior EPS:%f",eventAtIndex.listedCompany.ticker,[eventAtIndex.estimatedEps floatValue],priorDateString,[eventAtIndex.actualEpsPrior floatValue]);
     
     return cell;
 }
@@ -382,8 +366,6 @@
 // When a row is selected on the events list table, check to see if that row has an event cell with remote fetch status
 // set to true, meaning the event needs to be fetched from the remote Data Source. Additionally clear out the search context.
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    NSLog(@"Row Clicked");
     
     // Check to see if the row selected has an event cell with remote fetch status set to true
     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
@@ -393,11 +375,9 @@
         if ([self checkForInternetConnectivity]) {
             
             // Set the remote fetch spinner to animating to show a fetch is in progress
-            NSLog(@"Starting to animate spinner");
             [self.remoteFetchSpinner startAnimating];
             
             // Fetch the event for the related parent company in the background
-            NSLog(@"Fetching Event Data for ticker in the background:%@",(cell.companyTicker).text);
             [self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
         }
         // If not, show error message
@@ -430,12 +410,8 @@
             // Get today's date
             NSDate *todaysDate = [NSDate date];
             Event *selectedEvent = [historyDataController1 getEventForParentEventTicker:eventTicker andEventType:eventType];
-            NSLog(@"Before Segueing for ticker:%@ the event current quarter end date is:%@ and prior quarter end date is:%@",eventTicker, selectedEvent.relatedDate,selectedEvent.priorEndDate);
             // Compute the likely date for the previous event
-            NSLog(@"ABOUT TO COMPUTE PREVIOUS EVENT for ticker:%@",eventTicker);
             NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:selectedEvent.date currentEventRelatedDate:selectedEvent.relatedDate previousEventRelatedDate:selectedEvent.priorEndDate];
-            NSLog(@"COMPUTED PREVIOUS EVENT for ticker:%@ is: %@",eventTicker,previousEvent1LikelyDate);
-            NSLog(@"Before deciding to create or update event history for ticker:%@, history exists is:%d and prior end date is:%@ and current end date is:%@",eventTicker, [historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType], selectedEvent.priorEndDate,selectedEvent.relatedDate);
             // If Event history doesn't exist insert it
             if (![historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
             {
@@ -443,13 +419,11 @@
                 // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
                 NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
                 [historyDataController1 insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
-                NSLog(@"Inserted event history for ticker:%@ with previous end date:%@", eventTicker,[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate]);
             }
             // Else update the non price related data, except current date, on the event history from the event, in case the event info has been refreshed
             else
             {
                 [historyDataController1 updateEventHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate] parentEventTicker:eventTicker parentEventType:eventType];
-                NSLog(@"Updated event history for ticker:%@ with previous end date:%@", eventTicker,[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate]);
             }
             
             // Call price API, in the main thread, to get price history, if the current date is not today or if any of the price values are not available.
@@ -464,7 +438,6 @@
             // Note: NSOrderedSame has the value 0
             if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison != NSOrderedSame))
             {
-                NSLog(@"Getting prices from API for ticker: %@ with prev event price:%f and prev related event price:%f current price:%f and date comparison:%ld and stored current date:%@ and actual todays date:%@", eventTicker, prev1PriceDbl,prev1RelatedPriceDbl,currentPriceDbl,(long)currDateComparison,selectedEventHistory.currentDate,todaysDate);
                 // It's important to update the date here cause the get prices call gets the current date for the API call from the event history.
                 [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
                 //[self performSelectorInBackground:@selector(getPricesInBackgroundWithEventInfo:) withObject:@[eventTicker,eventType]];
@@ -485,7 +458,6 @@
     // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
     if ([self.eventsSearchBar isFirstResponder] && !(self.filterSpecified)) {
         
-        NSLog(@"SEARCH BAR CONTEXT SHOULD BE CLEARED");
         [self.eventsSearchBar resignFirstResponder];
     }
 }
@@ -517,10 +489,6 @@
         {
             [companiesDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[companiesDataController getCompanySyncedUptoPage]];
         }
-        NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld before terminating the background thread to update companies",[companiesDataController getCompanySyncStatus],[[companiesDataController getCompanySyncedUptoPage] longValue]);
-        // TO DO: Delete timing information.
-        NSTimeInterval timeRemaining = [UIApplication sharedApplication].backgroundTimeRemaining;
-        NSLog(@"****Background time remaining: %f seconds (%d mins) and ending task", timeRemaining, (int)(timeRemaining / 60));
         
         // Stopped or ending the task outright.
         [[UIApplication sharedApplication] endBackgroundTask:bgFetchTask];
@@ -529,10 +497,6 @@
     
     // Start the long-running task and return immediately.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        // TO DO: Delete. Just outputting the time
-        NSTimeInterval timeRemaining = [UIApplication sharedApplication].backgroundTimeRemaining;
-        NSLog(@"****Background time remaining: %f seconds (%d mins) and about to begin company sync from bg thread", timeRemaining, (int)(timeRemaining / 60));
         
         [companiesDataController getAllCompaniesFromApi];
         
@@ -549,15 +513,11 @@
     
     [eventsDataController getAllEventsFromApiWithTicker:ticker];
     
-    
-    NSLog(@"Finished fetching Event Data for ticker in the background:%@",ticker);
-    NSLog(@"Stopping to animate spinner");
     [self.remoteFetchSpinner stopAnimating];
     
     // Force a search to capture the refreshed event, so that the table can be refreshed
     // to show the refreshed event
     [self searchBarSearchButtonClicked:self.eventsSearchBar];
-    NSLog(@"Finished researching with updated event");
 }
 
 // Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
@@ -578,8 +538,6 @@
 // found. If there are no events, search for the same fields on the company to display the matching
 // companies to prompt the user to fetch the events data for these companies.
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    
-    NSLog(@"Search Button Clicked");
     
     // Validate search text entered. If valid
     if ([self searchTextValid:searchBar.text]) {
@@ -649,8 +607,6 @@
     // If not valid
     else {
         
-        NSLog(@"Entered the search text not valid loop in text did change");
-        
         //Query all events as that is the default view
         self.eventResultsController = [self.primaryDataController getAllEvents];
         
@@ -683,8 +639,6 @@
 // Before a user enters a search term check to see if full company data sync has been completed.
 // If not show the user a message warming them.
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar*)searchBar {
-    
-    NSLog(@"SEARCH BAR EDITING BEGIN FIRED:");
     
     // Check for connectivity. If yes, give user information message
     if ([self checkForInternetConnectivity]) {
@@ -721,8 +675,6 @@
 // 1) When user touches outside the search bar, if search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context.
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
-    NSLog(@"Tap recognized by Touches Began with first responder:%d", [self isFirstResponder]);
-    
     //When user touches outside the search bar, if search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context.
     if ([self.eventsSearchBar isFirstResponder] && !(self.filterSpecified)) {
         [self.eventsSearchBar resignFirstResponder];
@@ -730,7 +682,6 @@
     
     // When user touches outside the search bar, when a fetch event is displayed or in progress, clear out of the search context.
     if ([self.eventsSearchBar isFirstResponder] && (self.filterSpecified)) {
-        NSLog(@"Entered touch outside to clear search bar context");
         [self.eventsSearchBar setText:@""];
         [self searchBar:self.eventsSearchBar textDidChange:@""];
     }
@@ -742,7 +693,6 @@
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
-    NSLog(@"NOTIFICATION FIRED: With User Message: %@",msgContents);
 }
 
 #pragma mark - Change Listener Responses
@@ -757,7 +707,6 @@
     FADataController *secondaryDataController = [[FADataController alloc] init];
     self.eventResultsController = [secondaryDataController getAllEvents];
     [self.eventsListTable reloadData];
-    NSLog(@"*******************************************Event Store Changed listener fired to refresh table");
 }
 
 // Show the error message for a temporary period and then fade it if a user message has been generated
@@ -767,8 +716,6 @@
     // Make sure the message bar is empty and visible to the user
     self.messageBar.text = @"";
     self.messageBar.alpha = 1.0;
-    
-     NSLog(@"NOTIFICATION ABOUT TO BE SHOWN: With User Message: %@",[notification object]);
     
     // Show the message that's generated for a period of 20 seconds
     [UIView animateWithDuration:20 animations:^{
@@ -916,17 +863,12 @@
     
     // TO DO: Use Earnings type later
     
-    // TO DO: Delete later. For testing
-    NSLog(@"For computing prior earnings date the current earnings date is:%@ and current end of quarter is:%@",currentDate,currentRelatedDate);
-    
     // Calculate the number of days between current event date (quarterly earnings) and current event related date (end of quarter being reported)
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     // NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
     NSUInteger unitFlags =  NSCalendarUnitDay;
     NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:currentRelatedDate toDate:currentDate options:0];
     NSInteger difference = [diffDateComponents day];
-    
-    NSLog(@"The difference from the end of quarter is:%ld",(long)difference);
     
     // Add the no of days to the previous related event date (previously reported quarter end)
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
@@ -938,22 +880,15 @@
     NSDateFormatter *previousDayFormatter = [[NSDateFormatter alloc] init];
     [previousDayFormatter setDateFormat:@"EEE"];
     NSString *previousDayString = [previousDayFormatter stringFromDate:previousEventDate];
-    NSLog(@"PREVIOUS EARNINGS DATE is computed to be: %@",previousEventDate);
     if ([previousDayString isEqualToString:@"Fri"]) {
-        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
-        NSLog(@"CHECK DATA: Computed a friday prior event date that was shifted to a day earlier");
         differenceDayComponents.day = -1;
         previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
     }
     if ([previousDayString isEqualToString:@"Sat"]) {
-        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
-        NSLog(@"CHECK DATA: Computed a saturday prior event date that was shifted to 2 days later");
         differenceDayComponents.day = 2;
         previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
     }
     if ([previousDayString isEqualToString:@"Sun"]) {
-        // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
-        NSLog(@"CHECK DATA: Computed a sunday prior event date that was shifted to a day later");
         differenceDayComponents.day = 1;
         previousEventDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:previousEventDate options:0];
     }
@@ -972,7 +907,6 @@
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
     NSDate *scrubbedDate = dateToScrub;
     NSString *dayString = [dayFormatter stringFromDate:dateToScrub];
-    NSLog(@"UNSCRUBBED DATE is computed to be: %@",dateToScrub);
 
     if ([dayString isEqualToString:@"Sat"]) {
         differenceDayComponents.day = -1;
@@ -984,7 +918,6 @@
         scrubbedDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:dateToScrub options:0];
     }
     
-    NSLog(@"SCRUBBED DATE is computed to be: %@",scrubbedDate);
     return scrubbedDate;
 }
 

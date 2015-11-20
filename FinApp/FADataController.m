@@ -90,12 +90,12 @@
         }
         // TO DO: Delete Later.
         else {
-            NSLog(@"Saved Unique Company with ticker %@",companyTicker);
+            
         }
     }
     // TO DO: Delete Later
     else {
-        NSLog(@"Found a duplicate of ticker %@",companyTicker);
+
     }
 }
 
@@ -119,9 +119,9 @@
     if (![self.resultsController performFetch:&error]) {
         NSLog(@"ERROR: Getting all companies from data store failed: %@",error.description);
     }
-    // TO DO: Delete. Currently for debugging only
+    // TO DO: Delete.
     else {
-        NSLog(@"Fetched a total of %ld companies from the data store.",self.resultsController.fetchedObjects.count);
+
     }
     
     return self.resultsController;
@@ -188,8 +188,6 @@
         existingEvent.estimatedEps = eventEstEps;
         existingEvent.priorEndDate = eventPriorEndDate;
         existingEvent.actualEpsPrior = eventActualEpsPrior;
-        
-        NSLog(@"Updating company ticker is:%@ and company confirmed is:%@",existingEvent.listedCompany.ticker,existingEvent.certainty);
     }
     
     // Perform the insert
@@ -220,7 +218,7 @@
     }
     // TO DO: Delete. Currently for debugging only
     else {
-        NSLog(@"Fetched all events at the db level");
+
     }
     
     return self.resultsController;
@@ -406,7 +404,7 @@
         }
         // TO DO: Delete later. Currently for testing
         else {
-            NSLog(@"Inserted history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and current date:%@ and previous event price:%@ and previous related event price:%@ and current price:%@",existingEvent.listedCompany.ticker,history.previous1Date,history.previous1Status,history.previous1RelatedDate,history.currentDate,[history.previous1Price stringValue],history.previous1RelatedPrice,history.currentPrice);
+
         }
     }
     
@@ -450,7 +448,7 @@
         }
         // TO DO: Delete later. Currently for testing
         else {
-            NSLog(@"Updated history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and current date:%@",existingHistory.parentEvent.listedCompany.ticker,existingHistory.previous1Date,existingHistory.previous1Status,existingHistory.previous1RelatedDate,existingHistory.currentDate);
+
         }
     }
     
@@ -494,7 +492,7 @@
         }
         // TO DO: Delete later. Currently for testing
         else {
-            NSLog(@"Updated history for ticker:%@ with previous event date:%@ with previous event status:%@ and previous related event:%@ and previous event price:%@ and previous related event price:%@ and current price:%@ and current date:%@",existingHistory.parentEvent.listedCompany.ticker,existingHistory.previous1Date,existingHistory.previous1Status,existingHistory.previous1RelatedDate,[existingHistory.previous1Price stringValue],existingHistory.previous1RelatedPrice,existingHistory.currentPrice,existingHistory.currentDate);
+
         }
     }
     
@@ -535,7 +533,7 @@
         }
         // TO DO: Delete later. Currently for testing
         else {
-            NSLog(@"Updated history for ticker:%@ with current date:%@", eventTicker, existingHistory.currentDate);
+
         }
     }
     
@@ -929,7 +927,8 @@
     // Get the list of data slices from the overall data set
     NSArray *parsedDataSets = [parsedDataSet objectForKey:@"data"];
     
-    NSLog(@"The parsed data set is:%@",parsedDataSets.description);
+    // TO DO: Delete Later. For testing purposes
+    //NSLog(@"The parsed data set is:%@",parsedDataSets.description);
     
     // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
     // then you don't want to process the data and enter as events.
@@ -949,21 +948,21 @@
         // Set the type of event. Currently support:
         // 1) "Quarterly Earnings"
         NSString *eventType = @"Quarterly Earnings";
-        NSLog(@"The event type is: %@",eventType);
+        //NSLog(@"The event type is: %@",eventType);
         
         // Get the date on which the event takes place which is the 5th item
-        NSLog(@"The date on which the event takes place: %@",[parsedEventsList objectAtIndex:4]);
+        //NSLog(@"The date on which the event takes place: %@",[parsedEventsList objectAtIndex:4]);
         NSString *eventDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:4]];
         // Convert from string to Date
         NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
         [eventDateFormatter setDateFormat:@"yyyyMMdd"];
         NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
-        NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+        //NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
         
         
         // Get Details related to the event which is the 10th item
         // For Quarterly Earnings: 1 (After Market Close), 2 (Before Market Open), 3 (During Market Trading) or 4 (Unknown)
-        NSLog(@"The timing details related to the event: %@",[parsedEventsList objectAtIndex:9]);
+        //NSLog(@"The timing details related to the event: %@",[parsedEventsList objectAtIndex:9]);
         NSString *eventDetails = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:9]];
         // Convert to human understandable string
         if ([eventDetails isEqualToString:@"1"]) {
@@ -978,20 +977,20 @@
         if ([eventDetails isEqualToString:@"4"]) {
             eventDetails = [NSString stringWithFormat:@"Unknown"];
         }
-        NSLog(@"The timing details related to the event formatted: %@",eventDetails);
+        //NSLog(@"The timing details related to the event formatted: %@",eventDetails);
         
         
         // Get the Date related to the event which is the 3rd item
         // 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
         // to be reported
         // TO DO: For optimizing later: Can't I just reuse the event date formatter
-        NSLog(@"The quarter end date related to the event: %@",[parsedEventsList objectAtIndex:2]);
+        //NSLog(@"The quarter end date related to the event: %@",[parsedEventsList objectAtIndex:2]);
         NSString *relatedDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:2]];
         // Convert from string to Date
         NSDateFormatter *relatedDateFormatter = [[NSDateFormatter alloc] init];
         [relatedDateFormatter setDateFormat:@"yyyyMMdd"];
         NSDate *relatedDate = [relatedDateFormatter dateFromString:relatedDateStr];
-        NSLog(@"The quarter end date related to the event formatted as a Date: %@",relatedDate);
+        //NSLog(@"The quarter end date related to the event formatted as a Date: %@",relatedDate);
         
         // Get the end date of the previously reported quarter which is the 12th item
         NSString *priorEndDateStr =  [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:11]];
@@ -1010,7 +1009,7 @@
         
         // Get Indicator if this event is "Confirmed" or "Estimated" or "Unknown" which is the 9th item
         // 1 (Company confirmed), 2 (Estimated based on algorithm) or 3 (Unknown)
-        NSLog(@"The confirmation indicator for this event: %@",[parsedEventsList objectAtIndex:8]);
+        //NSLog(@"The confirmation indicator for this event: %@",[parsedEventsList objectAtIndex:8]);
         NSString *certaintyStr = [NSString stringWithFormat: @"%@", [parsedEventsList objectAtIndex:8]];
         // Convert to human understandable string
         if ([certaintyStr isEqualToString:@"1"]) {
@@ -1022,11 +1021,11 @@
         if ([certaintyStr isEqualToString:@"3"]) {
             certaintyStr = [NSString stringWithFormat:@"Unknown"];
         }
-        NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
+        //NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
         
         // Upsert events data into the data store
         [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker estimatedEps:estEpsNumber priorEndDate:priorEndDate actualEpsPrior:actualPriorEpsNumber];
-        NSLog(@"After updating event for ticker:%@ the event current quarter end date is:%@ and prior quarter end date is:%@",ticker, relatedDate,priorEndDate);
+        //NSLog(@"After updating event for ticker:%@ the event current quarter end date is:%@ and prior quarter end date is:%@",ticker, relatedDate,priorEndDate);
         
         // If this event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
         // Similarly if this event just went from confirmed to confirmed and there is a created reminder that exists for it, fire a notification to create a new reminder.
@@ -1112,9 +1111,6 @@
     // Process the response
     if (error == nil)
     {
-        // TO DO: Delete Later, for testing
-        NSLog(@"The endpoint being called for getting price information is:%@",endpointURL);
-        //NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         // Process the response that contains the events for the company.
         [self processStockPricesResponse:responseData forTicker:companyTicker forEventType:eventType];
         
@@ -1255,13 +1251,9 @@
         // Iterate through price/details arrays within the parsed data set
         for (NSArray *parsedDetailsList in parsedDataSets) {
             
-            // TO DO: Delete later.
-            NSLog(@"The date for the stock price is:%@",[parsedDetailsList objectAtIndex:0]);
-            
             // Get the event history dates for which we want to record the stock prices
             // Currently recording only previous event 1 (prior quarterly earnings) date closing stock price, previous related event 1 (prior quarter end date closing price and current price (yesterday's closing price).
             historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
-            NSLog(@"While processing the prices API response for ticker:%@ the event prior quarter end date is:%@",ticker, historyForDates.previous1RelatedDate);
             prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
             prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
             // Subtract 1 from the current day to get yesterday's date, since currently only yesterday's price data is available
@@ -1275,13 +1267,11 @@
             // If the details array contains the previousRelatedEvent1 date, get the split adjusted closing price, which is the 12th item in the array
             if ([parsedDetailsList containsObject:prevRelatedEvent1Date]) {
                 prevRelatedEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectAtIndex:11] doubleValue]];
-                NSLog(@"Stock price for ticker:%@ previous related event date:%@ is:%@",ticker, prevRelatedEvent1Date,prevRelatedEvent1Price);
             }
             
             // If the details array contains the previousEvent1 date, get the split adjusted closing price, which is the 12th item in the array
             if ([parsedDetailsList containsObject:prevEvent1Date]) {
                 prevEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectAtIndex:11] doubleValue]];
-                NSLog(@"Stock price for ticker:%@ previous event date:%@ is:%@", ticker, prevEvent1Date,prevEvent1Price);
             }
             
             // If the details array contains the current date minus 1 day, get the split adjusted closing price, which is the 12th item in the array
@@ -1301,7 +1291,6 @@
             currentDateMinus1Day = [priceDateFormatter stringFromDate:currentMinus1Date];
             if ([parsedDetailsList containsObject:currentDateMinus1Day]) {
                 currentDateMinus1DayPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectAtIndex:11] doubleValue]];
-                NSLog(@"Stock price for ticker:%@ yesterday's date:%@ is:%@",ticker, currentDateMinus1Day,currentDateMinus1DayPrice);
             }
         }
         
@@ -1588,8 +1577,6 @@
 // 2. If the confirmed date of the event is in the past.
 - (void)updateEventsFromRemoteIfNeeded {
     
-    NSLog(@"****************************Entered the method to updateevents**********************");
-    
     // Flag to see if any event was updated
     BOOL eventsUpdated = NO;
     
@@ -1603,7 +1590,6 @@
     // An event that overall qualifies will be refetched from the remote data source and updated in the local data store.
     for (Event *localEvent in eventResultsController.fetchedObjects)
     {
-        NSLog(@"****************************Entered the loop for checking**********************");
         // Get Today's Date
         NSDate *todaysDate = [NSDate date];
         // Get the event's date
@@ -1612,12 +1598,10 @@
         NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:todaysDate toDate:eventDate options:0];
         NSInteger daysBetween = [components day];
-        NSLog(@"****************************No of days for event for %@ is %ld",localEvent.listedCompany.ticker, daysBetween);
         
         // See if the event qualifies for the update. If it does, call the remote data source to update it.
         if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
-            NSLog(@"****************************About to update an event**********************");
-            [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker]; 
+            [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
             eventsUpdated = YES;
         }
     }
@@ -2026,16 +2010,13 @@
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
-    NSLog(@"NOTIFICATION FIRED: With User Message: %@",msgContents);
 }
 
 // Send a notification that a queued reminder associated with an event should be created, since the event date has been confirmed. Send an array of information {eventType,companyTicker,eventDateText} that will be needed by receiver to complete this action.
 - (void)sendCreateReminderNotificationWithEventInformation:(NSArray *)eventInfo {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"CreateQueuedReminder" object:eventInfo];
-    NSLog(@"NOTIFICATION FIRED FOR CREATING QUEUED REMINDER: For eventtype:%@ and eventticker:%@ and eventDateText:%@",[eventInfo objectAtIndex:0],[eventInfo objectAtIndex:1],[eventInfo objectAtIndex:2]);
 }
-
 
 @end
 

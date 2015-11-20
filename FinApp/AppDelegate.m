@@ -57,13 +57,10 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-     NSLog(@"******************************************App Entered Background Fired****************************************");
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    
-    NSLog(@"APP WILL ENTER FOREGROUND FIRED");
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -100,8 +97,6 @@
     
     // Fire a notification to set the screen header for the events view to today's date.
     [self sendEventsHeaderChangeNotification];
-    
-    NSLog(@"******************************************Active State Fired****************************************");
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -120,7 +115,6 @@
         [genericDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[genericDataController getCompanySyncedUptoPage]];
     }
     NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld",[genericDataController getCompanySyncStatus],[[genericDataController getCompanySyncedUptoPage] longValue]); */
-    NSLog(@"******************************************App Termination Fired****************************************");
 }
 
 #pragma mark - State Refresh
@@ -141,11 +135,7 @@
     // Create a new FADataController so that this thread has its own MOC
     FADataController *companyDataController = [[FADataController alloc] init];
     
-    NSLog(@"******************************************About to Processed the Get All Companies from API in the background since last sync was incomplete**************************************** with Company sync status:%@",[companyDataController getCompanySyncStatus]);
-    
     if ([[companyDataController getCompanySyncStatus] isEqualToString:@"SeedSyncDone"]||[[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"]) {
-        
-        NSLog(@"******************************************About to start syncing companies from the restarted main thread****************************************");
         
         // Get Companies
         // Creating a task that continues to process in the background.
@@ -160,11 +150,6 @@
             {
                 [companyDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[companyDataController getCompanySyncedUptoPage]];
             }
-            NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld before terminating the background thread from restart to update companies",[companyDataController getCompanySyncStatus],[[companyDataController getCompanySyncedUptoPage] longValue]);
-            
-            // TO DO: Delete timing information.
-            NSTimeInterval timeRemaining = [UIApplication sharedApplication].backgroundTimeRemaining;
-            NSLog(@"****Background time remaining: %f seconds (%d mins) and ending task", timeRemaining, (int)(timeRemaining / 60));
             
             // Stopped or ending the task outright.
             [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
@@ -173,10 +158,6 @@
         
         // Start the long-running task and return immediately.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            
-            // TO DO: Delete. Just outputting the time
-            NSTimeInterval timeRemaining = [UIApplication sharedApplication].backgroundTimeRemaining;
-            NSLog(@"****Background time remaining: %f seconds (%d mins) and about to begin company sync from bg thread", timeRemaining, (int)(timeRemaining / 60));
             
             [companyDataController getAllCompaniesFromApi];
             
@@ -198,7 +179,6 @@
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
-    NSLog(@"NOTIFICATION FIRED: With User Message: %@",msgContents);
 }
 
 // Send a notification that the text of the header on the Events screen should be changed. Currently to today's date.
