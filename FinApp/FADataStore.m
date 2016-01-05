@@ -63,19 +63,18 @@ static FADataStore *sharedInstance;
     // Check to see if a sqlite db already exists. If not, find the path to the preloaded DB and use that.
     // Post ios7 you need to add the code for copying the sqlite-wal and sqlite-shm files as well if you decide to generate the preseeded file with wal journalling on. Currently we switch that off while generating the preseeded db.
     if (![[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
-        
         // Copy the .sqlite file
         NSURL *preloadURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"FinApp" ofType:@"sqlite"]];
         NSError* err = nil;
         if (![[NSFileManager defaultManager] copyItemAtURL:preloadURL toURL:storeURL error:&err]) {
-            NSLog(@"ERROR: Could not copy the Preloaded SQL Database .sqlite file for use.");
+            NSLog(@"ERROR: Could not copy the Preloaded SQL Database .sqlite file for use because:%@",err.description);
         }
     }
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: Setting WAL off for SQLite so that we don't have to worry about copying the WAL and SHM files. note: you need to set the options in the next instruction from nil to walOffOptions.
-    //NSDictionary *walOffOptions = @{ NSSQLitePragmasOption : @{@"journal_mode" : @"DELETE"} };
+    // NSDictionary *walOffOptions = @{ NSSQLitePragmasOption : @{@"journal_mode" : @"DELETE"} };
     
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
         /*

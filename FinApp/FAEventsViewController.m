@@ -18,6 +18,7 @@
 #import <UIKit/UIKit.h>
 #import "FAEventDetailsViewController.h"
 #import "EventHistory.h"
+@import EventKit;
 
 @interface FAEventsViewController ()
 
@@ -44,6 +45,9 @@
 
 // Check if there is internet connectivity
 - (BOOL) checkForInternetConnectivity;
+
+// User's calendar events and reminders data store
+@property (strong, nonatomic) EKEventStore *userEventStore;
 
 @end
 
@@ -91,13 +95,13 @@
     
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
     // Get the date for the event represented by the cell
-    /*NSDate *today = [NSDate date];
+   /* NSDate *today = [NSDate date];
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
     differenceDayComponents.day = -1;
     NSDate *yesterday = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:today options:0];
-   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"TSLA" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
-    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"AAPL" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
+   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"MSFT" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
+   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"AAPL" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
     //[self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
     
     // Register a listener for changes to events stored locally
@@ -115,6 +119,13 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(updateScreenHeader:)
                                                  name:@"UpdateScreenHeader" object:nil];
+    
+    // Register a listener for queued reminders to be created now that they have been confirmed
+    // We do this here, instead of the event details since this is the most likely screen the user
+    // will be on when the reminders are confirmed in a background thread
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(createQueuedReminder:)
+                                                 name:@"CreateQueuedReminder" object:nil];
     
    // Seed the company data, the very first time, to get the user started.
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
@@ -177,12 +188,42 @@
 }
 
 // Set the header for the table view to a special table cell that serves as header.
+// TO DO: Currently only set a customized header for non ipad devices since there are weird
+// alignment problems with ipad.
 -(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     
     UITableViewCell *headerView = nil;
     
-    headerView = [tableView dequeueReusableCellWithIdentifier:@"EventsTableHeader"];
+    // If device is ipad
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        
+        // Don't set the header
+    }
+    // For all other devices
+    else {
+        
+        // Set the header to the appropriate table cell
+        headerView = [tableView dequeueReusableCellWithIdentifier:@"EventsTableHeader"];
+    }
+    
     return headerView;
+}
+
+// Set the section header title for the table view that serves as the overall header.
+// TO DO: Currently only do this for the ipad since we can't use a customized header for it. See above.
+// When we are able to set a customized header for the ipad this won't be needed.
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSString *sectionTitle = nil;
+    
+    // If device is ipad
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        
+       // Set title
+       sectionTitle = @"Upcoming Earnings";
+    }
+    
+    return sectionTitle;
 }
 
 // Return number of rows in the events list table view
@@ -378,7 +419,12 @@
             [self.remoteFetchSpinner startAnimating];
             
             // Fetch the event for the related parent company in the background
-            [self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
+            // TO DO: Understand this better. PerformSelectorInBackground was causing warnings with attempting to modify UI in a background thread in iOS 9. Using dispatch async solved that error.
+            //[self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [self getAllEventsFromApiInBackgroundWithTicker:(cell.companyTicker).text];
+            });
         }
         // If not, show error message
         else {
@@ -730,6 +776,80 @@
     NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
     [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
     [self.navigationController.navigationBar.topItem setTitle:[todayDateFormatter stringFromDate:[NSDate date]]];
+}
+
+// Take a queued reminder and create it in the user's OS Reminders now that the event has been confirmed.
+// The notification object contains an array of strings representing {eventType,companyTicker,eventDateText}
+// We do this here, instead of the event details since this is the most likely screen the user will be on when
+// the reminders are confirmed in a background thread
+- (void)createQueuedReminder:(NSNotification *)notification {
+    
+    NSArray *infoArray = [notification object];
+    // Create a new DataController so that this thread has its own MOC
+    // TO DO: Understand at what point does a new thread get spawned off. Shouldn't I be creating the new MOC in that thread as opposed to here ? Maybe it doesn't matter as long as I am not sharing MOCs across threads ? The general rule with Core Data is one Managed Object Context per thread, and one thread per MOC
+    FADataController *thirdDataController = [[FADataController alloc] init];
+    
+    // Create the reminder
+    BOOL success = [self createReminderForEventOfType:[infoArray objectAtIndex:0] withTicker:[infoArray objectAtIndex:1] dateText:[infoArray objectAtIndex:2] andDataController:thirdDataController];
+    
+    // If successful, update the status of the event in the data store to be "Created" from "Queued"
+    if (success) {
+        [thirdDataController updateActionWithStatus:@"Created" type:@"OSReminder" eventTicker:[infoArray objectAtIndex:1] eventType:[infoArray objectAtIndex:0]];
+    }
+    // Else log an error message
+    else {
+        NSLog(@"ERROR:Creating a queued reminder for ticker:%@ and event type:%@ failed", [infoArray objectAtIndex:1], [infoArray objectAtIndex:0]);
+    }
+}
+
+#pragma mark - Reminder Related
+
+// Set the getter for the user event store property so that only one event store object gets created
+- (EKEventStore *)userEventStore {
+    if (!_userEventStore) {
+        _userEventStore = [[EKEventStore alloc] init];
+    }
+    return _userEventStore;
+}
+
+
+// Actually create the reminder in the user's default calendar and return success or failure depending on the outcome.
+- (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker dateText:(NSString *)eventDateText andDataController:(FADataController *)reminderDataController  {
+    
+    BOOL creationSuccess = NO;
+    
+    // Set title of the reminder to the reminder text.
+    EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
+    NSString *reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
+    eventReminder.title = reminderText;
+    
+    // For now, create the reminder in the default calendar for new reminders as specified in settings
+    eventReminder.calendar = [self.userEventStore defaultCalendarForNewReminders];
+    
+    // Get the date for the event represented by the cell
+    NSDate *eventDate = [reminderDataController getDateForEventOfType:eventType eventTicker:companyTicker];
+    
+    // Subtract a day as we want to remind the user a day prior and then set the reminder time to noon of the previous day
+    // and set reminder due date to that.
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -1;
+    NSDate *reminderDateTime = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:eventDate options:0];
+    NSUInteger unitFlags = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+    NSDateComponents *reminderDateTimeComponents = [aGregorianCalendar components:unitFlags fromDate:reminderDateTime];
+    reminderDateTimeComponents.hour = 12;
+    reminderDateTimeComponents.minute = 0;
+    reminderDateTimeComponents.second = 0;
+    eventReminder.dueDateComponents = reminderDateTimeComponents;
+    // Additionally add an alarm for the same time as due date/time so that the reminder actually pops up.
+    NSDate *alarmDateTime = [aGregorianCalendar dateFromComponents:reminderDateTimeComponents];
+    [eventReminder addAlarm:[EKAlarm alarmWithAbsoluteDate:alarmDateTime]];
+    
+    // Save the Reminder and return success or failure
+    NSError *error = nil;
+    creationSuccess = [self.userEventStore saveReminder:eventReminder commit:YES error:&error];
+    
+    return creationSuccess;
 }
 
 #pragma mark - Connectivity Methods

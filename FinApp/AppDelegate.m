@@ -67,6 +67,12 @@
     
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
+    // Making sure that the core data store is instantiated in the main thread
+    // Create a new FADataController so that this thread has its own MOC
+    FADataController *eventDataController = [[FADataController alloc] init];
+    // TO DO: This is an extra call, everytime the app becomes active bt is needed to complete the datastore instantiation process. Optimize this later.
+    [eventDataController getAllEvents];
+    
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
         
@@ -86,8 +92,13 @@
         // If the full sync of company data has failed, retry it
         [self refreshCompanyInfoIfNeededFromApiInBackground]; */
         
-        // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data. Don't comment if you re just developing.
-        [self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
+        // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data. Don't comment if you're just developing.
+        // TO DO: Understand this better. PerformSelectorInBackground was causing warnings with attempting to modify UI in a background thread in iOS 9. Using dispatch async solved that error.
+        //[self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self refreshEventsIfNeededFromApiInBackground];
+        });
     }
     // If not, show error message
     else {

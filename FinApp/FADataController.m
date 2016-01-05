@@ -1287,7 +1287,7 @@
                 differenceDayComponents.day = -2;
                 currentMinus1Date = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:currentMinus1Date options:0];
             }
-            // Check for the adjusted previous day and get the price
+            // Check for the adjusted previous day to see if it exists. Get the price if it does
             currentDateMinus1Day = [priceDateFormatter stringFromDate:currentMinus1Date];
             if ([parsedDetailsList containsObject:currentDateMinus1Day]) {
                 currentDateMinus1DayPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectAtIndex:11] doubleValue]];

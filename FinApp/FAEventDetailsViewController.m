@@ -69,10 +69,6 @@
                                              selector:@selector(userGuidanceGenerated:)
                                                  name:@"UserGuidanceCreated" object:nil];
     
-    // Register a listener for queued reminders to be created now that they have been confirmed
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(createQueuedReminder:)
-                                                 name:@"CreateQueuedReminder" object:nil];
     
     // Register a listener for changes to the event history that's stored locally
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -99,12 +95,42 @@
 }
 
 // Set the header for the table view to a special table cell that serves as header.
+// TO DO: Currently only set a customized header for non ipad devices since there are weird
+// alignment problems with ipad.
 -(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     
     UITableViewCell *headerView = nil;
     
-    headerView = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsTableHeader"];
+    // If device is ipad
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        
+        // Don't set the header
+    }
+    // For all other devices
+    else {
+        
+        // Set the header to the appropriate table cell
+        headerView = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsTableHeader"];
+    }
+    
     return headerView;
+}
+
+// Set the section header title for the table view that serves as the overall header.
+// TO DO: Currently only do this for the ipad since we can't use a customized header for it. See above.
+// When we are able to set a customized header for the ipad this won't be needed.
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSString *sectionTitle = nil;
+    
+    // If device is ipad
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        
+        // Set title
+        sectionTitle = @"Related Data";
+    }
+    
+    return sectionTitle;
 }
 
 // Return number of rows in the events list table view.
@@ -486,28 +512,6 @@
     // FADataController *historyDataController = [[FADataController alloc] init];
     // self.eventResultsController = [secondaryDataController getAllEvents];
     [self.eventDetailsTable reloadData];
-}
-
-// Take a queued reminder and create it in the user's OS Reminders now that the event has been confirmed.
-// The notification object contains an array of strings representing {eventType,companyTicker,eventDateText}
-- (void)createQueuedReminder:(NSNotification *)notification {
-    
-    NSArray *infoArray = [notification object];
-    // Create a new DataController so that this thread has its own MOC
-    // TO DO: Understand at what point does a new thread get spawned off. Shouldn't I be creating the new MOC in that thread as opposed to here ? Maybe it doesn't matter as long as I am not sharing MOCs across threads ? The general rule with Core Data is one Managed Object Context per thread, and one thread per MOC
-    FADataController *thirdDataController = [[FADataController alloc] init];
-    
-    // Create the reminder
-    BOOL success = [self createReminderForEventOfType:[infoArray objectAtIndex:0] withTicker:[infoArray objectAtIndex:1] dateText:[infoArray objectAtIndex:2] andDataController:thirdDataController];
-    
-    // If successful, update the status of the event in the data store to be "Created" from "Queued"
-    if (success) {
-        [thirdDataController updateActionWithStatus:@"Created" type:@"OSReminder" eventTicker:[infoArray objectAtIndex:1] eventType:[infoArray objectAtIndex:0]];
-    }
-    // Else log an error message
-    else {
-        NSLog(@"ERROR:Creating a queued reminder for ticker:%@ and event type:%@ failed", [infoArray objectAtIndex:1], [infoArray objectAtIndex:0]);
-    }
 }
 
 // Show the error message for a temporary period and then fade it if a user guidance message has been generated
