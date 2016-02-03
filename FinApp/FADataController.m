@@ -670,11 +670,18 @@
         if (error == nil)
         {
             // Process the response that contains the first page of companies.
+            
+            // TO DO: UNCOMMENT FOR PRE SEEDING DB:
             // If it's not already been entered, enter the total no of pages of companies to sync in the user data store. This should only be done once.
-            noOfPagesTemp = [self processCompaniesResponse:responseData];
+            /*noOfPagesTemp = [self processCompaniesResponse:responseData];
             if ([[self getTotalNoOfCompanyPagesToSync] integerValue] == -1) {
                 [self updateUserWithTotalNoOfCompanyPagesToSync:[NSNumber numberWithInteger: noOfPagesTemp]];
-            }
+            }*/
+            // TO DO: COMMENT FOR PRE SEEDING DB:
+            // Enter the total no of pages of companies to sync, each time a page response is processed.
+            noOfPagesTemp = [self processCompaniesResponse:responseData];
+            [self updateUserWithTotalNoOfCompanyPagesToSync:[NSNumber numberWithInteger: noOfPagesTemp]];
+            
             // TO DO: Optimize to not hit the db everytime.
             // Get back total no of pages of companies in the response.
             noOfPages = [[self getTotalNoOfCompanyPagesToSync] integerValue];
