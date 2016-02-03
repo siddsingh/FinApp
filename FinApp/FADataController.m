@@ -713,6 +713,24 @@
     }
 }
 
+// Update the list of companies and their tickers, to include newer companies that have been added since the initial seeded DB. Whenever this is called, the logic here figures out how much needs to be synced. It relies on getAllCompaniesFromApi to do the actual sync.
+- (void)getIncrementalCompaniesFromApi
+{
+    // Get the current total number of company pages that are synced (76 in the preseeded database) and sync from one page before that page (75) till the newest page if there are more, to capture newly added companies. Do this only if the prior sync has completed successfully.
+    if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
+        
+        // Set Currently Synced Upto Page
+        NSInteger pageNoCurrentlySynced = 1;
+        pageNoCurrentlySynced = ([[self getCompanySyncedUptoPage] integerValue] - 2);
+        
+        // Set Company Sync Status to In Progress
+        [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger:pageNoCurrentlySynced]];
+    }
+    
+    // Call the original companies sync method to start the incremental sync
+    [self getAllCompaniesFromApi];
+}
+
 // Parse the companies API response and return total no of pages of companies in it.
 // Before returning call on to formatting and adding companies data to the core data store.
 - (NSInteger)processCompaniesResponse:(NSData *)response {
@@ -1723,6 +1741,30 @@
     }
     User *fetchedUser = [fetchedUsers lastObject];
     return fetchedUser.eventSyncStatus;
+}
+
+// Get the date on which the Company info was last completely synced
+- (NSDate *)getCompanySyncDate {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    NSFetchRequest *statusFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [statusFetchRequest setEntity:userEntity];
+    
+    NSError *error;
+    NSArray *fetchedUsers = [dataStoreContext executeFetchRequest:statusFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store failed: %@",error.description);
+    }
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store");
+    }
+    
+    // Return the company sync date
+    User *fetchedUser = [fetchedUsers lastObject];
+    return fetchedUser.companySyncDate;
 }
 
 // Add company data sync status to the user data store. Current design is that the user object is created

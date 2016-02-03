@@ -18,6 +18,9 @@
 // Redo fetching of company data from the API, in case the full sync of company data had failed. Typically called in a background thread.
 - (void)refreshCompanyInfoIfNeededFromApiInBackground;
 
+// Kick off a background task to add any new companies that might have been added.
+- (void)doCompanyUpdateInBackground;
+
 // Send a notification that the list of messages has changed (updated)
 - (void)sendEventsChangeNotification;
 
@@ -92,6 +95,9 @@
         // If the full sync of company data has failed, retry it
         [self refreshCompanyInfoIfNeededFromApiInBackground]; */
         
+        // TESTING: DELETE LATER
+        [self doCompanyUpdateInBackground];
+        
         // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data. Don't comment if you're just developing.
         // TO DO: Understand this better. PerformSelectorInBackground was causing warnings with attempting to modify UI in a background thread in iOS 9. Using dispatch async solved that error.
         //[self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
@@ -138,6 +144,48 @@
     
     // TO DO: Uncomment for actual use. Comment for test data for event update testing.
     [eventDataController updateEventsFromRemoteIfNeeded];
+}
+
+// Kick off a background task to add any new companies that might have been added.
+- (void)doCompanyUpdateInBackground
+{
+    // Create a new FADataController so that this thread has its own MOC
+    FADataController *companyUpdateDataController = [[FADataController alloc] init];
+    
+    // Get Today's Date
+    NSDate *todaysDate = [NSDate date];
+    
+    // Get the last company sync date
+    NSDate *lastCompanySyncDate = [companyUpdateDataController getCompanySyncDate];
+    
+    // Get the number of days between the 2 dates
+    NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastCompanySyncDate toDate:todaysDate options:0];
+    NSInteger daysBetween = [components day];
+    
+    NSLog(@"Days since last sync:%ld",(long)daysBetween);
+    
+    // If the company full sync has not been completed or if it's been a week since the last company sync, do an incremental sync
+    if ([[companyUpdateDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||((int)daysBetween >= 7))
+    {
+        // Creating a task that continues to process in the background.
+        __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
+            
+            // Stopped or ending the task outright.
+            [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
+            backgroundFetchTask = UIBackgroundTaskInvalid;
+        }];
+        
+        // Start the long-running task and return immediately.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            NSLog(@"About to start the background get incremental companies from API");
+            [companyUpdateDataController getIncrementalCompaniesFromApi];
+            
+            [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
+            backgroundFetchTask = UIBackgroundTaskInvalid;
+        });
+    }
 }
 
 // Redo fetching of company data from the API, in case the full sync of company data had failed or not started. Typically called in a background thread.

@@ -91,6 +91,9 @@
 // Get a list of all companies and their tickers.
 - (void)getAllCompaniesFromApi;
 
+// Update the list of companies and their tickers, to include newer companies that have been added since the initial seeded DB. Whenever this is called, the logic here figures out hoe much needs to be synced. It relies on getAllCompaniesFromApi to do the actual sync.
+- (void)getIncrementalCompaniesFromApi;
+
 #pragma mark - Methods to call Company Event Data Source APIs
 
 // Get the event details for a company given it's ticker.
@@ -137,6 +140,9 @@
 // "SeedSyncDone" means the most basic set of events information has been added to the event data store.
 // "NoSyncPerformed" means no event information has been added to the event data store.
 - (NSString *)getEventSyncStatus;
+
+// Get the date on which all the companies were last synced.
+- (NSDate *)getCompanySyncDate;
 
 // Add company data sync status to the user data store. Current design is that the user object is created
 // when a company data sync is done. Thus this method creates the user with the given status if it

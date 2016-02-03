@@ -189,9 +189,9 @@
             
         case expectedEpsRow:
         {
-            [[cell descriptionPart1] setText:@"Expected earnings per share for"];
+            [[cell descriptionPart1] setText:@"Expected EPS"];
             // Get the related date from the event which is the quarter end that is going to be reported
-            NSString *relatedDateString = [NSString stringWithFormat:@"quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.relatedDate]];
+            NSString *relatedDateString = [NSString stringWithFormat:@"Quarter End %@", [monthDateYearFormatter stringFromDate:eventData.relatedDate]];
             [[cell descriptionPart2] setText:relatedDateString];
             [[cell descriptionAddtlPart] setText:@"Estimated"];
             // Set color to the bright blue
@@ -205,9 +205,9 @@
             
         case priorEpsRow:
         {
-            [[cell descriptionPart1] setText:@"Earnings per share for prior"];
+            [[cell descriptionPart1] setText:@"Prior EPS"];
             // Get the prior end date from the event which is the end date of previously reported quarter
-            NSString *priorEndDateString = [NSString stringWithFormat:@"quarter ended %@", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
+            NSString *priorEndDateString = [NSString stringWithFormat:@"Quarter End %@", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
             [[cell descriptionPart2] setText:priorEndDateString];
             [[cell descriptionAddtlPart] setText:@"Reported"];
             // Set color to the bright blue
@@ -221,8 +221,8 @@
             
         case changeSincePrevQuarter:
         {
-            [[cell descriptionPart1] setText:@"Change in stock price since"];
-            [[cell descriptionPart2] setText:@"end of prior reported quarter"];
+            [[cell descriptionPart1] setText:@"Price Since"];
+            [[cell descriptionPart2] setText:@"Prior Quarter End"];
             // Get the prior end date from the event which is the end date of previously reported quarter
             NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
             [[cell descriptionAddtlPart] setText:priorEndDateToYestString];
@@ -275,8 +275,8 @@
             
         case changeSincePrevEarnings:
         {
-            [[cell descriptionPart1] setText:@"Change in stock price since"];
-            [[cell descriptionPart2] setText:@"estimated prior earnings day"];
+            [[cell descriptionPart1] setText:@"Price Since"];
+            [[cell descriptionPart2] setText:@"Estimated Prior Earnings"];
             // Get the prior end date from the event which is the end date of previously reported quarter
             NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
             [[cell descriptionAddtlPart] setText:priorEarningsDateToYestString];
