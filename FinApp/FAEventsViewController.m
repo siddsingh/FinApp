@@ -127,6 +127,16 @@
                                              selector:@selector(createQueuedReminder:)
                                                  name:@"CreateQueuedReminder" object:nil];
     
+    // Register a listener for starting the busy spinner in case we need to call it remotely
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(startBusySpinner:)
+                                                 name:@"StartBusySpinner" object:nil];
+    
+    // Register a listener for stopping the busy spinner in case we need to call it remotely
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(stopBusySpinner:)
+                                                 name:@"StopBusySpinner" object:nil];
+    
    // Seed the company data, the very first time, to get the user started.
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to kick off a company/event sync due to preseeded data.
     /*if ([[self.primaryDataController getCompanySyncStatus] isEqualToString:@"NoSyncPerformed"]) {
@@ -683,7 +693,7 @@
 }
 
 // Before a user enters a search term check to see if full company data sync has been completed.
-// If not show the user a message warming them.
+// If not show the user a message warning them.
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar*)searchBar {
     
     // Check for connectivity. If yes, give user information message
@@ -707,6 +717,12 @@
             // TO DO: Delete Later after testing.
             //[self sendUserMessageCreatedNotificationWithMessage:@"Fetching Tickers! Can't find one, retry in a bit."];
         } */
+        
+        // If the newer companies data is still being synced, give the user a warning message
+        if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
+            
+            [self sendUserMessageCreatedNotificationWithMessage:@"Fetching new tickers! Can't find one, retry later."];
+        }
     }
     // If not, show error message,
     else {
@@ -800,6 +816,22 @@
     else {
         NSLog(@"ERROR:Creating a queued reminder for ticker:%@ and event type:%@ failed", [infoArray objectAtIndex:1], [infoArray objectAtIndex:0]);
     }
+}
+
+// Respond to the notification to start the busy spinner
+- (void)startBusySpinner:(NSNotification *)notification {
+    
+    // Set the busy spinner to spin. Do this in a background thread as the main
+    // thread is being taken up by the table view. It's a best practice.
+    [self.remoteFetchSpinner performSelectorInBackground:@selector(startAnimating) withObject:self];
+}
+
+// Respond to the notification to stop the busy spinner
+- (void)stopBusySpinner:(NSNotification *)notification {
+    
+    // Set the busy spinner to stop spinning. Do this in a background thread as the main
+    // thread is being taken up by the table view. It's a best practice.
+    [self.remoteFetchSpinner performSelectorInBackground:@selector(stopAnimating) withObject:self];
 }
 
 #pragma mark - Reminder Related

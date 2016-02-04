@@ -1608,6 +1608,9 @@
     // Get all events in the local data store.
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
     
+    // Start the busy spinner on the UI to indicate that a fetch is in progress
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+    
     // For every event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
     // 1. If the speculated date of an event is within 31 days from today, then we consider it likely that the event has been updated
     // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
@@ -1636,6 +1639,9 @@
         
         [self sendEventsChangeNotification];
     }
+    
+    // Stop the busy spinner on the UI to indicate that the fetch is complete
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
 }
 
 

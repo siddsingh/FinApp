@@ -95,9 +95,6 @@
         // If the full sync of company data has failed, retry it
         [self refreshCompanyInfoIfNeededFromApiInBackground]; */
         
-        // Do appropriate user messaging
-        [self sendUserMessageCreatedNotificationWithMessage:@"Getting Latest Data!"];
-        
         // TO DO: COMMENT FOR PRE SEEDING DB: This does an incremental update of newer companies since the last time the data was synced. This data should already be captured in the preseeding, so not needed for preseeding.
         [self doCompanyUpdateInBackground];
         
