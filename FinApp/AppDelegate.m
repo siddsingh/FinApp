@@ -24,11 +24,13 @@
 // Send a notification that the list of messages has changed (updated)
 - (void)sendEventsChangeNotification;
 
+// TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
 // Send a notification that a user message should be displayed
-- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
+//- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
 
+// TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
 // Send a notification that the text of the header on the Events screen should be changed. Currently to today's date.
-- (void)sendEventsHeaderChangeNotification;
+//- (void)sendEventsHeaderChangeNotification;
 
 // Check if there is internet connectivity
 - (BOOL) checkForInternetConnectivity;
@@ -106,14 +108,16 @@
             [self refreshEventsIfNeededFromApiInBackground];
         });
     }
+    // TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
     // If not, show error message
-    else {
+   /* else {
         
         [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Limited functionality available."];
-    }
+    } */
     
+    // TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
     // Fire a notification to set the screen header for the events view to today's date.
-    [self sendEventsHeaderChangeNotification];
+    // [self sendEventsHeaderChangeNotification];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -234,17 +238,19 @@
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 
+// TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
 // Send a notification that a user message should be displayed
-- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
+/*- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
-}
+}*/
 
+// TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
 // Send a notification that the text of the header on the Events screen should be changed. Currently to today's date.
-- (void)sendEventsHeaderChangeNotification {
+/*- (void)sendEventsHeaderChangeNotification {
     
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UpdateScreenHeader" object:self];
-}
+}*/
 
 #pragma mark - Connectivity Methods
 

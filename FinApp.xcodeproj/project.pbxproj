@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9E0AC7B81C6EB9CA0078EAA5 /* FACompanyInfoStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */; };
 		9E5D1DDC1C0D3FA400BA0B34 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */; };
 		9E5D1DDD1C0D3FA400BA0B34 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */; };
 		9E602D1A19E655DF00ACDEC6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1919E655DF00ACDEC6 /* main.m */; };
@@ -47,6 +48,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9E0AC7B61C6EB9CA0078EAA5 /* FACompanyInfoStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FACompanyInfoStore.h; sourceTree = "<group>"; };
+		9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FACompanyInfoStore.m; sourceTree = "<group>"; };
 		9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = FinApp.sqlite; sourceTree = "<group>"; };
 		9E602D1419E655DF00ACDEC6 /* Knotifi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Knotifi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D1819E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -145,6 +148,8 @@
 				9E6D80781AA4E07100E1F2D3 /* FADataController.m */,
 				9E6D80741A9EB49700E1F2D3 /* FADataStore.h */,
 				9E6D80751A9EB49700E1F2D3 /* FADataStore.m */,
+				9E0AC7B61C6EB9CA0078EAA5 /* FACompanyInfoStore.h */,
+				9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */,
@@ -302,6 +307,7 @@
 				9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */,
 				9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */,
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
+				9E0AC7B81C6EB9CA0078EAA5 /* FACompanyInfoStore.m in Sources */,
 				9E79C9371BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */,
 				9E602D1A19E655DF00ACDEC6 /* main.m in Sources */,
 				9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */,
