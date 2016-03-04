@@ -14,6 +14,8 @@
 #import "FADataController.h"
 #import "Event.h"
 #import "Reachability.h"
+#import "FACompanyInfoStore.h"
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 @import EventKit;
 
 @interface FAEventDetailsViewController ()
@@ -32,6 +34,9 @@
     [super viewDidLoad];
     
     // Do any additional setup after loading the view.
+    
+    // Initialize the Company Info local data store
+    [FACompanyInfoStore sharedInfoStore];
     
     // Make the information messages area fully transparent so that it's invisible to the user
     self.messagesArea.alpha = 0.0;
@@ -345,6 +350,11 @@
     if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
     {
         [self sendUserGuidanceCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
+        
+        // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
+        [FBSDKAppEvents logEvent:@"Unset Reminder"
+                      parameters:@{ @"Ticker" : self.parentTicker,
+                                    @"Event Certainty" : self.eventCertainty } ];
     }
     
     // If not, create the reminder and style the button to post set styling
@@ -357,6 +367,11 @@
         [self.reminderButton setBackgroundColor:[UIColor grayColor]];
         [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
         [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        
+        // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
+        [FBSDKAppEvents logEvent:@"Create Reminder"
+                      parameters:@{ @"Ticker" : self.parentTicker,
+                                    @"Event Certainty" : self.eventCertainty } ];
     }
 }
 

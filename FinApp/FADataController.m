@@ -638,7 +638,8 @@
         //noOfPages = 26;
         noOfPages = [[self getTotalNoOfCompanyPagesToSync] integerValue];
         
-        NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
+        // TO DO: For testing, comment before shipping
+        //NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
     }
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
@@ -664,7 +665,8 @@
         NSData *responseData = [NSURLConnection sendSynchronousRequest:companiesRequest returningResponse:&response
                                                                  error:&error];
         
-         NSLog(@"******************************************Made request to get company data with page number:%@**************",endpointURL);
+        // TO DO: For testing, comment before shipping
+        //NSLog(@"******************************************Made request to get company data with page number:%@**************",endpointURL);
         
         // Process the response
         if (error == nil)
@@ -707,7 +709,8 @@
             ++pageNo;
         }
         endpointURL = @"https://www.quandl.com/api/v3/datasets.json?database_code=ZEA";
-        NSLog(@"Page Number is:%ld and NoOfPages is:%ld",(long)pageNo,(long)noOfPages);
+        // TO DO: For testing, comment before shipping
+        //NSLog(@"Page Number is:%ld and NoOfPages is:%ld",(long)pageNo,(long)noOfPages);
     }
     
     // Add or Update the Company Data Sync status to SeedSyncDone. Check that all pages have been processed before doing so.
@@ -784,7 +787,8 @@
     NSDictionary *metaInformation = [parsedResponse objectForKey:@"meta"];
     noOfPages = [[metaInformation objectForKey:@"total_pages"] integerValue];
     
-    NSLog(@"Total Number of pages dynamically computed: %ld ", (long)noOfPages);
+    // TO DO: For testing, comment before shipping
+    //NSLog(@"Total Number of pages dynamically computed: %ld ", (long)noOfPages);
     return noOfPages;
 }
 
@@ -827,7 +831,8 @@
         // Replace underscore in certain ticker names with . e.g.GRP_U -> GRP.U
         companyTicker = [companyTicker stringByReplacingOccurrencesOfString:@"_" withString:@"."];
         NSString *companyNameString = [company objectForKey:@"name"];
-        NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
+        // TO DO: For testing, comment before shipping
+        //NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
         
         // Extract the company name from the company name string
         NSRange forString = [companyNameString rangeOfString:@"for"];
@@ -842,7 +847,8 @@
                 companyName = [companyName substringToIndex:[companyName length]-1];
             }
         }
-        NSLog(@"Company Name to be entered in db is: %@", companyName);
+        // TO DO: For testing, comment before shipping
+        //NSLog(@"Company Name to be entered in db is: %@", companyName);
         
         // Add company ticker and name into the data store
         [self insertUniqueCompanyWithTicker:companyTicker name:companyName];

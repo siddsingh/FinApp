@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "FADataController.h"
 #import "Reachability.h"
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 @interface AppDelegate ()
 
@@ -23,14 +24,6 @@
 
 // Send a notification that the list of messages has changed (updated)
 - (void)sendEventsChangeNotification;
-
-// TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
-// Send a notification that a user message should be displayed
-//- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
-
-// TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
-// Send a notification that the text of the header on the Events screen should be changed. Currently to today's date.
-//- (void)sendEventsHeaderChangeNotification;
 
 // Check if there is internet connectivity
 - (BOOL) checkForInternetConnectivity;
@@ -51,6 +44,10 @@
     [[UINavigationBar appearance] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setShadowImage:[UIImage new]];
     
+    // Adding the FB SDK
+    [[FBSDKApplicationDelegate sharedInstance] application:application
+                             didFinishLaunchingWithOptions:launchOptions];
+    
     return YES;
 }
 
@@ -70,12 +67,15 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
+    // TRACKING EVENT: App Launch: Application was launched.
+    [FBSDKAppEvents activateApp];
+    
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
     // Making sure that the core data store is instantiated in the main thread
     // Create a new FADataController so that this thread has its own MOC
     FADataController *eventDataController = [[FADataController alloc] init];
-    // TO DO: This is an extra call, everytime the app becomes active bt is needed to complete the datastore instantiation process. Optimize this later.
+    // TO DO: This is an extra call, everytime the app becomes active but is needed to complete the datastore instantiation process. Optimize this later.
     [eventDataController getAllEvents];
     
     // Check for connectivity. If yes, sync data from remote data source
@@ -108,16 +108,6 @@
             [self refreshEventsIfNeededFromApiInBackground];
         });
     }
-    // TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
-    // If not, show error message
-   /* else {
-        
-        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Limited functionality available."];
-    } */
-    
-    // TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
-    // Fire a notification to set the screen header for the events view to today's date.
-    // [self sendEventsHeaderChangeNotification];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -136,6 +126,16 @@
         [genericDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[genericDataController getCompanySyncedUptoPage]];
     }
     NSLog(@"**************Company Sync Status is:%@ and synced page is:%ld",[genericDataController getCompanySyncStatus],[[genericDataController getCompanySyncedUptoPage] longValue]); */
+}
+
+#pragma mark - FB SDK Methods
+
+// Needed to add the FB SDK
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                          openURL:url
+                                                sourceApplication:sourceApplication
+                                                       annotation:annotation];
 }
 
 #pragma mark - State Refresh
@@ -167,7 +167,8 @@
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastCompanySyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
     
-    NSLog(@"Days since last sync:%ld",(long)daysBetween);
+    // TO DO: For testing, comment before shipping
+    // NSLog(@"Days since last sync:%ld",(long)daysBetween);
     
     // If the company full sync has not been completed or if it's been a week since the last company sync, do an incremental sync
     if ([[companyUpdateDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||((int)daysBetween >= 7))
@@ -183,7 +184,9 @@
         // Start the long-running task and return immediately.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
-            NSLog(@"About to start the background get incremental companies from API");
+            // TO DO: For testing, comment before shipping
+            //NSLog(@"About to start the background get incremental companies from API");
+            
             [companyUpdateDataController getIncrementalCompaniesFromApi];
             
             [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
@@ -238,19 +241,6 @@
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 
-// TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
-// Send a notification that a user message should be displayed
-/*- (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
-    
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
-}*/
-
-// TO DO: Delete Later, this notification is not fired. The events view controller takes care of this scenario
-// Send a notification that the text of the header on the Events screen should be changed. Currently to today's date.
-/*- (void)sendEventsHeaderChangeNotification {
-    
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"UpdateScreenHeader" object:self];
-}*/
 
 #pragma mark - Connectivity Methods
 

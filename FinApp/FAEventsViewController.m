@@ -18,6 +18,7 @@
 #import <UIKit/UIKit.h>
 #import "FAEventDetailsViewController.h"
 #import "EventHistory.h"
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 @import EventKit;
 
 @interface FAEventsViewController ()
@@ -435,6 +436,11 @@
                 
                 [self getAllEventsFromApiInBackgroundWithTicker:(cell.companyTicker).text];
             });
+            
+            // TRACKING EVENT: Get Earnings: User clicked the get earnings link for a company/ticker.
+            [FBSDKAppEvents logEvent:@"Get Earnings"
+                          parameters:@{ @"Ticker" : (cell.companyTicker).text,
+                                        @"Name" : (cell.companyName).text } ];
         }
         // If not, show error message
         else {
@@ -616,9 +622,13 @@
         // Set the Filter Specified flag to true, indicating that a search filter has been specified
         self.filterSpecified = YES;
         
-        // Reload messages table
+        // Reload table
         [self.eventsListTable reloadData];
     }
+    
+    // TRACKING EVENT: Search Button Clicked: User clicked the search button to search for a company or ticker.
+    [FBSDKAppEvents logEvent:@"Search Button Clicked"
+                  parameters:@{ @"Search String" : searchBar.text } ];
     
     //[searchBar resignFirstResponder];
     // TO DO: In case you want to clear the search context
@@ -717,6 +727,9 @@
             // TO DO: Delete Later after testing.
             //[self sendUserMessageCreatedNotificationWithMessage:@"Fetching Tickers! Can't find one, retry in a bit."];
         } */
+        
+        // TRACKING EVENT: Search Initiated: User clicked into the search bar to initiate a search.
+        [FBSDKAppEvents logEvent:@"Search Initiated"];
         
         // If the newer companies data is still being synced, give the user a warning message
         if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
@@ -964,7 +977,7 @@
     // Check the segue is "ShowEventDetails"
     if ([identifier isEqualToString:@"ShowEventDetails" ]) {
         
-        // If the cell is the "Get Earnings" cell identified by if Remote Fetch indicator is true, set return value to false indicating no swguw should be performed
+        // If the cell is the "Get Earnings" cell identified by if Remote Fetch indicator is true, set return value to false indicating no segue should be performed
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
         if (selectedCell.eventRemoteFetch) {
@@ -1004,6 +1017,11 @@
         [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@ %@", eventTicker, [eventType uppercaseString]]];
         // Set Event Schedule for display in destination
         [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
+        
+        // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
+        [FBSDKAppEvents logEvent:@"Go To Details"
+                      parameters:@{ @"Ticker" : eventTicker,
+                                    @"Name" : (selectedCell.companyName).text } ];
     }
 }
 
