@@ -67,9 +67,6 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
-    // TRACKING EVENT: App Launch: Application was launched.
-    [FBSDKAppEvents activateApp];
-    
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
     // Making sure that the core data store is instantiated in the main thread
@@ -107,6 +104,9 @@
             
             [self refreshEventsIfNeededFromApiInBackground];
         });
+        
+        // TRACKING EVENT: App Launch: Application was launched.
+        [FBSDKAppEvents activateApp];
     }
 }
 
@@ -168,10 +168,10 @@
     NSInteger daysBetween = [components day];
     
     // TO DO: For testing, comment before shipping
-    // NSLog(@"Days since last sync:%ld",(long)daysBetween);
+    //NSLog(@"Days since last sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
     
-    // If the company full sync has not been completed or if it's been a week since the last company sync, do an incremental sync
-    if ([[companyUpdateDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||((int)daysBetween >= 7))
+    // If it's been a week since the last company sync, do an incremental sync
+    if ((int)daysBetween >= 7)
     {
         // Creating a task that continues to process in the background.
         __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
@@ -187,7 +187,10 @@
             // TO DO: For testing, comment before shipping
             //NSLog(@"About to start the background get incremental companies from API");
             
-            [companyUpdateDataController getIncrementalCompaniesFromApi];
+            // Create a new FADataController so that this thread has its own MOC
+            FADataController *companyBkgrndDataController = [[FADataController alloc] init];
+            
+            [companyBkgrndDataController getIncrementalCompaniesFromApi];
             
             [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
             backgroundFetchTask = UIBackgroundTaskInvalid;

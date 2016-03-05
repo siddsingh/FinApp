@@ -720,21 +720,26 @@
     if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= [[self getTotalNoOfCompanyPagesToSync] integerValue]))
     {
         [self upsertUserWithCompanySyncStatus:@"FullSyncDone" syncedPageNo:[NSNumber numberWithInteger:(pageNo-1)]];
+        // TO DO: For testing, comment before shipping
+        //NSLog(@"Set status to fullsyncdone");
     }
 }
 
 // Update the list of companies and their tickers, to include newer companies that have been added since the initial seeded DB. Whenever this is called, the logic here figures out how much needs to be synced. It relies on getAllCompaniesFromApi to do the actual sync.
 - (void)getIncrementalCompaniesFromApi
 {
-    // Get the current total number of company pages that are synced (76 in the preseeded database) and sync from one page before that page (75) till the newest page if there are more, to capture newly added companies. Do this only if the prior sync has completed successfully.
+    // Get the current total number of company pages that are synced (76 in the preseeded database) and sync from two pages before that page (74) till the newest page if there are more, to capture newly added companies. Do this only if the prior sync has completed successfully.
     if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
         
         // Set Currently Synced Upto Page
         NSInteger pageNoCurrentlySynced = 1;
-        pageNoCurrentlySynced = ([[self getCompanySyncedUptoPage] integerValue] - 2);
+        pageNoCurrentlySynced = ([[self getCompanySyncedUptoPage] integerValue] - 3);
         
         // Set Company Sync Status to In Progress
         [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger:pageNoCurrentlySynced]];
+        
+        // TO DO: For testing, comment before shipping
+        //NSLog(@"Set the status to FullSyncStarted. About to call getAllCompanies");
     }
     
     // Call the original companies sync method to start the incremental sync
@@ -1615,7 +1620,8 @@
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
     
     // Start the busy spinner on the UI to indicate that a fetch is in progress
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+    // TO DO: Needs to be tested more thoroughly before enabling
+    //[[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
     
     // For every event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
     // 1. If the speculated date of an event is within 31 days from today, then we consider it likely that the event has been updated
@@ -1647,7 +1653,8 @@
     }
     
     // Stop the busy spinner on the UI to indicate that the fetch is complete
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+    // TO DO: Needs to be tested more thoroughly before enabling
+    //[[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
 }
 
 
