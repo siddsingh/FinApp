@@ -38,7 +38,9 @@
     // Override point for customization after application launch.
     
     // Set the status bar text color to white. This is done in conjunction with setting View controller-based status bar appearance property to NO in Info.plist. To revert delete that property and remove this line.
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    // With a light app theme, setting the status bar style to default dark theme. 
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     
     // Remove the 1 pixel bottom border line from navigation Controller top bar.
     [[UINavigationBar appearance] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
@@ -106,7 +108,8 @@
         });
         
         // TRACKING EVENT: App Launch: Application was launched.
-        [FBSDKAppEvents activateApp];
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        // [FBSDKAppEvents activateApp];
     }
 }
 
@@ -168,7 +171,7 @@
     NSInteger daysBetween = [components day];
     
     // TO DO: For testing, comment before shipping
-    //NSLog(@"Days since last sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
+    NSLog(@"Days since last sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
     
     // If it's been a week since the last company sync, do an incremental sync
     if ((int)daysBetween >= 7)
@@ -185,7 +188,7 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
             // TO DO: For testing, comment before shipping
-            //NSLog(@"About to start the background get incremental companies from API");
+            NSLog(@"About to start the background get incremental companies from API");
             
             // Create a new FADataController so that this thread has its own MOC
             FADataController *companyBkgrndDataController = [[FADataController alloc] init];

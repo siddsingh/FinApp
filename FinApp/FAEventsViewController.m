@@ -69,24 +69,24 @@
     [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
     [self.navigationController.navigationBar.topItem setTitle:[todayDateFormatter stringFromDate:[NSDate date]]];
     
-    // Change the color of the events search bar placeholder text and text entered to be white.
+    // Change the color of the events search bar placeholder text and text entered to be the Knotifi Action Green.
     [self.eventsSearchBar setBackgroundImage:[UIImage new]];
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
-    [eventSearchBarInputFld setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
-    eventSearchBarInputFld.textColor = [UIColor whiteColor];
-    // TO DO: Finally decide between this currently set blue or purple color.
-    //eventSearchBarInputFld.backgroundColor = [UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-    eventSearchBarInputFld.backgroundColor = [UIColor colorWithRed:78.0f/255.0f green:132.0f/255.0f blue:216.0f/255.0f alpha:1.0f];
+    [eventSearchBarInputFld setValue:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"];
+    eventSearchBarInputFld.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
     
-    // Do the same for the Magnifying glass icon in the search bar.
+    // Set search bar background color to a very light gray background for actions.
+    eventSearchBarInputFld.backgroundColor = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+    
+    // Change the color of the Magnifying glass icon in the search bar to Knotifi Action Green
     UIImageView *magGlassIcon = (UIImageView *)eventSearchBarInputFld.leftView;
     magGlassIcon.image = [magGlassIcon.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    magGlassIcon.tintColor = [UIColor whiteColor];
+    magGlassIcon.tintColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
     
-    // Do the same for the Clear button in the search bar.
+    // Change the color of the Clear button in the search bar to the Knotifi Action Green
     UIButton *searchClearBtn = [eventSearchBarInputFld valueForKey:@"_clearButton"];
     [searchClearBtn setImage:[searchClearBtn.imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-    searchClearBtn.tintColor = [UIColor whiteColor];
+    searchClearBtn.tintColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
     
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
@@ -279,14 +279,14 @@
     // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
     
-    //TO DO: Delete Later. Reset color for Event description to dark text, in case it's been set to blue for a "Get Events" display
-    //cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    //TO DO: Delete Later. Reset color for Event description to dark text color, in case it's been set to blue for a "Get Events" display
     // Reset color for Event Date to dark text, in case it's been set to blue for a "Get Earnings" display.
-    cell.eventDate.textColor = [UIColor colorWithRed:45.0f/255.0f green:45.0f/255.0f blue:45.0f/255.0f alpha:1.0f];
+    cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     
     // Set the compnay ticker background color to a darker to lighter (darker at the top) based on row number.
     // Currently supporting a dark gray scheme
-    cell.companyTicker.backgroundColor = [self getColorForIndexPath:indexPath];
+    // TO DO: Still testing new flat UI. Either delete or implement properly for new UI.
+    //cell.companyTicker.backgroundColor = [self getColorForIndexPath:indexPath];
     
     // Get event or company  to display
     Event *eventAtIndex;
@@ -322,16 +322,15 @@
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:companyAtIndex.ticker];
         
-        // Show the company name associated with the event
+        // Set the company name associated with the event
         [[cell  companyName] setText:companyAtIndex.name];
+        // Show the company Name as this information is not needed to be displayed to the user when searching
+        [[cell companyName] setHidden:NO];
         
         // Show the "Get Events" text in the event display area.
-        // TO DO: Delete Later. With the reformatting, the Get text should be shown in the event date column
-        //[[cell  eventDescription] setText:@"Get Events"];
-        //cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-        [[cell eventDate] setText:@"Get Earnings"];
+        [[cell eventDescription] setText:@"GET EARNINGS"];
         // Set color to a link blue to provide a visual cue to click
-        cell.eventDate.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+        cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
         
         // Set the fetch state of the event cell to true
         // TO DO: Should you really be holding logic state at the cell level or should there
@@ -339,9 +338,7 @@
         cell.eventRemoteFetch = YES;
         
         // Set all other fields to empty
-        // TO DO: Delete Later since we will show the "Get Earnings" Message in the Event Date.
-        //[[cell eventDate] setText:@" "];
-        [[cell eventDescription] setText:@" "];
+        [[cell eventDate] setText:@" "];
         [[cell eventCertainty] setText:@" "];
     }
     else {
@@ -351,7 +348,9 @@
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
         
-        // Show the company name associated with the event
+        // Hide the company Name as this information is not needed to be displayed to the user.
+        [[cell companyName] setHidden:YES];
+        // Set the company name associated with the event as this is needed in places like getting the earnings.
         [[cell  companyName] setText:eventAtIndex.listedCompany.name];
         
         // Set the fetch state of the event cell to false
@@ -395,21 +394,10 @@
             [[cell eventCertainty] setText:[NSString stringWithFormat:@" "]];
         } */
         
-        // Show event certainty
+        // Hide the event certainty as this information is not needed to be displayed to the user.
+        [[cell eventCertainty] setHidden:YES];
+        // Set event certainty though since it's needed by reminder creation.
         [[cell eventCertainty] setText:eventAtIndex.certainty];
-        // Set it's color based on certainty. Confirmed is -> Dark Gray, Others -> Dark Gray
-        if ([cell.eventCertainty.text isEqualToString:@"Confirmed"]) {
-            
-            // TO DO: Delete this purple,blue, bright blue later
-            //cell.eventCertainty.textColor = [UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-            //cell.eventCertainty.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-            //cell.eventCertainty.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-            cell.eventCertainty.textColor = [UIColor darkGrayColor];
-        } else {
-            // TO DO: Delete Later Red Color
-            //cell.eventCertainty.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-            cell.eventCertainty.textColor = [UIColor darkGrayColor];
-        }
     }
     
     return cell;
@@ -438,9 +426,10 @@
             });
             
             // TRACKING EVENT: Get Earnings: User clicked the get earnings link for a company/ticker.
-            [FBSDKAppEvents logEvent:@"Get Earnings"
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            /*[FBSDKAppEvents logEvent:@"Get Earnings"
                           parameters:@{ @"Ticker" : (cell.companyTicker).text,
-                                        @"Name" : (cell.companyName).text } ];
+                                        @"Name" : (cell.companyName).text } ]; */
         }
         // If not, show error message
         else {
@@ -627,8 +616,9 @@
     }
     
     // TRACKING EVENT: Search Button Clicked: User clicked the search button to search for a company or ticker.
-    [FBSDKAppEvents logEvent:@"Search Button Clicked"
-                  parameters:@{ @"Search String" : searchBar.text } ];
+    // TO DO: Disabling to not track development events. Enable before shipping.
+    /*[FBSDKAppEvents logEvent:@"Search Button Clicked"
+                  parameters:@{ @"Search String" : searchBar.text } ];*/
     
     //[searchBar resignFirstResponder];
     // TO DO: In case you want to clear the search context
@@ -729,7 +719,8 @@
         } */
         
         // TRACKING EVENT: Search Initiated: User clicked into the search bar to initiate a search.
-        [FBSDKAppEvents logEvent:@"Search Initiated"];
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        /*[FBSDKAppEvents logEvent:@"Search Initiated"];*/
         
         // If the newer companies data is still being synced, give the user a warning message
         if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
@@ -1019,9 +1010,10 @@
         [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
         
         // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
-        [FBSDKAppEvents logEvent:@"Go To Details"
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        /*[FBSDKAppEvents logEvent:@"Go To Details"
                       parameters:@{ @"Ticker" : eventTicker,
-                                    @"Name" : (selectedCell.companyName).text } ];
+                                    @"Name" : (selectedCell.companyName).text } ];*/
     }
 }
 
