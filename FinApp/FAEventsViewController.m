@@ -67,26 +67,26 @@
     // Show today's date in the navigation bar header.
     NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
     [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
-    [self.navigationController.navigationBar.topItem setTitle:[todayDateFormatter stringFromDate:[NSDate date]]];
+    [self.navigationController.navigationBar.topItem setTitle:[[todayDateFormatter stringFromDate:[NSDate date]] uppercaseString]];
     
-    // Change the color of the events search bar placeholder text and text entered to be the Knotifi Action Green.
+    // Change the color of the events search bar placeholder text and text entered to be a very light, almost white gray.
     [self.eventsSearchBar setBackgroundImage:[UIImage new]];
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
-    [eventSearchBarInputFld setValue:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"];
-    eventSearchBarInputFld.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    [eventSearchBarInputFld setValue:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"];
+    eventSearchBarInputFld.textColor = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
     
-    // Set search bar background color to a very light gray background for actions.
-    eventSearchBarInputFld.backgroundColor = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+    // Set search bar background color to a dark gray (dark text) color so that it's totally flat.
+    eventSearchBarInputFld.backgroundColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     
-    // Change the color of the Magnifying glass icon in the search bar to Knotifi Action Green
+    // Change the color of the Magnifying glass icon in the search bar to to be a very light, almost white gray
     UIImageView *magGlassIcon = (UIImageView *)eventSearchBarInputFld.leftView;
     magGlassIcon.image = [magGlassIcon.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    magGlassIcon.tintColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    magGlassIcon.tintColor = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
     
-    // Change the color of the Clear button in the search bar to the Knotifi Action Green
+    // Change the color of the Clear button in the search bar to to to be a very light, almost white gray
     UIButton *searchClearBtn = [eventSearchBarInputFld valueForKey:@"_clearButton"];
     [searchClearBtn setImage:[searchClearBtn.imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-    searchClearBtn.tintColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    searchClearBtn.tintColor = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
     
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
