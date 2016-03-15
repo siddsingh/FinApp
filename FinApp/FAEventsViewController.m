@@ -272,7 +272,7 @@
 }
 
 // Return a cell configured to display an event or a company with a fetch event
-// TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
+// TO DO LATER: IMPORTANT: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation. Also reconcile in didSelectRowAtIndexPath.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
@@ -343,7 +343,7 @@
     }
     else {
         
-        // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!!: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation.
+        // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!!: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation. Also reconcile in didSelectRowAtIndexPath.
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
@@ -361,7 +361,7 @@
         // Show the event type. Format it for display. Currently map "Quarterly Earnings" to Quarterly.
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!! If you are making a change here, reconcile with prepareForSegue in addition to the methods mentioned above.
         if ([eventAtIndex.type isEqualToString:@"Quarterly Earnings"])
-        [[cell  eventDescription] setText:@"Quarterly"];
+        [[cell  eventDescription] setText:@"Earnings"];
         
         // Show the event date
         NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
@@ -455,7 +455,7 @@
             NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
             FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
             NSString *eventTicker = selectedCell.companyTicker.text;
-            NSString *eventType = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
+            NSString *eventType = [NSString stringWithFormat:@"Quarterly %@",selectedCell.eventDescription.text];
             
             // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
             // Get today's date
@@ -994,7 +994,7 @@
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
         NSString *eventTicker = selectedCell.companyTicker.text;
-        NSString *eventType = [NSString stringWithFormat:@"%@ Earnings",selectedCell.eventDescription.text];
+        NSString *eventType = [NSString stringWithFormat:@"Quarterly %@",selectedCell.eventDescription.text];
         // Set Event Parent Ticker for processing in destination
         [eventDetailsViewController setParentTicker:eventTicker];
         // Set Event Type for processing in destination
