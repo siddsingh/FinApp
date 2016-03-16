@@ -1,0 +1,14 @@
+{
+ "name":"FOMC Meeting",
+ "identifier":"ECONOMY_FOMC",
+ "agency":"Federal Open Market Committee",
+ "impact":"Very High",
+ "impactReason":"Outcome determines key interest rates",
+ "sectorsImpacted":"Financial",
+ "shortDescription":"Meeting between members of the Federal Reserve Board to determine key interest rates, ending with a highly watched statement and press conference",
+ "moreInfoUrl":"http://www.federalreserve.gov/monetarypolicy/default.htm",
+ "tip":"If short term interest rates go up, banks typically benefit because they can earn more.",
+ "timing":"2:00 PM EST",
+ "dates":[20160127,20160316,20160427,20160615,20160727,20160921,20161102,20161214],
+ "datesPressConference":[20160316,20160615,20160921,20161214]
+}
