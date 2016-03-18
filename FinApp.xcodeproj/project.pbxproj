@@ -164,8 +164,9 @@
 				9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
-				9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
+				9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */,
+				9EA8E47B1C99053C002B1F5E /* EconomicEvents_2016.json */,
 				9EBD8EE41B82CEB9008A0370 /* Action.h */,
 				9EBD8EE51B82CEB9008A0370 /* Action.m */,
 				9E7586441AF44679009DD7B2 /* User.h */,
@@ -178,7 +179,6 @@
 				9E79C9231BCDE3B9007E17B6 /* EventHistory.m */,
 				9EBD8EEB1BAC9EA0008A0370 /* Reachability.h */,
 				9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */,
-				9EA8E47B1C99053C002B1F5E /* EconomicEvents_2016.json */,
 				9E602D1719E655DF00ACDEC6 /* Supporting Files */,
 			);
 			path = FinApp;

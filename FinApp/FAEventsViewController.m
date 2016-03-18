@@ -169,7 +169,7 @@
     }
     
     // TO DO: Delete Later. In here for Testing.
-    [self.primaryDataController getAllCompanies];
+    //[self.primaryDataController getAllCompanies];
     
     // Set the Filter Specified flag to false, indicating that no search filter has been specified
     self.filterSpecified = NO;

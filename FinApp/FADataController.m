@@ -808,7 +808,7 @@
      "dataset_code":"CLDT",
      "database_code":"ZEA",
      "name":"Earnings Announcement Dates for Chatham Lodging Trust (CLDT)"
-     }
+     },
      {......
      }]
      "meta":{
@@ -1101,6 +1101,82 @@
         if ([certaintyStr isEqualToString:@"Estimated"]&&[self doesReminderActionExistForEventWithTicker:ticker eventType:eventType]) {
             
             [self updateActionWithStatus:@"Queued" type:@"OSReminder" eventTicker:ticker eventType:eventType];
+        }
+    }
+}
+
+#pragma mark - Methods to call Economic Events Data Sources
+
+// Get all the economic events and details from local storage, which currently is a json file and write them to the data store.
+- (void)getAllEconomicEventsFromLocalStorage
+{
+    // Get the economic events file path
+    NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"EconomicEvents_2016" ofType:@"json"];
+    NSLog(@"Found the json file at: %@",eventsFilePath);
+    
+    // Parse the economic events file contents
+    
+    // Get the contents into a parsed object
+    NSError *error;
+    NSString *eventsJsonStr = [[NSString alloc] initWithContentsOfFile:eventsFilePath encoding:NSUTF8StringEncoding error:&error];
+    NSDictionary *parsedContents = [NSJSONSerialization JSONObjectWithData:[eventsJsonStr dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+    
+    // Loop through the parsed object to get the various economic events and their details
+    // Get the list of companies first from the overall response
+    NSArray *parsedEvents = [parsedContents objectForKey:@"eventSets"];
+    
+    for (NSDictionary *event in parsedEvents) {
+        
+        // Get the event name
+        NSString *eventName = [event objectForKey:@"name"];
+        NSLog(@"The event name: %@", eventName);
+        
+        // Get the event identifier
+        NSString *eventId = [event objectForKey:@"identifier"];
+        NSLog(@"The event identifier: %@", eventId);
+        
+        // Get the agency that puts out the event
+        NSString *eventAgency = [event objectForKey:@"agency"];
+        NSLog(@"The event agency: %@", eventAgency);
+        
+        // Insert the ticker and name for the event in the company data store
+        [self insertUniqueCompanyWithTicker:eventId name:eventAgency];
+        
+        // Get the short description for the event
+        NSString *eventDesc = [event objectForKey:@"shortDescription"];
+        NSLog(@"The event short description: %@", eventDesc);
+        
+        // Get the URL for getting more info on the event
+        NSString *eventMoreInfoUrl = [event objectForKey:@"moreInfoUrl"];
+        NSLog(@"The event more info Url: %@", eventMoreInfoUrl);
+        
+        // Get the timing information for the event
+        NSString *eventTiming = [event objectForKey:@"timing"];
+        NSLog(@"The event timing information: %@", eventTiming);
+        
+        // Get the array of upcoming dates
+        NSArray *eventInstances = [event objectForKey:@"instances"];
+        
+        // Get the individual upcoming instances like Jan Fed Meeting, Mar Fed Meeting, etc and the
+        // dates for each
+        for (NSDictionary *eventInstance in eventInstances) {
+            
+            // Get Related Period to form unique event name for each instance of the Fed Meeting by prepending it to event name.
+            NSString *eventRelatedInfo = [eventInstance objectForKey:@"relatedPeriod"];
+            NSString *uniqueName = [NSString stringWithFormat:@"%@ %@", eventRelatedInfo, eventName];
+            NSLog(@"The event unique name is: %@", uniqueName);
+            
+            // Get the date for the event instance
+            NSNumber *eventDateAsNum = [eventInstance objectForKey:@"date"];
+            NSLog(@"The date on which the event takes place: %@", eventDateAsNum);
+            NSString *eventDateStr =  [NSString stringWithFormat: @"%@", eventDateAsNum];
+            NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+            [eventDateFormatter setDateFormat:@"yyyyMMdd"];
+            NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
+            NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+            
+            // Insert each instance into the events datastore
+            [self upsertEventWithDate:eventDate relatedDetails:eventMoreInfoUrl relatedDate:nil type:uniqueName certainty:nil listedCompany:eventId estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
         }
     }
 }
