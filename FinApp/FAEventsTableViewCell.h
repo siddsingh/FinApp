@@ -24,6 +24,9 @@
 // Label that represents the date of the event
 @property (weak, nonatomic) IBOutlet UILabel *eventDate;
 
+// Label that represents how near or far in the future the event is
+@property (weak, nonatomic) IBOutlet UILabel *eventDistance;
+
 // Label that represents the certainty of this event
 @property (weak, nonatomic) IBOutlet UILabel *eventCertainty;
 

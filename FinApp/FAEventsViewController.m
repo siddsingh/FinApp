@@ -168,9 +168,6 @@
         [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Limited functionality available."];
     }
     
-    // TO DO: Delete Later. In here for Testing.
-    //[self.primaryDataController getAllCompanies];
-    
     // Set the Filter Specified flag to false, indicating that no search filter has been specified
     self.filterSpecified = NO;
     
@@ -283,11 +280,6 @@
     // Reset color for Event Date to dark text, in case it's been set to blue for a "Get Earnings" display.
     cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     
-    // Set the compnay ticker background color to a darker to lighter (darker at the top) based on row number.
-    // Currently supporting a dark gray scheme
-    // TO DO: Still testing new flat UI. Either delete or implement properly for new UI.
-    //cell.companyTicker.backgroundColor = [self getColorForIndexPath:indexPath];
-    
     // Get event or company  to display
     Event *eventAtIndex;
     Company *companyAtIndex;
@@ -365,28 +357,12 @@
         // Show the event date
         [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails]];
         
-        /*NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-        // TO DO: For later different formatting styles.
-        //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
-        //[eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
-        [eventDateFormatter setDateFormat:@"EEE MMMM dd"];
-        NSString *eventDateString = [eventDateFormatter stringFromDate:eventAtIndex.date];
-        NSString *eventTimeString = eventAtIndex.relatedDetails;
-        // Append related details (timing information) to the event date if it's known
-        if (![eventTimeString isEqualToString:@"Unknown"]) {
-            //Format "After Market Close","Before Market Open", "During Market Trading" to be "After Close" & "Before Open" & "During Open"
-            if ([eventTimeString isEqualToString:@"After Market Close"]) {
-                eventTimeString = [NSString stringWithFormat:@"After Close"];
-            }
-            if ([eventTimeString isEqualToString:@"Before Market Open"]) {
-                eventTimeString = [NSString stringWithFormat:@"Before Open"];
-            }
-            if ([eventTimeString isEqualToString:@"During Market Trading"]) {
-                eventTimeString = [NSString stringWithFormat:@"While Open"];
-            }
-            eventDateString = [NSString stringWithFormat:@"%@ %@ ",eventDateString,eventTimeString];
-        }
-        [[cell eventDate] setText:eventDateString]; */
+        // Show the event distance
+        [[cell eventDistance] setText:[self formatDistanceFromEventDate:eventAtIndex.date]];
+        
+        // Set event distance to the appropriate color. Nearest is Red, gradually fading to yellow
+        // Set the task label with a color representing it's priority
+        [[cell eventDistance] setTextColor:[self getColorForIndexPath:indexPath]];
         
         // Hide the event certainty as this information is not needed to be displayed to the user.
         [[cell eventCertainty] setHidden:YES];
@@ -587,8 +563,7 @@
     // Validate search text entered. If valid
     if ([self searchTextValid:searchBar.text]) {
     
-        // Search the ticker and name fields on the company related to the events in the data store, for the
-        // search text entered
+        // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
         self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
         // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
         // has been specified.
@@ -630,8 +605,7 @@
     // If valid
     if ([self searchTextValid:searchBar.text]) {
         
-        // Search the ticker and name fields on the company related to the events in the data store, for the
-        // search text entered
+        // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
         self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
         // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
         // has been specified.
@@ -901,57 +875,6 @@
     }
 }
 
-#pragma mark - Helper Methods
-
-// Return a color scheme from darker to lighter based on rwo number with darker on top. Currently returning a dark gray scheme.
-- (UIColor *)getColorForIndexPath:(NSIndexPath *)indexPath
-{
-    
-    // Set returned color to the darkest gray to start with
-    UIColor *colorToReturn = [UIColor colorWithRed:45.0f/255.0f green:45.0f/255.0f blue:45.0f/255.0f alpha:1.0f];
-    
-    // Get row number, it's 0 based
-    long rowNumber = indexPath.row;
-    
-    // For the first row go with the darkest color and then make it gradually lighter upto 7rows and then go with the lightest for all the rest
-    if (rowNumber == 0) {
-        
-        colorToReturn = [UIColor colorWithRed:45.0f/255.0f green:45.0f/255.0f blue:45.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 1) {
-        
-        colorToReturn = [UIColor colorWithRed:61.0f/255.0f green:61.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 2) {
-        
-        colorToReturn = [UIColor colorWithRed:77.0f/255.0f green:76.0f/255.0f blue:77.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 3) {
-        
-        colorToReturn = [UIColor colorWithRed:108.0f/255.0f green:107.0f/255.0f blue:108.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 4) {
-        
-        colorToReturn = [UIColor colorWithRed:137.0f/255.0f green:135.0f/255.0f blue:136.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 5) {
-        
-        colorToReturn = [UIColor colorWithRed:157.0f/255.0f green:154.0f/255.0f blue:156.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 6) {
-        
-        colorToReturn = [UIColor colorWithRed:189.0f/255.0f green:185.0f/255.0f blue:187.0f/255.0f alpha:1.0f];
-        
-    } else {
-        
-        colorToReturn = [UIColor colorWithRed:189.0f/255.0f green:185.0f/255.0f blue:187.0f/255.0f alpha:1.0f];
-        
-    }
-    
-    return colorToReturn;
-}
-
-
 #pragma mark - Navigation
 
 // Check to see if the table cell press is for a "Get Earnings" cell. If yes, then don't perform the table segue
@@ -1137,11 +1060,85 @@
     if ([rawEventType containsString:@"Fed Meeting"]) {
         
         eventTimeString = @"2 p.m. ET";
-        eventDateString = [NSString stringWithFormat:@"%@ %@ ",eventDateString,eventTimeString];
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     
     return eventDateString;
 }
+
+// Format how far the event is from today. Typical values are Past,Today, Tomorrow, 2d, 3d and so on.
+- (NSString *)formatDistanceFromEventDate:(NSDate *)eventDate
+{
+    NSString *formattedDistance = @"Upcoming";
+    
+    // Calculate the number of days between event date and today's date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSUInteger unitFlags =  NSCalendarUnitDay;
+    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:[NSDate date] toDate:eventDate options:0];
+    NSInteger difference = [diffDateComponents day];
+    
+    // Return an appropriately formatted string
+    if (difference < 0) {
+        formattedDistance = @"Past";
+    } else if (difference == 0) {
+        formattedDistance = @"Today";
+    } else if (difference == 1) {
+        formattedDistance = @"Tomorrow";
+    } else {
+        formattedDistance = [NSString stringWithFormat:@"%@d",[@(difference) stringValue]];
+    }
+    
+    return formattedDistance;
+}
+
+// Return priority color based on the row position. First in the row is Red indicating it's the closest, gradually fading towards yellow.
+- (UIColor *)getColorForIndexPath:(NSIndexPath *)indexPath
+{
+    
+    // Set returned color to dark gray text to start with
+    UIColor *colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    
+    // Get row number, it's 0 based
+    long rowNumber = indexPath.row;
+    
+    // For the first row go with the reddest color and then make it gradually orangish upto 7 rows and then go with the lightest for all the rest
+    if (rowNumber == 0) {
+        
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 1) {
+        
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:60.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 2) {
+        
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:86.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 3) {
+        
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:100.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 4) {
+        
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:120.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 5) {
+        
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:150.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        
+    } else if (rowNumber == 6) {
+        
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:185.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        
+    } else {
+        
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:200.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        
+    }
+    
+    return colorToReturn;
+}
+
 
 /*
 #pragma mark - Code to use later
