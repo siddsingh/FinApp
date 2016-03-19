@@ -17,13 +17,16 @@
 
 
 // Name of the company.
+// For economic events this is the name of agency that puts out the event.
 @property (nonatomic, retain) NSString * name;
 
 // Ticker for the company
+// For economic events it follows the format ECONOMY_<agency abbreviation> e.g. ECONOMY_FOMC.
 @property (nonatomic, retain) NSString * ticker;
 
 // Set of events associated with the company
 @property (nonatomic, retain) NSSet *events;
+
 @end
 
 @interface Company (CoreDataGeneratedAccessors)

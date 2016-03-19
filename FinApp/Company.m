@@ -15,9 +15,11 @@
 @implementation Company
 
 // Name of the company.
+// For economic events this is the name of agency that puts out the event
 @dynamic name;
 
 // Ticker for the company
+// For economic events it follows the format ECONOMY_<agency abbreviation> e.g. ECONOMY_FOMC.
 @dynamic ticker;
 
 // Set of events associated with the company

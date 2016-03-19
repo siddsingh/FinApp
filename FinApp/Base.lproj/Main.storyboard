@@ -432,14 +432,6 @@
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
-                                <exclude reference="5cx-il-ILy"/>
-                                <exclude reference="GAJ-cr-gj4"/>
-                                <exclude reference="a1j-OX-KCO"/>
-                                <exclude reference="bW3-uV-gpb"/>
-                                <exclude reference="iiw-0T-dVG"/>
-                                <exclude reference="jkd-9p-GFJ"/>
-                                <exclude reference="t5v-Db-Sqo"/>
-                                <exclude reference="tkQ-Uc-Qkp"/>
                                 <exclude reference="2bK-Ah-J6F"/>
                                 <exclude reference="6qV-Eg-pXL"/>
                                 <exclude reference="AFK-eI-eVW"/>
@@ -461,6 +453,14 @@
                                 <exclude reference="rcP-7e-fm5"/>
                                 <exclude reference="s0K-VK-9ey"/>
                                 <exclude reference="zf7-V9-haM"/>
+                                <exclude reference="5cx-il-ILy"/>
+                                <exclude reference="GAJ-cr-gj4"/>
+                                <exclude reference="a1j-OX-KCO"/>
+                                <exclude reference="bW3-uV-gpb"/>
+                                <exclude reference="iiw-0T-dVG"/>
+                                <exclude reference="jkd-9p-GFJ"/>
+                                <exclude reference="t5v-Db-Sqo"/>
+                                <exclude reference="tkQ-Uc-Qkp"/>
                                 <exclude reference="TqZ-ka-XOu"/>
                                 <exclude reference="clk-9X-6ue"/>
                                 <exclude reference="hAn-1M-pGq"/>
@@ -469,9 +469,6 @@
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
                             <mask key="constraints">
-                                <exclude reference="bW3-uV-gpb"/>
-                                <exclude reference="iiw-0T-dVG"/>
-                                <exclude reference="tkQ-Uc-Qkp"/>
                                 <exclude reference="AFK-eI-eVW"/>
                                 <exclude reference="EAo-3z-w1d"/>
                                 <include reference="cLR-LF-aPG"/>
@@ -479,6 +476,9 @@
                                 <include reference="hfq-e2-Nyi"/>
                                 <exclude reference="mgn-w1-GJi"/>
                                 <exclude reference="rcP-7e-fm5"/>
+                                <exclude reference="bW3-uV-gpb"/>
+                                <exclude reference="iiw-0T-dVG"/>
+                                <exclude reference="tkQ-Uc-Qkp"/>
                                 <exclude reference="52s-9z-qtH"/>
                                 <include reference="TqZ-ka-XOu"/>
                                 <exclude reference="clk-9X-6ue"/>

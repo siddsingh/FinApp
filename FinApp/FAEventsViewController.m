@@ -346,7 +346,7 @@
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!!: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation. Also reconcile in didSelectRowAtIndexPath.
         
         // Show the company ticker associated with the event
-        [[cell  companyTicker] setText:eventAtIndex.listedCompany.ticker];
+        [[cell  companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
         
         // Hide the company Name as this information is not needed to be displayed to the user.
         [[cell companyName] setHidden:YES];
@@ -358,13 +358,14 @@
         // be a unique identifier for each event ?
         cell.eventRemoteFetch = NO;
         
-        // Show the event type. Format it for display. Currently map "Quarterly Earnings" to Quarterly.
+        // Show the event type. Format it for display. Currently map "Quarterly Earnings" to "Earnings", "Jan Fed Meeting" to "Fed Meeting".
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!! If you are making a change here, reconcile with prepareForSegue in addition to the methods mentioned above.
-        if ([eventAtIndex.type isEqualToString:@"Quarterly Earnings"])
-        [[cell  eventDescription] setText:@"Earnings"];
+        [[cell  eventDescription] setText:[self formatEventType:eventAtIndex.type]];
         
         // Show the event date
-        NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+        [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails]];
+        
+        /*NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
         // TO DO: For later different formatting styles.
         //[eventDateFormatter setDateFormat:@"dd-MMMM-yyyy"];
         //[eventDateFormatter setDateFormat:@"EEEE,MMMM dd,yyyy"];
@@ -385,14 +386,7 @@
             }
             eventDateString = [NSString stringWithFormat:@"%@ %@ ",eventDateString,eventTimeString];
         }
-        [[cell eventDate] setText:eventDateString];
-        
-        // TO DO: FIX LATER. If we show the certainty of the event only if it's not Confirmed, else make it blank, the reminder functionality doesn't work, thus commenting this for now.
-        /* if (![eventAtIndex.certainty isEqualToString:@"Confirmed"]) {
-            [[cell eventCertainty] setText:eventAtIndex.certainty];
-        } else {
-            [[cell eventCertainty] setText:[NSString stringWithFormat:@" "]];
-        } */
+        [[cell eventDate] setText:eventDateString]; */
         
         // Hide the event certainty as this information is not needed to be displayed to the user.
         [[cell eventCertainty] setHidden:YES];
@@ -1081,6 +1075,72 @@
     }
     
     return scrubbedDate;
+}
+
+// Check if the ticker other than a normal ticker e.g. for economic event
+// ticker will be of the format ECONOMY_FOMC. In that case format it to say ECONOMY.
+- (NSString *)formatTickerBasedOnEventType:(NSString *)tickerToFormat
+{
+    NSString *formattedTicker = tickerToFormat;
+    
+    if ([tickerToFormat containsString:@"ECONOMY_"]) {
+        
+        formattedTicker = @"ECON";
+    }
+    
+    return formattedTicker;
+}
+
+// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan Fed Meeting -> Fed Meeting
+- (NSString *)formatEventType:(NSString *)rawEventType
+{
+    NSString *formattedEventType = rawEventType;
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        formattedEventType = @"Earnings";
+    }
+    
+    if ([rawEventType containsString:@"Fed Meeting"]) {
+        formattedEventType = @"Fed Meeting";
+    }
+    
+    return formattedEventType;
+}
+
+// Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 PM EST
+- (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails
+{
+    
+    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+    [eventDateFormatter setDateFormat:@"EEE MMMM dd"];
+    NSString *eventDateString = [eventDateFormatter stringFromDate:eventDate];
+    NSString *eventTimeString = eventRelatedDetails;
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        // Append related details (timing information) to the event date if it's known
+        if (![eventTimeString isEqualToString:@"Unknown"]) {
+            //Format "After Market Close","Before Market Open", "During Market Trading" to be "After Close" & "Before Open" & "During Open"
+            if ([eventTimeString isEqualToString:@"After Market Close"]) {
+                eventTimeString = [NSString stringWithFormat:@"After Close"];
+            }
+            if ([eventTimeString isEqualToString:@"Before Market Open"]) {
+                eventTimeString = [NSString stringWithFormat:@"Before Open"];
+            }
+            if ([eventTimeString isEqualToString:@"During Market Trading"]) {
+                eventTimeString = [NSString stringWithFormat:@"While Open"];
+            }
+            eventDateString = [NSString stringWithFormat:@"%@ %@ ",eventDateString,eventTimeString];
+        }
+    }
+    
+    if ([rawEventType containsString:@"Fed Meeting"]) {
+        
+        eventTimeString = @"2 p.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@ ",eventDateString,eventTimeString];
+    }
+    
+    return eventDateString;
 }
 
 /*

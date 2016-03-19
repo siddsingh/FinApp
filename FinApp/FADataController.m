@@ -1150,10 +1150,6 @@
         NSString *eventMoreInfoUrl = [event objectForKey:@"moreInfoUrl"];
         NSLog(@"The event more info Url: %@", eventMoreInfoUrl);
         
-        // Get the timing information for the event
-        NSString *eventTiming = [event objectForKey:@"timing"];
-        NSLog(@"The event timing information: %@", eventTiming);
-        
         // Get the array of upcoming dates
         NSArray *eventInstances = [event objectForKey:@"instances"];
         
@@ -1176,7 +1172,7 @@
             NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
             
             // Insert each instance into the events datastore
-            [self upsertEventWithDate:eventDate relatedDetails:eventMoreInfoUrl relatedDate:nil type:uniqueName certainty:nil listedCompany:eventId estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+            [self upsertEventWithDate:eventDate relatedDetails:eventMoreInfoUrl relatedDate:nil type:uniqueName certainty:eventRelatedInfo listedCompany:eventId estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
         }
     }
 }

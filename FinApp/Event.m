@@ -20,22 +20,26 @@
 
 // The type of event
 // 1. "Quarterly Earnings"
+// 2. "Fed Meeting" (Economic Event)
 @dynamic type;
 
 // Details related to the event, based on event type
 // 1. "Quarterly Earnings" would have timing information "After Market Close",
 // "Before Market Open, "During Market Trading", "Unknown".
+//  2. Economic Event like "Fed Meeting" would contain the weblink to get more details.
 @dynamic relatedDetails;
 
 // Date related to the event.
 // 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
-// to be reported
+// to be reported.
+// Economic event like "Fed Meeting" would have the date of the event.
 @dynamic relatedDate;
 
-// End date of previously reported quarter for now. or fiscal year later.
+// For "Quarterly Earnings" end date of previously reported quarter for now. or fiscal year later.
 @dynamic priorEndDate;
 
-// Indicator if this event is "Confirmed" or "Estimated" or "Unknown"
+// For Quarterly Earnings, Indicator if this event is "Confirmed" or "Estimated" or "Unknown".
+// For Economic events like "Fed Meeting" contains the string representing the period to which the event applies.
 @dynamic certainty;
 
 // Estimated EPS for the upcoming event
