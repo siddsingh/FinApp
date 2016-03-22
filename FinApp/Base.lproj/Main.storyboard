@@ -83,7 +83,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="31"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="center" text="UPCOMING EVENTS" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="DrK-lS-eMj">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="center" text="UPCOMING EVENTS" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="DrK-lS-eMj">
                                                     <rect key="frame" x="15" y="0.0" width="570" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
@@ -94,7 +94,7 @@
                                             </subviews>
                                             <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="EventCell" rowHeight="77" id="GMC-5M-9zB" customClass="FAEventsTableViewCell">
@@ -347,15 +347,15 @@
                             </label>
                             <searchBar contentMode="redraw" text="" placeholder="COMPANY OR TICKER OR EVENT" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
                                 <rect key="frame" x="163" y="5" width="275" height="44"/>
-                                <color key="backgroundColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="275" id="hjf-XQ-Koh"/>
                                     <constraint firstAttribute="width" constant="560" id="jnJ-Ta-4AT"/>
                                     <constraint firstAttribute="width" constant="281" id="mhM-BN-IR8"/>
                                     <constraint firstAttribute="height" constant="44" id="pV3-8V-vCK"/>
                                 </constraints>
-                                <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="barTintColor" red="0.24705882352941178" green="0.24705882352941178" blue="0.24705882352941178" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="tintColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="barTintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <variation key="default">
                                     <mask key="constraints">
@@ -376,8 +376,8 @@
                                 </connections>
                             </searchBar>
                         </subviews>
-                        <color key="backgroundColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="tintColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="RVP-gf-zre" secondAttribute="trailing" constant="-16" id="2bK-Ah-J6F"/>
                             <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" id="52s-9z-qtH"/>
@@ -507,7 +507,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Knotifi" id="Rre-Iz-HOH">
                         <barButtonItem key="backBarButtonItem" title="Back" id="78w-is-WPS">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="tintColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
@@ -883,10 +883,10 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="barTintColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="13"/>
-                            <color key="textColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                             <offsetWrapper key="textShadowOffset" horizontal="0.0" vertical="0.0"/>
                         </textAttributes>
                     </navigationBar>
