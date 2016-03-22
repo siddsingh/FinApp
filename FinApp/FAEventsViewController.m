@@ -358,11 +358,12 @@
         [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails]];
         
         // Show the event distance
-        [[cell eventDistance] setText:[self formatDistanceFromEventDate:eventAtIndex.date]];
+        [[cell eventDistance] setText:[self calculateDistanceFromEventDate:eventAtIndex.date]];
         
+        // TO DO: Figure this out during the UI phase
         // Set event distance to the appropriate color. Nearest is Red, gradually fading to yellow
         // Set the task label with a color representing it's priority
-        [[cell eventDistance] setTextColor:[self getColorForIndexPath:indexPath]];
+        // [[cell eventDistance] setTextColor:[self getColorForIndexPath:indexPath]];
         
         // Hide the event certainty as this information is not needed to be displayed to the user.
         [[cell eventCertainty] setHidden:YES];
@@ -1066,15 +1067,15 @@
     return eventDateString;
 }
 
-// Format how far the event is from today. Typical values are Past,Today, Tomorrow, 2d, 3d and so on.
-- (NSString *)formatDistanceFromEventDate:(NSDate *)eventDate
+// Calculate how far the event is from today. Typical values are Past,Today, Tomorrow, 2d, 3d and so on.
+- (NSString *)calculateDistanceFromEventDate:(NSDate *)eventDate
 {
     NSString *formattedDistance = @"Upcoming";
     
     // Calculate the number of days between event date and today's date
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSUInteger unitFlags =  NSCalendarUnitDay;
-    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:[NSDate date] toDate:eventDate options:0];
+    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:[self setTimeToMidnightLastNightOnDate:[NSDate date]] toDate:[self setTimeToMidnightLastNightOnDate:eventDate] options:0];
     NSInteger difference = [diffDateComponents day];
     
     // Return an appropriately formatted string
@@ -1089,6 +1090,16 @@
     }
     
     return formattedDistance;
+}
+
+// Format the given date to set the time on it to midnight last night. e.g. 03/21/2016 9:00 pm becomes 03/21/2016 12:00 am.
+- (NSDate *)setTimeToMidnightLastNightOnDate:(NSDate *)dateToFormat
+{
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *dateComponents = [aGregorianCalendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:dateToFormat];
+    NSDate *formattedDate = [aGregorianCalendar dateFromComponents:dateComponents];
+    
+    return formattedDate;
 }
 
 // Return priority color based on the row position. First in the row is Red indicating it's the closest, gradually fading towards yellow.
