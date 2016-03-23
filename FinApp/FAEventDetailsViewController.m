@@ -52,8 +52,8 @@
     self.navigationItem.title = [self.eventType uppercaseString];
     
     // Set the labels to the strings that hold their text. These strings will be set in the prepare for segue method when called. This is necessary since the label outlets are still nil when prepare for segue is called, so can't be set directly.
-    [self.eventTitle setText:self.eventTitleStr];
-    [self.eventSchedule setText:self.eventScheduleStr];
+    [self.eventTitle setText:[self.eventTitleStr uppercaseString]];
+    [self.eventSchedule setText:[self.eventScheduleStr uppercaseString]];
     
     // Check to see if a reminder has already been created for the event.
     // If yes, show the appropriate styling
