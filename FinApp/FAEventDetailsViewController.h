@@ -43,6 +43,8 @@
 @property (strong,nonatomic) NSString *eventDateText;
 // This event's certainty status. Currently "Confirmed" or "Estimated"
 @property (strong,nonatomic) NSString *eventCertainty;
+// The company name to which this event belongs
+@property (strong,nonatomic) NSString *parentCompany;
 
 // Primary Data Controller to add/access data in the data store
 @property (strong, nonatomic) FADataController *primaryDetailsDataController;

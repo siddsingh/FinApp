@@ -174,8 +174,8 @@
     // Set the filter type to None_Specified, meaning no filter has been specified.
     self.filterType = [NSString stringWithFormat:@"None_Specified"];
     
-    // Query all events as that is the default view first shown
-    self.eventResultsController = [self.primaryDataController getAllEvents];
+    // Query all future events, including today, as that is the default view first shown
+    self.eventResultsController = [self.primaryDataController getAllFutureEvents];
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -332,6 +332,7 @@
         // Set all other fields to empty
         [[cell eventDate] setText:@" "];
         [[cell eventCertainty] setText:@" "];
+        [[cell eventDistance] setText:@" "];
     }
     else {
         
@@ -632,8 +633,8 @@
     // If not valid
     else {
         
-        //Query all events as that is the default view
-        self.eventResultsController = [self.primaryDataController getAllEvents];
+        // Query all future events, including today, as that is the default view
+        self.eventResultsController = [self.primaryDataController getAllFutureEvents];
         
         // Set the Filter Specified flag to false, indicating that no search filter has been specified
         self.filterSpecified = NO;
@@ -740,7 +741,7 @@
     // reloading the table. SHouldn't I be creating the new MOC in that thread as opposed to here ? Maybe it doesn't matter
     // as long as I am not sharing MOCs across threads ? The general rule with Core Data is one Managed Object Context per thread, and one thread per MOC
     FADataController *secondaryDataController = [[FADataController alloc] init];
-    self.eventResultsController = [secondaryDataController getAllEvents];
+    self.eventResultsController = [secondaryDataController getAllFutureEvents];
     [self.eventsListTable reloadData];
 }
 
@@ -912,6 +913,7 @@
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
         NSString *eventTicker = selectedCell.companyTicker.text;
+        NSString *eventCompany = selectedCell.companyName.text;
         NSString *eventType = [NSString stringWithFormat:@"Quarterly %@",selectedCell.eventDescription.text];
         // Set Event Parent Ticker for processing in destination
         [eventDetailsViewController setParentTicker:eventTicker];
@@ -921,9 +923,11 @@
         [eventDetailsViewController setEventDateText:selectedCell.eventDate.text];
         // Set Event certainty status for processing in destination
         [eventDetailsViewController setEventCertainty:selectedCell.eventCertainty.text];
+        // Set Event Parent Company Name for processing in destination
+        [eventDetailsViewController setParentCompany:eventCompany];
         
         // Set Event Title for display in destination
-        [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@ %@", eventTicker, [eventType uppercaseString]]];
+        [eventDetailsViewController setEventTitleStr:eventCompany];
         // Set Event Schedule for display in destination
         [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
         

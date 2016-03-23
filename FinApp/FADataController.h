@@ -70,6 +70,10 @@
 // Get Event Details for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (Event *)getEventForParentEventTicker:(NSString *)eventCompanyTicker andEventType:(NSString *)eventType;
 
+// Check to see if a single economic event exists in the event data store and return accordingly. Typically used to
+// check if economic events types have been synced or not.
+- (BOOL)doesEconEventExist;
+
 #pragma mark - Event History related Methods
 
 // Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.

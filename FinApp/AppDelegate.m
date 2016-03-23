@@ -75,12 +75,16 @@
     // Create a new FADataController so that this thread has its own MOC
     FADataController *eventDataController = [[FADataController alloc] init];
     
-    // TO DO: Testing adding the new economic events. Verify if this is the right place to do it and if the get All Events
+    // TO DO: Testing adding the new economic events only if it's not been added before. Verify if this is the right place to do it and if the get All Events
     // is needed after that.
-    [eventDataController getAllEconomicEventsFromLocalStorage];
+    if (![eventDataController doesEconEventExist]) {
+        
+        NSLog(@"About to add economic events from local storage");
+        [eventDataController getAllEconomicEventsFromLocalStorage];
+    }
     
     // TO DO: This is an extra call, everytime the app becomes active but is needed to complete the datastore instantiation process. Optimize this later.
-    [eventDataController getAllEvents];
+    //[eventDataController getAllEvents];
     
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {

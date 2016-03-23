@@ -392,6 +392,31 @@
     return existingEvent;
 }
 
+// Check to see if a single economic event exists in the event data store and return accordingly. Typically used to
+// check if economic events types have been synced or not.
+- (BOOL)doesEconEventExist
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL exists = NO;
+    
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Searching for ticker of type "ECONOMY_FOMC" that identifies the agency that puts out the fed meeting
+    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@",@"ECONOMY_FOMC"];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Retrieving Fed meeting event, to check if it exists, from event data store failed: %@",error.description);
+    }
+    if (events.count >= 1) {
+        exists = YES;
+    }
+    
+    return exists;
+}
+
 #pragma mark - Event History related Methods
 
 // Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.

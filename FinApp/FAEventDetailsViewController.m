@@ -47,6 +47,10 @@
     // Get a primary data controller that you will use later
     self.primaryDetailsDataController = [[FADataController alloc] init];
     
+    
+    // Show event type in the navigation bar header.
+    self.navigationItem.title = [self.eventType uppercaseString];
+    
     // Set the labels to the strings that hold their text. These strings will be set in the prepare for segue method when called. This is necessary since the label outlets are still nil when prepare for segue is called, so can't be set directly.
     [self.eventTitle setText:self.eventTitleStr];
     [self.eventSchedule setText:self.eventScheduleStr];
@@ -132,7 +136,7 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         
         // Set title
-        sectionTitle = @"Related Data";
+        sectionTitle = @"RELATED DATA";
     }
     
     return sectionTitle;
