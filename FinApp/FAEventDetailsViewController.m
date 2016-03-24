@@ -119,7 +119,7 @@
     else {
         
         // Set the header to the appropriate table cell
-        headerView = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsTableHeader"];
+        //headerView = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsTableHeader"];
     }
     
     return headerView;
@@ -136,10 +136,17 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         
         // Set title
-        sectionTitle = @"RELATED DATA";
+        // sectionTitle = @"RELATED DATA";
     }
     
     return sectionTitle;
+}
+
+// Set the table header to 0 height as we don't need this for the details table.
+// TO DO: Test on the ipad and then remove the above 2 header related methods as they are no longer needed.
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    
+    return 0.0;
 }
 
 // Return number of rows in the events list table view.
