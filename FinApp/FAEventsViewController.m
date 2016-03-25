@@ -914,7 +914,8 @@
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
         NSString *eventTicker = selectedCell.companyTicker.text;
         NSString *eventCompany = selectedCell.companyName.text;
-        NSString *eventType = [NSString stringWithFormat:@"Quarterly %@",selectedCell.eventDescription.text];
+        // Format event display name back to event type for logic in the destination
+        NSString *eventType = [self formatBackToEventType:selectedCell.eventDescription.text withAddedInfo:selectedCell.eventCertainty.text];
         // Set Event Parent Ticker for processing in destination
         [eventDetailsViewController setParentTicker:eventTicker];
         // Set Event Type for processing in destination
@@ -1034,6 +1035,22 @@
     
     return formattedEventType;
 }
+
+// Take the event displayed and format it back to the event type stored in the db. Currently the formatting looks like the following: Earnings -> Quarterly Earnings. Fed Meeting -> Jan Fed Meeting.
+- (NSString *)formatBackToEventType:(NSString *)rawEventType withAddedInfo:(NSString *)addtlInfo
+{
+    NSString *formattedEventType = rawEventType;
+    
+    if ([rawEventType isEqualToString:@"Earnings"]) {
+        formattedEventType = @"Quarterly Earnings";
+    }
+    else {
+        formattedEventType = [NSString stringWithFormat:@"%@ %@",addtlInfo,rawEventType];
+    }
+    
+    return formattedEventType;
+}
+
 
 // Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 PM EST
 - (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails

@@ -892,10 +892,10 @@
                                 <exclude reference="yXH-jU-e2V"/>
                                 <exclude reference="H7q-Cb-LTQ"/>
                                 <exclude reference="Jvy-4g-F8g"/>
-                                <exclude reference="WL6-hD-NTB"/>
                                 <exclude reference="J6W-P3-xiZ"/>
                                 <exclude reference="fQd-Sr-Es2"/>
                                 <exclude reference="pgB-Vk-S0d"/>
+                                <exclude reference="WL6-hD-NTB"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
@@ -934,12 +934,12 @@
                                 <exclude reference="879-h8-jPx"/>
                                 <include reference="H7q-Cb-LTQ"/>
                                 <include reference="Jvy-4g-F8g"/>
-                                <include reference="WL6-hD-NTB"/>
-                                <exclude reference="p3c-dG-Sjo"/>
                                 <include reference="J6W-P3-xiZ"/>
                                 <exclude reference="WH9-q0-aTT"/>
                                 <exclude reference="cQP-re-Upf"/>
                                 <include reference="pgB-Vk-S0d"/>
+                                <include reference="WL6-hD-NTB"/>
+                                <exclude reference="p3c-dG-Sjo"/>
                             </mask>
                         </variation>
                     </view>

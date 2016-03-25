@@ -47,7 +47,6 @@
     // Get a primary data controller that you will use later
     self.primaryDetailsDataController = [[FADataController alloc] init];
     
-    
     // Show event type in the navigation bar header.
     self.navigationItem.title = [self.eventType uppercaseString];
     
@@ -152,28 +151,21 @@
 // Return number of rows in the events list table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Currently number of rows of events related data is 4: Expected EPS, Prior EPS, Change in price since end of prior quarter, Change in price since previous earnings call.
-    NSInteger numberOfRows = 4;
-    
-    return numberOfRows;
+    return [self getNoOfInfoPiecesForEventType];
 }
 
-// Return a cell configured to display the event details based on the cell number. Currently 4 types of data points are available.
+// Return a cell configured to display the event details based on the cell number and event type. Currently upto 5 types of information pieces are available.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
     FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
-    [[cell associatedValue1] setHidden:NO];
-    [[cell additionalValue] setHidden:NO];
-    [[cell descriptionAddtlPart] setHidden:NO];
-    cell.associatedValue1.textColor = [UIColor darkGrayColor];
-    cell.associatedValue2.textColor = [UIColor darkGrayColor];
     
-    // Assign a row no to the type of event detail row. Currently number of rows of events related data is 4: Expected EPS, Prior EPS, Change in price since end of prior quarter, Change in price since previous earnings call.
-    #define expectedEpsRow  0
-    #define priorEpsRow  1
-    #define changeSincePrevQuarter 2
-    #define changeSincePrevEarnings 3
+    // Assign a row no to the type of event detail row. Currently upto 5 types of related info pieces are available.
+    #define infoRow1  0
+    #define infoRow2  1
+    #define infoRow3  2
+    #define infoRow4  3
+    #define infoRow5  4
     
     // Define date formatters that will be used later
     // 1. Jun 30 2015
@@ -202,6 +194,13 @@
     // Display the appropriate details based on the row no
     // TO DO: SOLIDIFY LATER: Currently we use the event data to get the previous related date in expectedEps, priorEps, changeSincePrevQuarter. The scrubbed version of the previous related date (updated if it was on a weekend) is stored in the event history so that the stock price can be fetched. This is working fine for now but might want to rethink this.
     switch (rowNo) {
+        
+        // Display a short description of the event along with the related static image.
+        case infoRow1:
+        {
+            
+        }
+    
             
         case expectedEpsRow:
         {
@@ -574,6 +573,58 @@
     else {
         return YES;
     }
+}
+
+#pragma mark - Utility Methods
+
+// Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted.
+- (NSInteger)getNoOfInfoPiecesForEventType
+{
+    NSInteger numberOfPieces = 0;
+    
+    // Set a value indicating that a value is not available. Currently a Not Available value is represented by
+    double notAvailable = 999999.9f;
+    
+    // Get the event details
+    Event *eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:self.eventType];
+    // Get the event history.
+    EventHistory *eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
+    
+    // Based on event type and what's available, return the no of pieces of information.
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        numberOfPieces = 5;
+        
+        // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 5 pieces. If not then return 3 pieces (desc, expected eps, prior eps)
+        double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+        double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+        if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
+            numberOfPieces = 5;
+        } else {
+            numberOfPieces = 3;
+        }
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        numberOfPieces = 4;
+    }
+
+    return numberOfPieces;
+}
+
+// Get short description of event given event type. Currently this is hardcoded.
+// FUTURE TO DO: Get this into the event data model.
+- (NSString *)getShortDescriptionForEventType:(NSString *)eventType
+{
+    NSString *description = eventType;
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        description = @"\"Report Card\" for companies.Covers their performance over the last quarter.";
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        description = @"\"Report Card\" for companies.Covers their performance over the last quarter."
+    }
+    
+    return description;
 }
 
 - (void)didReceiveMemoryWarning {

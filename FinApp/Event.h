@@ -20,13 +20,13 @@
 
 // The type of event
 // 1. "Quarterly Earnings"
-// 2. "Fed Meeting" (Economic Event)
+// 2. "Jan Fed Meeting", "Feb Fed Meeting" (Economic Event)
 @property (nonatomic, retain) NSString * type;
 
 // Details related to the event, based on event type
 // 1. "Quarterly Earnings" would have timing information "After Market Close",
 // "Before Market Open, "During Market Trading", "Unknown".
-//  2. Economic Event like "Fed Meeting" would contain the weblink to get more details.
+//  2. Economic Event like "Jan Fed Meeting" would contain the weblink to get more details.
 @property (nonatomic, retain) NSString * relatedDetails;
 
 // Date related to the event.

@@ -20,7 +20,7 @@
 
 // The type of event
 // 1. "Quarterly Earnings"
-// 2. "Fed Meeting" (Economic Event)
+// 2. "Jan Fed Meeting", "Feb Fed Meeting" (Economic Event)
 @dynamic type;
 
 // Details related to the event, based on event type
@@ -32,7 +32,7 @@
 // Date related to the event.
 // 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
 // to be reported.
-// Economic event like "Fed Meeting" would have the date of the event.
+// Economic event like "Jan Fed Meeting" would have the date of the event.
 @dynamic relatedDate;
 
 // For "Quarterly Earnings" end date of previously reported quarter for now. or fiscal year later.
