@@ -198,27 +198,30 @@
         // Display a short description of the event along with the related static image.
         case infoRow1:
         {
-            
-        }
-    
-            
-        case expectedEpsRow:
-        {
-            [[cell descriptionPart1] setText:@"Expected EPS"];
-            // Get the related date from the event which is the quarter end that is going to be reported
-            NSString *relatedDateString = [NSString stringWithFormat:@"Quarter End %@", [monthDateYearFormatter stringFromDate:eventData.relatedDate]];
-            [[cell descriptionPart2] setText:relatedDateString];
-            [[cell descriptionAddtlPart] setText:@"Estimated"];
-            // Set color to the bright blue
-            cell.associatedValue2.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-            [[cell associatedValue2] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
-            // Hide other value labels as they are empty
-            [[cell associatedValue1] setHidden:YES];
-            [[cell additionalValue] setHidden:YES];
+            [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType]];
         }
         break;
             
-        case priorEpsRow:
+        // Display Expected EPS or Impact Level depending on the event type
+        case infoRow2:
+        {
+            // Text
+            [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType]];
+            
+            // Value
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                // Bright Blue Color
+                cell.titleLabel.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+            }
+            if ([self.eventType containsString:@"Fed Meeting"]) {
+                // Select the appropriate image
+            }
+        }
+        break;
+        
+        // Display Prior EPS or Sectors Affected depending on the event type
+        case infoRow3:
         {
             [[cell descriptionPart1] setText:@"Prior EPS"];
             // Get the prior end date from the event which is the end date of previously reported quarter
@@ -575,7 +578,7 @@
     }
 }
 
-#pragma mark - Utility Methods
+#pragma mark - Event Info Related
 
 // Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted.
 - (NSInteger)getNoOfInfoPiecesForEventType
@@ -615,17 +618,68 @@
 // FUTURE TO DO: Get this into the event data model.
 - (NSString *)getShortDescriptionForEventType:(NSString *)eventType
 {
-    NSString *description = eventType;
+    NSString *description = @"Data Not Available";
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         description = @"\"Report Card\" for companies.Covers their performance over the last quarter.";
     }
     if ([eventType containsString:@"Fed Meeting"]) {
-        description = @"\"Report Card\" for companies.Covers their performance over the last quarter."
+        description = @"Meeting between federal officials to determine future monetary policy."
     }
     
     return description;
 }
+
+// Get the display text for Expected EPS or Impact depending on the event type.
+// FUTURE TO DO: Get the impact values into the database model.
+- (NSString *)getEpsOrImpactTextForEventType:(NSString *)eventType
+{
+    NSString *description = @"Data Not Available";
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        description = @"Expected Earnings Per Share.EPS is the profit per share of the company.";
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        description = @"Very High Impact.Outcome determines key interest rates."
+    }
+    
+    return description;
+}
+
+// Get the display text for Prior EPS or Sectors Affected depending on the event type.
+// FUTURE TO DO: Get the sectors affected values into the database model.
+- (NSString *)getEpsOrSectorsTextForEventType:(NSString *)eventType
+{
+    NSString *description = @"Data Not Available";
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        description = @"Prior Reported Quarter EPS.";
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        description = @"Financial stocks are impacted most by this."
+    }
+    
+    return description;
+}
+
+// Get the display text for PriceSince or Tip depending on the event type.
+// FUTURE TO DO: Get the tip value into the database model.
+- (NSString *)getPriceSinceOrTipTextForEventType:(NSString *)eventType
+{
+    NSString *description = @"Data Not Available";
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        description = @"\"Report Card\" for companies.Covers their performance over the last quarter."
+        description = @"Price since prior reported quarter end";
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        description = @"Financial stocks are impacted most by this."
+    }
+    
+    return description;
+}
+
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
