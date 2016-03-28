@@ -613,7 +613,9 @@
     if ([self.eventType containsString:@"Fed Meeting"]) {
         numberOfPieces = 4;
     }
-
+    
+    // TO DO: Delete later before shipping v2
+    NSLog(@"Number of rows is:%ld", (long)numberOfPieces);
     return numberOfPieces;
 }
 

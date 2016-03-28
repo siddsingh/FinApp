@@ -20,14 +20,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="kvC-1T-x6w">
-                                <rect key="frame" x="285" y="49" width="30" height="30"/>
+                                <rect key="frame" x="285" y="55" width="30" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Ba3-Ry-Pdi"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="30" id="OfC-Mo-i6S"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="itW-aF-r0v"/>
                                     <constraint firstAttribute="width" constant="30" id="xh6-pV-J3J"/>
                                 </constraints>
-                                <color key="color" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="color" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="OfC-Mo-i6S"/>
@@ -379,7 +379,7 @@
                         <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="RVP-gf-zre" secondAttribute="trailing" constant="-16" id="2bK-Ah-J6F"/>
-                            <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" id="52s-9z-qtH"/>
+                            <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="6" id="52s-9z-qtH"/>
                             <constraint firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="5cx-il-ILy"/>
                             <constraint firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="5iW-N5-6CB">
                                 <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
@@ -400,7 +400,12 @@
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="bottom" secondItem="kvC-1T-x6w" secondAttribute="bottom" constant="494" id="KxZ-ia-aq2"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" id="QJJ-ft-4SW"/>
                             <constraint firstAttribute="trailingMargin" secondItem="KbY-6m-WGH" secondAttribute="trailing" constant="-16" id="RdI-kk-aBD"/>
-                            <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="7" id="TqZ-ka-XOu"/>
+                            <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="7Cj-9c-Flh" secondAttribute="bottom" constant="18" id="T5I-bf-tck">
+                                <variation key="heightClass=regular-widthClass=regular" constant="4"/>
+                            </constraint>
+                            <constraint firstItem="kvC-1T-x6w" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="7" id="TqZ-ka-XOu">
+                                <variation key="heightClass=regular-widthClass=regular" constant="20"/>
+                            </constraint>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" id="YYc-TA-BAy"/>
                             <constraint firstAttribute="trailing" secondItem="KbY-6m-WGH" secondAttribute="trailing" id="Yel-CZ-VCU"/>
                             <constraint firstAttribute="centerX" secondItem="KbY-6m-WGH" secondAttribute="centerX" id="ZPx-EN-Zmh"/>
@@ -480,6 +485,7 @@
                                 <exclude reference="jkd-9p-GFJ"/>
                                 <exclude reference="t5v-Db-Sqo"/>
                                 <exclude reference="tkQ-Uc-Qkp"/>
+                                <exclude reference="T5I-bf-tck"/>
                                 <exclude reference="TqZ-ka-XOu"/>
                                 <exclude reference="clk-9X-6ue"/>
                                 <exclude reference="hAn-1M-pGq"/>
@@ -499,7 +505,8 @@
                                 <exclude reference="iiw-0T-dVG"/>
                                 <exclude reference="tkQ-Uc-Qkp"/>
                                 <exclude reference="52s-9z-qtH"/>
-                                <include reference="TqZ-ka-XOu"/>
+                                <include reference="T5I-bf-tck"/>
+                                <exclude reference="TqZ-ka-XOu"/>
                                 <exclude reference="clk-9X-6ue"/>
                             </mask>
                         </variation>
@@ -696,7 +703,7 @@
                                                     <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="&quot;Report Card&quot; for companies. Covers their performance over the last quarter." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="PEv-AN-HGr">
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="&quot;Report Card&quot; for companies. Covers their performance over the last quarter." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="PEv-AN-HGr">
                                                     <rect key="frame" x="146" y="45" width="289" height="52"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
@@ -705,6 +712,7 @@
                                                     </constraints>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                    <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES" calendarEvent="YES"/>
                                                 </textView>
                                             </subviews>
                                             <constraints>
