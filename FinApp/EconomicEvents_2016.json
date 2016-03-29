@@ -10,30 +10,30 @@
                 "shortDescription":"Meeting between federal officials to determine future monetary policy.",
                 "moreInfoUrl":"http://www.federalreserve.gov/monetarypolicy/default.htm",
                 "tip":"If short term interest rates go up, banks typically benefit because they can earn more.",
-                "timing":"2:00 PM EST",
+                "timing":"2:00 p.m. ET",
                 "instances":[
                              {
-                                "date":20160318,
+                                "date":20160127,
                                 "relatedPeriod":"Jan"
                              },
                              {
-                                "date":20160319,
+                                "date":20160316,
                                 "relatedPeriod":"Mar"
                              },
                              {
-                                "date":20160321,
+                                "date":20160427,
                                 "relatedPeriod":"Apr"
                              },
                              {
-                                "date":20160322,
+                                "date":20160615,
                                 "relatedPeriod":"Jun"
                              },
                              {
-                                "date":20160323,
+                                "date":20160727,
                                 "relatedPeriod":"Jul"
                              },
                              {
-                                "date":20160324,
+                                "date":20160921,
                                 "relatedPeriod":"Sep"
                              },
                              {
@@ -48,51 +48,157 @@
                 "datesPressConference":[20160316,20160615,20160921,20161214]
               },
               {
-                "name":"Fed Meeting 2",
-                "identifier":"ECONOMY_FOMC_2",
-                "agency":"Federal Open Market Committee",
+                "name":"Jobs Report",
+                "identifier":"ECONOMY_BLS",
+                "agency":"Bureau of Labor Statistics",
                 "impact":"Very High",
-                "impactReason":"Outcome determines key interest rates.",
-                "sectorsImpacted":"Financial",
-                "shortDescription":"Meeting between members of the Federal Reserve Board to determine key interest rates, ending with a highly watched statement and press conference",
-                "moreInfoUrl":"http://www.federalreserve.gov/monetarypolicy/default.htm",
-                "tip":"If short term interest rates go up, banks typically benefit because they can earn more.",
-                "timing":"2:00 PM EST",
+                "impactReason":"Reflects the health of the job market.",
+                "sectorsImpacted":"All",
+                "shortDescription":"An estimate of the number of people who have jobs and those that don't.",
+                "moreInfoUrl":"http://www.bls.gov/mobile/mobile_releases.htm",
+                "tip":"Watch the jobless rate. In a strong labor market this decreases.",
+                "timing":"8:30 a.m. ET",
                 "instances":[
                              {
-                                "date":20170127,
+                                "date":20160205,
                                 "relatedPeriod":"Jan"
                              },
                              {
-                                "date":20170316,
+                                "date":20160304,
+                                "relatedPeriod":"Feb"
+                             },
+                             {
+                                "date":20160401,
                                 "relatedPeriod":"Mar"
                              },
                              {
-                                "date":20170427,
+                                "date":20160506,
                                 "relatedPeriod":"Apr"
                              },
                              {
-                                "date":20170615,
+                                "date":20160603,
+                                "relatedPeriod":"May"
+                             },
+                             {
+                                "date":20160708,
                                 "relatedPeriod":"Jun"
                              },
                              {
-                                "date":20160727,
+                                "date":20160805,
                                 "relatedPeriod":"Jul"
                              },
                              {
-                                "date":20170921,
+                                "date":20160902,
+                                "relatedPeriod":"Aug"
+                             },
+                             {
+                                "date":20161007,
                                 "relatedPeriod":"Sep"
                              },
                              {
-                                "date":20171102,
+                                "date":20161104,
+                                "relatedPeriod":"Oct"
+                             },
+                             {
+                                "date":20161202,
+                                "relatedPeriod":"Nov"
+                             }
+                ]
+              },
+              {
+                "name":"Consumer Confidence",
+                "identifier":"ECONOMY_TCB",
+                "agency":"The Conference Board",
+                "impact":"Medium",
+                "impactReason":"Indicator of future personal spending.",
+                "sectorsImpacted":"Retail",
+                "shortDescription":"Measure of how likely people are to spend money in the future.",
+                "moreInfoUrl":"https://www.conference-board.org/data/consumerconfidence.cfm",
+                "tip":"Consumers account for about two-thirds of the nation's economic activity.",
+                "timing":"10:00 a.m. ET",
+                "instances":[
+                             {
+                                "date":20160126,
+                                "relatedPeriod":"Jan"
+                             },
+                             {
+                                "date":20160223,
+                                "relatedPeriod":"Feb"
+                             },
+                             {
+                                "date":20160329,
+                                "relatedPeriod":"Mar"
+                             },
+                             {
+                                "date":20160426,
+                                "relatedPeriod":"Apr"
+                             },
+                             {
+                                "date":20160531,
+                                "relatedPeriod":"May"
+                             },
+                             {
+                                "date":20160628,
+                                "relatedPeriod":"Jun"
+                             },
+                             {
+                                "date":20160726,
+                                "relatedPeriod":"Jul"
+                             },
+                             {
+                                "date":20160830,
+                                "relatedPeriod":"Aug"
+                             },
+                             {
+                                "date":20160927,
+                                "relatedPeriod":"Sep"
+                             },
+                             {
+                                "date":20161025,
+                                "relatedPeriod":"Oct"
+                             },
+                             {
+                                "date":20161129,
                                 "relatedPeriod":"Nov"
                              },
                              {
-                                "date":20171214,
+                                "date":20161227,
                                 "relatedPeriod":"Dec"
                              }
-                           ],
-                "datesPressConference":[20160316,20160615,20160921,20161214]
+                ]
+              },
+              {
+                "name":"Consumer Confidence",
+                "identifier":"ECONOMY_TCB",
+                "agency":"The Conference Board",
+                "impact":"Medium",
+                "impactReason":"Indicator of future personal spending.",
+                "sectorsImpacted":"Retail",
+                "shortDescription":"Measure of how likely people are to spend money in the future.",
+                "moreInfoUrl":"https://www.conference-board.org/data/consumerconfidence.cfm",
+                "tip":"Consumers account for about two-thirds of the nation's economic activity.",
+                "timing":"10:00 a.m. ET",
+                "instances":[
+                             {
+                                "date":20160126,
+                                "relatedPeriod":"Jan"
+                             },
+                             {
+                                "date":20160223,
+                                "relatedPeriod":"Feb"
+                             },
+                             {
+                                "date":20160329,
+                                "relatedPeriod":"Mar"
+                             },
+                             {
+                                "date":20160426,
+                                "relatedPeriod":"Apr"
+                             },
+                             {
+                                "date":20160531,
+                                "relatedPeriod":"May"
+                             }
+                ]
               }
-             ]
 }

@@ -37,7 +37,7 @@
 // Assumption is that ticker and event type uniquely identify an event
 // Ticker of the parent company for this event
 @property (strong,nonatomic) NSString *parentTicker;
-// Type of event. Currently support "Quarterly Earnings", "Jan Fed Meeting"
+// Type of event. Currently support "Quarterly Earnings", "Jan Fed Meeting" and so on
 @property (strong,nonatomic) NSString *eventType;
 // This event's scheduled date as text
 @property (strong,nonatomic) NSString *eventDateText;

@@ -41,6 +41,9 @@
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllCompanies;
 
+// Get company ticker using company name. Assumption is that there is only one record per company name and ticker.
+- (NSString *)getTickerForName:(NSString *)companyName;
+
 #pragma mark - Events Data Related
 
 // Upsert an Event along with a parent company to the Event Data Store i.e. If the specified event type for that particular company exists, update it. If not insert it.

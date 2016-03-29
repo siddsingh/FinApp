@@ -351,7 +351,7 @@
         // be a unique identifier for each event ?
         cell.eventRemoteFetch = NO;
         
-        // Show the event type. Format it for display. Currently map "Quarterly Earnings" to "Earnings", "Jan Fed Meeting" to "Fed Meeting".
+        // Show the event type. Format it for display. Currently map "Quarterly Earnings" to "Earnings", "Jan Fed Meeting" to "Fed Meeting", "Jan Jobs Report" to "Jobs Report" and so on.
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!! If you are making a change here, reconcile with prepareForSegue in addition to the methods mentioned above.
         [[cell  eventDescription] setText:[self formatEventType:eventAtIndex.type]];
         
@@ -415,10 +415,6 @@
         // Check for connectivity. If yes, process the fetch
         if ([self checkForInternetConnectivity]) {
             
-            // Set the busy spinner to show that details are being fetched. Do this in a background thread as the main
-            // thread is being taken up by the table view. It's a best practice.
-            [self.remoteFetchSpinner performSelectorInBackground:@selector(startAnimating) withObject:self];
-            
             // Read whatever history details are available from event and fetch additional ones from the API to get ready to segue to
             // the event detail view
             FADataController *historyDataController1 = [[FADataController alloc] init];
@@ -426,10 +422,20 @@
             // Get the currently selected cell and details
             NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
             FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
-            NSString *eventTicker = selectedCell.companyTicker.text;
-            NSString *eventType = [NSString stringWithFormat:@"Quarterly %@",selectedCell.eventDescription.text];
             
+            // Get the database level (not display level) event type based on the display type.
+            // Earnings -> Quarterly Earnings, Fed Meeting -> Jan Fed Meeting, Jobs Report -> Jan Jobs Report and so on.
+            NSString *eventType = [self formatBackToEventType:selectedCell.eventDescription.text withAddedInfo:selectedCell.eventCertainty.text];
+            
+            // If Quarterly Earnings get the historical data for display in the details
             if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+                
+                // Set the busy spinner to show that details are being fetched. Do this in a background thread as the main
+                // thread is being taken up by the table view. It's a best practice.
+                [self.remoteFetchSpinner performSelectorInBackground:@selector(startAnimating) withObject:self];
+                
+                // Get the ticker for the Quarterly Earnings
+                NSString *eventTicker = selectedCell.companyTicker.text;
                 
                 // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
                 // Get today's date
@@ -912,14 +918,14 @@
         
         // Get the currently selected cell and set details for the destination.
         // IMPORTANT: If the format here or in the events UI is changed, reminder creation in the details screen will break.
+        FADataController *segueDataController = [[FADataController alloc] init];
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
-        NSString *eventTicker = selectedCell.companyTicker.text;
         NSString *eventCompany = selectedCell.companyName.text;
         // Format event display name back to event type for logic in the destination
         NSString *eventType = [self formatBackToEventType:selectedCell.eventDescription.text withAddedInfo:selectedCell.eventCertainty.text];
-        // Set Event Parent Ticker for processing in destination
-        [eventDetailsViewController setParentTicker:eventTicker];
+        // Set the full name of the Event Parent Ticker for processing in destination
+        [eventDetailsViewController setParentTicker:[segueDataController getTickerForName:selectedCell.companyName.text]];
         // Set Event Type for processing in destination
         [eventDetailsViewController setEventType: eventType];
         // Set Event Schedule as text for processing in destination
@@ -1022,7 +1028,7 @@
     return formattedTicker;
 }
 
-// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan Fed Meeting -> Fed Meeting
+// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan Fed Meeting -> Fed Meeting. Jan Jobs Report -> Jobs Report and so on.
 - (NSString *)formatEventType:(NSString *)rawEventType
 {
     NSString *formattedEventType = rawEventType;
@@ -1035,10 +1041,18 @@
         formattedEventType = @"Fed Meeting";
     }
     
+    if ([rawEventType containsString:@"Jobs Report"]) {
+        formattedEventType = @"Jobs Report";
+    }
+    
+    if ([rawEventType containsString:@"Consumer Confidence"]) {
+        formattedEventType = @"Consumer Confidence";
+    }
+    
     return formattedEventType;
 }
 
-// Take the event displayed and format it back to the event type stored in the db. Currently the formatting looks like the following: Earnings -> Quarterly Earnings. Fed Meeting -> Jan Fed Meeting.
+// Take the event displayed and format it back to the event type stored in the db. Currently the formatting looks like the following: Earnings -> Quarterly Earnings. Fed Meeting -> Jan Fed Meeting. Jobs Report -> Jan Jobs Report and so on.
 - (NSString *)formatBackToEventType:(NSString *)rawEventType withAddedInfo:(NSString *)addtlInfo
 {
     NSString *formattedEventType = rawEventType;
@@ -1084,6 +1098,18 @@
     if ([rawEventType containsString:@"Fed Meeting"]) {
         
         eventTimeString = @"2 p.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    
+    if ([rawEventType containsString:@"Jobs Report"]) {
+        
+        eventTimeString = @"8:30 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    
+    if ([rawEventType containsString:@"Consumer Confidence"]) {
+        
+        eventTimeString = @"10:0 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     

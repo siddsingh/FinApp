@@ -91,6 +91,9 @@
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventDetailsTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    // TO DO: Delete before shipping v2
+    NSLog(@"Event Type in Details is: %@ and Parent Ticker is:%@",self.eventType,self.parentTicker);
 }
 
 #pragma mark - Event Details Table
@@ -218,7 +221,16 @@
                 cell.titleLabel.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
             }
+            
             if ([self.eventType containsString:@"Fed Meeting"]) {
+                // Select the appropriate image
+            }
+            
+            if ([self.eventType containsString:@"Jobs Report"]) {
+                // Select the appropriate image
+            }
+            
+            if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate image
             }
         }
@@ -236,10 +248,18 @@
                 cell.titleLabel.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
             }
+            
             if ([self.eventType containsString:@"Fed Meeting"]) {
                 // Select the appropriate image
             }
-
+            
+            if ([self.eventType containsString:@"Jobs Report"]) {
+                // Select the appropriate image
+            }
+            
+            if ([self.eventType containsString:@"Consumer Confidence"]) {
+                // Select the appropriate image
+            }
         }
         break;
         
@@ -293,6 +313,14 @@
             if ([self.eventType containsString:@"Fed Meeting"]) {
                 // Select the appropriate image
             }
+            
+            if ([self.eventType containsString:@"Jobs Report"]) {
+                // Select the appropriate image
+            }
+            
+            if ([self.eventType containsString:@"Consumer Confidence"]) {
+                // Select the appropriate image
+            }
         }
         break;
         
@@ -344,6 +372,16 @@
             }
             
             if ([self.eventType containsString:@"Fed Meeting"]) {
+                // Just in case
+                [[cell titleLabel] setText:@"NA"];
+            }
+            
+            if ([self.eventType containsString:@"Jobs Report"]) {
+                // Just in case
+                [[cell titleLabel] setText:@"NA"];
+            }
+            
+            if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Just in case
                 [[cell titleLabel] setText:@"NA"];
             }
@@ -457,16 +495,40 @@
 // Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
 - (void)processReminderForEventType:(NSString *)eventType companyTicker:(NSString *)parentTicker eventDateText:(NSString *)evtDateText eventCertainty:(NSString *)evtCertainty withDataController:(FADataController *)appropriateDataController {
     
-    // NOTE: Format for Event Type is expected to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
+    // NOTE: Format for Event Type is expected to be "Quarterly Earnings"  based on "Earnings" or "Jan Fed Meeting" based on "Fed Meeting" that comes from the UI.
     // If the formatting changes, it needs to be changed here to accomodate as well.
     NSString *cellEventType = eventType;
     NSString *cellCompanyTicker = parentTicker;
     NSString *cellEventDateText = evtDateText;
     NSString *cellEventCertainty = evtCertainty;
     
-    // Check to see if the event represented by the cell is estimated or confirmed ?
-    // If confirmed create and save to action data store
-    if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+    // Check to see if the event is of type Earnings or Economic event
+    // Based on event type and what's available, return the no of pieces of information.
+    if ([cellEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        // Check to see if the event represented by the cell is estimated or confirmed ?
+        // If confirmed create and save to action data store
+        if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+            
+            // Create the reminder and show user the appropriate message
+            BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
+            if (success) {
+                [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+                // Add action to the action data store with status created
+                [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
+            } else {
+                [self sendUserGuidanceCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
+            }
+        }
+        // If estimated add to action data store for later processing
+        else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
+            
+            // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
+            [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+        }
+    }
+    if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]) {
         
         // Create the reminder and show user the appropriate message
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
@@ -478,23 +540,22 @@
             [self sendUserGuidanceCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
         }
     }
-    // If estimated add to action data store for later processing
-    else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
-        
-        // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
-        [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-        [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
-    }
 }
 
 // Actually create the reminder in the user's default calendar and return success or failure depending on the outcome.
 - (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker dateText:(NSString *)eventDateText andDataController:(FADataController *)reminderDataController  {
     
     BOOL creationSuccess = NO;
+    NSString *reminderText = @"An earnings Call of interest is tomorrow.";
     
-    // Set title of the reminder to the reminder text.
+    // Set title of the reminder to the reminder text, based on event type
     EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
-    NSString *reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
+    }
+    if ([eventType containsString:@"Fed Meeting"]||[eventType containsString:@"Jobs Report"]||[eventType containsString:@"Consumer Confidence"]) {
+        reminderText = [NSString stringWithFormat:@"%@ tomorrow %@", eventType,eventDateText];
+    }
     eventReminder.title = reminderText;
     
     // For now, create the reminder in the default calendar for new reminders as specified in settings
@@ -610,7 +671,16 @@
             numberOfPieces = 3;
         }
     }
+    
     if ([self.eventType containsString:@"Fed Meeting"]) {
+        numberOfPieces = 4;
+    }
+    
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        numberOfPieces = 4;
+    }
+    
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
         numberOfPieces = 4;
     }
     
@@ -628,8 +698,17 @@
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         description = @"\"Report Card\" for companies.Covers their performance over the last quarter.";
     }
+    
     if ([eventType containsString:@"Fed Meeting"]) {
         description = @"Meeting between federal officials to determine future monetary policy.";
+    }
+    
+    if ([eventType containsString:@"Jobs Report"]) {
+        description = @"Estimate of the number of people who have jobs and those that don't.";
+    }
+    
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        description = @"Measure of how likely people are to spend money in the future.";
     }
     
     return description;
@@ -644,8 +723,17 @@
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         description = @"Expected Earnings Per Share.EPS is the profit per share of the company.";
     }
+    
     if ([eventType containsString:@"Fed Meeting"]) {
         description = @"Very High Impact.Outcome determines key interest rates.";
+    }
+    
+    if ([eventType containsString:@"Jobs Report"]) {
+        description = @"Very High Impact.Reflects the health of the job market.";
+    }
+    
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        description = @"Medium Impact.Indicator of future personal spending.";
     }
     
     return description;
@@ -660,8 +748,17 @@
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         description = @"Prior Reported Quarter EPS.";
     }
+    
     if ([eventType containsString:@"Fed Meeting"]) {
         description = @"Financial stocks are impacted most by this.";
+    }
+    
+    if ([eventType containsString:@"Jobs Report"]) {
+        description = @"All types of stocks are impacted by this.";
+    }
+    
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        description = @"Retail stocks are impacted most by this.";
     }
     
     return description;
@@ -676,8 +773,17 @@
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         description = [NSString stringWithFormat:@"Price since prior quarter end(%@).",infoString];
     }
+    
     if ([eventType containsString:@"Fed Meeting"]) {
-        description = @"Pro Tip! If short term interest rates go up, banks typically benefit.";
+        description = @"Knote!If short term interest rates go up, banks typically benefit.";
+    }
+    
+    if ([eventType containsString:@"Jobs Report"]) {
+        description = @"Knote!Watch the jobless rate. In a strong labor market this decreases.";
+    }
+    
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        description = @"Knote!Consumers account for about 2/3rd of the nation's economic activity.";
     }
     
     return description;

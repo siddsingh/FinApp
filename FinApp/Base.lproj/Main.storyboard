@@ -704,7 +704,7 @@
                                                     <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="&quot;Report Card&quot; for companies. Covers their performance over the last quarter." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="PEv-AN-HGr">
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" indicatorStyle="white" editable="NO" text="&quot;Report Card&quot; for companies. Covers their performance over the last quarter." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="PEv-AN-HGr">
                                                     <rect key="frame" x="156" y="45" width="289" height="52"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>

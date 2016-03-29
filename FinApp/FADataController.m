@@ -105,7 +105,7 @@
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
-    // Get all comapnies
+    // Get all companies
     NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
     [companyFetchRequest setEntity:companyEntity];
@@ -125,6 +125,32 @@
     }
     
     return self.resultsController;
+}
+
+// Get company ticker using company name. Assumption is that there is only one record per company name and ticker.
+- (NSString *)getTickerForName:(NSString *)companyName
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get company record by doing a case insensitive query on company name
+    NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    NSPredicate *companyPredicate = [NSPredicate predicateWithFormat:@"name =[c] %@",companyName];
+    [companyFetchRequest setEntity:companyEntity];
+    [companyFetchRequest setPredicate:companyPredicate];
+    NSError *error;
+    Company *existingCompany = nil;
+    NSArray *fetchedCompanies = [dataStoreContext executeFetchRequest:companyFetchRequest error:&error];
+    existingCompany  = [fetchedCompanies lastObject];
+    if (fetchedCompanies.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found %ld(more than 1) duplicate tickers for %@ when getting a ticker using company name from the Data Store",(long)fetchedCompanies.count,companyName);
+    }
+    if (error) {
+        NSLog(@"ERROR: Getting a company ticker using company name from data store failed: %@",error.description);
+    }
+
+    // Return Company Ticker
+    return existingCompany.ticker;
 }
 
 #pragma mark - Events Data Related
