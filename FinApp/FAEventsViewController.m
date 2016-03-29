@@ -1049,6 +1049,10 @@
         formattedEventType = @"Consumer Confidence";
     }
     
+    if ([rawEventType containsString:@"GDP Release"]) {
+        formattedEventType = @"GDP Release";
+    }
+    
     return formattedEventType;
 }
 
@@ -1110,6 +1114,12 @@
     if ([rawEventType containsString:@"Consumer Confidence"]) {
         
         eventTimeString = @"10:0 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    
+    if ([rawEventType containsString:@"GDP Release"]) {
+        
+        eventTimeString = @"8:30 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     

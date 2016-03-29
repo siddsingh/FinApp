@@ -168,36 +168,64 @@
                 ]
               },
               {
-                "name":"Consumer Confidence",
-                "identifier":"ECONOMY_TCB",
-                "agency":"The Conference Board",
+                "name":"GDP Release",
+                "identifier":"ECONOMY_BEA",
+                "agency":"Bureau of Economic Analysis",
                 "impact":"Medium",
-                "impactReason":"Indicator of future personal spending.",
-                "sectorsImpacted":"Retail",
-                "shortDescription":"Measure of how likely people are to spend money in the future.",
-                "moreInfoUrl":"https://www.conference-board.org/data/consumerconfidence.cfm",
-                "tip":"Consumers account for about two-thirds of the nation's economic activity.",
-                "timing":"10:00 a.m. ET",
+                "impactReason":"Scorecard of the country's economic health.",
+                "sectorsImpacted":"All",
+                "shortDescription":"GDP(Gross Domestic Product) is a measure of the country's economic health.",
+                "moreInfoUrl":"http://www.bea.gov/newsreleases/news_release_sort_national.htm",
+                "tip":"Knote!Decreasing GDP for 2 or more quarters indicates a recession.",
+                "timing":"8:30 a.m. ET",
                 "instances":[
                              {
-                                "date":20160126,
-                                "relatedPeriod":"Jan"
+                                "date":20160129,
+                                "relatedPeriod":"Q4 2015 Initial"
                              },
                              {
-                                "date":20160223,
-                                "relatedPeriod":"Feb"
+                                "date":20160226,
+                                "relatedPeriod":"Q4 2015 Second"
                              },
                              {
-                                "date":20160329,
-                                "relatedPeriod":"Mar"
+                                "date":20160325,
+                                "relatedPeriod":"Q4 2015 Third"
                              },
                              {
-                                "date":20160426,
-                                "relatedPeriod":"Apr"
+                                "date":20160428,
+                                "relatedPeriod":"Q1 Initial"
                              },
                              {
-                                "date":20160531,
-                                "relatedPeriod":"May"
+                                "date":20160527,
+                                "relatedPeriod":"Q1 Second"
+                             },
+                             {
+                                "date":20160628,
+                                "relatedPeriod":"Q1 Third"
+                             },
+                             {
+                                "date":20160729,
+                                "relatedPeriod":"Q2 Initial"
+                             },
+                             {
+                                "date":20160826,
+                                "relatedPeriod":"Q2 Second"
+                             },
+                             {
+                                "date":20160929,
+                                "relatedPeriod":"Q2 Third"
+                             },
+                             {
+                                "date":20161028,
+                                "relatedPeriod":"Q3 Initial"
+                             },
+                             {
+                                "date":20161129,
+                                "relatedPeriod":"Q3 Second"
+                             },
+                             {
+                                "date":20161222,
+                                "relatedPeriod":"Q3 Third"
                              }
                 ]
               }
