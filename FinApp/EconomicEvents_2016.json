@@ -44,7 +44,7 @@
                                 "date":20161214,
                                 "relatedPeriod":"Dec"
                              }
-                            ],
+                ],
                 "datesPressConference":[20160316,20160615,20160921,20161214]
               },
               {
@@ -174,9 +174,9 @@
                 "impact":"Medium",
                 "impactReason":"Scorecard of the country's economic health.",
                 "sectorsImpacted":"All",
-                "shortDescription":"GDP(Gross Domestic Product) is a measure of the country's economic health.",
+                "shortDescription":"GDP is a measure of the country's economic health.",
                 "moreInfoUrl":"http://www.bea.gov/newsreleases/news_release_sort_national.htm",
-                "tip":"Knote!Decreasing GDP for 2 or more quarters indicates a recession.",
+                "tip":"Decreasing GDP for 2 or more quarters indicates a recession.",
                 "timing":"8:30 a.m. ET",
                 "instances":[
                              {
@@ -229,4 +229,5 @@
                              }
                 ]
               }
+ ]
 }

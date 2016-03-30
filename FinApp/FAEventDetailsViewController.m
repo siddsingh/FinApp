@@ -233,6 +233,10 @@
             if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate image
             }
+            
+            if ([self.eventType containsString:@"GDP Release"]) {
+                // Select the appropriate image
+            }
         }
         break;
         
@@ -258,6 +262,10 @@
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
+                // Select the appropriate image
+            }
+            
+            if ([self.eventType containsString:@"GDP Release"]) {
                 // Select the appropriate image
             }
         }
@@ -321,6 +329,10 @@
             if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate image
             }
+            
+            if ([self.eventType containsString:@"GDP Release"]) {
+                // Select the appropriate image
+            }
         }
         break;
         
@@ -382,6 +394,11 @@
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
+                // Just in case
+                [[cell titleLabel] setText:@"NA"];
+            }
+            
+            if ([self.eventType containsString:@"GDP Release"]) {
                 // Just in case
                 [[cell titleLabel] setText:@"NA"];
             }
@@ -528,7 +545,7 @@
             [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
         }
     }
-    if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]) {
+    if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]) {
         
         // Create the reminder and show user the appropriate message
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
@@ -553,7 +570,7 @@
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
     }
-    if ([eventType containsString:@"Fed Meeting"]||[eventType containsString:@"Jobs Report"]||[eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"Fed Meeting"]||[eventType containsString:@"Jobs Report"]||[eventType containsString:@"Consumer Confidence"]||[eventType containsString:@"GDP Release"]) {
         reminderText = [NSString stringWithFormat:@"%@ tomorrow %@", eventType,eventDateText];
     }
     eventReminder.title = reminderText;
@@ -684,6 +701,10 @@
         numberOfPieces = 4;
     }
     
+    if ([self.eventType containsString:@"GDP Release"]) {
+        numberOfPieces = 4;
+    }
+    
     // TO DO: Delete later before shipping v2
     NSLog(@"Number of rows is:%ld", (long)numberOfPieces);
     return numberOfPieces;
@@ -711,6 +732,10 @@
         description = @"Measure of how likely people are to spend money in the future.";
     }
     
+    if ([eventType containsString:@"GDP Release"]) {
+        description = @"GDP is a measure of the country's economic health.";
+    }
+    
     return description;
 }
 
@@ -734,6 +759,10 @@
     
     if ([eventType containsString:@"Consumer Confidence"]) {
         description = @"Medium Impact.Indicator of future personal spending.";
+    }
+    
+    if ([eventType containsString:@"GDP Release"]) {
+        description = @"Medium Impact.Scorecard of the country's economic health.";
     }
     
     return description;
@@ -761,6 +790,10 @@
         description = @"Retail stocks are impacted most by this.";
     }
     
+    if ([eventType containsString:@"GDP Release"]) {
+        description = @"All types of stocks are impacted by this.";
+    }
+    
     return description;
 }
 
@@ -775,15 +808,19 @@
     }
     
     if ([eventType containsString:@"Fed Meeting"]) {
-        description = @"Knote!If short term interest rates go up, banks typically benefit.";
+        description = @"Pro Tip!If short term interest rates go up, banks typically benefit.";
     }
     
     if ([eventType containsString:@"Jobs Report"]) {
-        description = @"Knote!Watch the jobless rate. In a strong labor market this decreases.";
+        description = @"Tip!Watch the jobless rate. In a strong labor market this decreases.";
     }
     
     if ([eventType containsString:@"Consumer Confidence"]) {
-        description = @"Knote!Consumers account for about 2/3rd of the nation's economic activity.";
+        description = @"Pro Tip!Consumers account for about 2/3rd of the nation's economic activity.";
+    }
+    
+    if ([eventType containsString:@"GDP Release"]) {
+        description = @"Pro Tip!Decreasing GDP for 2 or more quarters indicates a recession.";
     }
     
     return description;

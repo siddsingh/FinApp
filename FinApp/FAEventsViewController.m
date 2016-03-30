@@ -1113,7 +1113,7 @@
     
     if ([rawEventType containsString:@"Consumer Confidence"]) {
         
-        eventTimeString = @"10:0 a.m. ET";
+        eventTimeString = @"10 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     
