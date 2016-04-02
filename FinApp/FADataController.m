@@ -33,6 +33,9 @@
 
 @implementation FADataController
 
+// Private variable: Flag to see if any event was updated
+bool eventsUpdated = NO;
+
 #pragma mark - Data Store related
 
 // Managed Object Context to interact with Data Store.
@@ -437,6 +440,30 @@
         NSLog(@"ERROR: Retrieving Fed meeting event, to check if it exists, from event data store failed: %@",error.description);
     }
     if (events.count >= 1) {
+        exists = YES;
+    }
+    
+    return exists;
+}
+
+// Check to see if more than the 5 seed synced events of type quarterly earnings exist in the data store and return accordingly. Typically used to check if trending ticker events have been synced or not.
+- (BOOL)doTrendingTickerEventsExist
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL exists = NO;
+    
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Searching for events of type "Quarterly Earnings"
+    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@",@"Quarterly Earnings"];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Retrieving events of type Quarterly Earnings, to check if Trending ticker events exist, from event data store failed: %@",error.description);
+    }
+    if (events.count != 5) {
         exists = YES;
     }
     
@@ -1746,6 +1773,7 @@
 
 // Add the most basic set of most used events to the event data store. This is fetched from the data source
 // API based on the set of companies that are included in the Company Seed Sync.
+// IMPORTANT: If you are changing the list or number of companies here, reconcile with doTrendingTickerEventsExist.
 - (void)performEventSeedSyncRemotely {
     
     // Add the events for the 5 most used companies to the events database.
@@ -1755,8 +1783,55 @@
     [self getAllEventsFromApiWithTicker:@"BAC"];
     [self getAllEventsFromApiWithTicker:@"GM"];
     
+    // Add trending tickers and their events.
+    [self performTrendingEventSyncRemotely];
+    
     // Add or Update the Company Data Sync status to SeedSyncDone.
     [self updateUserWithEventSyncStatus:@"SeedSyncDone"];
+}
+
+// Add tickers and events for trending stocks.
+- (void)performTrendingEventSyncRemotely {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Add 7 trending company tickers and name to the company database.
+    Company *company1 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    company1.ticker = @"TSLA";
+    company1.name = @"Tesla Motors,Inc";
+    Company *company2 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    company2.ticker = @"GPRO";
+    company2.name = @"Go Pro";
+    Company *company3 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    company3.ticker = @"BABA";
+    company3.name = @"Alibaba";
+    Company *company4 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    company4.ticker = @"ANET";
+    company4.name = @"Arista Networks";
+    Company *company5 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    company5.ticker = @"LULU";
+    company5.name = @"Lululemon Athletica,Inc";
+    Company *company6 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    company6.ticker = @"BOX";
+    company6.name = @"Box,Inc";
+    Company *company7 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    company7.ticker = @"SQ";
+    company7.name = @"Square,Inc";
+    NSError *error;
+    if (![dataStoreContext save:&error]) {
+        NSLog(@"ERROR: Batch Saving companies during trending events sync failed: %@",error.description);
+    }
+    
+    // Get events for these trending companies from the remote data source
+    [self getAllEventsFromApiWithTicker:@"TSLA"];
+    [self getAllEventsFromApiWithTicker:@"GPRO"];
+    [self getAllEventsFromApiWithTicker:@"BABA"];
+    [self getAllEventsFromApiWithTicker:@"ANET"];
+    [self getAllEventsFromApiWithTicker:@"LULU"];
+    [self getAllEventsFromApiWithTicker:@"BOX"];
+    [self getAllEventsFromApiWithTicker:@"SQ"];
+    
+    eventsUpdated = YES;
 }
 
 // Update the existing events in the local data store, with latest information from the remote data source, if it's
@@ -1764,10 +1839,10 @@
 // 1. If the speculated date of an event is within 2 weeks of today, then we consider it likely that the event has been updated
 // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
 // 2. If the confirmed date of the event is in the past.
+// ADDITIONALLY: Add trending tickers only initially
 - (void)updateEventsFromRemoteIfNeeded {
     
-    // Flag to see if any event was updated
-    BOOL eventsUpdated = NO;
+    eventsUpdated = NO;
     
     // Get all events in the local data store.
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
@@ -1795,8 +1870,17 @@
         // See if the event qualifies for the update. If it does, call the remote data source to update it.
         if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
             [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
+            // TO DO: Delete before shipping v2.0
+            NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
             eventsUpdated = YES;
         }
+    }
+    
+    // Check to see if trending ticker events exist already. If not add those
+    if (![self doTrendingTickerEventsExist]) {
+        
+        NSLog(@"About to add trending ticker events from remote");
+        [self performTrendingEventSyncRemotely];
     }
     
     // Fire events change notification if any event was updated
@@ -1809,7 +1893,6 @@
     // TO DO: Needs to be tested more thoroughly before enabling
     [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
 }
-
 
 #pragma mark - User State Related
 

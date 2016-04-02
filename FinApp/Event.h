@@ -32,7 +32,6 @@
 // Date related to the event.
 // 1. "Quarterly Earnings" would have the end date of the next fiscal quarter
 // to be reported.
-// Economic event like "Fed Meeting" would have the date of the event.
 @property (nonatomic, retain) NSDate * relatedDate;
 
 // For "Quarterly Earnings" end date of previously reported quarter for now. or fiscal year later.

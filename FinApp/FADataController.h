@@ -77,6 +77,9 @@
 // check if economic events types have been synced or not.
 - (BOOL)doesEconEventExist;
 
+// Check to see if more than the 5 seed synced events of type quarterly earnings exist in the data store and return accordingly. Typically used to check if trending ticker events have been synced or not.
+- (BOOL)doTrendingTickerEventsExist;
+
 #pragma mark - Event History related Methods
 
 // Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
@@ -127,7 +130,11 @@
 
 // Add the most basic set of most used events to the event data store. This is done locally and is dependent on the
 // set of companies that are included in the Company Seed Sync.
+// IMPORTANT: If you are changing the list or number of companies here, reconcile with doTrendingTickerEventsExist.
 - (void)performEventSeedSyncRemotely;
+
+// Add tickers and events for trending stocks.
+- (void)performTrendingEventSyncRemotely;
 
 // Update the existing events in the local data store, with latest information from the remote data source, if it's
 // likely that the remote source has been updated. There are 2 scenarios where it's likely:

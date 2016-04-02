@@ -14,7 +14,7 @@
 @interface AppDelegate ()
 
 // Refresh events that are likely to be updated, from API. Typically called in a background thread.
-- (void)refreshEventsIfNeededFromApiInBackground;
+- (void)refreshEventsIfNeededFromApiInBackgroundWithDataController:(FADataController *)existingDC;
 
 // Redo fetching of company data from the API, in case the full sync of company data had failed. Typically called in a background thread.
 - (void)refreshCompanyInfoIfNeededFromApiInBackground;
@@ -108,12 +108,13 @@
         // TO DO: COMMENT FOR PRE SEEDING DB: This does an incremental update of newer companies since the last time the data was synced. This data should already be captured in the preseeding, so not needed for preseeding.
         [self doCompanyUpdateInBackground];
         
-        // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data. Don't comment if you're just developing.
-        // TO DO: Understand this better. PerformSelectorInBackground was causing warnings with attempting to modify UI in a background thread in iOS 9. Using dispatch async solved that error.
-        //[self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
+        // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data.
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            [self refreshEventsIfNeededFromApiInBackground];
+            // Create a new FADataController so that this thread has its own MOC
+            FADataController *eventDataController = [[FADataController alloc] init];
+            
+            [self refreshEventsIfNeededFromApiInBackgroundWithDataController:eventDataController];
         });
         
         // TRACKING EVENT: App Launch: Application was launched.
@@ -150,16 +151,13 @@
                                                        annotation:annotation];
 }
 
-#pragma mark - State Refresh
+#pragma mark - State Setup Rfresh
 
-// Refresh events that are likely to be updated, from API. Typically called in a background thread.
-- (void)refreshEventsIfNeededFromApiInBackground
+// Refresh events that are likely to be updated, from API. Additionally also get the events for trending tickers initially. Typically called in a background thread.
+- (void)refreshEventsIfNeededFromApiInBackgroundWithDataController:(FADataController *)existingDC
 {
-    // Create a new FADataController so that this thread has its own MOC
-    FADataController *eventDataController = [[FADataController alloc] init];
-    
     // TO DO: Uncomment for actual use. Comment for test data for event update testing.
-    [eventDataController updateEventsFromRemoteIfNeeded];
+    [existingDC updateEventsFromRemoteIfNeeded];
 }
 
 // Kick off a background task to add any new companies that might have been added.
