@@ -237,7 +237,10 @@
 // Return number of rows in the events list table view
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-     NSInteger numberOfRows = 0;
+    // TO DO: Delete before shipping v2
+    NSLog(@"EVENT: List table rows refreshed");
+    
+    NSInteger numberOfRows = 0;
     
     // If a search filter has been applied return the number of events in the filtered list of events or companies,
     // depending on the type of filter
@@ -751,6 +754,8 @@
     FADataController *secondaryDataController = [[FADataController alloc] init];
     self.eventResultsController = [secondaryDataController getAllFutureEvents];
     [self.eventsListTable reloadData];
+    // TO DO: Delete before shipping v2
+    NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");
 }
 
 // Show the error message for a temporary period and then fade it if a user message has been generated

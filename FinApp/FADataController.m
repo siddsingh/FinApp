@@ -1847,9 +1847,12 @@ bool eventsUpdated = NO;
     // Get all events in the local data store.
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
     
-    // Start the busy spinner on the UI to indicate that a fetch is in progress
+    // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
     // TO DO: Needs to be tested more thoroughly before enabling
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+    });
     
     // For every event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
     // 1. If the speculated date of an event is within 31 days from today, then we consider it likely that the event has been updated
@@ -1883,15 +1886,17 @@ bool eventsUpdated = NO;
         [self performTrendingEventSyncRemotely];
     }
     
-    // Fire events change notification if any event was updated
-    if (eventsUpdated) {
-        
-        [self sendEventsChangeNotification];
-    }
-    
-    // Stop the busy spinner on the UI to indicate that the fetch is complete
+    // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete. Any async UI element update has to happen in the main thread.
     // TO DO: Needs to be tested more thoroughly before enabling
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if (eventsUpdated) {
+            
+            [self sendEventsChangeNotification];
+        }
+        
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+    });
 }
 
 #pragma mark - User State Related
@@ -2307,6 +2312,8 @@ bool eventsUpdated = NO;
 // Send a notification that the list of events has changed (updated)
 - (void)sendEventsChangeNotification {
     
+    // TO DO: Delete Before Shipping v2
+    NSLog(@"EVENT RELOAD: From Data Controller");
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 

@@ -109,8 +109,8 @@
         [self doCompanyUpdateInBackground];
         
         // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
+       // Async processing of non ui tasks should not be done on the main thread.
+       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{     
             // Create a new FADataController so that this thread has its own MOC
             FADataController *eventDataController = [[FADataController alloc] init];
             
