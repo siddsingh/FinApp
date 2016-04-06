@@ -279,8 +279,7 @@
     // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
     
-    //TO DO: Delete Later. Reset color for Event description to dark text color, in case it's been set to blue for a "Get Events" display
-    // Reset color for Event Date to dark text, in case it's been set to blue for a "Get Earnings" display.
+    // Reset color for Event Date to dark text, in case it's been set to blue for a "Get Events" display.
     cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     
     // Get event or company  to display
@@ -319,11 +318,13 @@
         
         // Set the company name associated with the event
         [[cell  companyName] setText:companyAtIndex.name];
-        // Show the company Name as this information is not needed to be displayed to the user when searching
+        // Show the company Name as this information is needed to be displayed to the user when searching
         [[cell companyName] setHidden:NO];
+        // Hide the image representing the event as this information is not needed when the user searches
+        [[cell eventImage] setHidden:YES];
         
         // Show the "Get Events" text in the event display area.
-        [[cell eventDescription] setText:@"GET EARNINGS"];
+        [[cell eventDescription] setText:@"GET EVENTS"];
         // Set color to a link blue to provide a visual cue to click
         cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
         
@@ -346,6 +347,8 @@
         
         // Hide the company Name as this information is not needed to be displayed to the user.
         [[cell companyName] setHidden:YES];
+        // Show the image representing the event as this information is needed when user isn't searching
+        [[cell eventImage] setHidden:NO];
         // Set the company name associated with the event as this is needed in places like getting the earnings.
         [[cell  companyName] setText:eventAtIndex.listedCompany.name];
         
@@ -360,6 +363,9 @@
         
         // Show the event date
         [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails]];
+        
+        // Show the appropriate event Image
+        [[cell eventImage] setImage:[self getImageBasedOnEventType:eventAtIndex.type]];
         
         // Show the event distance
         [[cell eventDistance] setText:[self calculateDistanceFromEventDate:eventAtIndex.date]];
@@ -892,7 +898,7 @@
 
 #pragma mark - Navigation
 
-// Check to see if the table cell press is for a "Get Earnings" cell. If yes, then don't perform the table segue
+// Check to see if the table cell press is for a "Get Events" cell. If yes, then don't perform the table segue
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender {
     
     BOOL returnVal = YES;
@@ -1154,6 +1160,40 @@
     }
     
     return formattedDistance;
+}
+
+// Return the appropriate event image based on event type
+- (UIImage *)getImageBasedOnEventType:(NSString *)eventType
+{
+    UIImage *eventImage;
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        eventImage = [UIImage imageNamed:@"EarningsListCircle"];
+        
+    }
+    
+    if ([eventType containsString:@"Fed Meeting"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconListCircle"];
+    }
+    
+    if ([eventType containsString:@"Jobs Report"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconListCircle"];
+    }
+    
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconListCircle"];
+    }
+    
+    if ([eventType containsString:@"GDP Release"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconListCircle"];
+    }
+    
+    return eventImage;
 }
 
 // Format the given date to set the time on it to midnight last night. e.g. 03/21/2016 9:00 pm becomes 03/21/2016 12:00 am.
