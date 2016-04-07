@@ -218,24 +218,32 @@
             // Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 // Bright Blue Color
-                cell.titleLabel.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
             }
             
             if ([self.eventType containsString:@"Fed Meeting"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Very High Impact
+                cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"||||||||||"];
             }
             
             if ([self.eventType containsString:@"Jobs Report"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Very High Impact
+                cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"||||||||||"];
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Medium Impact
+                cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"|||||"];
             }
             
             if ([self.eventType containsString:@"GDP Release"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Medium Impact
+                cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"|||||"];
             }
         }
         break;
@@ -249,24 +257,32 @@
             // Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 // Bright Blue Color
-                cell.titleLabel.textColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
             }
             
             if ([self.eventType containsString:@"Fed Meeting"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Financial Stocks
+                cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"$$"];
             }
             
             if ([self.eventType containsString:@"Jobs Report"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for All Stocks
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"All"];
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Retail Stocks
+                cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"Sale!"];
             }
             
             if ([self.eventType containsString:@"GDP Release"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for All Stocks
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"All"];
             }
         }
         break;
@@ -298,7 +314,7 @@
                         priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
                         percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                         // Set color to Red
-                        cell.titleLabel.textColor = [UIColor colorWithRed:132.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                        cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
                         [[cell titleLabel] setText:percentageDiffString];
                     }
                     else
@@ -306,7 +322,7 @@
                         priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
                         percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                         // Set color to Green
-                        cell.titleLabel.textColor = [UIColor colorWithRed:78.0f/255.0f green:176.0f/255.0f blue:109.0f/255.0f alpha:1.0f];
+                        cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
                         [[cell titleLabel] setText:percentageDiffString];
                     }
                     pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1RelatedPriceDbl, currentPriceDbl];
@@ -319,19 +335,27 @@
             }
             
             if ([self.eventType containsString:@"Fed Meeting"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Pro Tip
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"!!"];
             }
             
             if ([self.eventType containsString:@"Jobs Report"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Pro Tip
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"!!"];
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Pro Tip
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"!!"];
             }
             
             if ([self.eventType containsString:@"GDP Release"]) {
-                // Select the appropriate image
+                // Select the appropriate color and text for Pro Tip
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"!!"];
             }
         }
         break;
@@ -363,7 +387,7 @@
                         priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
                         percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                         // Set color to Red
-                        cell.titleLabel.textColor = [UIColor colorWithRed:132.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                        cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
                         [[cell titleLabel] setText:percentageDiffString];
                     }
                     else
@@ -371,7 +395,7 @@
                         priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
                         percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                         // Set color to Green
-                        cell.titleLabel.textColor = [UIColor colorWithRed:68.0f/255.0f green:219.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
+                        cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
                         [[cell titleLabel] setText:percentageDiffString];
                     }
                     pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1PriceDbl, currentPriceDbl];
@@ -842,19 +866,19 @@
     }
     
     if ([eventType containsString:@"Fed Meeting"]) {
-        description = @"Pro Tip!If short term interest rates go up, banks typically benefit.";
+        description = @"Pro Tip! If short term interest rates go up, banks typically benefit.";
     }
     
     if ([eventType containsString:@"Jobs Report"]) {
-        description = @"Tip!Watch the jobless rate. In a strong labor market this decreases.";
+        description = @"Tip! Watch the jobless rate. In a strong labor market this decreases.";
     }
     
     if ([eventType containsString:@"Consumer Confidence"]) {
-        description = @"Pro Tip!Consumers account for about 2/3rd of the nation's economic activity.";
+        description = @"Pro Tip! Consumers account for about 2/3rd of the nation's economic activity.";
     }
     
     if ([eventType containsString:@"GDP Release"]) {
-        description = @"Pro Tip!Decreasing GDP for 2 or more quarters indicates a recession.";
+        description = @"Pro Tip! Decreasing GDP for 2 or more quarters indicates a recession.";
     }
     
     return description;
