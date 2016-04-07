@@ -298,7 +298,7 @@
                         priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
                         percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                         // Set color to Red
-                        cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                        cell.titleLabel.textColor = [UIColor colorWithRed:132.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
                         [[cell titleLabel] setText:percentageDiffString];
                     }
                     else
@@ -306,7 +306,7 @@
                         priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
                         percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                         // Set color to Green
-                        cell.titleLabel.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                        cell.titleLabel.textColor = [UIColor colorWithRed:78.0f/255.0f green:176.0f/255.0f blue:109.0f/255.0f alpha:1.0f];
                         [[cell titleLabel] setText:percentageDiffString];
                     }
                     pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1RelatedPriceDbl, currentPriceDbl];
@@ -363,7 +363,7 @@
                         priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
                         percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                         // Set color to Red
-                        cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                        cell.titleLabel.textColor = [UIColor colorWithRed:132.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
                         [[cell titleLabel] setText:percentageDiffString];
                     }
                     else
@@ -371,7 +371,7 @@
                         priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
                         percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
                         // Set color to Green
-                        cell.titleLabel.textColor = [UIColor colorWithRed:0.0f/255.0f green:168.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                        cell.titleLabel.textColor = [UIColor colorWithRed:68.0f/255.0f green:219.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
                         [[cell titleLabel] setText:percentageDiffString];
                     }
                     pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1PriceDbl, currentPriceDbl];
@@ -752,22 +752,22 @@
     
     if ([eventType containsString:@"Fed Meeting"]) {
         
-        eventImage = [UIImage imageNamed:@"EconDetailsCircle"];
+        eventImage = [UIImage imageNamed:@"EconDetailCircle"];
     }
     
     if ([eventType containsString:@"Jobs Report"]) {
         
-        eventImage = [UIImage imageNamed:@"EconDetailsCircle"];
+        eventImage = [UIImage imageNamed:@"EconDetailCircle"];
     }
     
     if ([eventType containsString:@"Consumer Confidence"]) {
         
-        eventImage = [UIImage imageNamed:@"EconDetailsCircle"];
+        eventImage = [UIImage imageNamed:@"EconDetailCircle"];
     }
     
     if ([eventType containsString:@"GDP Release"]) {
         
-        eventImage = [UIImage imageNamed:@"EconDetailsCircle"];
+        eventImage = [UIImage imageNamed:@"EconDetailCircle"];
     }
     
     return eventImage;
