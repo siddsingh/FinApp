@@ -58,16 +58,15 @@
     // If yes, show the appropriate styling
     if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
     {
-        [self.reminderButton setBackgroundColor:[UIColor grayColor]];
+        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
         [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
         [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     }
     // If not, show the appropriate styling
     else
     {
-        // TO DO: Finally decide between this currently set blue and purple color
-        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:78.0f/255.0f green:132.0f/255.0f blue:216.0f/255.0f alpha:1.0f]];
-        //[self.reminderButton setBackgroundColor:[UIColor colorWithRed:81.0f/255.0f green:54.0f/255.0f blue:127.0f/255.0f alpha:1.0f]];
+        // Modified Knotifi Green
+        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]];
         [self.reminderButton setTitle:@"REMIND ME" forState:UIControlStateNormal];
         [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     }
@@ -206,6 +205,7 @@
         case infoRow1:
         {
             [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType]];
+            cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
         }
         break;
             
@@ -737,6 +737,40 @@
     }
     
     return description;
+}
+
+// Return the appropriate event image based on event type
+- (UIImage *)getImageBasedOnEventType:(NSString *)eventType
+{
+    UIImage *eventImage;
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        eventImage = [UIImage imageNamed:@"EarningsDetailCircle"];
+        
+    }
+    
+    if ([eventType containsString:@"Fed Meeting"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconDetailsCircle"];
+    }
+    
+    if ([eventType containsString:@"Jobs Report"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconDetailsCircle"];
+    }
+    
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconDetailsCircle"];
+    }
+    
+    if ([eventType containsString:@"GDP Release"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconDetailsCircle"];
+    }
+    
+    return eventImage;
 }
 
 // Get the display text for Expected EPS or Impact depending on the event type.

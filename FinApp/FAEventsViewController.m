@@ -38,8 +38,8 @@
 // Send a notification to the events list controller with a message that should be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
 
-// Return a color scheme from darker to lighter based on rwo number with darker on top. Currently returning a dark gray scheme.
-- (UIColor *)getColorForIndexPath:(NSIndexPath *)indexPath;
+// Return the appropriate color for event distance based on how far it is from today.
+- (UIColor *)getColorForDistanceFromEventDate:(NSDate *)eventDate;
 
 // Compute the likely date for the previous event based on current event type (currently only Quarterly), previous event related date (e.g. quarter end related to the quarterly earnings), current event date and current event related date.
 - (NSDate *)computePreviousEventDateWithCurrentEventType:(NSString *)currentType currentEventDate:(NSDate *)currentDate currentEventRelatedDate:(NSDate *)currentRelatedDate previousEventRelatedDate:(NSDate *)previousRelatedDate;
@@ -69,24 +69,24 @@
     [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
     [self.navigationController.navigationBar.topItem setTitle:[[todayDateFormatter stringFromDate:[NSDate date]] uppercaseString]];
     
-    // Change the color of the events search bar placeholder text and text entered to be a dark gray text color.
+    // Change the color of the events search bar placeholder text and text entered to be a black text color.
     [self.eventsSearchBar setBackgroundImage:[UIImage new]];
     UITextField *eventSearchBarInputFld = [self.eventsSearchBar valueForKey:@"_searchField"];
-    [eventSearchBarInputFld setValue:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f] forKeyPath:@"_placeholderLabel.textColor"];
-    eventSearchBarInputFld.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    [eventSearchBarInputFld setValue:[UIColor blackColor] forKeyPath:@"_placeholderLabel.textColor"];
+    eventSearchBarInputFld.textColor = [UIColor blackColor];
     
     // Set search bar background color to a very light, almost white gray so that it matches the background.
     eventSearchBarInputFld.backgroundColor = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
     
-    // Change the color of the Magnifying glass icon in the search bar to be a dark gray text color
+    // Change the color of the Magnifying glass icon in the search bar to be a black text color
     UIImageView *magGlassIcon = (UIImageView *)eventSearchBarInputFld.leftView;
     magGlassIcon.image = [magGlassIcon.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    magGlassIcon.tintColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    magGlassIcon.tintColor = [UIColor blackColor];
     
-    // Change the color of the Clear button in the search bar to be a dark gray text color
+    // Change the color of the Clear button in the search bar to be a black text color
     UIButton *searchClearBtn = [eventSearchBarInputFld valueForKey:@"_clearButton"];
     [searchClearBtn setImage:[searchClearBtn.imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-    searchClearBtn.tintColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    searchClearBtn.tintColor = [UIColor blackColor];
     
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
@@ -228,7 +228,7 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         
        // Set title
-       sectionTitle = @"Upcoming Earnings";
+       sectionTitle = @"Upcoming Events";
     }
     
     return sectionTitle;
@@ -371,9 +371,8 @@
         [[cell eventDistance] setText:[self calculateDistanceFromEventDate:eventAtIndex.date]];
         
         // TO DO: Figure this out during the UI phase
-        // Set event distance to the appropriate color. Nearest is Red, gradually fading to yellow
-        // Set the task label with a color representing it's priority
-        // [[cell eventDistance] setTextColor:[self getColorForIndexPath:indexPath]];
+        // Set event distance to the appropriate color using a reddish scheme.
+        [[cell eventDistance] setTextColor:[self getColorForDistanceFromEventDate:eventAtIndex.date]];
         
         // Hide the event certainty as this information is not needed to be displayed to the user.
         [[cell eventCertainty] setHidden:YES];
@@ -1162,6 +1161,30 @@
     return formattedDistance;
 }
 
+// Return the appropriate color for event distance based on how far it is from today.
+- (UIColor *)getColorForDistanceFromEventDate:(NSDate *)eventDate
+{
+    // Set returned color to light gray text to start with
+    UIColor *colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
+    
+    // Calculate the number of days between event date and today's date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSUInteger unitFlags =  NSCalendarUnitDay;
+    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:[self setTimeToMidnightLastNightOnDate:[NSDate date]] toDate:[self setTimeToMidnightLastNightOnDate:eventDate] options:0];
+    NSInteger difference = [diffDateComponents day];
+    
+    // Return an appropriate color based on distance. Typical values and colors are Past(Light Gray Text),Today(Orangish Red), Tomorrow (Slightly less orangish red), 2d-7d (More orange, less red) and everything else (Light Gray)
+    if (difference == 0) {
+        colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+    } else if (difference == 1) {
+        colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:81.0f/255.0f blue:62.0f/255.0f alpha:1.0f];
+    } else if ((difference > 1)&&(difference < 8)){
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
+    }
+    
+    return colorToReturn;
+}
+
 // Return the appropriate event image based on event type
 - (UIImage *)getImageBasedOnEventType:(NSString *)eventType
 {
@@ -1205,55 +1228,6 @@
     
     return formattedDate;
 }
-
-// Return priority color based on the row position. First in the row is Red indicating it's the closest, gradually fading towards yellow.
-- (UIColor *)getColorForIndexPath:(NSIndexPath *)indexPath
-{
-    
-    // Set returned color to dark gray text to start with
-    UIColor *colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
-    
-    // Get row number, it's 0 based
-    long rowNumber = indexPath.row;
-    
-    // For the first row go with the reddest color and then make it gradually orangish upto 7 rows and then go with the lightest for all the rest
-    if (rowNumber == 0) {
-        
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:0.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 1) {
-        
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:60.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 2) {
-        
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:86.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 3) {
-        
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:100.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 4) {
-        
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:120.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 5) {
-        
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:150.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        
-    } else if (rowNumber == 6) {
-        
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:185.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        
-    } else {
-        
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:200.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-        
-    }
-    
-    return colorToReturn;
-}
-
 
 /*
 #pragma mark - Code to use later
