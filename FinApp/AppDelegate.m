@@ -46,7 +46,8 @@
     [[UINavigationBar appearance] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setShadowImage:[UIImage new]];
     
-    // Adding the FB SDK
+    // TRACKING EVENT: SETUP: Adding the FB SDK
+    // TO DO: Disabling to not track development events. Enable before shipping.
     [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
     
@@ -75,11 +76,8 @@
     // Create a new FADataController so that this thread has its own MOC
     FADataController *eventDataController = [[FADataController alloc] init];
     
-    // TO DO: Testing adding the new economic events only if it's not been added before. Verify if this is the right place to do it and if the get All Events
-    // is needed after that.
+    // Adding the new economic events only if it's not been added before.
     if (![eventDataController doesEconEventExist]) {
-        
-        NSLog(@"About to add economic events from local storage");
         [eventDataController getAllEconomicEventsFromLocalStorage];
     }
     
@@ -105,7 +103,7 @@
         // If the full sync of company data has failed, retry it
         [self refreshCompanyInfoIfNeededFromApiInBackground]; */
         
-        // TO DO: COMMENT FOR PRE SEEDING DB: This does an incremental update of newer companies since the last time the data was synced. This data should already be captured in the preseeding, so not needed for preseeding.
+        // TO DO: COMMENT FOR PRE SEEDING DB: Once preseeded *CHANGE* the sync page settings in FADataController-getIncrementalCompaniesFromApi. This does an incremental update of newer companies since the last time the data was synced. This data should already be captured in the preseeding, so not needed for preseeding.
         [self doCompanyUpdateInBackground];
         
         // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data.
@@ -119,7 +117,7 @@
         
         // TRACKING EVENT: App Launch: Application was launched.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        // [FBSDKAppEvents activateApp];
+        [FBSDKAppEvents activateApp];
     }
 }
 
@@ -177,8 +175,8 @@
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastCompanySyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
     
-    // TO DO: For testing, comment before shipping
-    NSLog(@"Days since last sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
+    // TO DO: For testing, comment before shipping. Keeping it around for future pre seeding testing.
+    //NSLog(@"Days since last sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
     
     // If it's been a week since the last company sync, do an incremental sync
     if ((int)daysBetween >= 7)
@@ -194,8 +192,8 @@
         // Start the long-running task and return immediately.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
-            // TO DO: For testing, comment before shipping
-            NSLog(@"About to start the background get incremental companies from API");
+            // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
+            //NSLog(@"About to start the background get incremental companies from API");
             
             // Create a new FADataController so that this thread has its own MOC
             FADataController *companyBkgrndDataController = [[FADataController alloc] init];
@@ -223,8 +221,6 @@
             // Clean up any unfinished task business before it's about to be terminated
             // In our case, check if all pages of companies data has been synced. If not, mark status to failed
             // so that another thread can pick up the completion on restart. Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi(2 places) in FADataController. Also change in Search Bar Began Editing in the Events View Controller.
-            // TO DO: Delete Later as now getting the value of the total no of companies to sync from db.
-            // if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companyDataController getCompanySyncedUptoPage] integerValue] < 26)
             if ([[companyDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companyDataController getCompanySyncedUptoPage] integerValue] < [[companyDataController getTotalNoOfCompanyPagesToSync] integerValue])
             {
                 [companyDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[companyDataController getCompanySyncedUptoPage]];

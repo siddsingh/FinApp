@@ -96,14 +96,14 @@
     
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
     // Get the date for the event represented by the cell
-   /* NSDate *today = [NSDate date];
+    /*NSDate *today = [NSDate date];
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
     differenceDayComponents.day = -1;
     NSDate *yesterday = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:today options:0];
    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"MSFT" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"AAPL" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
-    //[self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
+    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
     
     // Register a listener for changes to events stored locally
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -238,7 +238,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // TO DO: Delete before shipping v2
-    NSLog(@"EVENT: List table rows refreshed");
+    //NSLog(@"EVENT: List table rows refreshed");
     
     NSInteger numberOfRows = 0;
     
@@ -370,7 +370,6 @@
         // Show the event distance
         [[cell eventDistance] setText:[self calculateDistanceFromEventDate:eventAtIndex.date]];
         
-        // TO DO: Figure this out during the UI phase
         // Set event distance to the appropriate color using a reddish scheme.
         [[cell eventDistance] setTextColor:[self getColorForDistanceFromEventDate:eventAtIndex.date]];
         
@@ -407,9 +406,9 @@
             
             // TRACKING EVENT: Get Earnings: User clicked the get earnings link for a company/ticker.
             // TO DO: Disabling to not track development events. Enable before shipping.
-            /*[FBSDKAppEvents logEvent:@"Get Earnings"
+            [FBSDKAppEvents logEvent:@"Get Earnings"
                           parameters:@{ @"Ticker" : (cell.companyTicker).text,
-                                        @"Name" : (cell.companyName).text } ]; */
+                                        @"Name" : (cell.companyName).text } ];
         }
         // If not, show error message
         else {
@@ -506,13 +505,6 @@
 // Get all companies from API. Typically called in a background thread
 - (void)getAllCompaniesFromApiInBackground
 {
-    
-    // TO DO: Delete once you have background tasking figured out
-    // Create a new FADataController so that this thread has its own MOC
-   /* FADataController *companiesDataController = [[FADataController alloc] init];
-    
-    [companiesDataController getAllCompaniesFromApi]; */
-    
     // Get a data controller for data store interactions
     FADataController *companiesDataController = [[FADataController alloc] init];
     
@@ -522,8 +514,6 @@
         // Clean up any unfinished task business before it's about to be terminated
         // In our case, check if all pages of companies data has been synced. If not, mark status to failed
         // so that another thread can pick up the completion on restart. Currently this is hardcoded to 26 as 26 pages worth of companies (7375 companies at 300 per page) were available as of July 15, 2105. When you change this, change the hard coded value in getAllCompaniesFromApi in FADataController. Also change in Search Bar Began Editing in the Events View Controller.
-        // TO DO: Delete Later as now getting the value of the total no of companies to sync from db.
-        // if ([[companiesDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companiesDataController getCompanySyncedUptoPage] integerValue] < 26)
         if ([[companiesDataController getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&[[companiesDataController getCompanySyncedUptoPage] integerValue] < [[companiesDataController getTotalNoOfCompanyPagesToSync] integerValue])
         {
             [companiesDataController upsertUserWithCompanySyncStatus:@"FullSyncAttemptedButFailed" syncedPageNo:[companiesDataController getCompanySyncedUptoPage]];
@@ -604,8 +594,8 @@
     
     // TRACKING EVENT: Search Button Clicked: User clicked the search button to search for a company or ticker.
     // TO DO: Disabling to not track development events. Enable before shipping.
-    /*[FBSDKAppEvents logEvent:@"Search Button Clicked"
-                  parameters:@{ @"Search String" : searchBar.text } ];*/
+    [FBSDKAppEvents logEvent:@"Search Button Clicked"
+                  parameters:@{ @"Search String" : searchBar.text } ];
     
     //[searchBar resignFirstResponder];
     // TO DO: In case you want to clear the search context
@@ -706,7 +696,7 @@
         
         // TRACKING EVENT: Search Initiated: User clicked into the search bar to initiate a search.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Search Initiated"];*/
+        [FBSDKAppEvents logEvent:@"Search Initiated"];
         
         // If the newer companies data is still being synced, give the user a warning message
         if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
@@ -760,7 +750,7 @@
     self.eventResultsController = [secondaryDataController getAllFutureEvents];
     [self.eventsListTable reloadData];
     // TO DO: Delete before shipping v2
-    NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");
+    //NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");
 }
 
 // Show the error message for a temporary period and then fade it if a user message has been generated
@@ -952,9 +942,9 @@
         
         // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Go To Details"
-                      parameters:@{ @"Ticker" : eventTicker,
-                                    @"Name" : (selectedCell.companyName).text } ];*/
+        [FBSDKAppEvents logEvent:@"Go To Details"
+                      parameters:@{ @"Ticker" : [segueDataController getTickerForName:selectedCell.companyName.text],
+                                    @"Name" : (selectedCell.companyName).text } ];
     }
 }
 

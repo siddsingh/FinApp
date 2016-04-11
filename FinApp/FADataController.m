@@ -122,7 +122,7 @@ bool eventsUpdated = NO;
     if (![self.resultsController performFetch:&error]) {
         NSLog(@"ERROR: Getting all companies from data store failed: %@",error.description);
     }
-    // TO DO: Delete.
+    // TO DO: Delete Later.
     else {
 
     }
@@ -336,7 +336,6 @@ bool eventsUpdated = NO;
     NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"name contains[cd] %@ OR ticker contains[cd] %@", searchText, searchText];
     [companyFetchRequest setPredicate:searchPredicate];
     
-    // TO DO: Should it be ascending or descending to get the latest first ?
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
     [companyFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
     
@@ -745,8 +744,6 @@ bool eventsUpdated = NO;
     else if (([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]||[[self getCompanySyncStatus] isEqualToString:@"FullSyncAttemptedButFailed"])&&[[self getCompanySyncedUptoPage] integerValue] != 0) {
         
         pageNo = ([[self getCompanySyncedUptoPage] integerValue] + 1);
-        // TO DO: Delete the hardcoded value. Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value below and in applicationWillTerminate in AppDelegate as well.
-        //noOfPages = 26;
         noOfPages = [[self getTotalNoOfCompanyPagesToSync] integerValue];
         
         // TO DO: For testing, comment before shipping
@@ -825,9 +822,6 @@ bool eventsUpdated = NO;
     }
     
     // Add or Update the Company Data Sync status to SeedSyncDone. Check that all pages have been processed before doing so.
-    // TO DO: Currently this is hardcoded to 26 as 26 pages worth of companies (7517 companies at 300 per page) were available as of Sep 29, 2105. When you change this, change the hard coded value above and in applicationWillTerminate in AppDelegate as well.
-    // TO DO: Delete Later as now getting the value of the total no of companies to sync from db.
-    //if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= 26))
     if ([[self getCompanySyncStatus] isEqualToString:@"FullSyncStarted"]&&((pageNo-1) >= [[self getTotalNoOfCompanyPagesToSync] integerValue]))
     {
         [self upsertUserWithCompanySyncStatus:@"FullSyncDone" syncedPageNo:[NSNumber numberWithInteger:(pageNo-1)]];
@@ -836,7 +830,7 @@ bool eventsUpdated = NO;
     }
 }
 
-// Update the list of companies and their tickers, to include newer companies that have been added since the initial seeded DB. Whenever this is called, the logic here figures out how much needs to be synced. It relies on getAllCompaniesFromApi to do the actual sync.
+// Update the list of companies and their tickers, to include newer companies that have been added since the initial seeded DB. Whenever this is called, the logic here figures out how much needs to be synced. It relies on getAllCompaniesFromApi to do the actual sync. TO DO: Change this logic to go 2 pages behind what is the current total # of pages (74 as of April 8, 2016) after doing a fresh preseed.
 - (void)getIncrementalCompaniesFromApi
 {
     // Get the current total number of company pages that are synced (76 in the preseeded database) and sync from two pages before that page (74) till the newest page if there are more, to capture newly added companies. Do this only if the prior sync has completed successfully.
@@ -844,7 +838,9 @@ bool eventsUpdated = NO;
         
         // Set Currently Synced Upto Page
         NSInteger pageNoCurrentlySynced = 1;
-        pageNoCurrentlySynced = ([[self getCompanySyncedUptoPage] integerValue] - 3);
+        // 1 less than where you want to start the sync since actual sync starts after what has been synced.
+        // TO DO: Change after a fresh preseed to go 2 before. Currently hardcoding to start from page 70 assuming 76 pages in the preseeded db.
+        pageNoCurrentlySynced = ([[self getCompanySyncedUptoPage] integerValue] - 7);
         
         // Set Company Sync Status to In Progress
         [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger:pageNoCurrentlySynced]];
@@ -1223,7 +1219,8 @@ bool eventsUpdated = NO;
 {
     // Get the economic events file path
     NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"EconomicEvents_2016" ofType:@"json"];
-    NSLog(@"Found the json file at: %@",eventsFilePath);
+    // TO DO: Delete Later
+    //NSLog(@"Found the json file at: %@",eventsFilePath);
     
     // Parse the economic events file contents
     
@@ -1240,26 +1237,31 @@ bool eventsUpdated = NO;
         
         // Get the event name
         NSString *eventName = [event objectForKey:@"name"];
-        NSLog(@"The event name: %@", eventName);
+        // TO DO: Delete Later
+        //NSLog(@"The event name: %@", eventName);
         
         // Get the event identifier
         NSString *eventId = [event objectForKey:@"identifier"];
-        NSLog(@"The event identifier: %@", eventId);
+        // TO DO: Delete Later
+        //NSLog(@"The event identifier: %@", eventId);
         
         // Get the agency that puts out the event
         NSString *eventAgency = [event objectForKey:@"agency"];
-        NSLog(@"The event agency: %@", eventAgency);
+        // TO DO: Delete Later
+        //NSLog(@"The event agency: %@", eventAgency);
         
         // Insert the ticker and name for the event in the company data store
         [self insertUniqueCompanyWithTicker:eventId name:eventAgency];
         
-        // Get the short description for the event
-        NSString *eventDesc = [event objectForKey:@"shortDescription"];
-        NSLog(@"The event short description: %@", eventDesc);
+        // Get the short description for the event. Currently hardcoded. Use it later.
+        //NSString *eventDesc = [event objectForKey:@"shortDescription"];
+        // TO DO: Delete Later
+        //NSLog(@"The event short description: %@", eventDesc);
         
         // Get the URL for getting more info on the event
         NSString *eventMoreInfoUrl = [event objectForKey:@"moreInfoUrl"];
-        NSLog(@"The event more info Url: %@", eventMoreInfoUrl);
+        // TO DO: Delete Later
+        //NSLog(@"The event more info Url: %@", eventMoreInfoUrl);
         
         // Get the array of upcoming dates
         NSArray *eventInstances = [event objectForKey:@"instances"];
@@ -1271,16 +1273,19 @@ bool eventsUpdated = NO;
             // Get Related Period to form unique event name for each instance of the Fed Meeting by prepending it to event name.
             NSString *eventRelatedInfo = [eventInstance objectForKey:@"relatedPeriod"];
             NSString *uniqueName = [NSString stringWithFormat:@"%@ %@", eventRelatedInfo, eventName];
-            NSLog(@"The event unique name is: %@", uniqueName);
+            // TO DO: Delete Later
+            //NSLog(@"The event unique name is: %@", uniqueName);
             
             // Get the date for the event instance
             NSNumber *eventDateAsNum = [eventInstance objectForKey:@"date"];
-            NSLog(@"The date on which the event takes place: %@", eventDateAsNum);
+            // TO DO: Delete Later
+            //NSLog(@"The date on which the event takes place: %@", eventDateAsNum);
             NSString *eventDateStr =  [NSString stringWithFormat: @"%@", eventDateAsNum];
             NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
             [eventDateFormatter setDateFormat:@"yyyyMMdd"];
             NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
-            NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+            // TO DO: Delete Later
+            //NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
             
             // Insert each instance into the events datastore
             [self upsertEventWithDate:eventDate relatedDetails:eventMoreInfoUrl relatedDate:nil type:uniqueName certainty:eventRelatedInfo listedCompany:eventId estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
@@ -1497,12 +1502,10 @@ bool eventsUpdated = NO;
             // Make sure the previous date doesn't fall on a Saturday, Sunday. In these cases move it to the previous Friday.
             previousDayString = [previousDayFormatter stringFromDate:currentMinus1Date];
             if ([previousDayString isEqualToString:@"Sat"]) {
-                // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
                 differenceDayComponents.day = -1;
                 currentMinus1Date = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:currentMinus1Date options:0];
             }
             if ([previousDayString isEqualToString:@"Sun"]) {
-                // TO DO: Delete right at the end before shipping. Will identify possible incorrect calculations.
                 differenceDayComponents.day = -2;
                 currentMinus1Date = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:currentMinus1Date options:0];
             }
@@ -1851,7 +1854,6 @@ bool eventsUpdated = NO;
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
     
     // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
-    // TO DO: Needs to be tested more thoroughly before enabling
     dispatch_async(dispatch_get_main_queue(), ^{
         
         [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
@@ -1877,7 +1879,7 @@ bool eventsUpdated = NO;
         if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
             [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
             // TO DO: Delete before shipping v2.0
-            NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
+            //NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
             eventsUpdated = YES;
         }
     }
@@ -1885,12 +1887,13 @@ bool eventsUpdated = NO;
     // Check to see if trending ticker events exist already. If not add those
     if (![self doTrendingTickerEventsExist]) {
         
-        NSLog(@"About to add trending ticker events from remote");
+        // TO DO: Delete Later
+        //NSLog(@"About to add trending ticker events from remote");
         [self performTrendingEventSyncRemotely];
     }
     
     // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete. Any async UI element update has to happen in the main thread.
-    // TO DO: Needs to be tested more thoroughly before enabling
+    // TO DO: Look at this possible easy optimization. Sense if once events updated is set, it kicks in everytime, even when not needed.
     dispatch_async(dispatch_get_main_queue(), ^{
         
         if (eventsUpdated) {
@@ -2316,7 +2319,7 @@ bool eventsUpdated = NO;
 - (void)sendEventsChangeNotification {
     
     // TO DO: Delete Before Shipping v2
-    NSLog(@"EVENT RELOAD: From Data Controller");
+    //NSLog(@"EVENT RELOAD: From Data Controller");
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 

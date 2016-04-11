@@ -92,7 +92,7 @@
     self.eventDetailsTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     // TO DO: Delete before shipping v2
-    NSLog(@"Event Type in Details is: %@ and Parent Ticker is:%@",self.eventType,self.parentTicker);
+    //NSLog(@"Event Type in Details is: %@ and Parent Ticker is:%@",self.eventType,self.parentTicker);
 }
 
 #pragma mark - Event Details Table
@@ -136,7 +136,7 @@
     // If device is ipad
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         
-        // Set title
+        // Set title. Don't use a title for related data table anymore.
         // sectionTitle = @"RELATED DATA";
     }
     
@@ -450,9 +450,9 @@
         
         // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Unset Reminder"
+        [FBSDKAppEvents logEvent:@"Unset Reminder"
                       parameters:@{ @"Ticker" : self.parentTicker,
-                                    @"Event Certainty" : self.eventCertainty } ];*/
+                                    @"Event Certainty" : self.eventCertainty } ];
     }
     
     // If not, create the reminder and style the button to post set styling
@@ -468,9 +468,9 @@
         
         // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Create Reminder"
+        [FBSDKAppEvents logEvent:@"Create Reminder"
                       parameters:@{ @"Ticker" : self.parentTicker,
-                                    @"Event Certainty" : self.eventCertainty } ];*/
+                                    @"Event Certainty" : self.eventCertainty } ];
     }
 }
 
@@ -730,7 +730,7 @@
     }
     
     // TO DO: Delete later before shipping v2
-    NSLog(@"Number of rows is:%ld", (long)numberOfPieces);
+    //NSLog(@"Number of rows is:%ld", (long)numberOfPieces);
     return numberOfPieces;
 }
 

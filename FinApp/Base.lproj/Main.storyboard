@@ -145,8 +145,9 @@
                                                     </variation>
                                                     <variation key="heightClass=regular-widthClass=regular">
                                                         <mask key="constraints">
-                                                            <include reference="0IR-kz-x0Q"/>
+                                                            <exclude reference="0IR-kz-x0Q"/>
                                                             <include reference="arY-V4-kX6"/>
+                                                            <exclude reference="ywc-5f-vdG"/>
                                                         </mask>
                                                     </variation>
                                                 </label>
@@ -186,7 +187,7 @@
                                                     </variation>
                                                     <variation key="heightClass=regular-widthClass=regular">
                                                         <mask key="constraints">
-                                                            <include reference="bIe-nN-gk9"/>
+                                                            <exclude reference="bIe-nN-gk9"/>
                                                         </mask>
                                                     </variation>
                                                 </label>
@@ -302,8 +303,8 @@
                                                 <mask key="constraints">
                                                     <exclude reference="3Dz-xd-rpt"/>
                                                     <exclude reference="M5C-CS-imi"/>
-                                                    <include reference="1Je-it-QTn"/>
-                                                    <include reference="5jd-kq-907"/>
+                                                    <exclude reference="1Je-it-QTn"/>
+                                                    <exclude reference="5jd-kq-907"/>
                                                     <include reference="1Nh-X4-Wg8"/>
                                                     <exclude reference="8Sx-ky-tkV"/>
                                                     <exclude reference="Yi1-ph-DR0"/>
