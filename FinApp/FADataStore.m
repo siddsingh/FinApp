@@ -74,7 +74,7 @@ static FADataStore *sharedInstance;
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
     // TO DO: UNCOMMENT FOR PRE SEEDING DB: Setting WAL off for SQLite so that we don't have to worry about copying the WAL and SHM files. note: you need to set the options in the next instruction from nil to walOffOptions.
-    // NSDictionary *walOffOptions = @{ NSSQLitePragmasOption : @{@"journal_mode" : @"DELETE"} };
+    //NSDictionary *walOffOptions = @{ NSSQLitePragmasOption : @{@"journal_mode" : @"DELETE"} };
     
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
         /*

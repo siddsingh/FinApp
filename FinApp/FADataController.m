@@ -448,11 +448,11 @@ bool eventsUpdated = NO;
     return exists;
 }
 
-// Check to see if more than the 5 seed synced events of type quarterly earnings exist in the data store and return accordingly. Typically used to check if trending ticker events have been synced or not.
+// Check to see if more than the 15 synced events of type quarterly earnings exist in the data store and return accordingly. Typically used to check if trending ticker events have been synced or not.
 - (BOOL)doTrendingTickerEventsExist
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
-    BOOL exists = NO;
+    BOOL exists = YES;
     
     NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
@@ -465,8 +465,14 @@ bool eventsUpdated = NO;
     if (error) {
         NSLog(@"ERROR: Retrieving events of type Quarterly Earnings, to check if Trending ticker events exist, from event data store failed: %@",error.description);
     }
-    if (events.count != 5) {
+    // Fresh install
+    if (events.count == 15) {
         exists = YES;
+    }
+    
+    // Upgrade, less than 10 events added by user
+    if (events.count < 15) {
+        exists = NO;
     }
     
     return exists;
@@ -838,9 +844,8 @@ bool eventsUpdated = NO;
         
         // Set Currently Synced Upto Page
         NSInteger pageNoCurrentlySynced = 1;
-        // 1 less than where you want to start the sync since actual sync starts after what has been synced.
-        // TO DO: Change after a fresh preseed to go 2 before. Currently hardcoding to start from page 70 assuming 76 pages in the preseeded db.
-        pageNoCurrentlySynced = ([[self getCompanySyncedUptoPage] integerValue] - 7);
+        // 1 less than where you want to start the sync since actual sync starts after what has been synced. This will start the sync 3 pages before currently set expected to be 74
+        pageNoCurrentlySynced = ([[self getCompanySyncedUptoPage] integerValue] - 4);
         
         // Set Company Sync Status to In Progress
         [self upsertUserWithCompanySyncStatus:@"FullSyncStarted" syncedPageNo:[NSNumber numberWithInteger:pageNoCurrentlySynced]];
@@ -1799,34 +1804,17 @@ bool eventsUpdated = NO;
 // Add tickers and events for trending stocks.
 - (void)performTrendingEventSyncRemotely {
     
-    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
-    
-    // Add 7 trending company tickers and name to the company database.
-    Company *company1 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    company1.ticker = @"TSLA";
-    company1.name = @"Tesla Motors,Inc";
-    Company *company2 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    company2.ticker = @"GPRO";
-    company2.name = @"Go Pro";
-    Company *company3 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    company3.ticker = @"BABA";
-    company3.name = @"Alibaba";
-    Company *company4 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    company4.ticker = @"ANET";
-    company4.name = @"Arista Networks";
-    Company *company5 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    company5.ticker = @"LULU";
-    company5.name = @"Lululemon Athletica,Inc";
-    Company *company6 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    company6.ticker = @"BOX";
-    company6.name = @"Box,Inc";
-    Company *company7 = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:dataStoreContext];
-    company7.ticker = @"SQ";
-    company7.name = @"Square,Inc";
-    NSError *error;
-    if (![dataStoreContext save:&error]) {
-        NSLog(@"ERROR: Batch Saving companies during trending events sync failed: %@",error.description);
-    }
+    // Add 10 trending company tickers and name to the company database.
+    [self insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla Motors,Inc"];
+    [self insertUniqueCompanyWithTicker:@"GPRO" name:@"Go Pro"];
+    [self insertUniqueCompanyWithTicker:@"BABA" name:@"Alibaba"];
+    [self insertUniqueCompanyWithTicker:@"ANET" name:@"Arista Networks"];
+    [self insertUniqueCompanyWithTicker:@"LULU" name:@"Lululemon Athletica,Inc"];
+    [self insertUniqueCompanyWithTicker:@"BOX" name:@"Box,Inc"];
+    [self insertUniqueCompanyWithTicker:@"SQ" name:@"Square,Inc"];
+    [self insertUniqueCompanyWithTicker:@"ORCL" name:@"Oracle"];
+    [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike,Inc"];
+    [self insertUniqueCompanyWithTicker:@"UA" name:@"Under Armour Inc"];
     
     // Get events for these trending companies from the remote data source
     [self getAllEventsFromApiWithTicker:@"TSLA"];
@@ -1836,6 +1824,9 @@ bool eventsUpdated = NO;
     [self getAllEventsFromApiWithTicker:@"LULU"];
     [self getAllEventsFromApiWithTicker:@"BOX"];
     [self getAllEventsFromApiWithTicker:@"SQ"];
+    [self getAllEventsFromApiWithTicker:@"ORCL"];
+    [self getAllEventsFromApiWithTicker:@"NKE"];
+    [self getAllEventsFromApiWithTicker:@"UA"];
     
     eventsUpdated = YES;
 }
@@ -1852,12 +1843,6 @@ bool eventsUpdated = NO;
     
     // Get all events in the local data store.
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
-    
-    // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
-    });
     
     // For every event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
     // 1. If the speculated date of an event is within 31 days from today, then we consider it likely that the event has been updated
@@ -1877,9 +1862,20 @@ bool eventsUpdated = NO;
         
         // See if the event qualifies for the update. If it does, call the remote data source to update it.
         if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
+            
+            // Start the busy spinner only the first time
+            if (!eventsUpdated) {
+                // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
+                dispatch_async(dispatch_get_main_queue(), ^{
+                 // TO DO: Delete Later
+                 NSLog(@"About to start busy spinner");
+                 [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+                 });
+            }
+            
             [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
             // TO DO: Delete before shipping v2.0
-            //NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
+            NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
             eventsUpdated = YES;
         }
     }
@@ -1888,21 +1884,21 @@ bool eventsUpdated = NO;
     if (![self doTrendingTickerEventsExist]) {
         
         // TO DO: Delete Later
-        //NSLog(@"About to add trending ticker events from remote");
+        NSLog(@"About to add trending ticker events from remote");
         [self performTrendingEventSyncRemotely];
     }
     
-    // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete. Any async UI element update has to happen in the main thread.
-    // TO DO: Look at this possible easy optimization. Sense if once events updated is set, it kicks in everytime, even when not needed.
-    dispatch_async(dispatch_get_main_queue(), ^{
+    // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.
+    if (eventsUpdated) {
         
-        if (eventsUpdated) {
-            
+        // Any async UI element update has to happen in the main thread.
+        dispatch_async(dispatch_get_main_queue(), ^{
             [self sendEventsChangeNotification];
-        }
-        
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
-    });
+            // TO DO: Delete Later.
+            NSLog(@"About to stop busy spinner");
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+        });
+    }
 }
 
 #pragma mark - User State Related

@@ -37,6 +37,18 @@
     
     // Override point for customization after application launch.
     
+    // TO DO: UNCOMMENT FOR PRE SEEDING DB:
+    // Making sure that the core data store is instantiated in the main thread
+    // Create a new FADataController so that this thread has its own MOC
+    /*FADataController *econEventDataController = [[FADataController alloc] init];
+    
+    // Adding the new economic events only if it's not been added before.
+    if (![econEventDataController doesEconEventExist]) {
+        // TO DO: Delete Later before shipping v2.1
+        NSLog(@"About to add econ events to the db the first time");
+        [econEventDataController getAllEconomicEventsFromLocalStorage];
+    }*/
+    
     // Set the status bar text color to white. This is done in conjunction with setting View controller-based status bar appearance property to NO in Info.plist. To revert delete that property and remove this line.
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     // With a light app theme, setting the status bar style to default dark theme. 
@@ -72,18 +84,6 @@
     
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
-    // Making sure that the core data store is instantiated in the main thread
-    // Create a new FADataController so that this thread has its own MOC
-    FADataController *eventDataController = [[FADataController alloc] init];
-    
-    // Adding the new economic events only if it's not been added before.
-    if (![eventDataController doesEconEventExist]) {
-        [eventDataController getAllEconomicEventsFromLocalStorage];
-    }
-    
-    // TO DO: This is an extra call, everytime the app becomes active but is needed to complete the datastore instantiation process. Optimize this later.
-    //[eventDataController getAllEvents];
-    
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
         
@@ -103,7 +103,7 @@
         // If the full sync of company data has failed, retry it
         [self refreshCompanyInfoIfNeededFromApiInBackground]; */
         
-        // TO DO: COMMENT FOR PRE SEEDING DB: Once preseeded *CHANGE* the sync page settings in FADataController-getIncrementalCompaniesFromApi. This does an incremental update of newer companies since the last time the data was synced. This data should already be captured in the preseeding, so not needed for preseeding.
+        // TO DO: COMMENT FOR PRE SEEDING DB: This does an incremental update of newer companies since the last time the data was synced. This data should already be captured in the preseeding, so not needed for preseeding.
         [self doCompanyUpdateInBackground];
         
         // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data.
@@ -176,10 +176,10 @@
     NSInteger daysBetween = [components day];
     
     // TO DO: For testing, comment before shipping. Keeping it around for future pre seeding testing.
-    //NSLog(@"Days since last sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
+    NSLog(@"Days since last sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
     
-    // If it's been a week since the last company sync, do an incremental sync
-    if ((int)daysBetween >= 7)
+    // If it's been 45 days since the last company sync, do an incremental sync
+    if ((int)daysBetween >= 45)
     {
         // Creating a task that continues to process in the background.
         __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
@@ -193,7 +193,7 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
             // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
-            //NSLog(@"About to start the background get incremental companies from API");
+            NSLog(@"About to start the background get incremental companies from API");
             
             // Create a new FADataController so that this thread has its own MOC
             FADataController *companyBkgrndDataController = [[FADataController alloc] init];

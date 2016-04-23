@@ -101,8 +101,8 @@
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
     differenceDayComponents.day = -1;
     NSDate *yesterday = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:today options:0];
-   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"MSFT" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
-   [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"AAPL" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
+    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"AAPL" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
+    [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"Unknown" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Estimated" listedCompany:@"MSFT" estimatedEps:[NSNumber numberWithDouble:0.1] priorEndDate:[NSDate date] actualEpsPrior:[NSNumber numberWithDouble:0.2]];
     [self.primaryDataController upsertEventWithDate:yesterday relatedDetails:@"After Market Close" relatedDate:yesterday type:@"Quarterly Earnings" certainty:@"Confirmed" listedCompany:@"AVGO"]; */
     
     // Register a listener for changes to events stored locally
@@ -803,20 +803,18 @@
 // Respond to the notification to start the busy spinner
 - (void)startBusySpinner:(NSNotification *)notification {
     
-    // Set the busy spinner to spin. Do this in a background thread as the main
-    // thread is being taken up by the table view. It's a best practice.
-    [self.remoteFetchSpinner performSelectorInBackground:@selector(startAnimating) withObject:self];
+    // Set the busy spinner to spin.
+    [self.remoteFetchSpinner startAnimating];
 }
 
 // Respond to the notification to stop the busy spinner
 - (void)stopBusySpinner:(NSNotification *)notification {
     
-    // Set the busy spinner to stop spinning. Do this in a background thread as the main
-    // thread is being taken up by the table view. It's a best practice.
-    [self.remoteFetchSpinner performSelectorInBackground:@selector(stopAnimating) withObject:self];
+    // Set the busy spinner to stop spinning.
+    [self.remoteFetchSpinner stopAnimating];
 }
 
-#pragma mark - Reminder Related
+#pragma mark - Reminder Relate
 
 // Set the getter for the user event store property so that only one event store object gets created
 - (EKEventStore *)userEventStore {

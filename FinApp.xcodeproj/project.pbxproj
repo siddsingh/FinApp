@@ -12,8 +12,6 @@
 		9E0CC2A31C894D54009E088C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */; };
 		9E0CC2A41C894D58009E088C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */; };
 		9E2C2A4A1C8786DC00297F37 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */; };
-		9E5D1DDC1C0D3FA400BA0B34 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */; };
-		9E5D1DDD1C0D3FA400BA0B34 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */; };
 		9E602D1A19E655DF00ACDEC6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1919E655DF00ACDEC6 /* main.m */; };
 		9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */; };
 		9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */; };
@@ -40,6 +38,8 @@
 		9EBD8EEA1BAC9DAB008A0370 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */; };
 		9EBD8EED1BAC9EA0008A0370 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */; };
 		9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */; };
+		9ECE7B471CBF60BF000F8D77 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */; };
+		9ECE7B481CBF60BF000F8D77 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,7 +56,6 @@
 		9E0AC7B61C6EB9CA0078EAA5 /* FACompanyInfoStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FACompanyInfoStore.h; sourceTree = "<group>"; };
 		9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FACompanyInfoStore.m; sourceTree = "<group>"; };
 		9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
-		9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = FinApp.sqlite; sourceTree = "<group>"; };
 		9E602D1419E655DF00ACDEC6 /* Knotifi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Knotifi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D1819E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E602D1919E655DF00ACDEC6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -96,6 +95,7 @@
 		9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		9EBD8EEB1BAC9EA0008A0370 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = FinApp.sqlite; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,8 +164,8 @@
 				9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
+				9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
-				9E5D1DDB1C0D3FA400BA0B34 /* FinApp.sqlite */,
 				9EA8E47B1C99053C002B1F5E /* EconomicEvents_2016.json */,
 				9EBD8EE41B82CEB9008A0370 /* Action.h */,
 				9EBD8EE51B82CEB9008A0370 /* Action.m */,
@@ -293,10 +293,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E602D2619E655DF00ACDEC6 /* Main.storyboard in Resources */,
+				9ECE7B471CBF60BF000F8D77 /* FinApp.sqlite in Resources */,
 				9EA8E47C1C99053C002B1F5E /* EconomicEvents_2016.json in Resources */,
 				9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */,
 				9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */,
-				9E5D1DDC1C0D3FA400BA0B34 /* FinApp.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,7 +304,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9E5D1DDD1C0D3FA400BA0B34 /* FinApp.sqlite in Resources */,
+				9ECE7B481CBF60BF000F8D77 /* FinApp.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
