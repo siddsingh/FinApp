@@ -104,10 +104,11 @@
     return 1;
 }
 
+// TO DO: Delete before shipping v2.5
 // Set the header for the table view to a special table cell that serves as header.
 // TO DO: Currently only set a customized header for non ipad devices since there are weird
 // alignment problems with ipad.
--(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+/*-(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     
     UITableViewCell *headerView = nil;
     
@@ -124,12 +125,13 @@
     }
     
     return headerView;
-}
+}*/
 
+// TO DO: Delete before shipping v2.5
 // Set the section header title for the table view that serves as the overall header.
 // TO DO: Currently only do this for the ipad since we can't use a customized header for it. See above.
 // When we are able to set a customized header for the ipad this won't be needed.
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+/*- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     NSString *sectionTitle = nil;
     
@@ -141,7 +143,7 @@
     }
     
     return sectionTitle;
-}
+}*/
 
 // Set the table header to 0 height as we don't need this for the details table.
 // TO DO: Test on the ipad and then remove the above 2 header related methods as they are no longer needed.

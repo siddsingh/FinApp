@@ -64,10 +64,14 @@
     // Make the message bar fully transparent so that it's invisible to the user
     self.messageBar.alpha = 0.0;
     
+    // TO DO: Delete before shipping v2.5
     // Show today's date in the navigation bar header.
-    NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
+    /*NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
     [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
-    [self.navigationController.navigationBar.topItem setTitle:[[todayDateFormatter stringFromDate:[NSDate date]] uppercaseString]];
+    [self.navigationController.navigationBar.topItem setTitle:[[todayDateFormatter stringFromDate:[NSDate date]] uppercaseString]];*/
+    
+    // Set navigation bar header to title "Upcoming Events"
+    [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING EVENTS"];
     
     // Change the color of the events search bar placeholder text and text entered to be a black text color.
     [self.eventsSearchBar setBackgroundImage:[UIImage new]];
@@ -87,6 +91,14 @@
     UIButton *searchClearBtn = [eventSearchBarInputFld valueForKey:@"_clearButton"];
     [searchClearBtn setImage:[searchClearBtn.imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
     searchClearBtn.tintColor = [UIColor blackColor];
+    
+    // Format the event type selector
+    // Set text color for selected segment to a Black color
+    [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
+     
+    // Set text color of all others to a medium dark gray used in the event dates (R:113, G:113, B:113)
+    [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
+    
     
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
@@ -195,10 +207,11 @@
     return 1;
 }
 
+// TO DO: Delete before shipping v2.5
 // Set the header for the table view to a special table cell that serves as header.
 // TO DO: Currently only set a customized header for non ipad devices since there are weird
 // alignment problems with ipad.
--(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+/*-(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     
     UITableViewCell *headerView = nil;
     
@@ -211,16 +224,17 @@
     else {
         
         // Set the header to the appropriate table cell
-        headerView = [tableView dequeueReusableCellWithIdentifier:@"EventsTableHeader"];
+        //headerView = [tableView dequeueReusableCellWithIdentifier:@"EventsTableHeader"];
     }
     
     return headerView;
-}
+}*/
 
+// TO DO: Delete before shipping v2.5
 // Set the section header title for the table view that serves as the overall header.
 // TO DO: Currently only do this for the ipad since we can't use a customized header for it. See above.
 // When we are able to set a customized header for the ipad this won't be needed.
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+/*- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     NSString *sectionTitle = nil;
     
@@ -228,11 +242,11 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         
        // Set title
-       sectionTitle = @"Upcoming Events";
+       //sectionTitle = @"Upcoming Events";
     }
     
     return sectionTitle;
-}
+}*/
 
 // Return number of rows in the events list table view
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

@@ -44,4 +44,7 @@
 // Label to show error and informational messages
 @property (weak, nonatomic) IBOutlet UILabel *messageBar;
 
+// Segmented control for selecting event type
+@property (weak, nonatomic) IBOutlet UISegmentedControl *eventTypeSelector;
+
 @end
