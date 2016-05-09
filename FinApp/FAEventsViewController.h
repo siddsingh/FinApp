@@ -47,4 +47,7 @@
 // Segmented control for selecting event type
 @property (weak, nonatomic) IBOutlet UISegmentedControl *eventTypeSelector;
 
+// Event type selection has been made
+- (IBAction)eventTypeSelectAction:(id)sender;
+
 @end

@@ -376,6 +376,9 @@
                                         <exclude reference="xxa-4c-ykp"/>
                                     </mask>
                                 </variation>
+                                <connections>
+                                    <action selector="eventTypeSelectAction:" destination="WNQ-2i-B77" eventType="valueChanged" id="1kr-Zo-Gfo"/>
+                                </connections>
                             </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>

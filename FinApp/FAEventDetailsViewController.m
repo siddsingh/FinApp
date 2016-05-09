@@ -219,7 +219,7 @@
             
             // Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                // Bright Blue Color
+                // Econ Blue Color
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
             }
@@ -258,7 +258,7 @@
             
             // Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                // Bright Blue Color
+                // Econ Blue Color
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
             }
