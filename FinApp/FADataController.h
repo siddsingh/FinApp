@@ -57,6 +57,15 @@
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllFutureEvents;
 
+// Get all future earnings events including today. Returns a results controller with identities of all earnings Events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllFutureEarningsEvents;
+
+// Get all future economic events including today. Returns a results controller with identities of all economic events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllFutureEconEvents;
+
+// Get all future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllFutureProductEvents;
+
 // Search and return all future events that match the search text on "ticker" or "name" fields for the listed Company or the "type" field on the
 // event. Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15)
 // objects’ data will be fetched from the data store at a time.
