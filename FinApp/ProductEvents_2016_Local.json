@@ -11,8 +11,8 @@
                 "moreInfoTitle":"iPhone 7 Roundup on Mac Rumors",
                 "moreInfoUrl":"http://www.macrumors.com/roundup/iphone-7/",
                 "updatedOn":20160510,
-                "confidence":0.5,
-                "approved":1.0
+                "confidence":1.0,
+                "approved":false
               },
               {
                 "ticker":"GOOGL",
@@ -26,7 +26,7 @@
                 "moreInfoUrl":"http://www.ubergizmo.com/2016/05/2016-nexus-release-date-specs-features/",
                 "updatedOn":20160510,
                 "confidence":0.5,
-                "approved":1.0
+                "approved":true
               }
  ]
 }

@@ -106,6 +106,9 @@
     // Ensure that the remote fetch spinner is not animating thus hidden
     [self.remoteFetchSpinner stopAnimating];
     
+    // TO DO: TESTING ONLY, DELETE before shipping v2.5
+    [self.primaryDataController getAllProductEventsFromApi];
+    
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
     // Get the date for the event represented by the cell
     /*NSDate *today = [NSDate date];

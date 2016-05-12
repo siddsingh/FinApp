@@ -127,6 +127,11 @@
 // Get all the economic events and details from local storage, which currently is a json file and write them to the data store.
 - (void)getAllEconomicEventsFromLocalStorage;
 
+#pragma mark - Methods to call Product Events Data Source APIs
+
+// Get all the product events and details from the data source APIs
+- (void)getAllProductEventsFromApi;
+
 #pragma mark - Methods to call Company Stock Data Source APIs
 
 // Get the historical and current stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.

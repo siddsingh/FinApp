@@ -1324,7 +1324,7 @@ bool eventsUpdated = NO;
     NSDictionary *parsedContents = [NSJSONSerialization JSONObjectWithData:[eventsJsonStr dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
     
     // Loop through the parsed object to get the various economic events and their details
-    // Get the list of companies first from the overall response
+    // Get the list of events first
     NSArray *parsedEvents = [parsedContents objectForKey:@"eventSets"];
     
     for (NSDictionary *event in parsedEvents) {
@@ -1383,6 +1383,117 @@ bool eventsUpdated = NO;
             
             // Insert each instance into the events datastore
             [self upsertEventWithDate:eventDate relatedDetails:eventMoreInfoUrl relatedDate:nil type:uniqueName certainty:eventRelatedInfo listedCompany:eventId estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+        }
+    }
+}
+
+#pragma mark - Methods to call Product Events Data Source APIs
+
+// Get all the product events and details from the data source APIs
+- (void)getAllProductEventsFromApi
+{
+    // Get the product events file path
+    NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"ProductEvents_2016_Local" ofType:@"json"];
+    // TO DO: Delete Later
+    NSLog(@"Found the json file at: %@",eventsFilePath);
+    
+    // Parse the product events file contents
+    /* This is the current JSON structure of the response
+     "productEvents":[
+     {
+     "ticker":"AAPL",
+     "name":"iPhone 7",
+     "type":"Product_Launch",
+     "date":20160915,
+     "time":"NA",
+     "impact":"Very High",
+     "impactDescription":"About 62% of Apple's revenues.",
+     "moreInfoTitle":"iPhone 7 Roundup on Mac Rumors",
+     "moreInfoUrl":"http://www.macrumors.com/roundup/iphone-7/",
+     "updatedOn":20160510,
+     "confidence":0.5,
+     "approved":1.0
+     }, */
+    
+    // Get the contents into a parsed object
+    NSError *error;
+    NSString *eventsJsonStr = [[NSString alloc] initWithContentsOfFile:eventsFilePath encoding:NSUTF8StringEncoding error:&error];
+    NSDictionary *parsedContents = [NSJSONSerialization JSONObjectWithData:[eventsJsonStr dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+    
+    // Loop through the parsed object to get the various product events and their details
+    // Get the list of events first
+    NSArray *parsedEvents = [parsedContents objectForKey:@"productEvents"];
+    
+    for (NSDictionary *event in parsedEvents) {
+        
+        // Get the ticker for the event's parent company
+        NSString *parentTicker = [event objectForKey:@"ticker"];
+        // TO DO: Delete Later
+        NSLog(@"The event parent company is: %@", parentTicker);
+        
+        // Get the event raw name e.g. iPhone 7
+        NSString *eventName = [event objectForKey:@"name"];
+        // TO DO: Delete Later
+        NSLog(@"The event raw name is: %@", eventName);
+        
+        // Get the event type
+        NSString *eventType = [event objectForKey:@"type"];
+        // TO DO: Delete Later
+        NSLog(@"The event type is: %@", eventType);
+        
+        // Construct the formatted event name from raw name and event type e.g. iPhone 7 Launch
+        NSArray *typeComponents = [eventType componentsSeparatedByString:@"_"];
+        eventName = [eventName stringByAppendingString:@" "];
+        eventName = [eventName stringByAppendingString:typeComponents.lastObject];
+        NSLog(@"The event formatted name is: %@", eventName);
+        
+        // Get the event date
+        NSNumber *eventDateAsNum = [event objectForKey:@"date"];
+        // TO DO: Delete Later
+        NSLog(@"The date on which the event takes place: %@", eventDateAsNum);
+        NSString *eventDateStr =  [NSString stringWithFormat: @"%@", eventDateAsNum];
+        NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+        [eventDateFormatter setDateFormat:@"yyyyMMdd"];
+        NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
+        // TO DO: Delete Later
+        NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+        
+        // TO DO: Fix when you add a new table in the data model for event characteristics.
+        // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, Time String and More Info Title i.e. (Impact_Impact Description_TimeString_MoreInfoTitle)
+        NSString *eventAddtlInfo = [NSString stringWithFormat:@"%@_%@_%@_%@", [event objectForKey:@"impact"], [event objectForKey:@"impactDescription"], [event objectForKey:@"time"], [event objectForKey:@"moreInfoTitle"]];
+        NSLog(@"The event addtl info with Impact, Impact Description, Time String and More Info Title is: %@", eventAddtlInfo);
+        
+        // Get the URL to a source with the best related information
+        NSString *eventMoreInfoUrl = [event objectForKey:@"moreInfoUrl"];
+        // TO DO: Delete Later
+        NSLog(@"The event more info Url: %@", eventMoreInfoUrl);
+        
+        // Get the updated on date
+        NSNumber *updatedOnDateAsNum = [event objectForKey:@"updatedOn"];
+        // TO DO: Delete Later
+        NSLog(@"The updated on date is: %@", updatedOnDateAsNum);
+        NSString *updatedOnDateStr =  [NSString stringWithFormat: @"%@", updatedOnDateAsNum];
+        NSDate *updatedOnDate = [eventDateFormatter dateFromString:updatedOnDateStr];
+        // TO DO: Delete Later
+        NSLog(@"The updated on date formatted as a Date: %@",updatedOnDate);
+        
+        // Construct if the event is "Estimated" or "Confirmed" based on confidence value
+        // Currently, keeping it simple, if the confidence is 0.5 it's estimated, if it's 1.0 it's confirmed.
+        NSString *confidenceStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"confidence"]];
+        if ([confidenceStr isEqualToString:@"0.5"]) {
+            confidenceStr = @"Estimated";
+        }
+        if ([confidenceStr isEqualToString:@"1"]) {
+            confidenceStr = @"Confirmed";
+        }
+        NSLog(@"The confidence string is: %@",confidenceStr);
+        
+        // Check if this event is approved or not. Only if approved it will be added to local data store.
+        BOOL approved = [[event objectForKey:@"approved"] boolValue];
+        if(approved) {
+            NSLog(@"This entry is APPROVED");
+        } else {
+            NSLog(@"This entry is NOT APPROVED");
         }
     }
 }
