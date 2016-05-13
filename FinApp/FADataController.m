@@ -343,6 +343,7 @@ bool eventsUpdated = NO;
 }
 
 // Get all future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -355,8 +356,8 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the event and date filter
-    // TO DO: Before shipping v2.5. Fix when product architecture has been decided.
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND listedCompany.ticker contains %@", todaysDate, @"ECONOMY_"];
+    // NOTE: If there is a new type of product event like launch or conference added, add that here as well
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@)", todaysDate, @"Launch", @"Conference"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -510,6 +511,38 @@ bool eventsUpdated = NO;
     }
     
     return existingEvent;
+}
+
+// Check to see an event of a certain type exists for a given company ticker. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (BOOL)doesEventExistForParentEventTicker:(NSString *)eventCompanyTicker andEventType:(NSString *)eventType {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL exists = NO;
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // TO DO: Current assumption is that an event is uniquely identified by the combination of above 2 fields. This might need to change in the future.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type =[c] %@",eventCompanyTicker, eventType];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting an event of a particular type, while checking for it's existence, from data store failed: %@",error.description);
+    }
+    if (events.count > 1) {
+        NSLog(@"ERROR: Found more than 1 event for ticker:%@ and event type:%@ in the Event Data Store", eventCompanyTicker, eventType);
+    }
+    // If the event exists, return true.
+    if (events) {
+        
+        exists = YES;
+    }
+    
+    // else return false
+    return exists;
 }
 
 // Check to see if a single economic event exists in the event data store and return accordingly. Typically used to
@@ -1063,7 +1096,7 @@ bool eventsUpdated = NO;
 
 #pragma mark - Methods to call Company Event Data Source APIs
 
-// Get the event details for a company given it's ticker.
+// Get the event details for a company given it's ticker. NOTE: This is somewhat of a misnomer as this call only fetches the earnings event details not others like product events.
 - (void)getAllEventsFromApiWithTicker:(NSString *)companyTicker
 {
     // Get the event details for a company given it's ticker. Call the following API:
@@ -1095,7 +1128,7 @@ bool eventsUpdated = NO;
     if (error == nil)
     {
         // TO DO: Delete Later, for testing
-        //NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
+        NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
         //NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         // Process the response that contains the events for the company.
         [self processEventsResponse:responseData forTicker:companyTicker];
@@ -1387,7 +1420,7 @@ bool eventsUpdated = NO;
     }
 }
 
-#pragma mark - Methods to call Product Events Data Source APIs
+#pragma mark - Methods for Product Events Data
 
 // Get all the product events and details from the data source APIs
 - (void)getAllProductEventsFromApi
@@ -1489,13 +1522,65 @@ bool eventsUpdated = NO;
         NSLog(@"The confidence string is: %@",confidenceStr);
         
         // Check if this event is approved or not. Only if approved it will be added to local data store.
+        // Before updating, check if the earnings event for that company exists. If not, sync it.
         BOOL approved = [[event objectForKey:@"approved"] boolValue];
         if(approved) {
             NSLog(@"This entry is APPROVED");
+            
+            // Check if earnings event exists for this ticker. If not fetch it, since we don't want a company that has only a product event and no earnings event.
+            if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
+                
+                [self getAllEventsFromApiWithTicker:parentTicker];
+            }
+            
+            // Insert each instance into the events datastore
+            [self upsertEventWithDate:eventDate relatedDetails:eventMoreInfoUrl relatedDate:updatedOnDate type:eventName certainty:confidenceStr listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+            
+            // TO DO: Fix when you add a new table in the data model for event characteristics.
+            // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, Time String and More Info Title i.e. (Impact_Impact Description_TimeString_MoreInfoTitle). Insert the eventhistory record
+            [self insertHistoryWithPreviousEvent1Date:nil previousEvent1Status:eventAddtlInfo previousEvent1RelatedDate:nil currentDate:nil previousEvent1Price:nil previousEvent1RelatedPrice:nil currentPrice:nil parentEventTicker:parentTicker parentEventType:eventName];
+            
         } else {
             NSLog(@"This entry is NOT APPROVED");
         }
     }
+}
+
+// Check to see if 1) product events have been synced initially. 2) If there are new entries for product events on the server side. In either of these cases return true
+// NOTE: If there is a new type of product event like launch or conference is added, add that here as well
+- (BOOL)doProductEventsNeedToBeAddedRefreshed
+{
+    // Check if product events are present in the local db
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL needed = NO;
+    
+    // Get all events of type product events.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the event type filter.
+    // NOTE: If there is a new type of product event like launch or conference is added, add that here as well
+    NSPredicate *typePredicate = [NSPredicate predicateWithFormat:@"type contains[cd] %@ OR type contains[cd] %@", @"Launch", @"Conference"];
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:typePredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting events, while checking for product events existence, from data store failed: %@",error.description);
+    }
+    // If the events exist, return false.
+    if (!events) {
+        
+        needed = YES;
+    }
+    
+    // TO DO: Uncomment Before shipping v2.5 if server side work here is ready.
+    // Code for when you are adding server side check for new additions to the server side events.
+    /* Call API to see if true, false if there are new approved events added.
+       Parse API response
+       If true, set needed = YES; */
+    
+     return needed;
 }
 
 #pragma mark - Methods to call Company Stock Data Source APIs
@@ -2037,6 +2122,7 @@ bool eventsUpdated = NO;
 // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
 // 2. If the confirmed date of the event is in the past.
 // ADDITIONALLY: Add trending tickers only initially
+// PLUS: Check to see if product events need to be added or refreshed. If yes, do that.
 - (void)updateEventsFromRemoteIfNeeded {
     
     eventsUpdated = NO;
@@ -2044,11 +2130,12 @@ bool eventsUpdated = NO;
     // Get all events in the local data store.
     NSFetchedResultsController *eventResultsController = [self getAllEvents];
     
-    // For every event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
+    // For every earnings event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
     // 1. If the speculated date of an event is within 31 days from today, then we consider it likely that the event has been updated
     // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
     // 2. If the confirmed date of the event is in the past.
-    // An event that overall qualifies will be refetched from the remote data source and updated in the local data store.
+    // An earnings event that overall qualifies will be refetched from the remote data source and updated in the local data store.
+    // NOTE: TO DO: Fix when implementing server side storage of econ events. Currently economic events don't get picked up for refresh as the certainty field for them is used to store their time period information which does not match the if filter and hence don't get picked up.
     for (Event *localEvent in eventResultsController.fetchedObjects)
     {
         // Get Today's Date
@@ -2086,6 +2173,14 @@ bool eventsUpdated = NO;
         // TO DO: Delete Later
         NSLog(@"About to add trending ticker events from remote");
         [self performTrendingEventSyncRemotely];
+    }
+    
+    // Check to see if product events need to be added or refreshed. If yes, do that.
+    if (![self doProductEventsNeedToBeAddedRefreshed]) {
+        
+        // TO DO: Delete Later
+        NSLog(@"About to add product events from Knotifi Data Platform");
+        [self getAllProductEventsFromApi];
     }
     
     // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.

@@ -115,6 +115,8 @@
             [self refreshEventsIfNeededFromApiInBackgroundWithDataController:eventDataController];
         });
         
+        // TO DO: Delete Later, Testing only
+        NSLog(@"Application did become active called");
         // TRACKING EVENT: App Launch: Application was launched.
         // TO DO: Disabling to not track development events. Enable before shipping.
         //[FBSDKAppEvents activateApp];

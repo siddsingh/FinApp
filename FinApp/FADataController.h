@@ -64,6 +64,7 @@
 - (NSFetchedResultsController *)getAllFutureEconEvents;
 
 // Get all future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents;
 
 // Search and return all future events that match the search text on "ticker" or "name" fields for the listed Company or the "type" field on the
@@ -85,6 +86,9 @@
 // Check to see if a single economic event exists in the event data store and return accordingly. Typically used to
 // check if economic events types have been synced or not.
 - (BOOL)doesEconEventExist;
+
+// Check to see an event of a certain type exists for a given company ticker. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (BOOL)doesEventExistForParentEventTicker:(NSString *)eventCompanyTicker andEventType:(NSString *)eventType;
 
 // Check to see if more than the 5 seed synced events of type quarterly earnings exist in the data store and return accordingly. Typically used to check if trending ticker events have been synced or not.
 - (BOOL)doTrendingTickerEventsExist;
@@ -119,7 +123,7 @@
 
 #pragma mark - Methods to call Company Event Data Source APIs
 
-// Get the event details for a company given it's ticker.
+// Get the event details for a company given it's ticker. NOTE: This is somewhat of a misnomer as this call only fetches the earnings event details not others like product events.
 - (void)getAllEventsFromApiWithTicker:(NSString *)companyTicker;
 
 #pragma mark - Methods to call Economic Events Data Sources
@@ -127,10 +131,14 @@
 // Get all the economic events and details from local storage, which currently is a json file and write them to the data store.
 - (void)getAllEconomicEventsFromLocalStorage;
 
-#pragma mark - Methods to call Product Events Data Source APIs
+#pragma mark - Methods for Product Events Data
 
 // Get all the product events and details from the data source APIs
 - (void)getAllProductEventsFromApi;
+
+// Check to see if 1) product events have been synced initially. 2) If there are new entries for product events on the server side. In either of these cases return true
+// NOTE: If there is a new type of product event like launch or conference is added, add that here as well
+- (BOOL)doProductEventsNeedToBeAddedRefreshed;
 
 #pragma mark - Methods to call Company Stock Data Source APIs
 
