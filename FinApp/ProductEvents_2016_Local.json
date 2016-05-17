@@ -1,16 +1,16 @@
 {
- "productEvents":[
+ "responseData":[
               {
                 "ticker":"AAPL",
                 "name":"iPhone 7",
                 "type":"Product_Launch",
-                "date":20160915,
+                "date":"2016-09-15",
                 "time":"NA",
                 "impact":"Very High",
                 "impactDescription":"About 62% of Apple's revenues.",
                 "moreInfoTitle":"iPhone 7 Roundup on Mac Rumors",
                 "moreInfoUrl":"http://www.macrumors.com/roundup/iphone-7/",
-                "updatedOn":20160510,
+                "updated":"2016-05-10",
                 "confidence":1.0,
                 "approved":true
               },
@@ -18,13 +18,13 @@
                 "ticker":"GOOGL",
                 "name":"Nexus Devices",
                 "type":"Product_Launch",
-                "date":20161001,
+                "date":"2016-10-01",
                 "time":"NA",
                 "impact":"Low",
                 "impactDescription":"Nexus Devices are a very small part of Google's revenue.",
                 "moreInfoTitle":"Nexus Devices Roundup on Ubergizmo",
                 "moreInfoUrl":"http://www.ubergizmo.com/2016/05/2016-nexus-release-date-specs-features/",
-                "updatedOn":20160510,
+                "updated":"2016-05-10",
                 "confidence":0.5,
                 "approved":true
               }
