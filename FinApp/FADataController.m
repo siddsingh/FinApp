@@ -536,8 +536,7 @@ bool eventsUpdated = NO;
         NSLog(@"ERROR: Found more than 1 event for ticker:%@ and event type:%@ in the Event Data Store", eventCompanyTicker, eventType);
     }
     // If the event exists, return true.
-    if (events) {
-        
+    if (events.count >= 1) {
         exists = YES;
     }
     
@@ -1578,7 +1577,7 @@ bool eventsUpdated = NO;
                 
                 // Check if earnings event exists for this ticker. If not fetch it, since we don't want a company that has only a product event and no earnings event.
                 if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
-                    
+                    NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
                     [self getAllEventsFromApiWithTicker:parentTicker];
                 }
                 
@@ -1621,9 +1620,8 @@ bool eventsUpdated = NO;
     if (error) {
         NSLog(@"ERROR: Getting events, while checking for product events existence, from data store failed: %@",error.description);
     }
-    // If the events exist, return false.
-    if (!events) {
-        
+    // If the events do not exist, return yes
+    if (events.count == 0) {
         needed = YES;
     }
     
@@ -2229,12 +2227,11 @@ bool eventsUpdated = NO;
     }
     
     // Check to see if product events need to be added or refreshed. If yes, do that.
-    if (![self doProductEventsNeedToBeAddedRefreshed]) {
+    if ([self doProductEventsNeedToBeAddedRefreshed]) {
         
         // TO DO: Delete Later
         NSLog(@"About to add product events from Knotifi Data Platform");
-        // TO DO: Uncomment for actual use. Commenting now for testing.
-        //[self getAllProductEventsFromApi];
+        [self getAllProductEventsFromApi];
     }
     
     // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.

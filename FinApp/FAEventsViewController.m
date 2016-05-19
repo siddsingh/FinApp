@@ -106,9 +106,6 @@
     // Ensure that the remote fetch spinner is not animating thus hidden
     [self.remoteFetchSpinner stopAnimating];
     
-    // TO DO: TESTING ONLY, DELETE before shipping v2.5
-    [self.primaryDataController getAllProductEventsFromApi];
-    
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
     // Get the date for the event represented by the cell
    /* NSDate *today = [NSDate date];
@@ -748,13 +745,21 @@
 
 #pragma mark - Event Type Selection
 
-// When an event type selection has been made, change the color of the selected type and show the appropriate event types in the results table
+// When an event type selection has been made, change the color of the selected type and 1) show the appropriate event types in the results table 2) Set the correct search bar placeholder text 3) Clear out the search context
 - (IBAction)eventTypeSelectAction:(id)sender {
     
     // Change color of the selected option to indicate selection and filter the table to show the correct events of that type.
     // All Event Types - Color Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
+        
+        // Clear out the search context
+        [self.eventsSearchBar setText:@""];
+        [self searchBar:self.eventsSearchBar textDidChange:@""];
+        
+        // Set correct search bar placeholder text
+        self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
+        
         // Query all future events, including today.
         self.eventResultsController = [self.primaryDataController getAllFutureEvents];
         [self.eventsListTable reloadData];
@@ -762,6 +767,14 @@
     // Earnings - Color Knotifi Green
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        
+        // Clear out the search context
+        [self.eventsSearchBar setText:@""];
+        [self searchBar:self.eventsSearchBar textDidChange:@""];
+        
+        // Set correct search bar placeholder text
+        self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
+        
         // Query all future earnings events, including today.
         self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
         [self.eventsListTable reloadData];
@@ -769,6 +782,14 @@
     // Economic - Color Econ Blue
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        
+        // Clear out the search context
+        [self.eventsSearchBar setText:@""];
+        [self searchBar:self.eventsSearchBar textDidChange:@""];
+        
+        // Set correct search bar placeholder text
+        self.eventsSearchBar.placeholder = @"EVENT";
+        
         // Query all future economic events, including today.
         self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
         [self.eventsListTable reloadData];
@@ -776,6 +797,14 @@
     // Product - Product Brown
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        
+        // Clear out the search context
+        [self.eventsSearchBar setText:@""];
+        [self searchBar:self.eventsSearchBar textDidChange:@""];
+        
+        // Set correct search bar placeholder text
+        self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
+        
         // Query all future product events, including today.
         self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
         [self.eventsListTable reloadData];
