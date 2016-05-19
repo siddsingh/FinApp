@@ -627,46 +627,181 @@
     // If valid
     if ([self searchTextValid:searchBar.text]) {
         
-        // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-        self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
-        // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-        // has been specified.
-        self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
-        
-        // If no events are found, search for the name and ticker fields on the companies data store.
-        if ([self.filteredResultsController fetchedObjects].count == 0) {
-            
-            self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
-            
-            // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+        // Check to see if "All" events types are selected. In this case search for tickers, companies and event types
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
+            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
             // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            
+            // If no events are found, search for the name and ticker fields on the companies data store.
+            if ([self.filteredResultsController fetchedObjects].count == 0) {
+                
+                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                
+                // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+            }
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
         }
         
-        // Set the Filter Specified flag to true, indicating that a search filter has been specified
-        self.filterSpecified = YES;
+        // Check to see if "Earnings" events types are selected. In this case search for tickers and companies
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
+            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+            // has been specified.
+            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            
+            // If no events are found, search for the name and ticker fields on the companies data store.
+            if ([self.filteredResultsController fetchedObjects].count == 0) {
+                
+                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                
+                // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+            }
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+        }
         
-        // Reload messages table
-        [self.eventsListTable reloadData];
+        // Check to see if "Economic" events types are selected. In this case search for tickers, companies and event types
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
+            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+            // has been specified.
+            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            
+            // If no events are found, search for the name and ticker fields on the companies data store.
+            if ([self.filteredResultsController fetchedObjects].count == 0) {
+                
+                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                
+                // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+            }
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+        }
+
+        // Check to see if "Product" events types are selected. In this case search for tickers, companies and event types
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text];
+            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+            // has been specified.
+            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            
+            // If no events are found, search for the name and ticker fields on the companies data store.
+            if ([self.filteredResultsController fetchedObjects].count == 0) {
+                
+                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                
+                // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+            }
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+        }
     }
     
     // If not valid
     else {
         
-        // Query all future events, including today, as that is the default view
-        self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+        // Check to see if "All" events types are selected. In this case query all events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            // Query all future events, including today, as that is the default view
+            self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+            
+            // Set the Filter Specified flag to false, indicating that no search filter has been specified
+            self.filterSpecified = NO;
+            
+            // Set the filter type to None_Specified i.e. no filter is specified
+            self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+            
+            // TO DO: In case you want to clear the search context
+            [searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
+        }
         
-        // Set the Filter Specified flag to false, indicating that no search filter has been specified
-        self.filterSpecified = NO;
+        // Check to see if "Earnings" events types are selected. In this case query all earnings
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+            // Query all future events, including today, as that is the default view
+            self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
+            
+            // Set the Filter Specified flag to false, indicating that no search filter has been specified
+            self.filterSpecified = NO;
+            
+            // Set the filter type to None_Specified i.e. no filter is specified
+            self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+            
+            // TO DO: In case you want to clear the search context
+            [searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
+        }
         
-        // Set the filter type to None_Specified i.e. no filter is specified
-        self.filterType = [NSString stringWithFormat:@"None_Specified"];
+        // Check to see if "Economic" events types are selected. In this case query all economic events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            // Query all future events, including today, as that is the default view
+            self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+            
+            // Set the Filter Specified flag to false, indicating that no search filter has been specified
+            self.filterSpecified = NO;
+            
+            // Set the filter type to None_Specified i.e. no filter is specified
+            self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+            
+            // TO DO: In case you want to clear the search context
+            [searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
+        }
         
-        // Reload messages table
-        [self.eventsListTable reloadData];
-        
-        // TO DO: In case you want to clear the search context
-        [searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
+        // Check to see if "Product" events types are selected. In this case query all product events.
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+            // Query all future events, including today, as that is the default view
+            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+            
+            // Set the Filter Specified flag to false, indicating that no search filter has been specified
+            self.filterSpecified = NO;
+            
+            // Set the filter type to None_Specified i.e. no filter is specified
+            self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+            
+            // TO DO: In case you want to clear the search context
+            [searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
+        }
     }
 }
 

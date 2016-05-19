@@ -373,10 +373,9 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
-// Search and return all future events that match the search text on "ticker" or "name" fields for the listed Company or the "type" field on the
-// event. Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15)
-// objects’ data will be fetched from the data store at a time.
-- (NSFetchedResultsController *)searchEventsFor:(NSString *)searchText
+// Search and return all future events that match the search text dpending on the display event type. Note this is different from the type field on the event data object: 0. All (all eventTypes) 1. "Earnings" (Quarterly Earnings) 2. "Economic" (Economic Event) 3. "Product" (Product Event).NOTE: If there is a new type of product event like launch or conference added, add that here as well.
+// Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the data store at a time.
+- (NSFetchedResultsController *)searchEventsFor:(NSString *)searchText eventDisplayType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -388,8 +387,33 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     
-    // Case and Diacractic Insensitive Filtering
-    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@)", searchText, searchText, searchText, todaysDate];
+    // Setup the filtering based on the event type
+    NSPredicate *searchPredicate = nil;
+    
+    // Check to see if the event type is "All". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
+    if ([eventType caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+        // Case and Diacractic Insensitive Filtering
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@)", searchText, searchText, searchText, todaysDate];
+    }
+    
+    // Check to see if the event type is "Earnings". Search on "ticker" or "name" fields for the listed Company for earnings events
+    if ([eventType caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+        // Case and Diacractic Insensitive Filtering
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@) AND (type =[c]) %@ AND (date >= %@)", searchText, searchText, @"Quarterly Earnings", todaysDate];
+    }
+    
+    // Check to see if the event type is "Economic". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
+    if ([eventType caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        // Case and Diacractic Insensitive Filtering
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker contains %@) AND (date >= %@)", searchText, searchText, searchText, @"ECONOMY_", todaysDate];
+    }
+    
+    // Check to see if the event type is "Product". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
+    if ([eventType caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        // Case and Diacractic Insensitive Filtering
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (type contains[cd] %@ OR type contains[cd] %@) AND (date >= %@)", searchText, searchText, searchText, @"Launch", @"Conference", todaysDate];
+    }
+    
     [eventFetchRequest setPredicate:searchPredicate];
     
     // Sort with the closest event first
@@ -404,7 +428,7 @@ bool eventsUpdated = NO;
     
     NSError *error;
     if (![self.resultsController performFetch:&error]) {
-        NSLog(@"ERROR: Searching for events with the following name and ticker search text: %@ from data store failed: %@",searchText, error.description);
+        NSLog(@"ERROR: Searching for events of type: %@ with search text: %@,from data store,failed: %@", eventType, searchText, error.description);
     }
     
     return self.resultsController;
