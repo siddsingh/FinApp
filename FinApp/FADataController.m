@@ -399,7 +399,7 @@ bool eventsUpdated = NO;
     // Check to see if the event type is "Earnings". Search on "ticker" or "name" fields for the listed Company for earnings events
     if ([eventType caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@) AND (type =[c]) %@ AND (date >= %@)", searchText, searchText, @"Quarterly Earnings", todaysDate];
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@) AND (type =[c] %@) AND (date >= %@)", searchText, searchText, @"Quarterly Earnings", todaysDate];
     }
     
     // Check to see if the event type is "Economic". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
