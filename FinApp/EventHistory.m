@@ -18,7 +18,7 @@
 // to be on the day it actually happened. Idea is as the user uses this app, we confirm these events.
 // TO DO: Fix when you add a new table for event characteristics.
 // TO DO: Fix when you add a new table for event characteristics.
-// For Product Events, this field is currently being overloaded to store a string representing Impact, Impact Description, Time String and More Info Title i.e. (Impact_Impact Description_TimeString_MoreInfoTitle)
+// For Product Events, this field is currently being overloaded to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
 @dynamic previous1Status;
 
 // Date related to the previous event.

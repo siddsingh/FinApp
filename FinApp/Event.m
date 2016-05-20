@@ -29,7 +29,7 @@
 // 1. "Quarterly Earnings" would have timing information "After Market Close",
 // "Before Market Open, "During Market Trading", "Unknown".
 //  2. Economic Event like "Fed Meeting" would contain the weblink to get more details.
-// 3. Product Events like "iPhone 7 Launch" contain a weblink to a source with the best related information.
+// 3. Product Events like "iPhone 7 Launch" have timing information for the event.
 @dynamic relatedDetails;
 
 // Date related to the event.

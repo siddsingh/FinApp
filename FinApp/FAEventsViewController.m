@@ -376,7 +376,7 @@
         [[cell  eventDescription] setText:[self formatEventType:eventAtIndex.type]];
         
         // Show the event date
-        [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails]];
+        [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails withStatus:eventAtIndex.certainty]];
         
         // Show the appropriate event Image
         [[cell eventImage] setImage:[self getImageBasedOnEventType:eventAtIndex.type]];
@@ -1282,7 +1282,7 @@
     return formattedTicker;
 }
 
-// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan Fed Meeting -> Fed Meeting. Jan Jobs Report -> Jobs Report and so on.
+// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan Fed Meeting -> Fed Meeting. Jan Jobs Report -> Jobs Report and so on. For product events strip out conference keyword WWDC 2016 Conference -> WWDC 2016
 - (NSString *)formatEventType:(NSString *)rawEventType
 {
     NSString *formattedEventType = rawEventType;
@@ -1307,6 +1307,10 @@
         formattedEventType = @"GDP Release";
     }
     
+    if ([rawEventType containsString:@"Conference"]) {
+        formattedEventType = [rawEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+    }
+    
     return formattedEventType;
 }
 
@@ -1326,8 +1330,8 @@
 }
 
 
-// Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 PM EST
-- (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails
+// Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
+- (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails withStatus:(NSString *)eventStatus
 {
     
     NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
@@ -1375,6 +1379,29 @@
         
         eventTimeString = @"8:30 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    
+    if ([rawEventType containsString:@"Launch"]||[rawEventType containsString:@"Conference"]) {
+        
+        if ([eventStatus isEqualToString:@"Confirmed"]) {
+            eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+        }
+        // If status is not confirmed set 1-10 as Early 10-20 Mid 20-30/31 as Late
+        if ([eventStatus isEqualToString:@"Estimated"]) {
+            
+            NSArray *eventDateComponents = [eventDateString componentsSeparatedByString:@" "];
+            NSString *eventDayString = eventDateComponents.lastObject;
+            int eventDay = [eventDayString intValue];
+    
+            // Return an appropriately formatted string
+            if (eventDay <= 10) {
+                 eventDateString = [NSString stringWithFormat:@"%@ %@",@"Early",eventDateComponents[1]];
+            } else if (eventDay <= 20) {
+                eventDateString = [NSString stringWithFormat:@"%@ %@",@"Mid",eventDateComponents[1]];
+            } else if (eventDay <= 31) {
+                eventDateString = [NSString stringWithFormat:@"%@ %@",@"Late",eventDateComponents[1]];
+            }
+        }
     }
     
     return eventDateString;
