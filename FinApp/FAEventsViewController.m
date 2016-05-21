@@ -1167,8 +1167,9 @@
         
         FAEventDetailsViewController *eventDetailsViewController = [segue destinationViewController];
         
+        // TO DO: Delete before shipping v2.5. Not needed anymore.
         // Set the title on the destination view controller to be the same as that of the current view controller which is today's date
-        [eventDetailsViewController.navigationItem setTitle:self.navigationController.navigationBar.topItem.title];
+        //[eventDetailsViewController.navigationItem setTitle:self.navigationController.navigationBar.topItem.title];
         
         // Get the currently selected cell and set details for the destination.
         // IMPORTANT: If the format here or in the events UI is changed, reminder creation in the details screen will break.
@@ -1314,13 +1315,17 @@
     return formattedEventType;
 }
 
-// Take the event displayed and format it back to the event type stored in the db. Currently the formatting looks like the following: Earnings -> Quarterly Earnings. Fed Meeting -> Jan Fed Meeting. Jobs Report -> Jan Jobs Report and so on.
+// Take the event displayed and format it back to the event type stored in the db. Currently the formatting looks like the following: Earnings -> Quarterly Earnings. Fed Meeting -> Jan Fed Meeting. Jobs Report -> Jan Jobs Report and so on. For product events, only the conference keyword needs to be added back. So WWDC 2016 -> WWDC 2016 Conference. NOTE: When a new product event type other than launch or conference is added, reconcile here as well.
 - (NSString *)formatBackToEventType:(NSString *)rawEventType withAddedInfo:(NSString *)addtlInfo
 {
     NSString *formattedEventType = rawEventType;
     
     if ([rawEventType isEqualToString:@"Earnings"]) {
         formattedEventType = @"Quarterly Earnings";
+    } else if (([addtlInfo isEqualToString:@"Confirmed"]||[addtlInfo isEqualToString:@"Estimated"])&&(![rawEventType containsString:@"Launch"])){
+        formattedEventType = [NSString stringWithFormat:@"%@ %@",rawEventType,@" Conference"];
+    } else if (([addtlInfo isEqualToString:@"Confirmed"]||[addtlInfo isEqualToString:@"Estimated"])&&([rawEventType containsString:@"Launch"])) {
+        // Do Nothing as for Launch the full event type already exists
     }
     else {
         formattedEventType = [NSString stringWithFormat:@"%@ %@",addtlInfo,rawEventType];
