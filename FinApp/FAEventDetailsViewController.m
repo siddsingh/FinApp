@@ -241,31 +241,6 @@
                     [[cell titleLabel] setText:@"||||"];
                 }
             }
-    
-            // TO DO: Delete before shipping v 2.5
-           /* if ([self.eventType containsString:@"Fed Meeting"]) {
-                // Select the appropriate color and text for Very High Impact
-                cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"||||||||||"];
-            }
-            
-            if ([self.eventType containsString:@"Jobs Report"]) {
-                // Select the appropriate color and text for Very High Impact
-                cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"||||||||||"];
-            }
-            
-            if ([self.eventType containsString:@"Consumer Confidence"]) {
-                // Select the appropriate color and text for Medium Impact
-                cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"|||||"];
-            }
-            
-            if ([self.eventType containsString:@"GDP Release"]) {
-                // Select the appropriate color and text for Medium Impact
-                cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"|||||"];
-            }*/
         }
         break;
         
@@ -784,7 +759,7 @@
     }
     
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-        description = [NSString stringWithFormat:@"Event related to products or services offered by %@",companyName];
+        description = [NSString stringWithFormat:@"Related to products or services offered by %@",companyName];
     }
     
     return description;
