@@ -1147,7 +1147,7 @@
     BOOL returnVal = YES;
     
     // Check the segue is "ShowEventDetails"
-    if ([identifier isEqualToString:@"ShowEventDetails" ]) {
+    if ([identifier isEqualToString:@"ShowEventDetails"]) {
         
         // If the cell is the "Get Earnings" cell identified by if Remote Fetch indicator is true, set return value to false indicating no segue should be performed
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
@@ -1193,7 +1193,14 @@
         // Set Event Title for display in destination
         [eventDetailsViewController setEventTitleStr:eventCompany];
         // Set Event Schedule for display in destination
-        [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
+        // For Product Events that are estimated, prepend the estimated keyword
+        // When new product event types are added, change here as well
+        if (([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"])&&[selectedCell.eventCertainty.text isEqualToString:@"Estimated"]) {
+            [eventDetailsViewController setEventScheduleStr:[NSString stringWithFormat:@"%@ %@",selectedCell.eventCertainty.text,selectedCell.eventDate.text]];
+            
+        } else {
+            [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
+        }
         
         // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
         // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1323,7 +1330,7 @@
     if ([rawEventType isEqualToString:@"Earnings"]) {
         formattedEventType = @"Quarterly Earnings";
     } else if (([addtlInfo isEqualToString:@"Confirmed"]||[addtlInfo isEqualToString:@"Estimated"])&&(![rawEventType containsString:@"Launch"])){
-        formattedEventType = [NSString stringWithFormat:@"%@ %@",rawEventType,@" Conference"];
+        formattedEventType = [NSString stringWithFormat:@"%@ %@",rawEventType,@"Conference"];
     } else if (([addtlInfo isEqualToString:@"Confirmed"]||[addtlInfo isEqualToString:@"Estimated"])&&([rawEventType containsString:@"Launch"])) {
         // Do Nothing as for Launch the full event type already exists
     }
@@ -1394,17 +1401,19 @@
         // If status is not confirmed set 1-10 as Early 10-20 Mid 20-30/31 as Late
         if ([eventStatus isEqualToString:@"Estimated"]) {
             
+            // Get the year in the event date as rumored product events could well be in the next year
+            [eventDateFormatter setDateFormat:@"EEE MMMM dd y"];
+            eventDateString = [eventDateFormatter stringFromDate:eventDate];
             NSArray *eventDateComponents = [eventDateString componentsSeparatedByString:@" "];
-            NSString *eventDayString = eventDateComponents.lastObject;
+            NSString *eventDayString = eventDateComponents[2];
             int eventDay = [eventDayString intValue];
-    
             // Return an appropriately formatted string
             if (eventDay <= 10) {
-                 eventDateString = [NSString stringWithFormat:@"%@ %@",@"Early",eventDateComponents[1]];
+                 eventDateString = [NSString stringWithFormat:@"%@ %@ %@",@"Early",eventDateComponents[1],eventDateComponents[3]];
             } else if (eventDay <= 20) {
-                eventDateString = [NSString stringWithFormat:@"%@ %@",@"Mid",eventDateComponents[1]];
+                eventDateString = [NSString stringWithFormat:@"%@ %@ %@",@"Mid",eventDateComponents[1],eventDateComponents[3]];
             } else if (eventDay <= 31) {
-                eventDateString = [NSString stringWithFormat:@"%@ %@",@"Late",eventDateComponents[1]];
+                eventDateString = [NSString stringWithFormat:@"%@ %@ %@",@"Late",eventDateComponents[1],eventDateComponents[3]];
             }
         }
     }

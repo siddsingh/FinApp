@@ -206,7 +206,7 @@
         // Display a short description of the event along with the related static image.
         case infoRow1:
         {
-            [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType]];
+            [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
             cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
         }
         break;
@@ -214,17 +214,36 @@
         // Display Expected EPS or Impact Level depending on the event type
         case infoRow2:
         {
-            // Text
-            [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType]];
+            // Description
+            [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
             
-            // Value
+            // Value for Quarterl Earnings
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 // Econ Blue Color
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
             }
-            
-            if ([self.eventType containsString:@"Fed Meeting"]) {
+            // Impact Image bars for all others
+            else {
+                // Very High, High Impact
+                if ([cell.descriptionArea.text containsString:@"High Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"||||||||||"];
+                }
+                // Medium Impact
+                if ([cell.descriptionArea.text containsString:@"Medium Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"||||||"];
+                }
+                // Low Impact
+                if ([cell.descriptionArea.text containsString:@"Low Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"||||"];
+                }
+            }
+    
+            // TO DO: Delete before shipping v 2.5
+           /* if ([self.eventType containsString:@"Fed Meeting"]) {
                 // Select the appropriate color and text for Very High Impact
                 cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"||||||||||"];
@@ -246,7 +265,7 @@
                 // Select the appropriate color and text for Medium Impact
                 cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"|||||"];
-            }
+            }*/
         }
         break;
         
@@ -731,14 +750,16 @@
         numberOfPieces = 4;
     }
     
-    // TO DO: Delete later before shipping v2
-    //NSLog(@"Number of rows is:%ld", (long)numberOfPieces);
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+        numberOfPieces = 5;
+    }
+        
     return numberOfPieces;
 }
 
 // Get short description of event given event type. Currently this is hardcoded.
 // FUTURE TO DO: Get this into the event data model.
-- (NSString *)getShortDescriptionForEventType:(NSString *)eventType
+- (NSString *)getShortDescriptionForEventType:(NSString *)eventType parentCompanyName:(NSString *)companyName
 {
     NSString *description = @"Data Not Available";
     
@@ -760,6 +781,10 @@
     
     if ([eventType containsString:@"GDP Release"]) {
         description = @"GDP is a measure of the country's economic health.";
+    }
+    
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+        description = [NSString stringWithFormat:@"Event related to products or services offered by %@",companyName];
     }
     
     return description;
@@ -801,7 +826,7 @@
 
 // Get the display text for Expected EPS or Impact depending on the event type.
 // FUTURE TO DO: Get the impact values into the database model.
-- (NSString *)getEpsOrImpactTextForEventType:(NSString *)eventType
+- (NSString *)getEpsOrImpactTextForEventType:(NSString *)eventType eventParent:(NSString *)parentTicker
 {
     NSString *description = @"Data Not Available";
     
@@ -823,6 +848,18 @@
     
     if ([eventType containsString:@"GDP Release"]) {
         description = @"Medium Impact.Scorecard of the country's economic health.";
+    }
+    
+    // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
+    // If new product event types are added, add them here as well.
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+        
+        // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_TimeString_MoreInfoTitle_MoreInfoUrl
+        EventHistory *eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
+        
+        // Parse out to construct the Impact Text.
+        NSArray *impactComponents = [eventHistoryData.previous1Status componentsSeparatedByString:@"_"];
+        description = [NSString stringWithFormat:@"%@ Impact.%@",impactComponents[0],impactComponents[1]];
     }
     
     return description;
