@@ -217,7 +217,7 @@
             // Description
             [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
             
-            // Value for Quarterl Earnings
+            // Value for Quarterly Earnings
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 // Econ Blue Color
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
@@ -244,13 +244,20 @@
         }
         break;
         
-        // Display Prior EPS or Sectors Affected depending on the event type
+        // Display Prior EPS or Sectors Affected or Most Relevant Information link, depending on the event type
         case infoRow3:
         {
-            // Text
-            [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
+            // Description
+            // For product event types get the most relevant Info link and display appropriately
+            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+                [[cell descriptionArea] setAttributedText:[self getMostRelevantLinkedInfoTitleForEvent:self.eventType eventParent:self.parentTicker]];
+            }
+            // For others get the eps or sectors affected text
+            else {
+                [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
+            }
             
-            // Value
+            // Image/Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 // Econ Blue Color
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
@@ -759,7 +766,7 @@
     }
     
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-        description = [NSString stringWithFormat:@"Related to products or services offered by %@",companyName];
+        description = [NSString stringWithFormat:@"Event related to products or services offered by %@",companyName];
     }
     
     return description;
@@ -829,7 +836,7 @@
     // If new product event types are added, add them here as well.
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         
-        // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_TimeString_MoreInfoTitle_MoreInfoUrl
+        // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_MoreInfoTitle_MoreInfoUrl
         EventHistory *eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
         
         // Parse out to construct the Impact Text.
@@ -867,6 +874,41 @@
     }
     
     return description;
+}
+
+// Get the most relevant information title with the underlying URL hyperlinked into an NSAttributableString.
+- (NSMutableAttributedString *)getMostRelevantLinkedInfoTitleForEvent:(NSString *)eventType eventParent:(NSString *)parentTicker
+{
+    NSMutableAttributedString *attributedTitleWithURL = nil;
+    NSString *moreInfoTitle = nil;
+    NSString *moreInfoURL = nil;
+    EventHistory *eventHistoryData = nil;
+
+        
+    // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_MoreInfoTitle_MoreInfoUrl
+    eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
+        
+    // Parse out the MoreInfoTitle and MoreInfoUrl
+    NSArray *moreInfoComponents = [eventHistoryData.previous1Status componentsSeparatedByString:@"_"];
+    moreInfoTitle = moreInfoComponents[2];
+    moreInfoURL = moreInfoComponents[3];
+    
+    // Form the hyperlinked attributed String
+    attributedTitleWithURL = [[NSMutableAttributedString alloc] initWithString:moreInfoTitle
+                                                                           attributes:@{NSLinkAttributeName:[NSURL URLWithString:moreInfoURL]}];
+    // Set font and color for the string
+    UIFont *titleFont = [UIFont fontWithName:@"Helvetica" size:16];
+    [attributedTitleWithURL addAttribute:NSFontAttributeName value:titleFont range:NSMakeRange(0,[attributedTitleWithURL length])];
+    [attributedTitleWithURL addAttribute:NSBackgroundColorAttributeName value:[UIColor whiteColor] range:NSMakeRange(0,[attributedTitleWithURL length])];
+    // Econ Blue color
+    [attributedTitleWithURL addAttribute:NSForegroundColorAttributeName value:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f] range:NSMakeRange(0,[attributedTitleWithURL length])];
+    
+    // Set center alignment
+    NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc]init] ;
+    [paraStyle setAlignment:NSTextAlignmentCenter];
+    [attributedTitleWithURL addAttribute:NSParagraphStyleAttributeName value:paraStyle range:NSMakeRange(0,[attributedTitleWithURL length])];
+    
+    return attributedTitleWithURL;
 }
 
 // Get the display text for PriceSince or Tip depending on the event type.
@@ -908,6 +950,17 @@
     }
     
     return description;
+}
+
+// When a row is selected on the events realted data table
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    NSLog(@"REALTED DATA TABLE ROW SELECTED");
+}
+
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
+    NSLog(@"URL TEXT VIEW DELEGATE FIRED");
+    return YES;
 }
 
 - (void)didReceiveMemoryWarning {

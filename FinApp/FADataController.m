@@ -1561,13 +1561,13 @@ bool eventsUpdated = NO;
             // TO DO: Delete Later
             NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
             
-            // Get the URL to a source with the best related information
+            // Get the time label
             NSString *timeLabel = [event objectForKey:@"exactTimeLabel"];
             // TO DO: Delete Later
             NSLog(@"The event time label is: %@", timeLabel);
             
             // TO DO: Fix when you add a new table in the data model for event characteristics.
-            // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_TimeString_MoreInfoTitle_MoreInfoUrl)
+            // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
             NSString *eventAddtlInfo = [NSString stringWithFormat:@"%@_%@_%@_%@", [event objectForKey:@"impact"], [event objectForKey:@"impactDescription"], [event objectForKey:@"moreInfoTitle"], [event objectForKey:@"moreInfoUrl"]];
             NSLog(@"The event addtl info with Impact, Impact Description, More Info Title and More Info Url is: %@", eventAddtlInfo);
             
