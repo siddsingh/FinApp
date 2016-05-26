@@ -13,10 +13,12 @@
 @implementation FAEventDetailsTableViewCell
 
 - (void)awakeFromNib {
+    
     // Initialization code
     
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(textViewTapped:)];
-    [self.descriptionArea addGestureRecognizer:gestureRecognizer];
+    // Add a tap gesture recognizer to the related data description area to capture link clicks
+    UITapGestureRecognizer *linkTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(textViewTapped:)];
+    [self.descriptionArea addGestureRecognizer:linkTapRecognizer];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -25,27 +27,18 @@
     // Configure the view for the selected state
 }
 
+// When a user taps the related data description area, if it contains a URL, open that URL
+// using the system methods.
 - (void)textViewTapped:(UITapGestureRecognizer *)tapGesture {
     
-    NSLog(@"DESCRIPTION TEXT VIEW TAPPED");
-    //NSDictionary *attributes = [textView textStylingAtPosition:textPosition inDirection:UITextStorageDirectionForward];
-    
-    //NSURL *url = attributes[NSLinkAttributeName];
-    
-    /*if (url) {
-        [[UIApplication sharedApplication] openURL:url];
-    }*/
     NSAttributedString *descriptionString = [self.descriptionArea attributedText];
     NSRange descriptionRange = NSMakeRange(0,[descriptionString length]);
-    NSDictionary *attributes = [descriptionString attributesAtIndex:0 effectiveRange:&descriptionRange];
-    NSURL *url = attributes[NSLinkAttributeName];
+    NSDictionary *descAttributes = [descriptionString attributesAtIndex:0 effectiveRange:&descriptionRange];
+    NSURL *targetURL = descAttributes[NSLinkAttributeName];
     
-     NSLog(@"DESCRIPTION TEXT VIEW TAPPED WITH URL:%@",url);
-    
-    if (url) {
-     [[UIApplication sharedApplication] openURL:url];
+    if (targetURL) {
+     [[UIApplication sharedApplication] openURL:targetURL];
     }
-    
 }
 
 @end

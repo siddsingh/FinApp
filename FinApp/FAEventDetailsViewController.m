@@ -158,7 +158,7 @@
     return [self getNoOfInfoPiecesForEventType];
 }
 
-// Return a cell configured to display the event details based on the cell number and event type. Currently upto 5 types of information pieces are available.
+// Return a cell configured to display the event details based on the cell number and event type. Currently upto 6 types of information pieces are available.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     EventHistory *eventHistoryData;
@@ -172,6 +172,7 @@
     #define infoRow3  2
     #define infoRow4  3
     #define infoRow5  4
+    #define infoRow6  5
     
     // Define date formatters that will be used later
     // 1. Jun 30 2015
@@ -211,20 +212,24 @@
         }
         break;
             
-        // Display Expected EPS or Impact Level depending on the event type
+        // Display "Latest On Search Engine" or Impact Level depending on the event type
         case infoRow2:
         {
-            // Description
-            [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
-            
-            // Value for Quarterly Earnings
+            // For Quarterly Earnings display "Latest On Search Engine"
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                // Econ Blue Color
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+                // Description
+                [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
+                
+                // Display Label
+                cell.titleLabel.textColor = [UIColor blackColor];
+                [[cell titleLabel] setText:@"News"];
             }
             // Impact Image bars for all others
             else {
+                // Description
+                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+                
+                // Display Label
                 // Very High, High Impact
                 if ([cell.descriptionArea.text containsString:@"High Impact"]) {
                     cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
@@ -243,14 +248,38 @@
             }
         }
         break;
-        
-        // Display Prior EPS or Sectors Affected or Most Relevant Information link, depending on the event type
+            
+        // Display "Most Relevant Website" link for Product events or "Latest On Search Engine" link for economic events and "Expected EPS" for earnings event.
         case infoRow3:
         {
-            // Description
-            // For product event types get the most relevant Info link and display appropriately
+            // For product event types get the most relevant Info link and display appropriately. NOTE: Set label to nothing for the product events, just for safety.
             if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-                [[cell descriptionArea] setAttributedText:[self getMostRelevantLinkedInfoTitleForEvent:self.eventType eventParent:self.parentTicker]];
+                [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Most Relevant Website"]];
+                [[cell titleLabel] setText:@""];
+            }
+            // For Quarterly earnings events show the expected EPS
+            else if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+                cell.titleLabel.textColor = [UIColor blackColor];
+                [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+            }
+            // For all other Econ events get the "Latest On Search Engine" link and display appropriately
+            else {
+                [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
+                cell.titleLabel.textColor = [UIColor blackColor];
+                [[cell titleLabel] setText:@"News"];
+            }
+        }
+        break;
+            
+        // Display Prior EPS or Sectors Affected or "Latest On Search Engine" link, depending on the event type
+        case infoRow4:
+        {
+            // Description
+            // For product event types get the Latest On Search Engine link and display appropriately. NOTE: Set display label to nothing for the product events, just for safety.
+            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+                [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
+                [[cell titleLabel] setText:@""];
             }
             // For others get the eps or sectors affected text
             else {
@@ -260,7 +289,7 @@
             // Image/Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 // Econ Blue Color
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor blackColor];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
             }
             
@@ -272,7 +301,7 @@
             
             if ([self.eventType containsString:@"Jobs Report"]) {
                 // Select the appropriate color and text for All Stocks
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor blackColor];
                 [[cell titleLabel] setText:@"All"];
             }
             
@@ -284,14 +313,14 @@
             
             if ([self.eventType containsString:@"GDP Release"]) {
                 // Select the appropriate color and text for All Stocks
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor blackColor];
                 [[cell titleLabel] setText:@"All"];
             }
         }
         break;
         
         // Display Price Change Since Previous Quarter end or Tip depending on the event type
-        case infoRow4:
+        case infoRow5:
         {
             // Text
             // Get the prior end date from the event which is the end date of previously reported quarter
@@ -339,32 +368,32 @@
             
             if ([self.eventType containsString:@"Fed Meeting"]) {
                 // Select the appropriate color and text for Pro Tip
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor blackColor];
                 [[cell titleLabel] setText:@"!!"];
             }
             
             if ([self.eventType containsString:@"Jobs Report"]) {
                 // Select the appropriate color and text for Pro Tip
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor blackColor];
                 [[cell titleLabel] setText:@"!!"];
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate color and text for Pro Tip
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor blackColor];
                 [[cell titleLabel] setText:@"!!"];
             }
             
             if ([self.eventType containsString:@"GDP Release"]) {
                 // Select the appropriate color and text for Pro Tip
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                cell.titleLabel.textColor = [UIColor blackColor];
                 [[cell titleLabel] setText:@"!!"];
             }
         }
         break;
         
         // Display price change since estimated prior earnings date
-        case infoRow5:
+        case infoRow6:
         {
             // Text
             // Get the prior end date from the event which is the estimated prior earnings date
@@ -690,7 +719,7 @@
 
 #pragma mark - Event Info Related
 
-// Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted.
+// Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted. NOTE: Add a piece for getting the Related News for all types.
 - (NSInteger)getNoOfInfoPiecesForEventType
 {
     NSInteger numberOfPieces = 0;
@@ -702,7 +731,7 @@
     // Based on event type and what's available, return the no of pieces of information.
     if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
         
-        numberOfPieces = 5;
+        numberOfPieces = 6;
         // Get the event history.
         eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
         
@@ -710,30 +739,30 @@
         double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
-            numberOfPieces = 5;
+            numberOfPieces = 6;
         } else {
-            numberOfPieces = 3;
+            numberOfPieces = 4;
         }
     }
     
     if ([self.eventType containsString:@"Fed Meeting"]) {
-        numberOfPieces = 4;
+        numberOfPieces = 5;
     }
     
     if ([self.eventType containsString:@"Jobs Report"]) {
-        numberOfPieces = 4;
+        numberOfPieces = 5;
     }
     
     if ([self.eventType containsString:@"Consumer Confidence"]) {
-        numberOfPieces = 4;
+        numberOfPieces = 5;
     }
     
     if ([self.eventType containsString:@"GDP Release"]) {
-        numberOfPieces = 4;
+        numberOfPieces = 5;
     }
     
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-        numberOfPieces = 5;
+        numberOfPieces = 4;
     }
         
     return numberOfPieces;
@@ -766,7 +795,7 @@
     }
     
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-        description = [NSString stringWithFormat:@"Event related to products or services offered by %@",companyName];
+        description = [NSString stringWithFormat:@"Related to products or services offered by %@",companyName];
     }
     
     return description;
@@ -837,10 +866,10 @@
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         
         // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_MoreInfoTitle_MoreInfoUrl
-        EventHistory *eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
+        EventHistory *eventHistoryData1 = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
         
         // Parse out to construct the Impact Text.
-        NSArray *impactComponents = [eventHistoryData.previous1Status componentsSeparatedByString:@"_"];
+        NSArray *impactComponents = [eventHistoryData1.previous1Status componentsSeparatedByString:@"_"];
         description = [NSString stringWithFormat:@"%@ Impact.%@",impactComponents[0],impactComponents[1]];
     }
     
@@ -876,28 +905,75 @@
     return description;
 }
 
-// Get the most relevant information title with the underlying URL hyperlinked into an NSAttributableString.
-- (NSMutableAttributedString *)getMostRelevantLinkedInfoTitleForEvent:(NSString *)eventType eventParent:(NSString *)parentTicker
+// Get a more information title with the underlying URL hyperlinked into an NSAttributableString, based on the type of the more information. Currently support "Most Relevant Website" and "Latest On Search Engine"
+- (NSMutableAttributedString *)getMoreInfoTitleWithLinkForEventType:(NSString *)eventType eventParentTicker:(NSString *)parentTicker moreInfoType:(NSString *)infoType
 {
     NSMutableAttributedString *attributedTitleWithURL = nil;
     NSString *moreInfoTitle = nil;
     NSString *moreInfoURL = nil;
+    NSString *searchTerm = nil;
     EventHistory *eventHistoryData = nil;
-
+    NSArray *infoComponents = nil;
+    
+    // For "Most Relevant Website" construct link pointing to an external website for product events
+    if ([infoType isEqualToString:@"Most Relevant Website"]&&([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"])) {
+        // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_MoreInfoTitle_MoreInfoUrl
+        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
         
-    // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_MoreInfoTitle_MoreInfoUrl
-    eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
+        // Parse out the MoreInfoTitle and MoreInfoUrl
+        infoComponents = [eventHistoryData.previous1Status componentsSeparatedByString:@"_"];
+        moreInfoTitle = [NSString stringWithFormat:@"%@ %@",infoComponents[2],@"▸"];
+        moreInfoURL = infoComponents[3];
+    }
+    
+    // For "Latest On Search Engine" construct link pointing to an external search engine with a preset query.
+    // NOTE: Depending on type of event the title and URL with query to search engine varies.
+    if ([infoType isEqualToString:@"Latest On Search Engine"]) {
         
-    // Parse out the MoreInfoTitle and MoreInfoUrl
-    NSArray *moreInfoComponents = [eventHistoryData.previous1Status componentsSeparatedByString:@"_"];
-    moreInfoTitle = moreInfoComponents[2];
-    moreInfoURL = moreInfoComponents[3];
+        moreInfoTitle = [NSString stringWithFormat:@"%@",@"Latest On Bing ▸"];
+        moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+        
+        // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
+        if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+            searchTerm = [NSString stringWithFormat:@"%@ %@",parentTicker,@"earnings"];
+            moreInfoTitle = @"Latest News On Bing ▸";
+        }
+        
+        // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
+        if ([eventType containsString:@"Launch"]) {
+            searchTerm = [eventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+            moreInfoTitle = @"Latest News On Bing ▸";
+        }
+        if ([eventType containsString:@"Conference"]) {
+            searchTerm = [eventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+            moreInfoTitle = @"Latest News On Bing ▸";
+        }
+        
+        // For economic events, search query term is customized for each type
+        if ([eventType containsString:@"GDP Release"]) {
+            searchTerm = @"us gdp growth";
+        }
+        if ([eventType containsString:@"Consumer Confidence"]) {
+            searchTerm = @"us consumer confidence";
+        }
+        if ([eventType containsString:@"Fed Meeting"]) {
+            searchTerm = @"fomc meeting";
+        }
+        if ([eventType containsString:@"Fed Meeting"]) {
+            searchTerm = @"jobs report us";
+            moreInfoTitle = @"Latest On Google ▸";
+            moreInfoURL = @"https://www.google.com/news/search?q=";
+        }
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+    }
     
     // Form the hyperlinked attributed String
     attributedTitleWithURL = [[NSMutableAttributedString alloc] initWithString:moreInfoTitle
                                                                            attributes:@{NSLinkAttributeName:[NSURL URLWithString:moreInfoURL]}];
     // Set font and color for the string
-    UIFont *titleFont = [UIFont fontWithName:@"Helvetica" size:16];
+    UIFont *titleFont = [UIFont fontWithName:@"Helvetica" size:18];
     [attributedTitleWithURL addAttribute:NSFontAttributeName value:titleFont range:NSMakeRange(0,[attributedTitleWithURL length])];
     [attributedTitleWithURL addAttribute:NSBackgroundColorAttributeName value:[UIColor whiteColor] range:NSMakeRange(0,[attributedTitleWithURL length])];
     // Econ Blue color
@@ -952,16 +1028,7 @@
     return description;
 }
 
-// When a row is selected on the events realted data table
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    NSLog(@"REALTED DATA TABLE ROW SELECTED");
-}
-
-- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange {
-    NSLog(@"URL TEXT VIEW DELEGATE FIRED");
-    return YES;
-}
+#pragma mark - Others
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

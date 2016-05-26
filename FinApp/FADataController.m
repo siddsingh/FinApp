@@ -1572,11 +1572,6 @@ bool eventsUpdated = NO;
             NSLog(@"The event addtl info with Impact, Impact Description, More Info Title and More Info Url is: %@", eventAddtlInfo);
             
             // Get the updated on date
-            // TO DO: Delete later as the API response is a date string now
-            //NSNumber *updatedOnDateAsNum = [event objectForKey:@"updated"];
-            // TO DO: Delete Later
-            //NSLog(@"The updated on date is: %@", updatedOnDateAsNum);
-            //NSString *updatedOnDateStr =  [NSString stringWithFormat: @"%@", updatedOnDateAsNum];
             NSString *updatedOnDateStr = [event objectForKey:@"updated"];
             NSDate *updatedOnDate = [eventDateFormatter dateFromString:updatedOnDateStr];
             // TO DO: Delete Later
