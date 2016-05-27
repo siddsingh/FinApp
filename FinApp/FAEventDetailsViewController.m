@@ -221,8 +221,7 @@
                 [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
                 
                 // Display Label
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@"News"];
+                [[cell titleLabel] setText:@""];
             }
             // Impact Image bars for all others
             else {
@@ -267,7 +266,7 @@
             else {
                 [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@"News"];
+                [[cell titleLabel] setText:@""];
             }
         }
         break;
@@ -296,25 +295,25 @@
             if ([self.eventType containsString:@"Fed Meeting"]) {
                 // Select the appropriate color and text for Financial Stocks
                 cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"$$"];
+                [[cell titleLabel] setText:@""];
             }
             
             if ([self.eventType containsString:@"Jobs Report"]) {
                 // Select the appropriate color and text for All Stocks
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@"All"];
+                [[cell titleLabel] setText:@""];
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate color and text for Retail Stocks
                 cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"Sale!"];
+                [[cell titleLabel] setText:@""];
             }
             
             if ([self.eventType containsString:@"GDP Release"]) {
                 // Select the appropriate color and text for All Stocks
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@"All"];
+                [[cell titleLabel] setText:@""];
             }
         }
         break;
@@ -369,25 +368,25 @@
             if ([self.eventType containsString:@"Fed Meeting"]) {
                 // Select the appropriate color and text for Pro Tip
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@"!!"];
+                [[cell titleLabel] setText:@""];
             }
             
             if ([self.eventType containsString:@"Jobs Report"]) {
                 // Select the appropriate color and text for Pro Tip
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@"!!"];
+                [[cell titleLabel] setText:@""];
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate color and text for Pro Tip
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@"!!"];
+                [[cell titleLabel] setText:@""];
             }
             
             if ([self.eventType containsString:@"GDP Release"]) {
                 // Select the appropriate color and text for Pro Tip
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@"!!"];
+                [[cell titleLabel] setText:@""];
             }
         }
         break;
@@ -930,23 +929,20 @@
     // NOTE: Depending on type of event the title and URL with query to search engine varies.
     if ([infoType isEqualToString:@"Latest On Search Engine"]) {
         
-        moreInfoTitle = [NSString stringWithFormat:@"%@",@"Latest On Bing ▸"];
+        moreInfoTitle = [NSString stringWithFormat:@"%@",@"Latest News On Bing ▸"];
         moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
         
         // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
         if ([eventType isEqualToString:@"Quarterly Earnings"]) {
             searchTerm = [NSString stringWithFormat:@"%@ %@",parentTicker,@"earnings"];
-            moreInfoTitle = @"Latest News On Bing ▸";
         }
         
         // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
         if ([eventType containsString:@"Launch"]) {
             searchTerm = [eventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
-            moreInfoTitle = @"Latest News On Bing ▸";
         }
         if ([eventType containsString:@"Conference"]) {
             searchTerm = [eventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
-            moreInfoTitle = @"Latest News On Bing ▸";
         }
         
         // For economic events, search query term is customized for each type
@@ -959,11 +955,12 @@
         if ([eventType containsString:@"Fed Meeting"]) {
             searchTerm = @"fomc meeting";
         }
-        if ([eventType containsString:@"Fed Meeting"]) {
+        if ([eventType containsString:@"Jobs Report"]) {
             searchTerm = @"jobs report us";
             moreInfoTitle = @"Latest On Google ▸";
-            moreInfoURL = @"https://www.google.com/news/search?q=";
+            moreInfoURL = @"https://www.google.com/search?q=";
         }
+        
         // Remove any spaces in the URL query string params
         searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
         moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
@@ -973,7 +970,7 @@
     attributedTitleWithURL = [[NSMutableAttributedString alloc] initWithString:moreInfoTitle
                                                                            attributes:@{NSLinkAttributeName:[NSURL URLWithString:moreInfoURL]}];
     // Set font and color for the string
-    UIFont *titleFont = [UIFont fontWithName:@"Helvetica" size:18];
+    UIFont *titleFont = [UIFont fontWithName:@"Helvetica" size:20];
     [attributedTitleWithURL addAttribute:NSFontAttributeName value:titleFont range:NSMakeRange(0,[attributedTitleWithURL length])];
     [attributedTitleWithURL addAttribute:NSBackgroundColorAttributeName value:[UIColor whiteColor] range:NSMakeRange(0,[attributedTitleWithURL length])];
     // Econ Blue color
