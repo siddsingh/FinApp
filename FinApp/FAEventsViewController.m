@@ -186,8 +186,19 @@
     // Set the filter type to None_Specified, meaning no filter has been specified.
     self.filterType = [NSString stringWithFormat:@"None_Specified"];
     
-    // Query all future events, including today, as that is the default view first shown
-    self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+    // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+        self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+    }
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+        self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
+    }
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+    }
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+    }
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -1003,7 +1014,21 @@
     // reloading the table. SHouldn't I be creating the new MOC in that thread as opposed to here ? Maybe it doesn't matter
     // as long as I am not sharing MOCs across threads ? The general rule with Core Data is one Managed Object Context per thread, and one thread per MOC
     FADataController *secondaryDataController = [[FADataController alloc] init];
-    self.eventResultsController = [secondaryDataController getAllFutureEvents];
+    
+    // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+        self.eventResultsController = [secondaryDataController getAllFutureEvents];
+    }
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+        self.eventResultsController = [secondaryDataController getAllFutureEarningsEvents];
+    }
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        self.eventResultsController = [secondaryDataController getAllFutureEconEvents];
+    }
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        self.eventResultsController = [secondaryDataController getAllFutureProductEvents];
+    }
+
     [self.eventsListTable reloadData];
     // TO DO: Delete before shipping v2
     //NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");

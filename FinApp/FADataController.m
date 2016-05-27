@@ -2197,72 +2197,85 @@ bool eventsUpdated = NO;
     
     eventsUpdated = NO;
     
-    // Get all events in the local data store.
-    NSFetchedResultsController *eventResultsController = [self getAllEvents];
-    
-    // For every earnings event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
-    // 1. If the speculated date of an event is within 31 days from today, then we consider it likely that the event has been updated
-    // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
-    // 2. If the confirmed date of the event is in the past.
-    // An earnings event that overall qualifies will be refetched from the remote data source and updated in the local data store.
-    // NOTE: TO DO: Fix when implementing server side storage of econ events. Currently economic events don't get picked up for refresh as the certainty field for them is used to store their time period information which does not match the if filter and hence don't get picked up.
-    for (Event *localEvent in eventResultsController.fetchedObjects)
-    {
-        // Get Today's Date
-        NSDate *todaysDate = [NSDate date];
-        // Get the event's date
-        NSDate *eventDate = localEvent.date;
-        // Get the number of days between the 2 dates
-        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-        NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:todaysDate toDate:eventDate options:0];
-        NSInteger daysBetween = [components day];
+    // Check to make sure that we haven't already requested an events refresh today
+    // Get Today's Date
+    NSDate *todaysDate = [NSDate date];
+    // Get the event sync date
+    NSDate *lastSyncDate = [self getEventSyncDate];
+    // Get the number of days between the 2 dates
+    NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
+    NSInteger daysBetween = [components day];
+    NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    if((int)daysBetween > 0) {
         
-        // See if the event qualifies for the update. If it does, call the remote data source to update it.
-        if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
+        // Get all events in the local data store.
+        NSFetchedResultsController *eventResultsController = [self getAllEvents];
+        
+        // For every earnings event check if it's likely that the remote source has been updated. There are 2 scenarios where it's likely:
+        // 1. If the speculated date of an event is within 31 days from today, then we consider it likely that the event has been updated
+        // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
+        // 2. If the confirmed date of the event is in the past.
+        // An earnings event that overall qualifies will be refetched from the remote data source and updated in the local data store.
+        // NOTE: TO DO: Fix when implementing server side storage of econ events. Currently economic events don't get picked up for refresh as the certainty field for them is used to store their time period information which does not match the if filter and hence don't get picked up.
+        for (Event *localEvent in eventResultsController.fetchedObjects)
+        {
+            // Get the event's date
+            NSDate *eventDate = localEvent.date;
+            // Get the number of days between the 2 dates
+            components = [gregorianCalendar components:NSCalendarUnitDay fromDate:todaysDate toDate:eventDate options:0];
+            daysBetween = [components day];
             
-            // Start the busy spinner only the first time
-            if (!eventsUpdated) {
-                // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
-                dispatch_async(dispatch_get_main_queue(), ^{
-                 // TO DO: Delete Later
-                 NSLog(@"About to start busy spinner");
-                 [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
-                 });
+            // See if the event qualifies for the update. If it does, call the remote data source to update it.
+            if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
+                
+                // Start the busy spinner only the first time
+                if (!eventsUpdated) {
+                    // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        // TO DO: Delete Later
+                        NSLog(@"About to start busy spinner");
+                        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+                    });
+                }
+                
+                [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
+                // TO DO: Delete before shipping v2.0
+                NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
+                eventsUpdated = YES;
             }
-            
-            [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
-            // TO DO: Delete before shipping v2.0
-            NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
-            eventsUpdated = YES;
         }
-    }
-    
-    // Check to see if trending ticker events exist already. If not add those
-    if (![self doTrendingTickerEventsExist]) {
         
-        // TO DO: Delete Later
-        NSLog(@"About to add trending ticker events from remote");
-        [self performTrendingEventSyncRemotely];
-    }
-    
-    // Check to see if product events need to be added or refreshed. If yes, do that.
-    if ([self doProductEventsNeedToBeAddedRefreshed]) {
+        // Check to see if trending ticker events exist already. If not add those
+        if (![self doTrendingTickerEventsExist]) {
+            
+            // TO DO: Delete Later
+            NSLog(@"About to add trending ticker events from remote");
+            [self performTrendingEventSyncRemotely];
+        }
         
-        // TO DO: Delete Later
-        NSLog(@"About to add product events from Knotifi Data Platform");
-        [self getAllProductEventsFromApi];
-    }
-    
-    // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.
-    if (eventsUpdated) {
+        // Check to see if product events need to be added or refreshed. If yes, do that.
+        if ([self doProductEventsNeedToBeAddedRefreshed]) {
+            
+            // TO DO: Delete Later
+            NSLog(@"About to add product events from Knotifi Data Platform");
+            [self getAllProductEventsFromApi];
+        }
         
-        // Any async UI element update has to happen in the main thread.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self sendEventsChangeNotification];
-            // TO DO: Delete Later.
-            NSLog(@"About to stop busy spinner");
-            [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
-        });
+        // Set events sync status to "RefreshCheckDone" means a check to see if refreshed events data is available is done. This also sets the event sync date to today.
+        [self updateUserWithEventSyncStatus:@"RefreshCheckDone"];
+        
+        // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.
+        if (eventsUpdated) {
+            
+            // Any async UI element update has to happen in the main thread.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self sendEventsChangeNotification];
+                // TO DO: Delete Later.
+                NSLog(@"About to stop busy spinner");
+                [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+            });
+        }
     }
 }
 
@@ -2351,6 +2364,7 @@ bool eventsUpdated = NO;
 // Get the Event Data Sync Status for the one user in the data store. Returns the following values:
 // "SeedSyncDone" means the most basic set of events information has been added to the event data store.
 // "NoSyncPerformed" means no event information has been added to the event data store.
+// "RefreshCheckDone" means a check to see if refreshed events data is available is done.
 - (NSString *)getEventSyncStatus {
     
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -2375,6 +2389,29 @@ bool eventsUpdated = NO;
     }
     User *fetchedUser = [fetchedUsers lastObject];
     return fetchedUser.eventSyncStatus;
+}
+
+// Get the date on which the events were last synced
+- (NSDate *)getEventSyncDate {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    NSFetchRequest *statusFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:dataStoreContext];
+    [statusFetchRequest setEntity:userEntity];
+    
+    NSError *error;
+    NSArray *fetchedUsers = [dataStoreContext executeFetchRequest:statusFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting user from data store failed: %@",error.description);
+    }
+    if (fetchedUsers.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found more than 1 user objects in the User Data Store");
+    }
+    
+    User *fetchedUser = [fetchedUsers lastObject];
+    return fetchedUser.eventSyncDate;
 }
 
 // Get the date on which the Company info was last completely synced

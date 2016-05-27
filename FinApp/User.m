@@ -39,6 +39,7 @@
 // "SeedSyncDone" means the most basic set of events information has been added to
 // the event data store.
 // "NoSyncPerformed" means no event information has been added to the event data store.
+// "RefreshCheckDone" means a check to see if refreshed events data is available is done.
 @dynamic eventSyncStatus;
 
 // Date when the last event data sync was performed

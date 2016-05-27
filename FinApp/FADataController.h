@@ -185,6 +185,9 @@
 // "NoSyncPerformed" means no event information has been added to the event data store.
 - (NSString *)getEventSyncStatus;
 
+// Get the date on which the events were last synced
+- (NSDate *)getEventSyncDate;
+
 // Get the date on which all the companies were last synced.
 - (NSDate *)getCompanySyncDate;
 
