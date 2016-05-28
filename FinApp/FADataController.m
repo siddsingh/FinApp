@@ -1604,8 +1604,28 @@ bool eventsUpdated = NO;
                 [self upsertEventWithDate:eventDate relatedDetails:timeLabel relatedDate:updatedOnDate type:eventName certainty:confidenceStr listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                 
                 // TO DO: Fix when you add a new table in the data model for event characteristics.
-                // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, Time String and More Info Title i.e. (Impact_Impact Description_TimeString_MoreInfoTitle). Insert the eventhistory record
+                // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
                 [self insertHistoryWithPreviousEvent1Date:nil previousEvent1Status:eventAddtlInfo previousEvent1RelatedDate:nil currentDate:nil previousEvent1Price:nil previousEvent1RelatedPrice:nil currentPrice:nil parentEventTicker:parentTicker parentEventType:eventName];
+                
+                // If this product event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
+                if ([confidenceStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:parentTicker eventType:eventName]) {
+                    //TO DO: For testing, delete before shipping v 2.5
+                    NSLog(@"This product event just went from estimated to confirmed:%@ %@ with status string:%@",parentTicker,eventName,confidenceStr);
+                    // Create array that contains {eventType,companyTicker,eventDateText} to pass on to the notification
+                    NSString *notifEventType = [NSString stringWithFormat: @"%@", eventName];
+                    NSString *notifCompanyTicker = [NSString stringWithFormat: @"%@", parentTicker];
+                    // Format the eventDateText to include the timing details
+                    // Show the event date
+                    NSDateFormatter *notifEventDateFormatter = [[NSDateFormatter alloc] init];
+                    [notifEventDateFormatter setDateFormat:@"EEEE MMMM dd"];
+                    NSString *notifEventDateTxt = [notifEventDateFormatter stringFromDate:eventDate];
+                    NSString *notifEventTimeString = timeLabel;
+                    // Append timing information to the event date if it's known
+                    notifEventDateTxt = [NSString stringWithFormat:@"%@ %@ ",notifEventDateTxt,notifEventTimeString];
+                    
+                    // Fire the notification, passing on the necessary information
+                    [self sendCreateReminderNotificationWithEventInformation:@[notifEventType, notifCompanyTicker, notifEventDateTxt]];
+                }
                 
             } else {
                 NSLog(@"This entry is NOT APPROVED");
@@ -1619,10 +1639,11 @@ bool eventsUpdated = NO;
 
 // Check to see if 1) product events have been synced initially. 2) If there are new entries for product events on the server side. In either of these cases return true
 // NOTE: If there is a new type of product event like launch or conference is added, add that here as well
+// *****NOTE*****Currently always returning true since we have not implemented update logic
 - (BOOL)doProductEventsNeedToBeAddedRefreshed
 {
     // Check if product events are present in the local db
-    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    /*NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     BOOL needed = NO;
     
     // Get all events of type product events.
@@ -1646,11 +1667,13 @@ bool eventsUpdated = NO;
     
     // TO DO: Uncomment Before shipping v2.5 if server side work here is ready.
     // Code for when you are adding server side check for new additions to the server side events.
-    /* Call API to see if true, false if there are new approved events added.
-       Parse API response
-       If true, set needed = YES; */
+    // Call API to see if true, false if there are new approved events added.
+    //   Parse API response
+    //   If true, set needed = YES;
     
-     return needed;
+    return needed;*/
+    
+    return YES;
 }
 
 #pragma mark - Methods to call Company Stock Data Source APIs
@@ -2202,6 +2225,9 @@ bool eventsUpdated = NO;
     NSDate *todaysDate = [NSDate date];
     // Get the event sync date
     NSDate *lastSyncDate = [self getEventSyncDate];
+    // TO DO: Delete Later before shipping v2.5
+    NSLog(@"LAST EVENT SYNCED DATE AND TIME IS:%@",lastSyncDate);
+    NSLog(@"TODAY DATE AND TIME IS:%@",todaysDate);
     // Get the number of days between the 2 dates
     NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
@@ -2255,6 +2281,7 @@ bool eventsUpdated = NO;
         }
         
         // Check to see if product events need to be added or refreshed. If yes, do that.
+        // *****NOTE*****Currently always returning true since we have not implemented update logic
         if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // TO DO: Delete Later

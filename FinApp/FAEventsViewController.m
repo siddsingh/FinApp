@@ -1526,6 +1526,11 @@
         eventImage = [UIImage imageNamed:@"EconListCircle"];
     }
     
+    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        
+        eventImage = [UIImage imageNamed:@"ProdListCircle"];
+    }
+    
     return eventImage;
 }
 

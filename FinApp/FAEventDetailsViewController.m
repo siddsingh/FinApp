@@ -574,8 +574,8 @@
     NSString *cellEventDateText = evtDateText;
     NSString *cellEventCertainty = evtCertainty;
     
-    // Check to see if the event is of type Earnings or Economic event
-    // Based on event type and what's available, return the no of pieces of information.
+    // Check to see if the event is of type Earnings, Product Event or Economic event.
+    // Earnings
     if ([cellEventType isEqualToString:@"Quarterly Earnings"]) {
         
         // Check to see if the event represented by the cell is estimated or confirmed ?
@@ -600,6 +600,7 @@
             [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
         }
     }
+    // Economic Event
     if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]) {
         
         // Create the reminder and show user the appropriate message
@@ -610,6 +611,31 @@
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
         } else {
             [self sendUserGuidanceCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
+        }
+    }
+    // Product Event.
+    if ([cellEventType containsString:@"Launch"]||[cellEventType containsString:@"Conference"]) {
+        
+        // Check to see if the event represented by the cell is estimated or confirmed ?
+        // If confirmed create and save to action data store
+        if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+            
+            // Create the reminder and show user the appropriate message
+            BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
+            if (success) {
+                [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+                // Add action to the action data store with status created
+                [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
+            } else {
+                [self sendUserGuidanceCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
+            }
+        }
+        // If estimated add to action data store for later processing
+        else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
+            
+            // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
+            [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
         }
     }
 }
@@ -623,11 +649,24 @@
     // Set title of the reminder to the reminder text, based on event type
     EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ %@ Earnings tomorrow %@",companyTicker,eventDateText];
     }
-    if ([eventType containsString:@"Fed Meeting"]||[eventType containsString:@"Jobs Report"]||[eventType containsString:@"Consumer Confidence"]||[eventType containsString:@"GDP Release"]) {
-        reminderText = [NSString stringWithFormat:@"%@ tomorrow %@", eventType,eventDateText];
+    if ([eventType containsString:@"Fed Meeting"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Fed Meeting Outcome tomorrow %@", eventDateText];
     }
+    if ([eventType containsString:@"Jobs Report"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Jobs Report tomorrow %@", eventDateText];
+    }
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Consumer Confidence Report tomorrow %@", eventDateText];
+    }
+    if ([eventType containsString:@"GDP Release"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ GDP Release tomorrow %@", eventDateText];
+    }
+    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ %@ tomorrow %@",eventType,eventDateText];
+    }
+    
     eventReminder.title = reminderText;
     
     // For now, create the reminder in the default calendar for new reminders as specified in settings
@@ -831,6 +870,11 @@
         eventImage = [UIImage imageNamed:@"EconDetailCircle"];
     }
     
+    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        
+        eventImage = [UIImage imageNamed:@"ProdDetailCircle"];
+    }
+    
     return eventImage;
 }
 
@@ -921,7 +965,7 @@
         
         // Parse out the MoreInfoTitle and MoreInfoUrl
         infoComponents = [eventHistoryData.previous1Status componentsSeparatedByString:@"_"];
-        moreInfoTitle = [NSString stringWithFormat:@"%@ %@",infoComponents[2],@"▸"];
+        moreInfoTitle = [NSString stringWithFormat:@"%@ %@",infoComponents[2],@"▶︎"];
         moreInfoURL = infoComponents[3];
     }
     
@@ -929,7 +973,7 @@
     // NOTE: Depending on type of event the title and URL with query to search engine varies.
     if ([infoType isEqualToString:@"Latest On Search Engine"]) {
         
-        moreInfoTitle = [NSString stringWithFormat:@"%@",@"Latest News On Bing ▸"];
+        moreInfoTitle = [NSString stringWithFormat:@"%@",@"Latest News On Bing ▶︎"];
         moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
         
         // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
@@ -940,9 +984,13 @@
         // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
         if ([eventType containsString:@"Launch"]) {
             searchTerm = [eventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+            moreInfoTitle = @"Latest On Google ▶︎";
+            moreInfoURL = @"https://www.google.com/search?q=";
         }
         if ([eventType containsString:@"Conference"]) {
             searchTerm = [eventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+            moreInfoTitle = @"Latest On Google ▶︎";
+            moreInfoURL = @"https://www.google.com/search?q=";
         }
         
         // For economic events, search query term is customized for each type
@@ -957,7 +1005,7 @@
         }
         if ([eventType containsString:@"Jobs Report"]) {
             searchTerm = @"jobs report us";
-            moreInfoTitle = @"Latest On Google ▸";
+            moreInfoTitle = @"Latest On Google ▶︎";
             moreInfoURL = @"https://www.google.com/search?q=";
         }
         
