@@ -50,4 +50,7 @@
 // Event type selection action
 - (IBAction)eventTypeSelectAction:(id)sender;
 
+// Underline bar to draw focus to a certain area
+@property (weak, nonatomic) IBOutlet UILabel *focusBar;
+
 @end

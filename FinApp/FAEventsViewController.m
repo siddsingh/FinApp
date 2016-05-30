@@ -95,9 +95,12 @@
     // Format the event type selector
     // Set text color of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
     [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
-    // Set text color for the segment selected for the very first time which is Black for ALL events type.
+    // Set text color for the segment selected for the very first time which is Black for ALL events type. Also set focus bar to draw focus to the search bar to the same color.
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
+        [self.focusBar setTextColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
+        [self.focusBar setBackgroundColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
+        [self.focusBar setTintColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
     }
     
     // Get a primary data controller that you will use later
@@ -933,10 +936,13 @@
 // When an event type selection has been made, change the color of the selected type and 1) show the appropriate event types in the results table 2) Set the correct search bar placeholder text 3) Clear out the search context
 - (IBAction)eventTypeSelectAction:(id)sender {
     
-    // Change color of the selected option to indicate selection and filter the table to show the correct events of that type.
+    // Change color of the selected option to indicate selection and filter the table to show the correct events of that type. Also set the color of the focus bar to the same color as the selected option.
     // All Event Types - Color Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
+        [self.focusBar setTextColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
+        [self.focusBar setBackgroundColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
+        [self.focusBar setTintColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -952,6 +958,9 @@
     // Earnings - Color Knotifi Green
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        [self.focusBar setTextColor:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]];
+        [self.focusBar setBackgroundColor:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]];
+        [self.focusBar setTintColor:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -967,6 +976,9 @@
     // Economic - Color Econ Blue
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        [self.focusBar setTextColor:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]];
+        [self.focusBar setBackgroundColor:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]];
+        [self.focusBar setTintColor:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -982,6 +994,9 @@
     // Product - Product Brown
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        [self.focusBar setTextColor:[UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f]];
+        [self.focusBar setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f]];
+        [self.focusBar setTintColor:[UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f]];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -1113,7 +1128,26 @@
     
     // Set title of the reminder to the reminder text.
     EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
-    NSString *reminderText = [NSString stringWithFormat:@"%@ %@ tomorrow %@", companyTicker,eventType,eventDateText];
+    NSString *reminderText = @"A financial event of interest is tomorrow.";
+    // Set title of the reminder to the reminder text, based on event type
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ %@ Earnings tomorrow %@",companyTicker,eventDateText];
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Fed Meeting Outcome tomorrow %@", eventDateText];
+    }
+    if ([eventType containsString:@"Jobs Report"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Jobs Report tomorrow %@", eventDateText];
+    }
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Consumer Confidence Report tomorrow %@", eventDateText];
+    }
+    if ([eventType containsString:@"GDP Release"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ GDP Release tomorrow %@", eventDateText];
+    }
+    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ %@ tomorrow %@",eventType,eventDateText];
+    }
     eventReminder.title = reminderText;
     
     // For now, create the reminder in the default calendar for new reminders as specified in settings
@@ -1483,13 +1517,24 @@
     NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:[self setTimeToMidnightLastNightOnDate:[NSDate date]] toDate:[self setTimeToMidnightLastNightOnDate:eventDate] options:0];
     NSInteger difference = [diffDateComponents day];
     
-    // Return an appropriate color based on distance. Typical values and colors are Past(Light Gray Text),Today(Orangish Red), Tomorrow (Slightly less orangish red), 2d-7d (More orange, less red) and everything else (Light Gray)
+    // Return an appropriate color based on distance. Typical values and colors are Past(Light Gray Text),Today(Orangish Red), Tomorrow (Slightly less orangish red), 2d-7d (More orange, less red) and everything else (Light Gray).
+    // Currently return only a single shade of red for near events.
     if (difference == 0) {
-        colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+        // Older orangish red
+        //colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+        // Newer pinkish deep red
+        colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+        
     } else if (difference == 1) {
-        colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:81.0f/255.0f blue:62.0f/255.0f alpha:1.0f];
+        // Older slightly less orangish red
+        //colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:81.0f/255.0f blue:62.0f/255.0f alpha:1.0f];
+        // Newer pinkish deep red
+        colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
     } else if ((difference > 1)&&(difference < 8)){
-        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
+        // Older More orange, less red
+        //colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
+        // Newer pinkish deep red
+        colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;

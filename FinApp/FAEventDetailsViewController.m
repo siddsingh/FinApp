@@ -306,6 +306,7 @@
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate color and text for Retail Stocks
+                // Pinkish deep red
                 cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@""];
             }
@@ -644,7 +645,7 @@
 - (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker dateText:(NSString *)eventDateText andDataController:(FADataController *)reminderDataController  {
     
     BOOL creationSuccess = NO;
-    NSString *reminderText = @"An earnings Call of interest is tomorrow.";
+    NSString *reminderText = @"A financial event of interest is tomorrow.";
     
     // Set title of the reminder to the reminder text, based on event type
     EKReminder *eventReminder = [EKReminder reminderWithEventStore:self.userEventStore];
