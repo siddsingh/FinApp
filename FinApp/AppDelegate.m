@@ -60,8 +60,8 @@
     
     // TRACKING EVENT: SETUP: Adding the FB SDK
     // TO DO: Disabling to not track development events. Enable before shipping.
-    /*[[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];*/
+    [[FBSDKApplicationDelegate sharedInstance] application:application
+                             didFinishLaunchingWithOptions:launchOptions];
     
     return YES;
 }
@@ -116,10 +116,11 @@
         });
         
         // TO DO: Delete Later, Testing only
-        NSLog(@"Application did become active called");
+        //NSLog(@"Application did become active called");
+        
         // TRACKING EVENT: App Launch: Application was launched.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        //[FBSDKAppEvents activateApp];
+        [FBSDKAppEvents activateApp];
     }
 }
 
@@ -153,7 +154,7 @@
 
 #pragma mark - State Setup Rfresh
 
-// Refresh events that are likely to be updated, from API. Additionally also get the events for trending tickers initially. Typically called in a background thread.
+// Refresh events that are likely to be updated, from API. Additionally also get the events for trending tickers initially. Check to see if product events need to be added or refreshed. If yes, do that. Currently product events are being fetched whole each time. Typically called in a background thread.
 - (void)refreshEventsIfNeededFromApiInBackgroundWithDataController:(FADataController *)existingDC
 {
     // TO DO: Uncomment for actual use. Comment for test data for event update testing.
@@ -172,16 +173,23 @@
     // Get the last company sync date
     NSDate *lastCompanySyncDate = [companyUpdateDataController getCompanySyncDate];
     
-    // Get the number of days between the 2 dates
+    // Get the last event sync date
+    NSDate *lastEventSyncDate = [companyUpdateDataController getEventSyncDate];
+    
+    // Get the number of days between the 2 company sync dates
     NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastCompanySyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
     
-    // TO DO: For testing, comment before shipping. Keeping it around for future pre seeding testing.
-    NSLog(@"Days since last sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
+    // Get the number of days between the 2 event sync dates
+    NSDateComponents *eventComponents = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastEventSyncDate toDate:todaysDate options:0];
+    NSInteger daysBetweenEventSyncs = [eventComponents day];
     
-    // If it's been 45 days since the last company sync, do an incremental sync
-    if ((int)daysBetween >= 45)
+    // TO DO: For testing, comment before shipping. Keeping it around for future pre seeding testing.
+    //NSLog(@"Days since last company sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
+    
+    // If it's been 45 days since the last company sync, do an incremental sync, only if the event sync for the day is done
+    if (((int)daysBetween >= 45)&&((int)daysBetweenEventSyncs <= 0))
     {
         // Creating a task that continues to process in the background.
         __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
@@ -195,7 +203,7 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
             // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
-            NSLog(@"About to start the background get incremental companies from API");
+            //NSLog(@"About to start the background get incremental companies from API");
             
             // Create a new FADataController so that this thread has its own MOC
             FADataController *companyBkgrndDataController = [[FADataController alloc] init];

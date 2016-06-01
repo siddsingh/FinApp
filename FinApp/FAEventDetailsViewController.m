@@ -482,9 +482,10 @@
         
         // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Unset Reminder"
+        [FBSDKAppEvents logEvent:@"Unset Reminder"
                       parameters:@{ @"Ticker" : self.parentTicker,
-                                    @"Event Certainty" : self.eventCertainty } ];*/
+                                    @"Event Type" : self.eventType,
+                                    @"Event Certainty" : self.eventCertainty } ];
     }
     
     // If not, create the reminder and style the button to post set styling
@@ -500,9 +501,10 @@
         
         // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Create Reminder"
+        [FBSDKAppEvents logEvent:@"Create Reminder"
                       parameters:@{ @"Ticker" : self.parentTicker,
-                                    @"Event Certainty" : self.eventCertainty } ];*/
+                                    @"Event Type" : self.eventType,
+                                    @"Event Certainty" : self.eventCertainty } ];
     }
 }
 
@@ -1031,6 +1033,22 @@
     [attributedTitleWithURL addAttribute:NSParagraphStyleAttributeName value:paraStyle range:NSMakeRange(0,[attributedTitleWithURL length])];
     
     return attributedTitleWithURL;
+}
+
+// Implementing the UITextView (that holds the description text including the links) delegate to track the actions being clicked by the user
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange
+{
+    // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+    // TO DO: Disabling to not track development events. Enable before shipping.
+    [FBSDKAppEvents logEvent:@"External Action Clicked"
+                  parameters:@{ @"Action Title" : textView.text,
+                                @"Action URL" : [URL absoluteString] } ];
+    
+    // TO DO FINAL: Delete after final test
+    NSLog(@"LINK CLICKED:%@ %@", textView.text, URL);
+    
+    // Return NO if iOS should not open the link
+    return YES;
 }
 
 // Get the display text for PriceSince or Tip depending on the event type.

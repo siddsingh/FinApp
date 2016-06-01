@@ -1151,7 +1151,7 @@ bool eventsUpdated = NO;
     if (error == nil)
     {
         // TO DO: Delete Later, for testing
-        NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
+        //NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
         //NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         // Process the response that contains the events for the company.
         [self processEventsResponse:responseData forTicker:companyTicker];
@@ -1512,7 +1512,7 @@ bool eventsUpdated = NO;
     if (error == nil)
     {
         // TO DO: Delete Later, for testing
-        NSLog(@"The endpoint being called for getting product events information is:%@",endpointURL);
+        //NSLog(@"The endpoint being called for getting product events information is:%@",endpointURL);
         //NSLog(@"The API response for getting product events information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         
         // Process the response that contains the events for the company.
@@ -1530,52 +1530,49 @@ bool eventsUpdated = NO;
             // Get the ticker for the event's parent company
             NSString *parentTicker = [event objectForKey:@"ticker"];
             // TO DO: Delete Later
-            NSLog(@"The event parent company is: %@", parentTicker);
+            //NSLog(@"The event parent company is: %@", parentTicker);
             
             // Get the event raw name e.g. iPhone 7
             NSString *eventName = [event objectForKey:@"name"];
             // TO DO: Delete Later
-            NSLog(@"The event raw name is: %@", eventName);
+            //NSLog(@"The event raw name is: %@", eventName);
             
             // Get the event type
             NSString *eventType = [event objectForKey:@"type"];
             // TO DO: Delete Later
-            NSLog(@"The event type is: %@", eventType);
+            //NSLog(@"The event type is: %@", eventType);
             
             // Construct the formatted event name from raw name and event type e.g. iPhone 7 Launch
             NSArray *typeComponents = [eventType componentsSeparatedByString:@"_"];
             eventName = [eventName stringByAppendingString:@" "];
             eventName = [eventName stringByAppendingString:typeComponents.lastObject];
-            NSLog(@"The event formatted name is: %@", eventName);
+            // TO DO: Delete Later
+            //NSLog(@"The event formatted name is: %@", eventName);
             
             // Get the event date
-            // TO DO: Delete later as the API response is a date string now
-            //NSNumber *eventDateAsNum = [event objectForKey:@"date"];
-            // TO DO: Delete Later
-            //NSLog(@"The date on which the event takes place: %@", eventDateAsNum);
-            //NSString *eventDateStr =  [NSString stringWithFormat: @"%@", eventDateAsNum];
             NSString *eventDateStr =  [event objectForKey:@"date"];
             NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
             [eventDateFormatter setDateFormat:@"yyyy-MM-dd"];
             NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
             // TO DO: Delete Later
-            NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+            //NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
             
             // Get the time label
             NSString *timeLabel = [event objectForKey:@"exactTimeLabel"];
             // TO DO: Delete Later
-            NSLog(@"The event time label is: %@", timeLabel);
+            //NSLog(@"The event time label is: %@", timeLabel);
             
             // TO DO: Fix when you add a new table in the data model for event characteristics.
             // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
             NSString *eventAddtlInfo = [NSString stringWithFormat:@"%@_%@_%@_%@", [event objectForKey:@"impact"], [event objectForKey:@"impactDescription"], [event objectForKey:@"moreInfoTitle"], [event objectForKey:@"moreInfoUrl"]];
-            NSLog(@"The event addtl info with Impact, Impact Description, More Info Title and More Info Url is: %@", eventAddtlInfo);
+            // TO DO: Delete Later
+            //NSLog(@"The event addtl info with Impact, Impact Description, More Info Title and More Info Url is: %@", eventAddtlInfo);
             
             // Get the updated on date
             NSString *updatedOnDateStr = [event objectForKey:@"updated"];
             NSDate *updatedOnDate = [eventDateFormatter dateFromString:updatedOnDateStr];
             // TO DO: Delete Later
-            NSLog(@"The updated on date formatted as a Date: %@",updatedOnDate);
+            //NSLog(@"The updated on date formatted as a Date: %@",updatedOnDate);
             
             // Construct if the event is "Estimated" or "Confirmed" based on confidence value
             // Currently, keeping it simple, if the confidence is 0.5 it's estimated, if it's 1.0 it's confirmed.
@@ -1586,17 +1583,20 @@ bool eventsUpdated = NO;
             if ([confidenceStr isEqualToString:@"1"]) {
                 confidenceStr = @"Confirmed";
             }
-            NSLog(@"The confidence string is: %@",confidenceStr);
+            // TO DO: Delete Later
+            //NSLog(@"The confidence string is: %@",confidenceStr);
             
             // Check if this event is approved or not. Only if approved it will be added to local data store.
             // Before updating, check if the earnings event for that company exists. If not, sync it.
             BOOL approved = [[event objectForKey:@"approved"] boolValue];
             if(approved) {
-                NSLog(@"This entry is APPROVED");
+                // TO DO: Delete Later
+                //NSLog(@"This entry is APPROVED");
                 
                 // Check if earnings event exists for this ticker. If not fetch it, since we don't want a company that has only a product event and no earnings event.
                 if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
-                    NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
+                    // TO DO: Delete Later
+                    //NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
                     [self getAllEventsFromApiWithTicker:parentTicker];
                 }
                 
@@ -1610,7 +1610,7 @@ bool eventsUpdated = NO;
                 // If this product event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
                 if ([confidenceStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:parentTicker eventType:eventName]) {
                     //TO DO: For testing, delete before shipping v 2.5
-                    NSLog(@"This product event just went from estimated to confirmed:%@ %@ with status string:%@",parentTicker,eventName,confidenceStr);
+                    //NSLog(@"This product event just went from estimated to confirmed:%@ %@ with status string:%@",parentTicker,eventName,confidenceStr);
                     // Create array that contains {eventType,companyTicker,eventDateText} to pass on to the notification
                     NSString *notifEventType = [NSString stringWithFormat: @"%@", eventName];
                     NSString *notifCompanyTicker = [NSString stringWithFormat: @"%@", parentTicker];
@@ -1628,7 +1628,8 @@ bool eventsUpdated = NO;
                 }
                 
             } else {
-                NSLog(@"This entry is NOT APPROVED");
+                // TO DO: Delete Later
+                //NSLog(@"This entry is NOT APPROVED");
             }
         }
     } else {
@@ -2215,7 +2216,7 @@ bool eventsUpdated = NO;
 // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
 // 2. If the confirmed date of the event is in the past.
 // ADDITIONALLY: Add trending tickers only initially
-// PLUS: Check to see if product events need to be added or refreshed. If yes, do that.
+// PLUS: Check to see if product events need to be added or refreshed. If yes, do that. Currently product events are being fetched whole each time.
 - (void)updateEventsFromRemoteIfNeeded {
     
     eventsUpdated = NO;
@@ -2226,13 +2227,15 @@ bool eventsUpdated = NO;
     // Get the event sync date
     NSDate *lastSyncDate = [self getEventSyncDate];
     // TO DO: Delete Later before shipping v2.5
-    NSLog(@"LAST EVENT SYNCED DATE AND TIME IS:%@",lastSyncDate);
-    NSLog(@"TODAY DATE AND TIME IS:%@",todaysDate);
+    //NSLog(@"LAST EVENT SYNCED DATE AND TIME IS:%@",lastSyncDate);
+    //NSLog(@"TODAY DATE AND TIME IS:%@",todaysDate);
     // Get the number of days between the 2 dates
     NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
-    NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    // TO DO: Delete Later before shipping v2.5
+    //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    // Refresh only if a day has passed since last refresh
     if((int)daysBetween > 0) {
         
         // Get all events in the local data store.
@@ -2260,14 +2263,14 @@ bool eventsUpdated = NO;
                     // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
                     dispatch_async(dispatch_get_main_queue(), ^{
                         // TO DO: Delete Later
-                        NSLog(@"About to start busy spinner");
+                        //NSLog(@"About to start busy spinner");
                         [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
                     });
                 }
                 
                 [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
                 // TO DO: Delete before shipping v2.0
-                NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
+                //NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
                 eventsUpdated = YES;
             }
         }
@@ -2276,7 +2279,7 @@ bool eventsUpdated = NO;
         if (![self doTrendingTickerEventsExist]) {
             
             // TO DO: Delete Later
-            NSLog(@"About to add trending ticker events from remote");
+            //NSLog(@"About to add trending ticker events from remote");
             [self performTrendingEventSyncRemotely];
         }
         
@@ -2285,7 +2288,7 @@ bool eventsUpdated = NO;
         if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // TO DO: Delete Later
-            NSLog(@"About to add product events from Knotifi Data Platform");
+            //NSLog(@"About to add product events from Knotifi Data Platform");
             [self getAllProductEventsFromApi];
         }
         
@@ -2299,7 +2302,7 @@ bool eventsUpdated = NO;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self sendEventsChangeNotification];
                 // TO DO: Delete Later.
-                NSLog(@"About to stop busy spinner");
+                //NSLog(@"About to stop busy spinner");
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
             });
         }

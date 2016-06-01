@@ -69,16 +69,22 @@
                                 </variation>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Cj-9c-Flh">
-                                <rect key="frame" x="250" y="49" width="100" height="2"/>
+                                <rect key="frame" x="250" y="49" width="100" height="1"/>
                                 <color key="backgroundColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="tintColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="2tk-vn-qCw"/>
                                     <constraint firstAttribute="height" constant="2" id="4Am-2R-zAb"/>
                                     <constraint firstAttribute="width" constant="100" id="cJi-3i-HQg"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="4Am-2R-zAb"/>
+                                    </mask>
+                                </variation>
                             </label>
                             <searchBar contentMode="redraw" text="" placeholder="COMPANY or TICKER or EVENT" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
                                 <rect key="frame" x="163" y="5" width="275" height="44"/>
@@ -741,6 +747,9 @@
                                                     </attributedString>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                     <dataDetectorType key="dataDetectorTypes" link="YES"/>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="4jH-eb-uDY" id="Nb5-B1-GjM"/>
+                                                    </connections>
                                                 </textView>
                                             </subviews>
                                             <constraints>

@@ -9,6 +9,7 @@
 //
 
 #import "FAEventDetailsTableViewCell.h"
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 @implementation FAEventDetailsTableViewCell
 
@@ -37,7 +38,17 @@
     NSURL *targetURL = descAttributes[NSLinkAttributeName];
     
     if (targetURL) {
-     [[UIApplication sharedApplication] openURL:targetURL];
+        
+        // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"External Action Clicked"
+                      parameters:@{ @"Action Title" : self.descriptionArea.text,
+                                    @"Action URL" : [targetURL absoluteString]} ];
+        
+        // TO DO FINAL: Delete after final test
+        NSLog(@"LINK TAPPED:%@ %@", self.descriptionArea.text, targetURL);
+        
+        [[UIApplication sharedApplication] openURL:targetURL];
     }
 }
 
