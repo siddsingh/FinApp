@@ -46,7 +46,7 @@
                                     @"Action URL" : [targetURL absoluteString]} ];
         
         // TO DO FINAL: Delete after final test
-        NSLog(@"LINK TAPPED:%@ %@", self.descriptionArea.text, targetURL);
+        //NSLog(@"LINK TAPPED:%@ %@", self.descriptionArea.text, targetURL);
         
         [[UIApplication sharedApplication] openURL:targetURL];
     }

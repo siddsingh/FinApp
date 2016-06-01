@@ -1045,7 +1045,7 @@
                                 @"Action URL" : [URL absoluteString] } ];
     
     // TO DO FINAL: Delete after final test
-    NSLog(@"LINK CLICKED:%@ %@", textView.text, URL);
+    //NSLog(@"LINK CLICKED:%@ %@", textView.text, URL);
     
     // Return NO if iOS should not open the link
     return YES;
