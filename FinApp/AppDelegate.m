@@ -60,8 +60,8 @@
     
     // TRACKING EVENT: SETUP: Adding the FB SDK
     // TO DO: Disabling to not track development events. Enable before shipping.
-    [[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];
+    /*[[FBSDKApplicationDelegate sharedInstance] application:application
+                             didFinishLaunchingWithOptions:launchOptions];*/
     
     return YES;
 }
@@ -120,7 +120,7 @@
         
         // TRACKING EVENT: App Launch: Application was launched.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents activateApp];
+        //[FBSDKAppEvents activateApp];
     }
 }
 

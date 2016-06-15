@@ -433,9 +433,9 @@
             
             // TRACKING EVENT: Get Earnings: User clicked the get earnings link for a company/ticker.
             // TO DO: Disabling to not track development events. Enable before shipping.
-            [FBSDKAppEvents logEvent:@"Get Earnings"
+            /*[FBSDKAppEvents logEvent:@"Get Earnings"
                           parameters:@{ @"Ticker" : (cell.companyTicker).text,
-                                        @"Name" : (cell.companyName).text } ];
+                                        @"Name" : (cell.companyName).text } ];*/
         }
         // If not, show error message
         else {
@@ -681,8 +681,8 @@
     
     // TRACKING EVENT: Search Button Clicked: User clicked the search button to search for a company or ticker.
     // TO DO: Disabling to not track development events. Enable before shipping.
-    [FBSDKAppEvents logEvent:@"Search Button Clicked"
-                  parameters:@{ @"Search String" : searchBar.text } ];
+    /*[FBSDKAppEvents logEvent:@"Search Button Clicked"
+                  parameters:@{ @"Search String" : searchBar.text } ];*/
     
     //[searchBar resignFirstResponder];
     // TO DO: In case you want to clear the search context
@@ -897,7 +897,7 @@
         
         // TRACKING EVENT: Search Initiated: User clicked into the search bar to initiate a search.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Search Initiated"];
+        //[FBSDKAppEvents logEvent:@"Search Initiated"];
         
         // If the newer companies data is still being synced, give the user a warning message
         if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
@@ -956,8 +956,8 @@
         
         // TRACKING EVENT: Event Type Selected: User selected All event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Event Type Selected"
-                      parameters:@{ @"Event Type" : @"All" } ];
+        /*[FBSDKAppEvents logEvent:@"Event Type Selected"
+                      parameters:@{ @"Event Type" : @"All" } ];*/
     }
     // Earnings - Color Knotifi Green
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
@@ -979,8 +979,8 @@
         
         // TRACKING EVENT: Event Type Selected: User selected Earnings event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Event Type Selected"
-                      parameters:@{ @"Event Type" : @"Earnings" } ];
+        /*[FBSDKAppEvents logEvent:@"Event Type Selected"
+                      parameters:@{ @"Event Type" : @"Earnings" } ];*/
     }
     // Economic - Color Econ Blue
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
@@ -1002,8 +1002,8 @@
         
         // TRACKING EVENT: Event Type Selected: User selected Economic event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Event Type Selected"
-                      parameters:@{ @"Event Type" : @"Economic" } ];
+        /*[FBSDKAppEvents logEvent:@"Event Type Selected"
+                      parameters:@{ @"Event Type" : @"Economic" } ];*/
     }
     // Product - Product Brown
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
@@ -1025,8 +1025,8 @@
         
         // TRACKING EVENT: Event Type Selected: User selected Product event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Event Type Selected"
-                      parameters:@{ @"Event Type" : @"Product" } ];
+        /*[FBSDKAppEvents logEvent:@"Event Type Selected"
+                      parameters:@{ @"Event Type" : @"Product" } ];*/
     }
 }
 
@@ -1282,9 +1282,9 @@
         
         // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Go To Details"
+        /*[FBSDKAppEvents logEvent:@"Go To Details"
                       parameters:@{ @"Ticker" : [segueDataController getTickerForName:selectedCell.companyName.text],
-                                    @"Name" : (selectedCell.companyName).text } ];
+                                    @"Name" : (selectedCell.companyName).text } ];*/
     }
 }
 

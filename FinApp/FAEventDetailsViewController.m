@@ -46,12 +46,12 @@
     
     // Get a primary data controller that you will use later
     self.primaryDetailsDataController = [[FADataController alloc] init];
-    
-    // Show event type in the navigation bar header.
-    self.navigationItem.title = [self.eventType uppercaseString];
+
+    // Show the company name in the navigation bar header.
+    self.navigationItem.title = [self.eventTitleStr uppercaseString];
     
     // Set the labels to the strings that hold their text. These strings will be set in the prepare for segue method when called. This is necessary since the label outlets are still nil when prepare for segue is called, so can't be set directly.
-    [self.eventTitle setText:[self.eventTitleStr uppercaseString]];
+    [self.eventTitle setText:[self.eventType uppercaseString]];
     [self.eventSchedule setText:[self.eventScheduleStr uppercaseString]];
     
     // Check to see if a reminder has already been created for the event.
@@ -482,10 +482,10 @@
         
         // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Unset Reminder"
+        /*[FBSDKAppEvents logEvent:@"Unset Reminder"
                       parameters:@{ @"Ticker" : self.parentTicker,
                                     @"Event Type" : self.eventType,
-                                    @"Event Certainty" : self.eventCertainty } ];
+                                    @"Event Certainty" : self.eventCertainty } ];*/
     }
     
     // If not, create the reminder and style the button to post set styling
@@ -501,10 +501,10 @@
         
         // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Create Reminder"
+        /*[FBSDKAppEvents logEvent:@"Create Reminder"
                       parameters:@{ @"Ticker" : self.parentTicker,
                                     @"Event Type" : self.eventType,
-                                    @"Event Certainty" : self.eventCertainty } ];
+                                    @"Event Certainty" : self.eventCertainty } ];*/
     }
 }
 
@@ -1040,9 +1040,9 @@
 {
     // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
     // TO DO: Disabling to not track development events. Enable before shipping.
-    [FBSDKAppEvents logEvent:@"External Action Clicked"
+    /*[FBSDKAppEvents logEvent:@"External Action Clicked"
                   parameters:@{ @"Action Title" : textView.text,
-                                @"Action URL" : [URL absoluteString] } ];
+                                @"Action URL" : [URL absoluteString] } ];*/
     
     // TO DO FINAL: Delete after final test
     //NSLog(@"LINK CLICKED:%@ %@", textView.text, URL);
