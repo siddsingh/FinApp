@@ -67,7 +67,7 @@
     {
         // Modified Knotifi Green
         [self.reminderButton setBackgroundColor:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]];
-        [self.reminderButton setTitle:@"REMIND ME" forState:UIControlStateNormal];
+        [self.reminderButton setTitle:@"SET REMINDER" forState:UIControlStateNormal];
         [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     }
     
