@@ -727,6 +727,9 @@
                                 <state key="normal" title="SEE NEWS">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="seeNewsAction:" destination="4jH-eb-uDY" eventType="touchUpInside" id="cdj-QN-095"/>
+                                </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="117" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="DqT-nh-mSd">
                                 <rect key="frame" x="10" y="143" width="580" height="393"/>
@@ -1090,6 +1093,7 @@
                         <outlet property="eventSchedule" destination="skv-Z2-igx" id="stj-7W-ZQ5"/>
                         <outlet property="eventTitle" destination="l00-YB-Mlc" id="kvf-Y1-bPg"/>
                         <outlet property="messagesArea" destination="THB-3X-wjS" id="jQW-du-hOq"/>
+                        <outlet property="newsButton" destination="92d-w5-paa" id="Yc1-Zh-Hpw"/>
                         <outlet property="reminderButton" destination="GSC-fM-PEJ" id="DXu-xN-LRz"/>
                     </connections>
                 </viewController>

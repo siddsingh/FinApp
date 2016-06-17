@@ -55,4 +55,10 @@
 // Action to take when Reminder button is pressed
 - (IBAction)reminderAction:(id)sender;
 
+// Button to see the news
+@property (weak, nonatomic) IBOutlet UIButton *newsButton;
+
+// Action to take when the news button is clicked
+- (IBAction)seeNewsAction:(id)sender;
+
 @end

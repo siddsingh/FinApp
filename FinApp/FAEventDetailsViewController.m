@@ -65,11 +65,17 @@
     // If not, show the appropriate styling
     else
     {
-        // Modified Knotifi Green
-        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]];
+        // Set button color based on event type
+        [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
         [self.reminderButton setTitle:@"SET REMINDER" forState:UIControlStateNormal];
         [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     }
+    
+    // Set color of "See News" button based on event type
+    [self.newsButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+    
+    // Set color of back navigation item based on event type
+    self.navigationController.navigationBar.tintColor = [self getColorForEventType:self.eventType];
     
     // Register a listener for guidance messages to be shown to the user in the messages bar
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -172,7 +178,6 @@
     #define infoRow3  2
     #define infoRow4  3
     #define infoRow5  4
-    #define infoRow6  5
     
     // Define date formatters that will be used later
     // 1. Jun 30 2015
@@ -207,83 +212,96 @@
         // Display a short description of the event along with the related static image.
         case infoRow1:
         {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
+            
             [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
-            cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+            // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+            //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+            
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                // Knotifi Green
+                cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+                
+            }
+            if ([self.eventType containsString:@"Fed Meeting"]) {
+                // Econ Blue
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
+            if ([self.eventType containsString:@"Jobs Report"]) {
+                // Econ Blue
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
+            if ([self.eventType containsString:@"Consumer Confidence"]) {
+                // Econ Blue
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
+            if ([self.eventType containsString:@"GDP Release"]) {
+                // Econ Blue
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
+            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+                // Product Brown
+                cell.titleLabel.textColor = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
         }
         break;
             
-        // Display "Latest On Search Engine" or Impact Level depending on the event type
+        // Display Impact Level depending on the event type
         case infoRow2:
         {
-            // For Quarterly Earnings display "Latest On Search Engine"
-            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                // Description
-                [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
-                
-                // Display Label
-                [[cell titleLabel] setText:@""];
-            }
-            // Impact Image bars for all others
-            else {
-                // Description
-                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
-                
-                // Display Label
-                // Very High, High Impact
-                if ([cell.descriptionArea.text containsString:@"High Impact"]) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
-                    [[cell titleLabel] setText:@"||||||||||"];
-                }
-                // Medium Impact
-                if ([cell.descriptionArea.text containsString:@"Medium Impact"]) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-                    [[cell titleLabel] setText:@"||||||"];
-                }
-                // Low Impact
-                if ([cell.descriptionArea.text containsString:@"Low Impact"]) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
-                    [[cell titleLabel] setText:@"||||"];
-                }
-            }
-        }
-        break;
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
             
-        // Display "Most Relevant Website" link for Product events or "Latest On Search Engine" link for economic events and "Expected EPS" for earnings event.
-        case infoRow3:
-        {
-            // For product event types get the most relevant Info link and display appropriately. NOTE: Set label to nothing for the product events, just for safety.
-            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-                [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Most Relevant Website"]];
-                [[cell titleLabel] setText:@""];
-            }
-            // For Quarterly earnings events show the expected EPS
-            else if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+            // Show EPS for earnings and Impact Image bars for all others
+            // Description
+            [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+
+            // Display Label
+            // EPS
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                // Econ Blue Color
                 cell.titleLabel.textColor = [UIColor blackColor];
                 [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
             }
-            // For all other Econ events get the "Latest On Search Engine" link and display appropriately
-            else {
-                [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@""];
+            // Very High, High Impact
+            if ([cell.descriptionArea.text containsString:@"High Impact"]) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                //[[cell titleLabel] setText:@"||||||||||"];
+                [[cell titleLabel] setText:@"♨︎"];
+            }
+            // Medium Impact
+            if ([cell.descriptionArea.text containsString:@"Medium Impact"]) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                //[[cell titleLabel] setText:@"||||||"];
+                [[cell titleLabel] setText:@"♨︎"];
+            }
+            // Low Impact
+            if ([cell.descriptionArea.text containsString:@"Low Impact"]) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
+                //[[cell titleLabel] setText:@"||||"];
+                [[cell titleLabel] setText:@"♨︎"];
             }
         }
         break;
             
-        // Display Prior EPS or Sectors Affected or "Latest On Search Engine" link, depending on the event type
-        case infoRow4:
+        // Display "Sectors Affected" link for economic events and "Prior EPS" for earnings event. Nothing for product
+        case infoRow3:
         {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
+            
             // Description
-            // For product event types get the Latest On Search Engine link and display appropriately. NOTE: Set display label to nothing for the product events, just for safety.
-            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-                [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
-                [[cell titleLabel] setText:@""];
-            }
-            // For others get the eps or sectors affected text
-            else {
-                [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
-            }
+            [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
             
             // Image/Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
@@ -295,33 +313,37 @@
             if ([self.eventType containsString:@"Fed Meeting"]) {
                 // Select the appropriate color and text for Financial Stocks
                 cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@""];
+                [[cell titleLabel] setText:@"$"];
             }
             
             if ([self.eventType containsString:@"Jobs Report"]) {
                 // Select the appropriate color and text for All Stocks
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@""];
+                [[cell titleLabel] setText:@"☼"];
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate color and text for Retail Stocks
                 // Pinkish deep red
                 cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@""];
+                [[cell titleLabel] setText:@"⦿"];
             }
             
             if ([self.eventType containsString:@"GDP Release"]) {
                 // Select the appropriate color and text for All Stocks
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@""];
+                [[cell titleLabel] setText:@"☼"];
             }
         }
         break;
         
         // Display Price Change Since Previous Quarter end or Tip depending on the event type
-        case infoRow5:
+        case infoRow4:
         {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
+            
             // Text
             // Get the prior end date from the event which is the end date of previously reported quarter
             NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
@@ -369,32 +391,36 @@
             if ([self.eventType containsString:@"Fed Meeting"]) {
                 // Select the appropriate color and text for Pro Tip
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@""];
+                [[cell titleLabel] setText:@"⚇"];
             }
             
             if ([self.eventType containsString:@"Jobs Report"]) {
                 // Select the appropriate color and text for Pro Tip
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@""];
+                [[cell titleLabel] setText:@"⚇"];
             }
             
             if ([self.eventType containsString:@"Consumer Confidence"]) {
                 // Select the appropriate color and text for Pro Tip
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@""];
+                [[cell titleLabel] setText:@"⚇"];
             }
             
             if ([self.eventType containsString:@"GDP Release"]) {
                 // Select the appropriate color and text for Pro Tip
                 cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:@""];
+                [[cell titleLabel] setText:@"⚇"];
             }
         }
         break;
         
         // Display price change since estimated prior earnings date
-        case infoRow6:
+        case infoRow5:
         {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
+            
             // Text
             // Get the prior end date from the event which is the estimated prior earnings date
             NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
@@ -760,7 +786,7 @@
 
 #pragma mark - Event Info Related
 
-// Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted. NOTE: Add a piece for getting the Related News for all types.
+// Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted.
 - (NSInteger)getNoOfInfoPiecesForEventType
 {
     NSInteger numberOfPieces = 0;
@@ -772,7 +798,7 @@
     // Based on event type and what's available, return the no of pieces of information.
     if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
         
-        numberOfPieces = 6;
+        numberOfPieces = 5;
         // Get the event history.
         eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
         
@@ -780,30 +806,30 @@
         double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
-            numberOfPieces = 6;
+            numberOfPieces = 5;
         } else {
-            numberOfPieces = 4;
+            numberOfPieces = 3;
         }
     }
     
     if ([self.eventType containsString:@"Fed Meeting"]) {
-        numberOfPieces = 5;
+        numberOfPieces = 4;
     }
     
     if ([self.eventType containsString:@"Jobs Report"]) {
-        numberOfPieces = 5;
+        numberOfPieces = 4;
     }
     
     if ([self.eventType containsString:@"Consumer Confidence"]) {
-        numberOfPieces = 5;
+        numberOfPieces = 4;
     }
     
     if ([self.eventType containsString:@"GDP Release"]) {
-        numberOfPieces = 5;
+        numberOfPieces = 4;
     }
     
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-        numberOfPieces = 4;
+        numberOfPieces = 2;
     }
         
     return numberOfPieces;
@@ -1108,5 +1134,72 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
 } */
+
+- (IBAction)seeNewsAction:(id)sender {
+}
+
+#pragma mark - utility methods
+
+// Return the appropriate color for event distance based on how far it is from today.
+- (UIColor *)getColorForEventType:(NSString *)eventType
+{
+    // Set returned color to black text to start with
+    UIColor *colorToReturn = [UIColor blackColor];
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        // Knotifi green
+        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Jobs Report"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"GDP Release"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+        // Product Brown
+        colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
+    }
+    
+    return colorToReturn;
+}
+
+#pragma mark - unused code
+/* To set a clickable link on a text area
+case infoRow3:
+{
+    // Clear the image if it's been added to the title background
+    cell.titleLabel.backgroundColor = [UIColor whiteColor];
+    
+    // For product event types get the most relevant Info link and display appropriately. NOTE: Set label to nothing for the product events, just for safety.
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+     [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Most Relevant Website"]];
+     [[cell titleLabel] setText:@""];
+     }
+    // For Quarterly earnings events show the Prior EPS
+    else if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+        cell.titleLabel.textColor = [UIColor blackColor];
+        [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+    }
+    // For all other Econ events get the "Latest On Search Engine" link and display appropriately
+    else {
+        [[cell descriptionArea] setAttributedText:[self getMoreInfoTitleWithLinkForEventType:self.eventType eventParentTicker:self.parentTicker moreInfoType:@"Latest On Search Engine"]];
+        cell.titleLabel.textColor = [UIColor blackColor];
+        [[cell titleLabel] setText:@""];
+    }
+}
+break;
+*/
 
 @end
