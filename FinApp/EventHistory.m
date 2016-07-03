@@ -11,7 +11,8 @@
 
 @implementation EventHistory
 
-// Date for the previous event of the same type as the parent event.
+// Date for the previous event of the same type as the parent event. Currently being used for
+// the 30 days ago from today market date.
 @dynamic previous1Date;
 
 // Indicator if this previous event 1 is "Estimated" based on an algorithm or "Confirmed"
@@ -24,6 +25,7 @@
 // Date related to the previous event.
 // 1. "Quarterly Earnings" would have the end date of the previous fiscal quarter
 // that was reported.
+// Currently being used for the market open date at the start of the year.
 @dynamic previous1RelatedDate;
 
 // Date which is considered to be the current date.

@@ -475,20 +475,20 @@
                 // Get today's date
                 NSDate *todaysDate = [NSDate date];
                 Event *selectedEvent = [historyDataController1 getEventForParentEventTicker:eventTicker andEventType:eventType];
-                // Compute the likely date for the previous event
-                NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:selectedEvent.date currentEventRelatedDate:selectedEvent.relatedDate previousEventRelatedDate:selectedEvent.priorEndDate];
+                // TO DO: Delete before shipping v2.7 Compute the likely date for the previous event
+                //NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:selectedEvent.date currentEventRelatedDate:selectedEvent.relatedDate previousEventRelatedDate:selectedEvent.priorEndDate];
                 // If Event history doesn't exist insert it
                 if (![historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
                 {
-                    // Insert history.
+                    // Insert history, with previous event 1 date being the market open date 30 days ago and previous event 1 related date being the market open date at the beginning of the year.
                     // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
                     NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
-                    [historyDataController1 insertHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
+                    [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
                 }
                 // Else update the non price related data, except current date, on the event history from the event, in case the event info has been refreshed
                 else
                 {
-                    [historyDataController1 updateEventHistoryWithPreviousEvent1Date:previousEvent1LikelyDate previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate] parentEventTicker:eventTicker parentEventType:eventType];
+                    [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self scrubDateToNotBeWeekendOrHoliday:selectedEvent.priorEndDate] parentEventTicker:eventTicker parentEventType:eventType];
                 }
                 
                 // Call price API, in the main thread, to get price history, if the current date is not today or if any of the price values are not available.
@@ -1328,6 +1328,18 @@
     }
     
     return previousEventDate;
+}
+
+// Compute the unscrubbed date 30 days ago from today. Unscrubbed means it could be a weekend or a holiday.
+- (NSDate *)computeDate30DaysAgoFrom:(NSDate *)startingDate
+{
+    // Subtract 30 days from start date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -30;
+    NSDate *returnDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:startingDate options:0];
+    
+    return returnDate;
 }
 
 // Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Friday for Saturday and following Monday for Sunday. TO DO LATER: Factor in holidays here.
