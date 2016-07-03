@@ -534,6 +534,67 @@
     }
 }
 
+#pragma mark - News related
+
+// Send the user to the appropriate news site when they click the news button
+- (IBAction)seeNewsAction:(id)sender {
+    
+    NSString *moreInfoURL = nil;
+    NSString *searchTerm = nil;
+    NSURL *targetURL = nil;
+    
+    // Send them to different sites with different queries based on which site has the best informtion for that event type
+    
+    // Bing News is the default we are going with for now
+    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+    searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
+    
+    // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentTicker,@"earnings"];
+    }
+    
+    // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
+    if ([self.eventType containsString:@"Launch"]) {
+        searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+    }
+    if ([self.eventType containsString:@"Conference"]) {
+        searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+    }
+    
+    // For economic events, search query term is customized for each type
+    if ([self.eventType containsString:@"GDP Release"]) {
+        searchTerm = @"us gdp growth";
+    }
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
+        searchTerm = @"us consumer confidence";
+    }
+    if ([self.eventType containsString:@"Fed Meeting"]) {
+        searchTerm = @"fomc meeting";
+    }
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        searchTerm = @"jobs report us";
+    }
+    
+    // Remove any spaces in the URL query string params
+    searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+    
+    targetURL = [NSURL URLWithString:moreInfoURL];
+    
+    if (targetURL) {
+        
+        // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        /*[FBSDKAppEvents logEvent:@"External Action Clicked"
+         parameters:@{ @"Action Title" : @"See News",
+         @"Action Query" : searchTerm,
+         @"Action URL" : [targetURL absoluteString]} ];*/
+        
+        [[UIApplication sharedApplication] openURL:targetURL];
+    }
+}
+
 #pragma mark - Calendar and Event Related
 
 // Set the getter for the user event store property so that only one event store object gets created
@@ -1134,9 +1195,6 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
 } */
-
-- (IBAction)seeNewsAction:(id)sender {
-}
 
 #pragma mark - utility methods
 

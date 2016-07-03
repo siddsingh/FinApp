@@ -1284,6 +1284,7 @@
         // TO DO: Disabling to not track development events. Enable before shipping.
         /*[FBSDKAppEvents logEvent:@"Go To Details"
                       parameters:@{ @"Ticker" : [segueDataController getTickerForName:selectedCell.companyName.text],
+                                    @"Event Type" : eventType,
                                     @"Name" : (selectedCell.companyName).text } ];*/
     }
 }
