@@ -98,7 +98,7 @@
     self.eventDetailsTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     // TO DO: Delete before shipping v2
-    NSLog(@"Event Type in Details is: %@ and Parent Ticker is:%@",self.eventType,self.parentTicker);
+    //NSLog(@"Event Type in Details is: %@ and Parent Ticker is:%@",self.eventType,self.parentTicker);
 }
 
 #pragma mark - Event Details Table

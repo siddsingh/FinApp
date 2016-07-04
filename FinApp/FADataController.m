@@ -1683,10 +1683,11 @@ bool eventsUpdated = NO;
 - (void)getStockPricesFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType fromDateInclusive:(NSDate *)fromDate toDateInclusive:(NSDate *)toDate {
     
     // Get the event details for a company given it's ticker. Call the following API:
+    // TO DO: Delete before shipping v2.7
     // www.quandl.com/api/v3/datasets/WIKI/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ&start_date=2015-01-01&end_date=2015-01-10
     
     // The API endpoint URL
-    NSString *endpointURL = @"https://www.quandl.com/api/v3/datasets/WIKI";
+    /*NSString *endpointURL = @"https://www.quandl.com/api/v3/datasets/WIKI";
     
     // Append ticker for the company to the API endpoint URL
     // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
@@ -1695,18 +1696,38 @@ bool eventsUpdated = NO;
     
     // Append auth token to the call
     endpointURL = [NSString stringWithFormat:@"%@?auth_token=Mq-sCZjPwiJNcsTkUyoQ",endpointURL];
+     
+     // Append formatted start date and end date to the call
+     // Note: The from date in the response is one day after the given from date in the call. Thus make the call with a day earlier. Thus subtract a day from the from date.
+     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+     differenceDayComponents.day = -1;
+     NSDate *fromDateMinus1Day = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:fromDate options:0];
+     NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
+     [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
+     NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDateMinus1Day];
+     NSString *toDateInclusiveString = [priceDateFormatter stringFromDate:toDate];
+     endpointURL = [NSString stringWithFormat:@"%@&start_date=%@&end_date=%@",endpointURL,fromDateInclusiveString,toDateInclusiveString]; */
     
-    // Append formatted start date and end date to the call
-    // Note: The from date in the response is one day after the given from date in the call. Thus make the call with a day earlier. Thus subtract a day from the from date.
-    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = -1;
-    NSDate *fromDateMinus1Day = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:fromDate options:0];
+    
+    //  marketdata.websol.barchart.com/getHistory.json?key=9d040a74abe6d5df65a38df9b4253809&symbol=AAPL&type=daily&startDate=20160331000000
+    
+    // The API endpoint URL
+    NSString *endpointURL = @"http://marketdata.websol.barchart.com/getHistory.json?key=9d040a74abe6d5df65a38df9b4253809";
+    
+    // Append Ticker
+    // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
+    NSString *formattedCompanyTicker  = [companyTicker stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+    endpointURL = [NSString stringWithFormat:@"%@&symbol=%@",endpointURL,formattedCompanyTicker];
+    
+    // Append the formatted Start Date
     NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
-    [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
-    NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDateMinus1Day];
-    NSString *toDateInclusiveString = [priceDateFormatter stringFromDate:toDate];
-    endpointURL = [NSString stringWithFormat:@"%@&start_date=%@&end_date=%@",endpointURL,fromDateInclusiveString,toDateInclusiveString];
+    [priceDateFormatter setDateFormat:@"yyyyMMdd"];
+    NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDate];
+    endpointURL = [NSString stringWithFormat:@"%@&type=daily&startDate=%@000000",endpointURL,fromDateInclusiveString];
+    
+    // TO DO: Delete before shipping v2.7
+    NSLog(@"The endpoint URL is: %@",endpointURL);
     
     NSError * error = nil;
     NSURLResponse *response = nil;
@@ -1903,6 +1924,40 @@ bool eventsUpdated = NO;
         // Enter the historical prices to the database
         [self updateEventHistoryWithPreviousEvent1Price:prevEvent1Price previousEvent1RelatedPrice:prevRelatedEvent1Price currentPrice:currentDateMinus1DayPrice parentEventTicker:ticker parentEventType:type];
     }
+    
+    // New parsing for the Barchart on demand APIs
+    // Response format is
+    /*{
+        "status" : -{
+            "code" : 200,
+            "message" : Success.
+        },
+        "results" : -[
+                      -{
+                          "symbol" : AAPL,
+                          "timestamp" : 2016-03-31T00:00:00-04:00,
+                          "tradingDay" : 2016-03-31,
+                          "open" : 109.056,
+                          "high" : 109.2349,
+                          "low" : 108.2211,
+                          "close" : 108.3304,
+                          "volume" : 26046020,
+                          "openInterest" : 
+                      },
+                      -{
+                          "symbol" : AAPL,
+                          "timestamp" : 2016-04-01T00:00:00-04:00,
+                          "tradingDay" : 2016-04-01,
+                          "open" : 108.1217,
+                          "high" : 109.3343,
+                          "low" : 107.5452,
+                          "close" : 109.3244,
+                          "volume" : 26031432,
+                          "openInterest" : 
+                      },
+     */
+    
+    
 }
 
 #pragma mark - Data Syncing Related
