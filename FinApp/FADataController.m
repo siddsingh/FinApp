@@ -764,6 +764,49 @@ bool eventsUpdated = NO;
     }
 }
 
+// Update event history prices with the given previous event 1 date (30 days ago) stock price, previous event 1 related date (start of the year) stock price but no current stock price for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+- (void)updateEventHistoryWithPreviousEvent1Price:(NSNumber *)previousEv1Price previousEvent1RelatedPrice:(NSNumber *)previousEv1RelatedPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the event history exists by doing a case insensitive query on the parent Event Company Ticker and Event Type.
+    NSFetchRequest *historyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *historyEntity = [NSEntityDescription entityForName:@"EventHistory" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *historyPredicate = [NSPredicate predicateWithFormat:@"parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",eventTicker, eventType];
+    [historyFetchRequest setEntity:historyEntity];
+    [historyFetchRequest setPredicate:historyPredicate];
+    NSError *error;
+    EventHistory *existingHistory = nil;
+    existingHistory  = [[dataStoreContext executeFetchRequest:historyFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting event history from data store, to update prices, failed: %@",error.description);
+    }
+    
+    // If the event history exists update with given prices
+    if (existingHistory) {
+        
+        // Only update the price attributes, leaving the others untouched
+        existingHistory.previous1Price = previousEv1Price;
+        existingHistory.previous1RelatedPrice = previousEv1RelatedPrice;
+        
+        // Perform the insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Saving event history to data store failed: %@",error.description);
+        }
+        // TO DO: Delete later. Currently for testing
+        else {
+            
+        }
+    }
+    
+    // If the event does not exist, log an error message to the console
+    else {
+        
+        NSLog(@"ERROR: Did not update event history prices in data store for event ticker %@ and event type %@ because the history was not found in the data store", eventTicker,eventType);
+    }
+}
+
 // Update event history with the current date
 - (void)updateEventHistoryWithCurrentDate:(NSDate *)currDate parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
 {
@@ -1831,7 +1874,7 @@ bool eventsUpdated = NO;
      97763400.0
      ]
      */
-    
+    /* TO DO: Delete before shipping v2.7
     // Get the response into a parsed object
     NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:response
                                                                    options:kNilOptions
@@ -1923,7 +1966,8 @@ bool eventsUpdated = NO;
         
         // Enter the historical prices to the database
         [self updateEventHistoryWithPreviousEvent1Price:prevEvent1Price previousEvent1RelatedPrice:prevRelatedEvent1Price currentPrice:currentDateMinus1DayPrice parentEventTicker:ticker parentEventType:type];
-    }
+    } 
+     */
     
     // New parsing for the Barchart on demand APIs
     // Response format is
@@ -1957,7 +2001,65 @@ bool eventsUpdated = NO;
                       },
      */
     
+    // Get the response into a parsed object
+    NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:response
+                                                                   options:kNilOptions
+                                                                     error:&error];
     
+    // Get the list of data slices from the overall data set
+    NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
+    
+    // TO DO: Delete Later
+    //NSLog(@"The parsed data set is:%@",parsedDataSets.description);
+    
+    // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
+    // then you don't want to process the data and enter as historical prices.
+    // If response is not correct, show the user an error message
+    if (parsedDataSets == NULL)
+    {
+        // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
+        
+    }
+    // Else process response to enter historical prices
+    else
+    {
+        EventHistory *historyForDates = nil;
+        NSString *prevEvent1Date = nil;
+        NSString *prevRelatedEvent1Date = nil;
+        
+        // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
+        NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
+        NSNumber *prevEvent1Price = emptyPlaceholder;
+        NSNumber *prevRelatedEvent1Price = emptyPlaceholder;
+        
+        NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
+        [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
+        
+        // Iterate through price/details arrays within the parsed data set
+        for (NSDictionary *parsedDetailsList in parsedDataSets) {
+            
+            // Get the event history dates for which we want to record the stock prices
+            // Currently recording only previous event 1 (30 days ago) date closing stock price, previous related event 1 (start of the year).
+            historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
+            prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
+            prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
+            
+            // Get the prices for the various dates and write them to the history data store
+            
+            // If the price details dictionary is for the previousRelatedEvent1 (start of year) date, get the price
+            if ([[parsedDetailsList objectForKey:@"tradingDay"] caseInsensitiveCompare:prevRelatedEvent1Date] == NSOrderedSame) {
+                prevRelatedEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"close"] doubleValue]];
+            }
+            
+            // If the price details dictionary is for the previousEvent1 (30 days ago) date, get the price
+            if ([[parsedDetailsList objectForKey:@"tradingDay"] caseInsensitiveCompare:prevEvent1Date] == NSOrderedSame) {
+                prevEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"close"] doubleValue]];
+            }
+        }
+        
+        // Enter the historical prices to the database
+        [self updateEventHistoryWithPreviousEvent1Price:prevEvent1Price previousEvent1RelatedPrice:prevRelatedEvent1Price parentEventTicker:ticker parentEventType:type];
+    }
 }
 
 #pragma mark - Data Syncing Related
