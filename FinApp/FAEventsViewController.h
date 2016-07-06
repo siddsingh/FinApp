@@ -32,6 +32,9 @@
 // None_Specified: no filter is specified.
 @property (strong,nonatomic) NSString *filterType;
 
+// Current Stock Price & Change String to store this value for the event that the user selects. "NA" is the default value.
+@property (strong,nonatomic) NSString *currPriceAndChange;
+
 // Outlet for the events search bar
 @property (weak, nonatomic) IBOutlet UISearchBar *eventsSearchBar;
 

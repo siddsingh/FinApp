@@ -188,6 +188,9 @@
     // Set the filter type to None_Specified, meaning no filter has been specified.
     self.filterType = [NSString stringWithFormat:@"None_Specified"];
     
+    // Set Current Stock Price & Change String to "NA" which is the default value.
+    self.currPriceAndChange = [NSString stringWithFormat:@"NA"];
+    
     // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         self.eventResultsController = [self.primaryDataController getAllFutureEvents];
@@ -591,8 +594,8 @@
 {
     EventHistory *eventForPricesFetch = [specificDataController getEventHistoryForParentEventTicker:ticker parentEventType:type];
     
-    // Get current price
-    [specificDataController getCurrentStockPriceFromApiForTicker:ticker companyEventType:type];
+    // Get current price and set the global current price and change string to the value returned.
+    self.currPriceAndChange = [specificDataController getCurrentStockPriceFromApiForTicker:ticker companyEventType:type];
     
     // Get historical prices
     [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
@@ -1283,7 +1286,9 @@
         [eventDetailsViewController setParentCompany:eventCompany];
         
         // Set Event Title for display in destination
-        [eventDetailsViewController setEventTitleStr:eventCompany];
+        // TO DO: Delete before shipping v 2.7
+        //[eventDetailsViewController setEventTitleStr:eventCompany];
+        [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@ %@",eventCompany,self.currPriceAndChange]];
         // Set Event Schedule for display in destination
         // For Product Events that are estimated, prepend the estimated keyword
         // When new product event types are added, change here as well

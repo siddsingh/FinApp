@@ -2104,7 +2104,7 @@ bool eventsUpdated = NO;
     }
 }
 
-// Get the current stock price and write that to the event history. Also return a string with the following format netchange_percentchange
+// Get the current stock price and write that to the event history. Also return a string with the following format currentprice_netchange_percentchange
 - (NSString *)getCurrentStockPriceFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType {
     
     NSString *changeString = @"ERROR";
@@ -2159,8 +2159,8 @@ bool eventsUpdated = NO;
             NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
             NSNumber *currentPrice = emptyPlaceholder;
             
-            NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
-            [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
+           // NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
+          //  [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
             
             // Iterate through price array within the parsed data set, which only contains one dictionary.
             for (NSDictionary *parsedDetailsList in parsedDataSets) {
@@ -2169,7 +2169,7 @@ bool eventsUpdated = NO;
                 currentPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"lastPrice"] doubleValue]];
                 
                 // Construct the change string i.e. netchange_percentchange
-                changeString = [NSString stringWithFormat:@"%@_%@",[parsedDetailsList objectForKey:@"netChange"],[parsedDetailsList objectForKey:@"percentChange"]];
+                changeString = [NSString stringWithFormat:@"%@_%@_%@",[parsedDetailsList objectForKey:@"lastPrice"],[parsedDetailsList objectForKey:@"netChange"],[parsedDetailsList objectForKey:@"percentChange"]];
             }
             
             // Enter the current price into the event history table

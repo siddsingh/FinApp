@@ -337,7 +337,7 @@
         }
         break;
         
-        // Display Price Change Since Previous Quarter end or Tip depending on the event type
+        // Display Price Change Since last 30 days or Tip depending on the event type
         case infoRow4:
         {
             // Clear the image if it's been added to the background and remove text to reset state
@@ -345,8 +345,8 @@
             //[[cell titleLabel] setText:@""];
             
             // Text
-            // Get the prior end date from the event which is the end date of previously reported quarter
-            NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventData.priorEndDate]];
+            // Get the 30 days prior date
+            NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
             [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:priorEndDateToYestString]];
             
             // Value
@@ -414,7 +414,7 @@
         }
         break;
         
-        // Display price change since estimated prior earnings date
+        // Display price change since start of the year
         case infoRow5:
         {
             // Clear the image if it's been added to the background and remove text to reset state
@@ -422,8 +422,8 @@
             //[[cell titleLabel] setText:@""];
             
             // Text
-            // Get the prior end date from the event which is the estimated prior earnings date
-            NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Yesterday", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
+            // Get the start of the year date
+            NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1RelatedDate]];
             [[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:priorEarningsDateToYestString]];
             
             // Value
@@ -1145,7 +1145,7 @@
     NSString *description = @"Data Not Available";
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        description = [NSString stringWithFormat:@"Price since prior quarter end(%@).",infoString];
+        description = [NSString stringWithFormat:@"1 month price change(%@).",infoString];
     }
     
     if ([eventType containsString:@"Fed Meeting"]) {
@@ -1173,7 +1173,7 @@
     NSString *description = @"Data Not Available";
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        description = [NSString stringWithFormat:@"Price since prior estimated earnings(%@).",infoString];
+        description = [NSString stringWithFormat:@"Year to date price change(%@).",infoString];
     }
     
     return description;
