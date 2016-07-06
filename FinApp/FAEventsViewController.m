@@ -449,8 +449,8 @@
         // Check for connectivity. If yes, process the fetch
         if ([self checkForInternetConnectivity]) {
             
-            // Read whatever history details are available from event and fetch additional ones from the API to get ready to segue to
-            // the event detail view
+            // Read whatever history details are available from event to get ready to segue to the event detail view
+            // The prices for the ticker will be fetched in the detail view. 
             FADataController *historyDataController1 = [[FADataController alloc] init];
             
             // Get the currently selected cell and details
@@ -488,32 +488,35 @@
                     NSLog(@"The 30 days ago date: %@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
                     NSLog(@"The year beginning date: %@",[self computeMarketStartDateOfTheYearFrom:todaysDate]);
                 }
-                // Else update the non price related data, except current date, on the event history from the event, in case the event info has been refreshed
+                // Else update the non price related data, including current date, on the event history from the event, in case the event info has been refreshed
                 else
                 {
-                    [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] parentEventTicker:eventTicker parentEventType:eventType];
+                    [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
+                    [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
                     // TO DO: Delete before shipping v2.7
                     NSLog(@"The 30 days ago date: %@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
                     NSLog(@"The year beginning date: %@",[self computeMarketStartDateOfTheYearFrom:todaysDate]);
                     NSLog(@"Updated the event history");
                 }
                 
-                // Call price API, in the main thread, to get price history, if the current date is not today or if any of the price values are not available.
-                EventHistory *selectedEventHistory = [historyDataController1 getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
+                // Call price API, in the main thread, to refresh the price history
+                // TO DO: Delete before shipping v2.7
+                /*EventHistory *selectedEventHistory = [historyDataController1 getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
                 // Set a value indicating that a value is not available. Currently a Not Available value
                 // is represented by 999999.9
                 double notAvailable = 999999.9f;
                 double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
                 double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
                 double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
-                NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
+                //NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
                 // Note: NSOrderedSame has the value 0
                 if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison != NSOrderedSame))
                 {
                     // It's important to update the date here cause the get prices call gets the current date for the API call from the event history.
                     [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
                     [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1];
-                }
+                }*/
+                [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1];
             }
         }
         // If not, show error message
@@ -588,6 +591,10 @@
 {
     EventHistory *eventForPricesFetch = [specificDataController getEventHistoryForParentEventTicker:ticker parentEventType:type];
     
+    // Get current price
+    [specificDataController getCurrentStockPriceFromApiForTicker:ticker companyEventType:type];
+    
+    // Get historical prices
     [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
     
     // Use this if you move this operation to a background thread

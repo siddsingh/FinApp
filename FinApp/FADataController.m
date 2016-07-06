@@ -676,8 +676,8 @@ bool eventsUpdated = NO;
     }
 }
 
-// Update non price related history, except current date, associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
--(void)updateEventHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+// Update non price related history, including current date, associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+-(void)updateEventHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate currentDate:(NSDate *)currDate parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -702,6 +702,7 @@ bool eventsUpdated = NO;
         existingHistory.previous1Date = previousEv1Date;
         existingHistory.previous1Status = previousEv1Status;
         existingHistory.previous1RelatedDate = previousEv1RelatedDate;
+        existingHistory.currentDate = currDate;
         
         // Perform the insert
         if (![dataStoreContext save:&error]) {
@@ -848,8 +849,8 @@ bool eventsUpdated = NO;
     }
 }
 
-// Update event history with the current date and price
-- (void)updateEventHistoryWithCurrentDate:(NSDate *)currDate andPrice:(NSNumber *)currPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+// Update event history with the current price
+- (void)updateEventHistoryWithCurrentPrice:(NSNumber *)currPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -870,7 +871,6 @@ bool eventsUpdated = NO;
     // If the event history exists update with the current date
     if (existingHistory) {
         
-        existingHistory.currentDate = currDate;
         existingHistory.currentPrice = currPrice;
         
         // Perform the insert
@@ -2172,10 +2172,9 @@ bool eventsUpdated = NO;
                 changeString = [NSString stringWithFormat:@"%@_%@",[parsedDetailsList objectForKey:@"netChange"],[parsedDetailsList objectForKey:@"percentChange"]];
             }
             
-            // Enter the current date and price into the event history table
-            [self updateEventHistoryWithCurrentDate:[NSDate date] andPrice:currentPrice parentEventTicker:companyTicker parentEventType:eventType];
+            // Enter the current price into the event history table
+            [self updateEventHistoryWithCurrentPrice:currentPrice parentEventTicker:companyTicker parentEventType:eventType];
         }
-        
     } else {
         // Log error to console
         NSLog(@"ERROR: Could not get price data from the API Data Source. Error description: %@",error.description);
