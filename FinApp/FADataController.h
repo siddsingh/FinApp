@@ -109,6 +109,9 @@
 // Update event history with the current date
 - (void)updateEventHistoryWithCurrentDate:(NSDate *)currDate parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType;
 
+// Update event history with the current date and price
+- (void)updateEventHistoryWithCurrentDate:(NSDate *)currDate andPrice:(NSNumber *)currPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType;
+
 // Get Event History for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (EventHistory *)getEventHistoryForParentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType;
 
@@ -146,6 +149,9 @@
 
 // Get the historical and current stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.
 - (void)getStockPricesFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType fromDateInclusive:(NSDate *)fromDate toDateInclusive:(NSDate *)toDate;
+
+// Get the current stock price and write that to the event history, along with the current date. Also return a string with the following format netchange_percentchange
+- (NSString *)getCurrentStockPriceFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType;
 
 #pragma mark - Data Syncing Related
 

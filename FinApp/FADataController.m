@@ -848,6 +848,48 @@ bool eventsUpdated = NO;
     }
 }
 
+// Update event history with the current date and price
+- (void)updateEventHistoryWithCurrentDate:(NSDate *)currDate andPrice:(NSNumber *)currPrice parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the event history exists by doing a case insensitive query on the parent Event Company Ticker and Event Type.
+    NSFetchRequest *historyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *historyEntity = [NSEntityDescription entityForName:@"EventHistory" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *historyPredicate = [NSPredicate predicateWithFormat:@"parentEvent.listedCompany.ticker =[c] %@ AND parentEvent.type =[c] %@",eventTicker, eventType];
+    [historyFetchRequest setEntity:historyEntity];
+    [historyFetchRequest setPredicate:historyPredicate];
+    NSError *error;
+    EventHistory *existingHistory = nil;
+    existingHistory  = [[dataStoreContext executeFetchRequest:historyFetchRequest error:&error] lastObject];
+    if (error) {
+        NSLog(@"ERROR: Getting event history from data store, to update current date and price, failed: %@",error.description);
+    }
+    
+    // If the event history exists update with the current date
+    if (existingHistory) {
+        
+        existingHistory.currentDate = currDate;
+        existingHistory.currentPrice = currPrice;
+        
+        // Perform the insert
+        if (![dataStoreContext save:&error]) {
+            NSLog(@"ERROR: Updating current date and price on event history to data store failed: %@",error.description);
+        }
+        // TO DO: Delete later. Currently for testing
+        else {
+            
+        }
+    }
+    
+    // If the event does not exist, log an error message to the console
+    else {
+        
+        NSLog(@"ERROR: Did not update event history current date and price in data store for event ticker %@ and event type %@ because the history was not found in the data store", eventTicker,eventType);
+    }
+}
+
 // Get Event History for the given Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (EventHistory *)getEventHistoryForParentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType {
     
@@ -2060,6 +2102,87 @@ bool eventsUpdated = NO;
         // Enter the historical prices to the database
         [self updateEventHistoryWithPreviousEvent1Price:prevEvent1Price previousEvent1RelatedPrice:prevRelatedEvent1Price parentEventTicker:ticker parentEventType:type];
     }
+}
+
+// Get the current stock price and write that to the event history. Also return a string with the following format netchange_percentchange
+- (NSString *)getCurrentStockPriceFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType {
+    
+    NSString *changeString = @"ERROR";
+    
+    // The API endpoint URL
+    // marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=AMD
+    NSString *endpointURL = @"marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809";
+    
+    // Append Ticker
+    // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
+    NSString *formattedCompanyTicker  = [companyTicker stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+    endpointURL = [NSString stringWithFormat:@"%@&symbol=%@",endpointURL,formattedCompanyTicker];
+    
+    // TO DO: Delete before shipping v2.7
+    NSLog(@"The quote endpoint URL is: %@",endpointURL);
+    
+    NSError * error = nil;
+    NSURLResponse *response = nil;
+    
+    // Make the call synchronously
+    NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+                                                             error:&error];
+    
+    // Process the response
+    if (error == nil)
+    {
+        // Process the response that contains the price information for the company
+        NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                       options:kNilOptions
+                                                                         error:&error];
+        
+        // Get the list of data slices from the overall data set
+        NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
+        
+        // TO DO: Delete Later
+        //NSLog(@"The parsed data set is:%@",parsedDataSets.description);
+        
+        // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
+        // then you don't want to process the data and enter as historical prices.
+        // If response is not correct, show the user an error message
+        if (parsedDataSets == NULL)
+        {
+            // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
+            
+        }
+        // Else process response to enter historical prices
+        else
+        {
+            
+            // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
+            NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
+            NSNumber *currentPrice = emptyPlaceholder;
+            
+            NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
+            [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
+            
+            // Iterate through price array within the parsed data set, which only contains one dictionary.
+            for (NSDictionary *parsedDetailsList in parsedDataSets) {
+                
+                // Get the current price
+                currentPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"lastPrice"] doubleValue]];
+                
+                // Construct the change string i.e. netchange_percentchange
+                changeString = [NSString stringWithFormat:@"%@_%@",[parsedDetailsList objectForKey:@"netChange"],[parsedDetailsList objectForKey:@"percentChange"]];
+            }
+            
+            // Enter the current date and price into the event history table
+            [self updateEventHistoryWithCurrentDate:[NSDate date] andPrice:currentPrice parentEventTicker:companyTicker parentEventType:eventType];
+        }
+        
+    } else {
+        // Log error to console
+        NSLog(@"ERROR: Could not get price data from the API Data Source. Error description: %@",error.description);
+        // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
+    }
+    
+    return changeString;
 }
 
 #pragma mark - Data Syncing Related
