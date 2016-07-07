@@ -2091,11 +2091,15 @@ bool eventsUpdated = NO;
             // If the price details dictionary is for the previousRelatedEvent1 (start of year) date, get the price
             if ([[parsedDetailsList objectForKey:@"tradingDay"] caseInsensitiveCompare:prevRelatedEvent1Date] == NSOrderedSame) {
                 prevRelatedEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"close"] doubleValue]];
+                // TO DO: Delete before shipping v2.7
+                NSLog(@"Start of the year price is:%@",prevRelatedEvent1Price);
             }
             
             // If the price details dictionary is for the previousEvent1 (30 days ago) date, get the price
             if ([[parsedDetailsList objectForKey:@"tradingDay"] caseInsensitiveCompare:prevEvent1Date] == NSOrderedSame) {
                 prevEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"close"] doubleValue]];
+                // TO DO: Delete before shipping v2.7
+                NSLog(@"30 days ago price is:%@",prevEvent1Price);
             }
         }
         
@@ -2111,12 +2115,12 @@ bool eventsUpdated = NO;
     
     // The API endpoint URL
     // marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=AMD
-    NSString *endpointURL = @"marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809";
+    NSString *endpointURL = @"http://marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809";
     
     // Append Ticker
     // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
     NSString *formattedCompanyTicker  = [companyTicker stringByReplacingOccurrencesOfString:@"." withString:@"_"];
-    endpointURL = [NSString stringWithFormat:@"%@&symbol=%@",endpointURL,formattedCompanyTicker];
+    endpointURL = [NSString stringWithFormat:@"%@&symbols=%@",endpointURL,formattedCompanyTicker];
     
     // TO DO: Delete before shipping v2.7
     NSLog(@"The quote endpoint URL is: %@",endpointURL);
@@ -2141,7 +2145,7 @@ bool eventsUpdated = NO;
         NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
         
         // TO DO: Delete Later
-        //NSLog(@"The parsed data set is:%@",parsedDataSets.description);
+        NSLog(@"The parsed quote response data set is:%@",parsedDataSets.description);
         
         // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
         // then you don't want to process the data and enter as historical prices.
@@ -2168,8 +2172,14 @@ bool eventsUpdated = NO;
                 // Get the current price
                 currentPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"lastPrice"] doubleValue]];
                 
+                // TO DO: Delete before shipping v2.7
+                NSLog(@"Current price is:%@",currentPrice);
+                
                 // Construct the change string i.e. netchange_percentchange
                 changeString = [NSString stringWithFormat:@"%@_%@_%@",[parsedDetailsList objectForKey:@"lastPrice"],[parsedDetailsList objectForKey:@"netChange"],[parsedDetailsList objectForKey:@"percentChange"]];
+                
+                // TO DO: Delete before shipping v2.7
+                NSLog(@"Change string is:%@",changeString);
             }
             
             // Enter the current price into the event history table

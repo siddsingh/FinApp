@@ -351,7 +351,6 @@
                                             <outlet property="eventDescription" destination="r65-ua-5Pc" id="0Vs-fp-VsU"/>
                                             <outlet property="eventDistance" destination="hii-le-ydl" id="mjy-Q9-Nwx"/>
                                             <outlet property="eventImage" destination="5aU-rV-bDS" id="sah-NC-wDd"/>
-                                            <segue destination="4jH-eb-uDY" kind="show" identifier="ShowEventDetails" id="1LI-5f-UUQ"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -544,6 +543,7 @@
                         <outlet property="focusBar" destination="7Cj-9c-Flh" id="CjA-qO-Zek"/>
                         <outlet property="messageBar" destination="RVP-gf-zre" id="oAs-Ba-0Ep"/>
                         <outlet property="remoteFetchSpinner" destination="kvC-1T-x6w" id="Pbt-nP-0Xf"/>
+                        <segue destination="4jH-eb-uDY" kind="show" identifier="ShowEventDetails1" id="qyp-oL-r3P"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1ub-g1-2Pv" userLabel="First Responder" sceneMemberID="firstResponder"/>

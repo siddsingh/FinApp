@@ -531,6 +531,9 @@
         // Stop the remote fetch spinner animation to indicate fetch is complete. Do this in a background thread as the main
         // thread is being taken up by the table view. It's a best practice.
         [self.remoteFetchSpinner performSelectorInBackground:@selector(stopAnimating) withObject:self];
+        
+        // Perform segue to the event detail view
+        [self performSegueWithIdentifier:@"ShowEventDetails1" sender:self];
     }
     
     // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
@@ -596,6 +599,8 @@
     
     // Get current price and set the global current price and change string to the value returned.
     self.currPriceAndChange = [specificDataController getCurrentStockPriceFromApiForTicker:ticker companyEventType:type];
+    // TO DO: Delete before shipping v2.7
+    NSLog(@"Computed price and change in table click and is:%@",self.currPriceAndChange);
     
     // Get historical prices
     [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
@@ -1242,14 +1247,18 @@
     BOOL returnVal = YES;
     
     // Check the segue is "ShowEventDetails"
-    if ([identifier isEqualToString:@"ShowEventDetails"]) {
-        
+    //if ([identifier isEqualToString:@"ShowEventDetails"]) {
+    if ([identifier isEqualToString:@"ShowEventDetails1"]) {
         // If the cell is the "Get Earnings" cell identified by if Remote Fetch indicator is true, set return value to false indicating no segue should be performed
         NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
         FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
         if (selectedCell.eventRemoteFetch) {
             returnVal = NO;
         }
+    }
+    
+    if ([identifier isEqualToString:@"ShowEventDetails"]) {
+        returnVal = NO;
     }
 
     return returnVal;
@@ -1258,8 +1267,8 @@
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
-    if ([[segue identifier] isEqualToString:@"ShowEventDetails"]) {
-        
+   // if ([[segue identifier] isEqualToString:@"ShowEventDetails"]) {
+    if ([[segue identifier] isEqualToString:@"ShowEventDetails1"]) {
         FAEventDetailsViewController *eventDetailsViewController = [segue destinationViewController];
         
         // TO DO: Delete before shipping v2.5. Not needed anymore.
@@ -1288,6 +1297,7 @@
         // Set Event Title for display in destination
         // TO DO: Delete before shipping v 2.7
         //[eventDetailsViewController setEventTitleStr:eventCompany];
+        NSLog(@"Computing price and change in the segue and is:%@",self.currPriceAndChange);
         [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@ %@",eventCompany,self.currPriceAndChange]];
         // Set Event Schedule for display in destination
         // For Product Events that are estimated, prepend the estimated keyword
