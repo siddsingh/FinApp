@@ -1298,7 +1298,12 @@
         // TO DO: Delete before shipping v 2.7
         //[eventDetailsViewController setEventTitleStr:eventCompany];
         NSLog(@"Computing price and change in the segue and is:%@",self.currPriceAndChange);
-        [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@ %@",eventCompany,self.currPriceAndChange]];
+        if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+            [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@ %@",eventCompany,[self formatCurrPriceAndChange:self.currPriceAndChange]]];
+        }
+        else {
+            [eventDetailsViewController setEventTitleStr:eventCompany];
+        }
         // Set Event Schedule for display in destination
         // For Product Events that are estimated, prepend the estimated keyword
         // When new product event types are added, change here as well
@@ -1670,6 +1675,24 @@
     NSDate *formattedDate = [aGregorianCalendar dateFromComponents:dateComponents];
     
     return formattedDate;
+}
+
+// Format the current price and change string appropriately
+- (NSString *)formatCurrPriceAndChange:(NSString *)rawPriceStr
+{
+    NSString *formattedStr = rawPriceStr;
+    
+    // Get the price components in an array
+    NSArray *priceComponents = [rawPriceStr componentsSeparatedByString:@"_"];
+    
+    // Construct the formatted price change string
+    if ([rawPriceStr containsString:@"-"]) {
+        formattedStr = [NSString stringWithFormat:@"▼ %@ %@ %@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+    } else {
+        formattedStr = [NSString stringWithFormat:@"▲ %@ +%@ +%@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+    }
+
+    return formattedStr;
 }
 
 /*

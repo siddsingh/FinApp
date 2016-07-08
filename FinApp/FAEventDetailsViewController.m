@@ -177,7 +177,6 @@
     #define infoRow2  1
     #define infoRow3  2
     #define infoRow4  3
-    #define infoRow5  4
     
     // Define date formatters that will be used later
     // 1. Jun 30 2015
@@ -215,41 +214,116 @@
             // Clear the image if it's been added to the background and remove text to reset state
             //cell.titleLabel.backgroundColor = [UIColor whiteColor];
             //[[cell titleLabel] setText:@""];
-            
-            [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
-            // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
-            //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
-            
+
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                // Knotifi Green
-                cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"?"];
                 
+                // Text
+                // Get the 30 days prior date
+                // More detailed formatting if needed in the future
+                //NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
+                //[[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:priorEndDateToYestString]];
+                [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:@""]];
+                
+                // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
+                double prev1RelatedPriceDbl = [[eventHistoryData previous1Price] doubleValue];
+                double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+                if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
+                {
+                    double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
+                    double priceDiffAbs = fabs(priceDiff);
+                    double percentageDiff = (100 * priceDiff)/prev1RelatedPriceDbl;
+                    NSString *priceDiffString = nil;
+                    NSString *percentageDiffString = nil;
+                    NSString *pricesString = nil;
+                    if(priceDiff < 0)
+                    {
+                        priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
+                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                        // Set color to Red
+                        cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                        [[cell titleLabel] setText:percentageDiffString];
+                    }
+                    else
+                    {
+                        priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
+                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                        // Set color to Green
+                        cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                        [[cell titleLabel] setText:percentageDiffString];
+                    }
+                    pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1RelatedPriceDbl, currentPriceDbl];
+                }
+                // If not available, display an appropriately formatted NA
+                else
+                {
+                    [[cell titleLabel] setText:@"NA"];
+                }
             }
             if ([self.eventType containsString:@"Fed Meeting"]) {
+                
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
+                // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+                //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+                
                 // Econ Blue
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"?"];
             }
             if ([self.eventType containsString:@"Jobs Report"]) {
+                
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
+                // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+                //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+                
                 // Econ Blue
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"?"];
             }
             if ([self.eventType containsString:@"Consumer Confidence"]) {
+                
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
+                // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+                //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+                
                 // Econ Blue
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"?"];
             }
             if ([self.eventType containsString:@"GDP Release"]) {
+                
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
+                // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+                //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+                
                 // Econ Blue
                 cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"?"];
             }
             if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-                // Product Brown
-                cell.titleLabel.textColor = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"?"];
+                
+                // Show EPS for earnings and Impact Image bars for all others
+                // Description
+                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+                
+                // Very High, High Impact
+                if ([cell.descriptionArea.text containsString:@"High Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||||||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+                // Medium Impact
+                if ([cell.descriptionArea.text containsString:@"Medium Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+                // Low Impact
+                if ([cell.descriptionArea.text containsString:@"Low Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+
             }
         }
         break;
@@ -268,9 +342,48 @@
             // Display Label
             // EPS
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                // Econ Blue Color
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+                
+                // Text
+                // Get the start of the year date
+                // More detailed formatting in case you need it later.
+                //NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1RelatedDate]];
+                //[[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:priorEarningsDateToYestString]];
+                [[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:@""]];
+                
+                // Calculate the difference in stock prices since start of the year, if both of them are available, format and display them
+                double prev1PriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+                double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+                if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
+                {
+                    double priceDiff = currentPriceDbl - prev1PriceDbl;
+                    double priceDiffAbs = fabs(priceDiff);
+                    double percentageDiff = (100 * priceDiff)/prev1PriceDbl;
+                    NSString *priceDiffString = nil;
+                    NSString *percentageDiffString = nil;
+                    NSString *pricesString = nil;
+                    if(priceDiff < 0)
+                    {
+                        priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
+                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                        // Set color to Red
+                        cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                        [[cell titleLabel] setText:percentageDiffString];
+                    }
+                    else
+                    {
+                        priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
+                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                        // Set color to Green
+                        cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                        [[cell titleLabel] setText:percentageDiffString];
+                    }
+                    pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1PriceDbl, currentPriceDbl];
+                }
+                // If not available, display an appropriately formatted NA
+                else
+                {
+                    [[cell titleLabel] setText:@"NA"];
+                }
             }
             // Very High, High Impact
             if ([cell.descriptionArea.text containsString:@"High Impact"]) {
@@ -305,9 +418,18 @@
             
             // Image/Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                // Econ Blue Color
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
+                
+                // Show EPS for earnings and Impact Image bars for all others
+                // Description
+                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+                
+                // Display Label
+                // EPS
+                if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                    // Econ Blue Color
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+                }
             }
             
             if ([self.eventType containsString:@"Fed Meeting"]) {
@@ -343,49 +465,20 @@
             // Clear the image if it's been added to the background and remove text to reset state
             //cell.titleLabel.backgroundColor = [UIColor whiteColor];
             //[[cell titleLabel] setText:@""];
-            
+
             // Text
-            // Get the 30 days prior date
-            NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
-            [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:priorEndDateToYestString]];
+            [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:@""]];
             
             // Value
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                
-                // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
-                double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
-                double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
-                if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
-                {
-                    double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
-                    double priceDiffAbs = fabs(priceDiff);
-                    double percentageDiff = (100 * priceDiff)/prev1RelatedPriceDbl;
-                    NSString *priceDiffString = nil;
-                    NSString *percentageDiffString = nil;
-                    NSString *pricesString = nil;
-                    if(priceDiff < 0)
-                    {
-                        priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
-                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
-                        // Set color to Red
-                        cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
-                        [[cell titleLabel] setText:percentageDiffString];
-                    }
-                    else
-                    {
-                        priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
-                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
-                        // Set color to Green
-                        cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
-                        [[cell titleLabel] setText:percentageDiffString];
-                    }
-                    pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1RelatedPriceDbl, currentPriceDbl];
-                }
-                // If not available, display an appropriately formatted NA
-                else
-                {
-                    [[cell titleLabel] setText:@"NA"];
-                }
+             
+             // Description
+             [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
+             
+             // Econ Blue Color
+             cell.titleLabel.textColor = [UIColor blackColor];
+             [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
+             
             }
             
             if ([self.eventType containsString:@"Fed Meeting"]) {
@@ -414,79 +507,6 @@
         }
         break;
         
-        // Display price change since start of the year
-        case infoRow5:
-        {
-            // Clear the image if it's been added to the background and remove text to reset state
-            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            //[[cell titleLabel] setText:@""];
-            
-            // Text
-            // Get the start of the year date
-            NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1RelatedDate]];
-            [[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:priorEarningsDateToYestString]];
-            
-            // Value
-            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                
-                // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
-                double prev1PriceDbl = [[eventHistoryData previous1Price] doubleValue];
-                double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
-                if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
-                {
-                    double priceDiff = currentPriceDbl - prev1PriceDbl;
-                    double priceDiffAbs = fabs(priceDiff);
-                    double percentageDiff = (100 * priceDiff)/prev1PriceDbl;
-                    NSString *priceDiffString = nil;
-                    NSString *percentageDiffString = nil;
-                    NSString *pricesString = nil;
-                    if(priceDiff < 0)
-                    {
-                        priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
-                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
-                        // Set color to Red
-                        cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
-                        [[cell titleLabel] setText:percentageDiffString];
-                    }
-                    else
-                    {
-                        priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
-                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
-                        // Set color to Green
-                        cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
-                        [[cell titleLabel] setText:percentageDiffString];
-                    }
-                    pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1PriceDbl, currentPriceDbl];
-                }
-                // If not available, display an appropriately formatted NA
-                else
-                {
-                    [[cell titleLabel] setText:@"NA"];
-                }
-            }
-            
-            if ([self.eventType containsString:@"Fed Meeting"]) {
-                // Just in case
-                [[cell titleLabel] setText:@"NA"];
-            }
-            
-            if ([self.eventType containsString:@"Jobs Report"]) {
-                // Just in case
-                [[cell titleLabel] setText:@"NA"];
-            }
-            
-            if ([self.eventType containsString:@"Consumer Confidence"]) {
-                // Just in case
-                [[cell titleLabel] setText:@"NA"];
-            }
-            
-            if ([self.eventType containsString:@"GDP Release"]) {
-                // Just in case
-                [[cell titleLabel] setText:@"NA"];
-            }
-        }
-        break;
-            
         default:
             
         break;
@@ -859,17 +879,17 @@
     // Based on event type and what's available, return the no of pieces of information.
     if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
         
-        numberOfPieces = 5;
+        numberOfPieces = 4;
         // Get the event history.
         eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
         
-        // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 5 pieces. If not then return 3 pieces (desc, expected eps, prior eps)
+        // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
         double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
-            numberOfPieces = 5;
+            numberOfPieces = 4;
         } else {
-            numberOfPieces = 3;
+            numberOfPieces = 2;
         }
     }
     
@@ -890,7 +910,7 @@
     }
     
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-        numberOfPieces = 2;
+        numberOfPieces = 1;
     }
         
     return numberOfPieces;
@@ -975,7 +995,9 @@
     NSString *description = @"Data Not Available";
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        description = @"Expected Earnings Per Share.EPS is the profit per share of the company.";
+        // More detailed formatting in case you need it later
+        //description = @"Expected Earnings Per Share.EPS is the profit per share of the company.";
+        description = @"Expected EPS";
     }
     
     if ([eventType containsString:@"Fed Meeting"]) {
@@ -1016,9 +1038,10 @@
     NSString *description = @"Data Not Available";
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        description = @"Prior Reported Quarter EPS.";
+        // More detailed formatting if needed in the future
+        //description = @"Prior reported quarter EPS";
+        description = @"Prior EPS";
     }
-    
     if ([eventType containsString:@"Fed Meeting"]) {
         description = @"Financial stocks are impacted most by this.";
     }
@@ -1145,7 +1168,9 @@
     NSString *description = @"Data Not Available";
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        description = [NSString stringWithFormat:@"1 month price change(%@).",infoString];
+        // More detailed formatting if needed for the future
+        //description = [NSString stringWithFormat:@"1 month price change(%@).",infoString];
+        description = [NSString stringWithFormat:@"1 month price change"];
     }
     
     if ([eventType containsString:@"Fed Meeting"]) {
@@ -1173,7 +1198,9 @@
     NSString *description = @"Data Not Available";
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        description = [NSString stringWithFormat:@"Year to date price change(%@).",infoString];
+        // More detailed formatting in case you need it later
+        //description = [NSString stringWithFormat:@"Year to date price change(%@).",infoString];
+        description = [NSString stringWithFormat:@"Year to date price change"];
     }
     
     return description;
