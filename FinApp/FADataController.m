@@ -2176,7 +2176,10 @@ bool eventsUpdated = NO;
                 NSLog(@"Current price is:%@",currentPrice);
                 
                 // Construct the change string i.e. netchange_percentchange
-                changeString = [NSString stringWithFormat:@"%@_%@_%@",[parsedDetailsList objectForKey:@"lastPrice"],[parsedDetailsList objectForKey:@"netChange"],[parsedDetailsList objectForKey:@"percentChange"]];
+                NSString *currPrice = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"lastPrice"] floatValue]];
+                NSString *netChange = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"netChange"] floatValue]];
+                NSString *percentChange = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"percentChange"] floatValue]];
+                changeString = [NSString stringWithFormat:@"%@_%@_%@",currPrice,netChange,percentChange];
                 
                 // TO DO: Delete before shipping v2.7
                 NSLog(@"Change string is:%@",changeString);

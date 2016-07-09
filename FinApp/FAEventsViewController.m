@@ -33,7 +33,7 @@
 - (void)getAllEventsFromApiInBackgroundWithTicker:(NSString *)ticker;
 
 // Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
-- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type dataController:(FADataController *)specificDataController;
+- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type dataController:(FADataController *)specificDataController historyFetch:(BOOL)fetchHistory;
 
 // Send a notification to the events list controller with a message that should be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents;
@@ -519,7 +519,23 @@
                     [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
                     [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1];
                 }*/
-                [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1];
+                
+                // Check to see if the current date on which the price history was fetched is today or not in addition to if it was fetched at all. If today, fetch only current price. If not, then fetch both historical and current price
+                EventHistory *selectedEventHistory = [historyDataController1 getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
+                // Set a value indicating that a value is not available. Currently a Not Available value
+                // is represented by 999999.9
+                double notAvailable = 999999.9f;
+                double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
+                double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
+                double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
+                NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
+                // Note: NSOrderedSame has the value 0
+                if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison != NSOrderedSame))
+                {
+                    [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1 historyFetch:YES];
+                } else {
+                    [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1 historyFetch:NO];
+                }
             }
         }
         // If not, show error message
@@ -593,7 +609,7 @@
 }
 
 // Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
-- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type dataController:(FADataController *)specificDataController;
+- (void)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type dataController:(FADataController *)specificDataController historyFetch:(BOOL)fetchHistory;
 {
     EventHistory *eventForPricesFetch = [specificDataController getEventHistoryForParentEventTicker:ticker parentEventType:type];
     
@@ -602,8 +618,10 @@
     // TO DO: Delete before shipping v2.7
     NSLog(@"Computed price and change in table click and is:%@",self.currPriceAndChange);
     
-    // Get historical prices
-    [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
+    // Get historical prices if needed
+    if(fetchHistory) {
+        [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
+    }
     
     // Use this if you move this operation to a background thread
     //[[NSNotificationCenter defaultCenter]postNotificationName:@"EventHistoryUpdated" object:nil];
@@ -1295,15 +1313,11 @@
         [eventDetailsViewController setParentCompany:eventCompany];
         
         // Set Event Title for display in destination
+        [eventDetailsViewController setEventTitleStr:eventCompany];
         // TO DO: Delete before shipping v 2.7
-        //[eventDetailsViewController setEventTitleStr:eventCompany];
         NSLog(@"Computing price and change in the segue and is:%@",self.currPriceAndChange);
-        if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-            [eventDetailsViewController setEventTitleStr:[NSString stringWithFormat:@"%@ %@",eventCompany,[self formatCurrPriceAndChange:self.currPriceAndChange]]];
-        }
-        else {
-            [eventDetailsViewController setEventTitleStr:eventCompany];
-        }
+        // Set current price and change string in the destination
+        [eventDetailsViewController setCurrentPriceAndChange:[self formatCurrPriceAndChange:self.currPriceAndChange]];
         // Set Event Schedule for display in destination
         // For Product Events that are estimated, prepend the estimated keyword
         // When new product event types are added, change here as well
@@ -1687,9 +1701,9 @@
     
     // Construct the formatted price change string
     if ([rawPriceStr containsString:@"-"]) {
-        formattedStr = [NSString stringWithFormat:@"▼ %@ %@ %@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+        formattedStr = [NSString stringWithFormat:@"%@ ▼ %@ %@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
     } else {
-        formattedStr = [NSString stringWithFormat:@"▲ %@ +%@ +%@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+        formattedStr = [NSString stringWithFormat:@"%@ ▲ +%@ +%@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
     }
 
     return formattedStr;

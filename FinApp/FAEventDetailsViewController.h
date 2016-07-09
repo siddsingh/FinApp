@@ -34,6 +34,9 @@
 // Store the text for the eventSchedule label
 @property (strong,nonatomic) NSString *eventScheduleStr;
 
+// Store the curr price and change string.
+@property (strong,nonatomic) NSString *currentPriceAndChange;
+
 // Assumption is that ticker and event type uniquely identify an event
 // Ticker of the parent company for this event
 @property (strong,nonatomic) NSString *parentTicker;
