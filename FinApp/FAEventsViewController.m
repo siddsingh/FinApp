@@ -1673,9 +1673,9 @@
         
         // Construct the formatted price change string
         if ([rawPriceStr containsString:@"-"]) {
-            formattedStr = [NSString stringWithFormat:@"%@ ▼ %@ %@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+            formattedStr = [NSString stringWithFormat:@"$%@ ▼%@ %@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
         } else {
-            formattedStr = [NSString stringWithFormat:@"%@ ▲ +%@ +%@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+            formattedStr = [NSString stringWithFormat:@"$%@ ▲+%@ +%@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
         }
     }
     
