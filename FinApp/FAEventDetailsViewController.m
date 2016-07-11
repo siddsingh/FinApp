@@ -905,7 +905,7 @@
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
             numberOfPieces = 5;
         } else {
-            numberOfPieces = 3;
+            numberOfPieces = 1;
         }
     }
     

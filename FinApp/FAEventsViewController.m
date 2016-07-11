@@ -477,9 +477,7 @@
                 // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
                 // Get today's date
                 NSDate *todaysDate = [NSDate date];
-                // TO DO: Delete before shipping v2.7 Compute the likely date for the previous event
-               // Event *selectedEvent = [historyDataController1 getEventForParentEventTicker:eventTicker andEventType:eventType];
-                //NSDate *previousEvent1LikelyDate = [self computePreviousEventDateWithCurrentEventType:eventType currentEventDate:selectedEvent.date currentEventRelatedDate:selectedEvent.relatedDate previousEventRelatedDate:selectedEvent.priorEndDate];
+                
                 // If Event history doesn't exist insert it
                 if (![historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
                 {
@@ -487,39 +485,15 @@
                     // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
                     NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
                     [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
-                    // TO DO: Delete before shipping v2.7
-                    NSLog(@"The 30 days ago date: %@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
-                    NSLog(@"The year beginning date: %@",[self computeMarketStartDateOfTheYearFrom:todaysDate]);
                 }
                 // Else update the non price related data, including current date, on the event history from the event, in case the event info has been refreshed
                 else
                 {
                     [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
                     [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
-                    // TO DO: Delete before shipping v2.7
-                    NSLog(@"The 30 days ago date: %@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
-                    NSLog(@"The year beginning date: %@",[self computeMarketStartDateOfTheYearFrom:todaysDate]);
-                    NSLog(@"Updated the event history");
                 }
                 
                 // Call price API, in the main thread, to refresh the price history
-                // TO DO: Delete before shipping v2.7
-                /*EventHistory *selectedEventHistory = [historyDataController1 getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
-                // Set a value indicating that a value is not available. Currently a Not Available value
-                // is represented by 999999.9
-                double notAvailable = 999999.9f;
-                double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
-                double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
-                double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
-                //NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
-                // Note: NSOrderedSame has the value 0
-                if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison != NSOrderedSame))
-                {
-                    // It's important to update the date here cause the get prices call gets the current date for the API call from the event history.
-                    [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
-                    [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1];
-                }*/
-                
                 // Check to see if the current date on which the price history was fetched is today or not in addition to if it was fetched at all. If today, fetch only current price. If not, then fetch both historical and current price
                 EventHistory *selectedEventHistory = [historyDataController1 getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
                 // Set a value indicating that a value is not available. Currently a Not Available value
@@ -615,8 +589,6 @@
     
     // Get current price and set the global current price and change string to the value returned.
     self.currPriceAndChange = [specificDataController getCurrentStockPriceFromApiForTicker:ticker companyEventType:type];
-    // TO DO: Delete before shipping v2.7
-    NSLog(@"Computed price and change in table click and is:%@",self.currPriceAndChange);
     
     // Get historical prices if needed
     if(fetchHistory) {
@@ -1314,8 +1286,6 @@
         
         // Set Event Title for display in destination
         [eventDetailsViewController setEventTitleStr:eventCompany];
-        // TO DO: Delete before shipping v 2.7
-        NSLog(@"Computing price and change in the segue and is:%@",self.currPriceAndChange);
         // Set current price and change string in the destination
         [eventDetailsViewController setCurrentPriceAndChange:[self formatCurrPriceAndChange:self.currPriceAndChange]];
         // Set Event Schedule for display in destination
@@ -1696,16 +1666,19 @@
 {
     NSString *formattedStr = rawPriceStr;
     
-    // Get the price components in an array
-    NSArray *priceComponents = [rawPriceStr componentsSeparatedByString:@"_"];
-    
-    // Construct the formatted price change string
-    if ([rawPriceStr containsString:@"-"]) {
-        formattedStr = [NSString stringWithFormat:@"%@ ▼ %@ %@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
-    } else {
-        formattedStr = [NSString stringWithFormat:@"%@ ▲ +%@ +%@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+    // If there is actually price information, then format it
+    if (![rawPriceStr isEqualToString:@"NA"]) {
+        // Get the price components in an array
+        NSArray *priceComponents = [rawPriceStr componentsSeparatedByString:@"_"];
+        
+        // Construct the formatted price change string
+        if ([rawPriceStr containsString:@"-"]) {
+            formattedStr = [NSString stringWithFormat:@"%@ ▼ %@ %@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+        } else {
+            formattedStr = [NSString stringWithFormat:@"%@ ▲ +%@ +%@%%",priceComponents[0],priceComponents[1],priceComponents[2]];
+        }
     }
-
+    
     return formattedStr;
 }
 

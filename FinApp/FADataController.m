@@ -1768,7 +1768,7 @@ bool eventsUpdated = NO;
 - (void)getStockPricesFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType fromDateInclusive:(NSDate *)fromDate toDateInclusive:(NSDate *)toDate {
     
     // Get the event details for a company given it's ticker. Call the following API:
-    // TO DO: Delete before shipping v2.7
+    // TO DO: Delete once the marketdata API has been live for a while
     // www.quandl.com/api/v3/datasets/WIKI/AAPL.json?auth_token=Mq-sCZjPwiJNcsTkUyoQ&start_date=2015-01-01&end_date=2015-01-10
     
     // The API endpoint URL
@@ -1794,10 +1794,8 @@ bool eventsUpdated = NO;
      NSString *toDateInclusiveString = [priceDateFormatter stringFromDate:toDate];
      endpointURL = [NSString stringWithFormat:@"%@&start_date=%@&end_date=%@",endpointURL,fromDateInclusiveString,toDateInclusiveString]; */
     
-    
-    //  marketdata.websol.barchart.com/getHistory.json?key=9d040a74abe6d5df65a38df9b4253809&symbol=AAPL&type=daily&startDate=20160331000000
-    
     // The API endpoint URL
+    // marketdata.websol.barchart.com/getHistory.json?key=9d040a74abe6d5df65a38df9b4253809&symbol=AAPL&type=daily&startDate=20160331000000
     NSString *endpointURL = @"http://marketdata.websol.barchart.com/getHistory.json?key=9d040a74abe6d5df65a38df9b4253809";
     
     // Append Ticker
@@ -1810,9 +1808,6 @@ bool eventsUpdated = NO;
     [priceDateFormatter setDateFormat:@"yyyyMMdd"];
     NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDate];
     endpointURL = [NSString stringWithFormat:@"%@&type=daily&startDate=%@000000",endpointURL,fromDateInclusiveString];
-    
-    // TO DO: Delete before shipping v2.7
-    NSLog(@"The endpoint URL is: %@",endpointURL);
     
     NSError * error = nil;
     NSURLResponse *response = nil;
@@ -1916,7 +1911,7 @@ bool eventsUpdated = NO;
      97763400.0
      ]
      */
-    /* TO DO: Delete before shipping v2.7
+    /* TO DO: Delete later once the market data API has been live for a bit
     // Get the response into a parsed object
     NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:response
                                                                    options:kNilOptions
@@ -2051,15 +2046,17 @@ bool eventsUpdated = NO;
     // Get the list of data slices from the overall data set
     NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
     
-    // TO DO: Delete Later
-    //NSLog(@"The parsed data set is:%@",parsedDataSets.description);
+    // TO DO: Delete Later v2.7
+    NSLog(@"The parsed data set for history is:%@",parsedDataSets.description);
     
     // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
     // then you don't want to process the data and enter as historical prices.
     // If response is not correct, show the user an error message
-    if (parsedDataSets == NULL)
+    if ([parsedDataSets.description isEqualToString:@"<null>"])
     {
         // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
+        // TO DO: Delete Later before shipping v2.7
+        NSLog(@"Trapping the historical price error");
         
     }
     // Else process response to enter historical prices
@@ -2091,15 +2088,11 @@ bool eventsUpdated = NO;
             // If the price details dictionary is for the previousRelatedEvent1 (start of year) date, get the price
             if ([[parsedDetailsList objectForKey:@"tradingDay"] caseInsensitiveCompare:prevRelatedEvent1Date] == NSOrderedSame) {
                 prevRelatedEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"close"] doubleValue]];
-                // TO DO: Delete before shipping v2.7
-                NSLog(@"Start of the year price is:%@",prevRelatedEvent1Price);
             }
             
             // If the price details dictionary is for the previousEvent1 (30 days ago) date, get the price
             if ([[parsedDetailsList objectForKey:@"tradingDay"] caseInsensitiveCompare:prevEvent1Date] == NSOrderedSame) {
                 prevEvent1Price = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"close"] doubleValue]];
-                // TO DO: Delete before shipping v2.7
-                NSLog(@"30 days ago price is:%@",prevEvent1Price);
             }
         }
         
@@ -2111,7 +2104,7 @@ bool eventsUpdated = NO;
 // Get the current stock price and write that to the event history. Also return a string with the following format currentprice_netchange_percentchange
 - (NSString *)getCurrentStockPriceFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType {
     
-    NSString *changeString = @"ERROR";
+    NSString *changeString = @"NA";
     
     // The API endpoint URL
     // marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=AMD
@@ -2121,9 +2114,6 @@ bool eventsUpdated = NO;
     // Format the ticker e.g. for V.HSR replace with V_HSR as this is how the API expects it
     NSString *formattedCompanyTicker  = [companyTicker stringByReplacingOccurrencesOfString:@"." withString:@"_"];
     endpointURL = [NSString stringWithFormat:@"%@&symbols=%@",endpointURL,formattedCompanyTicker];
-    
-    // TO DO: Delete before shipping v2.7
-    NSLog(@"The quote endpoint URL is: %@",endpointURL);
     
     NSError * error = nil;
     NSURLResponse *response = nil;
@@ -2144,15 +2134,17 @@ bool eventsUpdated = NO;
         // Get the list of data slices from the overall data set
         NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
         
-        // TO DO: Delete Later
+        // TO DO: Delete Later before shipping v2.7
         NSLog(@"The parsed quote response data set is:%@",parsedDataSets.description);
         
         // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
         // then you don't want to process the data and enter as historical prices.
         // If response is not correct, show the user an error message
-        if (parsedDataSets == NULL)
+        if ([parsedDataSets.description isEqualToString:@"<null>"])
         {
             // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
+            // TO DO: Delete Later before shipping v2.7
+            NSLog(@"Trapping the current price error");
             
         }
         // Else process response to enter historical prices
@@ -2172,17 +2164,11 @@ bool eventsUpdated = NO;
                 // Get the current price
                 currentPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"lastPrice"] doubleValue]];
                 
-                // TO DO: Delete before shipping v2.7
-                NSLog(@"Current price is:%@",currentPrice);
-                
                 // Construct the change string i.e. netchange_percentchange
                 NSString *currPrice = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"lastPrice"] floatValue]];
                 NSString *netChange = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"netChange"] floatValue]];
                 NSString *percentChange = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"percentChange"] floatValue]];
                 changeString = [NSString stringWithFormat:@"%@_%@_%@",currPrice,netChange,percentChange];
-                
-                // TO DO: Delete before shipping v2.7
-                NSLog(@"Change string is:%@",changeString);
             }
             
             // Enter the current price into the event history table
