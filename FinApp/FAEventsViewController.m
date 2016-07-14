@@ -486,11 +486,12 @@
                     NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
                     [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
                 }
-                // Else update the non price related data, including current date, on the event history from the event, in case the event info has been refreshed
+                // Else update the non price related data, not including current date, on the event history from the event. We don't include the current date as current date is set only once a day which is when the user first accesses the event.
                 else
                 {
-                    [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
-                    [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
+                    [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] parentEventTicker:eventTicker parentEventType:eventType];
+                    // TO DO: Delete before shipping v2.7
+                    NSLog(@"30 days ago date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
                 }
                 
                 // Call price API, in the main thread, to refresh the price history
@@ -502,11 +503,16 @@
                 double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
                 double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
                 double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
-                NSComparisonResult currDateComparison = [[NSCalendar currentCalendar] compareDate:selectedEventHistory.currentDate toDate:todaysDate toUnitGranularity:NSCalendarUnitDay];
-                // Note: NSOrderedSame has the value 0
-                if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||(currDateComparison != NSOrderedSame))
+                NSDateFormatter *checkDateFormatter = [[NSDateFormatter alloc] init];
+                [checkDateFormatter setDateFormat:@"yyyy-MM-dd"];
+                // Format historical and now current dates to local time zone comparison
+                NSString *currentDateInHistory = [checkDateFormatter stringFromDate:selectedEventHistory.currentDate];
+                NSString *currentDateNow = [checkDateFormatter stringFromDate:todaysDate];
+                if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||([currentDateInHistory caseInsensitiveCompare:currentDateNow] != NSOrderedSame))
                 {
                     [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1 historyFetch:YES];
+                    // Current date is set only once a day which is when the user first accesses the event.
+                    [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
                 } else {
                     [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1 historyFetch:NO];
                 }

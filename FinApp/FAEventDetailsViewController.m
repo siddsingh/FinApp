@@ -314,13 +314,19 @@
                 // Text
                 // Get the 30 days prior date
                 // More detailed formatting if needed in the future
-                //NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
+                
+                // TO DO: Comment 1st line and delete second line before shipping v2.7
+                NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
+                NSLog(@"30 days price change range is:%@",priorEndDateToYestString);
+                
                 //[[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:priorEndDateToYestString]];
                 [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:@""]];
                 
                 // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
                 double prev1RelatedPriceDbl = [[eventHistoryData previous1Price] doubleValue];
                 double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+                // TO DO: Comment 1st line and delete second line before shipping v2.7
+                NSLog(@"The 30 days ago price was:%f and current price is:%f",prev1RelatedPriceDbl,currentPriceDbl);
                 if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
                 {
                     double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
@@ -389,13 +395,19 @@
                 // Text
                 // Get the start of the year date
                 // More detailed formatting in case you need it later.
-                //NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1RelatedDate]];
+                
+                // TO DO: Comment 1st line and delete second line before shipping v2.7
+                NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1RelatedDate]];
+                NSLog(@"ytd price change range is:%@",priorEarningsDateToYestString);
+                
                 //[[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:priorEarningsDateToYestString]];
                 [[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:@""]];
                 
                 // Calculate the difference in stock prices since start of the year, if both of them are available, format and display them
                 double prev1PriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
                 double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+                // TO DO: Comment 1st line and delete second line before shipping v2.7
+                NSLog(@"The first day of the yr price was:%f and current price is:%f",prev1PriceDbl,currentPriceDbl);
                 if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
                 {
                     double priceDiff = currentPriceDbl - prev1PriceDbl;

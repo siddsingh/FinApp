@@ -676,8 +676,8 @@ bool eventsUpdated = NO;
     }
 }
 
-// Update non price related history, including current date, associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
--(void)updateEventHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate currentDate:(NSDate *)currDate parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
+// Update non price related history, not including current date, associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
+-(void)updateEventHistoryWithPreviousEvent1Date:(NSDate *)previousEv1Date previousEvent1Status:(NSString *)previousEv1Status previousEvent1RelatedDate:(NSDate *)previousEv1RelatedDate parentEventTicker:(NSString *)eventTicker parentEventType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -702,8 +702,7 @@ bool eventsUpdated = NO;
         existingHistory.previous1Date = previousEv1Date;
         existingHistory.previous1Status = previousEv1Status;
         existingHistory.previous1RelatedDate = previousEv1RelatedDate;
-        existingHistory.currentDate = currDate;
-        
+                
         // Perform the insert
         if (![dataStoreContext save:&error]) {
             NSLog(@"ERROR: Saving event history, when updating the non price data, to data store failed: %@",error.description);
@@ -1764,7 +1763,7 @@ bool eventsUpdated = NO;
 
 #pragma mark - Methods to call Company Stock Data Source APIs
 
-// Get the historical and current stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.
+// Get the historical stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.
 - (void)getStockPricesFromApiForTicker:(NSString *)companyTicker companyEventType:(NSString *)eventType fromDateInclusive:(NSDate *)fromDate toDateInclusive:(NSDate *)toDate {
     
     // Get the event details for a company given it's ticker. Call the following API:
@@ -1803,10 +1802,14 @@ bool eventsUpdated = NO;
     NSString *formattedCompanyTicker  = [companyTicker stringByReplacingOccurrencesOfString:@"." withString:@"_"];
     endpointURL = [NSString stringWithFormat:@"%@&symbol=%@",endpointURL,formattedCompanyTicker];
     
-    // Append the formatted Start Date
+    // Append the formatted Start Date minus 1 day just to be safe
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -1;
+    NSDate *fromDateMinus1Day = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:fromDate options:0];
     NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
     [priceDateFormatter setDateFormat:@"yyyyMMdd"];
-    NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDate];
+    NSString *fromDateInclusiveString = [priceDateFormatter stringFromDate:fromDateMinus1Day];
     endpointURL = [NSString stringWithFormat:@"%@&type=daily&startDate=%@000000",endpointURL,fromDateInclusiveString];
     
     NSError * error = nil;
@@ -1831,7 +1834,7 @@ bool eventsUpdated = NO;
     }
 }
 
-// Parse the stock prices API response and add the historical and current prices to the event history.Currently recording only previous event 1 (prior quarterly earnings) date closing stock price, previous related event 1 (prior quarter end date closing price and current price (yesterday's closing price).NOTE: Yesterday's closing price is based on what the current date is on the history object.
+// Parse the stock prices API response and add the historical prices to the event history.Currently recording only previous event 1 (prior quarterly earnings) date closing stock price, previous related event 1 (prior quarter end date closing price and current price (yesterday's closing price).NOTE: Yesterday's closing price is based on what the current date is on the history object.
 - (void)processStockPricesResponse:(NSData *)response forTicker:(NSString *)ticker forEventType:(NSString *)type {
     
     NSError *error;
@@ -2081,6 +2084,8 @@ bool eventsUpdated = NO;
             // Currently recording only previous event 1 (30 days ago) date closing stock price, previous related event 1 (start of the year).
             historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
             prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
+            // TO DO: Comment 1st line and delete second line before shipping v2.7
+            NSLog(@"The 30 days ago date in the history parsing logic is:%@",prevEvent1Date);
             prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
             
             // Get the prices for the various dates and write them to the history data store
@@ -2155,6 +2160,7 @@ bool eventsUpdated = NO;
             NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
             NSNumber *currentPrice = emptyPlaceholder;
             
+            // TO DO: Delete before shipping v2.7
            // NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
           //  [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
             
