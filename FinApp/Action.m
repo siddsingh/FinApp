@@ -2,7 +2,7 @@
 //  Action.m
 //  FinApp
 //
-//  Class represents User object in the core data model.
+//  Class represents Action object in the core data model.
 //
 //  Created by Sidd Singh on 8/17/15.
 //  Copyright (c) 2015 Sidd Singh. All rights reserved.

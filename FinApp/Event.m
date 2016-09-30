@@ -17,12 +17,14 @@
 
 // Date on which the event takes place
 // For Estimated product events, date is a best guess early, mid or late in a month. Early would be 5th of the month. Middle would be 15th. Late would be 25th.
+// For Price change events this is the date the event was logged
 @dynamic date;
 
 // The type of event
 // 1. "Quarterly Earnings"
 // 2. "Jan Fed Meeting", "Feb Fed Meeting" (Economic Event)
 // 3. "iPhone 7 Launch" (Product Event)
+// 4. "+ 5.12% today" "- 5.12% today" "+ 10.12% past 30 days" "+ 30.12% year to date" (Price Change events)
 @dynamic type;
 
 // Details related to the event, based on event type
@@ -30,6 +32,7 @@
 // "Before Market Open, "During Market Trading", "Unknown".
 //  2. Economic Event like "Fed Meeting" would contain the weblink to get more details.
 // 3. Product Events like "iPhone 7 Launch" have timing information for the event.
+// 4. Price change events don't have any details currently.
 @dynamic relatedDetails;
 
 // Date related to the event.
