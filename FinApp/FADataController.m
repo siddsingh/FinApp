@@ -167,8 +167,38 @@ bool eventsUpdated = NO;
     // TO DO: Current assumption is that an event is uniquely identified by the combination of above 2 fields. This might need to change in the future.
     NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
-    // Case and Diacractic Insensitive Filtering
-    NSPredicate *eventPredicate = [NSPredicate predicateWithFormat:@" listedCompany.ticker =[c] %@ AND type =[c] %@",listedCompanyTicker, eventType];
+    // If event is of type price change set type filter to be more generic depending on the type of price change event
+    // "50.12% up today" "50.12% down today" "10.12% down 30 days" "30.12% down ytd"
+    NSPredicate *eventPredicate = nil;
+    // For daily change event - % up today
+    if ([eventType containsString:@"% up today"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up today"];
+    }
+    // For daily change event - % down today
+    if ([eventType containsString:@"% down today"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down today"];
+    }
+    // For 30 days change event - % down 30 days
+    else if ([eventType containsString:@"% down 30 days"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down 30 days"];
+    }
+    // For 30 days change event - % up 30 days
+    else if ([eventType containsString:@"% up 30 days"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up 30 days"];
+    }
+    // For year to date change event - % down ytd
+    else if ([eventType containsString:@"% down ytd"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down ytd"];
+    }
+    // For year to date change event - % up ytd
+    else if ([eventType containsString:@"% up ytd"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up ytd"];
+    }
+    // If not a price change event, it's an exact match to the type string
+    else {
+       eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type =[c] %@",listedCompanyTicker,eventType];
+    }
+    
     [eventFetchRequest setEntity:eventEntity];
     [eventFetchRequest setPredicate:eventPredicate];
     NSError *error;

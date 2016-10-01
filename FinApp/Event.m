@@ -24,7 +24,7 @@
 // 1. "Quarterly Earnings"
 // 2. "Jan Fed Meeting", "Feb Fed Meeting" (Economic Event)
 // 3. "iPhone 7 Launch" (Product Event)
-// 4. "+ 5.12% today" "- 5.12% today" "+ 10.12% past 30 days" "+ 30.12% year to date" (Price Change events)
+// 4. "50.12% up today" "50.12% down today" "10.12% down 30 days" "30.12% down ytd" (Price Change events)
 @dynamic type;
 
 // Details related to the event, based on event type
