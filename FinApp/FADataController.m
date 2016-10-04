@@ -1791,6 +1791,241 @@ bool eventsUpdated = NO;
     return YES;
 }
 
+#pragma mark - Methods for Price Change Data
+
+// Get all the price change events and details from the data source APIs
+- (void)getAllPriceChangeEventsFromApi
+{
+    // TO DO: Delete this later as we are getting this from the cloud now
+    // Get the price change events file path
+     NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"PriceChangeEvents_Local" ofType:@"json"];
+     // TO DO: Delete Later
+     NSLog(@"Found the json file at: %@",eventsFilePath);
+     
+     // Parse the product events file contents
+     /* This is the current JSON structure of the response
+      "responseData":[
+      {
+      "ticker":"GOOG",
+      "alert_ytd":false,
+      "last":741.19,
+      "alert_30days":false,
+      "change_1day":0.57,
+      "change_30days":1.77,
+      "change_ytd":-0.09,
+      "1_day_ago":736.96,
+      "alert_1day":false,
+      "30_days_ago":728.28,
+      "start_of_year":741.84
+      },
+      {
+      "ticker":"AAPL",
+      "alert_ytd":false,
+      "last":99.96,
+      "alert_30days":false,
+      "change_1day":0.09,
+      "change_30days":1.03,
+      "change_ytd":-5.12,
+      "1_day_ago":99.87,
+      "alert_1day":false,
+      "30_days_ago":98.94,
+      "start_of_year":105.35
+      }
+      ] */
+    
+     // Get the contents into a parsed object
+     NSError *error;
+     NSString *eventsJsonStr = [[NSString alloc] initWithContentsOfFile:eventsFilePath encoding:NSUTF8StringEncoding error:&error];
+     NSDictionary *parsedContents = [NSJSONSerialization JSONObjectWithData:[eventsJsonStr dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+    
+    // Get all the product events and their details from the Knotifi Data Platform. Call the following API:
+    // 104.197.243.153/productevent/
+    /* This is the current JSON structure of the response
+     "responseData":[
+     {
+     "impact":"Very High",
+     "confidence":0.5,
+     "name":"iPhone 7",
+     "exactTimeLabel":"12:00:00 AM ET",
+     "ticker":"AAPL",
+     "moreInfoTitle":"iPhone 7 Roundup on Mac Rumors",
+     "approved":true,
+     "updated":"2016-05-10",
+     "impactDescription":"The iPhone is about 62% of Apple's revenue.",
+     "date":"2016-09-15",
+     "exactTime":"2016-09-15T00:00:00 US/Eastern",
+     "type":"Product_Launch",
+     "id":1,
+     "moreInfoUrl":"http://www.macrumors.com/roundup/iphone-7"
+     }, */
+    
+    // The API endpoint URL
+   /* NSString *endpointURL = @"http://104.197.243.153/productevent/";
+    NSError * error = nil;
+    NSURLResponse *response = nil;
+    
+    // Make the call synchronously
+    NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+                                                             error:&error]; */
+    
+    // Process the response
+    if (error == nil)
+    {
+        // TO DO: Delete Later, for testing
+        //NSLog(@"The endpoint being called for getting product events information is:%@",endpointURL);
+        //NSLog(@"The API response for getting product events information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
+        
+        // Process the response that contains the events for the company.
+        // Get the response into a parsed object
+       /* NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                       options:kNilOptions
+                                                                         error:&error]; */
+        
+        // Loop through the parsed object to get the various product events and their details
+        // Get the list of events first
+        NSArray *parsedEvents = [parsedContents objectForKey:@"responseData"];
+        
+        for (NSDictionary *event in parsedEvents) {
+            
+            // Get the ticker for the event's parent company
+            NSString *parentTicker = [event objectForKey:@"ticker"];
+            // TO DO: Delete Later
+            NSLog(@"The event parent company is: %@", parentTicker);
+            
+            // Get the 1d alarm status
+            BOOL dailyAlarm = [[event objectForKey:@"alert_1day"] boolValue];
+            // TO DO: Delete Later
+            NSLog(@"The 1d alarm status is: %d", dailyAlarm);
+            // Get the 1d change string
+            NSString *dailyChangeStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"change_1day"]];
+            // TO DO: Delete Later
+            NSLog(@"The 1d change is: %@%%", dailyChangeStr);
+            
+            // Get the 30 days alarm status
+            BOOL thirtyAlarm = [[event objectForKey:@"alert_30days"] boolValue];
+            // TO DO: Delete Later
+            NSLog(@"The 30 days alarm status is: %d", thirtyAlarm);
+            // Get the 30 days change string
+            NSString *thirtyChangeStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"change_30days"]];
+            // TO DO: Delete Later
+            NSLog(@"The 30 days change is: %@%%", thirtyChangeStr);
+            
+            // Get the ytd alarm status
+            BOOL ytdAlarm = [[event objectForKey:@"alert_ytd"] boolValue];
+            // TO DO: Delete Later
+            NSLog(@"The ytd alarm status is: %d", ytdAlarm);
+            // Get the ytd change string
+            NSString *ytdChangeStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"change_ytd"]];
+            // TO DO: Delete Later
+            NSLog(@"The ytd alarm status is: %@%%", ytdChangeStr);
+            
+            // Get the event raw name e.g. iPhone 7
+          /*  NSString *eventName = [event objectForKey:@"name"];
+            // TO DO: Delete Later
+            //NSLog(@"The event raw name is: %@", eventName);
+            
+            // Get the event type
+            NSString *eventType = [event objectForKey:@"type"];
+            // TO DO: Delete Later
+            //NSLog(@"The event type is: %@", eventType);
+            
+            // Construct the formatted event name from raw name and event type e.g. iPhone 7 Launch
+            NSArray *typeComponents = [eventType componentsSeparatedByString:@"_"];
+            eventName = [eventName stringByAppendingString:@" "];
+            eventName = [eventName stringByAppendingString:typeComponents.lastObject];
+            // TO DO: Delete Later
+            //NSLog(@"The event formatted name is: %@", eventName);
+            
+            // Get the event date
+            NSString *eventDateStr =  [event objectForKey:@"date"];
+            NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+            [eventDateFormatter setDateFormat:@"yyyy-MM-dd"];
+            NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
+            // TO DO: Delete Later
+            //NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+            
+            // Get the time label
+            NSString *timeLabel = [event objectForKey:@"exactTimeLabel"];
+            // TO DO: Delete Later
+            //NSLog(@"The event time label is: %@", timeLabel);
+            
+            // TO DO: Fix when you add a new table in the data model for event characteristics.
+            // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
+            NSString *eventAddtlInfo = [NSString stringWithFormat:@"%@_%@_%@_%@", [event objectForKey:@"impact"], [event objectForKey:@"impactDescription"], [event objectForKey:@"moreInfoTitle"], [event objectForKey:@"moreInfoUrl"]];
+            // TO DO: Delete Later
+            //NSLog(@"The event addtl info with Impact, Impact Description, More Info Title and More Info Url is: %@", eventAddtlInfo);
+            
+            // Get the updated on date
+            NSString *updatedOnDateStr = [event objectForKey:@"updated"];
+            NSDate *updatedOnDate = [eventDateFormatter dateFromString:updatedOnDateStr];
+            // TO DO: Delete Later
+            //NSLog(@"The updated on date formatted as a Date: %@",updatedOnDate);
+            
+            // Construct if the event is "Estimated" or "Confirmed" based on confidence value
+            // Currently, keeping it simple, if the confidence is 0.5 it's estimated, if it's 1.0 it's confirmed.
+            NSString *confidenceStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"confidence"]];
+            if ([confidenceStr isEqualToString:@"0.5"]) {
+                confidenceStr = @"Estimated";
+            }
+            if ([confidenceStr isEqualToString:@"1"]) {
+                confidenceStr = @"Confirmed";
+            }
+            // TO DO: Delete Later
+            //NSLog(@"The confidence string is: %@",confidenceStr);
+            
+            // Check if this event is approved or not. Only if approved it will be added to local data store.
+            // Before updating, check if the earnings event for that company exists. If not, sync it.
+            BOOL approved = [[event objectForKey:@"approved"] boolValue];
+            if(approved) {
+                // TO DO: Delete Later
+                //NSLog(@"This entry is APPROVED");
+                
+                // Check if earnings event exists for this ticker. If not fetch it, since we don't want a company that has only a product event and no earnings event.
+                if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
+                    // TO DO: Delete Later
+                    //NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
+                    [self getAllEventsFromApiWithTicker:parentTicker];
+                }
+                
+                // Insert each instance into the events datastore
+                [self upsertEventWithDate:eventDate relatedDetails:timeLabel relatedDate:updatedOnDate type:eventName certainty:confidenceStr listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                
+                // TO DO: Fix when you add a new table in the data model for event characteristics.
+                // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
+                [self insertHistoryWithPreviousEvent1Date:nil previousEvent1Status:eventAddtlInfo previousEvent1RelatedDate:nil currentDate:nil previousEvent1Price:nil previousEvent1RelatedPrice:nil currentPrice:nil parentEventTicker:parentTicker parentEventType:eventName];
+                
+                // If this product event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
+                if ([confidenceStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:parentTicker eventType:eventName]) {
+                    //TO DO: For testing, delete before shipping v 2.5
+                    //NSLog(@"This product event just went from estimated to confirmed:%@ %@ with status string:%@",parentTicker,eventName,confidenceStr);
+                    // Create array that contains {eventType,companyTicker,eventDateText} to pass on to the notification
+                    NSString *notifEventType = [NSString stringWithFormat: @"%@", eventName];
+                    NSString *notifCompanyTicker = [NSString stringWithFormat: @"%@", parentTicker];
+                    // Format the eventDateText to include the timing details
+                    // Show the event date
+                    NSDateFormatter *notifEventDateFormatter = [[NSDateFormatter alloc] init];
+                    [notifEventDateFormatter setDateFormat:@"EEEE MMMM dd"];
+                    NSString *notifEventDateTxt = [notifEventDateFormatter stringFromDate:eventDate];
+                    NSString *notifEventTimeString = timeLabel;
+                    // Append timing information to the event date if it's known
+                    notifEventDateTxt = [NSString stringWithFormat:@"%@ %@ ",notifEventDateTxt,notifEventTimeString];
+                    
+                    // Fire the notification, passing on the necessary information
+                    [self sendCreateReminderNotificationWithEventInformation:@[notifEventType, notifCompanyTicker, notifEventDateTxt]];
+                }
+                
+            } else {
+                // TO DO: Delete Later
+                //NSLog(@"This entry is NOT APPROVED");
+            } */
+        }
+    } else {
+        // Log error to console
+        NSLog(@"ERROR: Could not get price events data from the API Data Source. Error description: %@",error.description);
+    }
+}
+
 #pragma mark - Methods to call Company Stock Data Source APIs
 
 // Get the historical stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.

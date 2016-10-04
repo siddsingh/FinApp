@@ -207,6 +207,9 @@
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    // TO DO: Delete before shipping v2.7
+    [self.primaryDataController getAllPriceChangeEventsFromApi];
 }
 
 - (void)didReceiveMemoryWarning {

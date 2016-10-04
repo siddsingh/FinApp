@@ -11,6 +11,7 @@
 		9E0CC2A21C894D51009E088C /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */; };
 		9E0CC2A31C894D54009E088C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */; };
 		9E0CC2A41C894D58009E088C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */; };
+		9E1BF82E1DA1FA6000D50E4F /* PriceChangeEvents_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E1BF82D1DA1FA6000D50E4F /* PriceChangeEvents_Local.json */; };
 		9E2C2A4A1C8786DC00297F37 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */; };
 		9E2F49571CE1622700D51401 /* ProductEvents_2016_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */; };
 		9E2F49581CE1622800D51401 /* ProductEvents_2016_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */; };
@@ -57,6 +58,7 @@
 /* Begin PBXFileReference section */
 		9E0AC7B61C6EB9CA0078EAA5 /* FACompanyInfoStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FACompanyInfoStore.h; sourceTree = "<group>"; };
 		9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FACompanyInfoStore.m; sourceTree = "<group>"; };
+		9E1BF82D1DA1FA6000D50E4F /* PriceChangeEvents_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = PriceChangeEvents_Local.json; sourceTree = "<group>"; };
 		9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ProductEvents_2016_Local.json; sourceTree = "<group>"; };
 		9E602D1419E655DF00ACDEC6 /* Knotifi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Knotifi.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -170,6 +172,7 @@
 				9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
 				9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */,
+				9E1BF82D1DA1FA6000D50E4F /* PriceChangeEvents_Local.json */,
 				9EA8E47B1C99053C002B1F5E /* EconomicEvents_2016.json */,
 				9EBD8EE41B82CEB9008A0370 /* Action.h */,
 				9EBD8EE51B82CEB9008A0370 /* Action.m */,
@@ -300,6 +303,7 @@
 				9ECE7B471CBF60BF000F8D77 /* FinApp.sqlite in Resources */,
 				9EA8E47C1C99053C002B1F5E /* EconomicEvents_2016.json in Resources */,
 				9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */,
+				9E1BF82E1DA1FA6000D50E4F /* PriceChangeEvents_Local.json in Resources */,
 				9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */,
 				9E2F49571CE1622700D51401 /* ProductEvents_2016_Local.json in Resources */,
 			);

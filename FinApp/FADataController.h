@@ -145,6 +145,11 @@
 // NOTE: If there is a new type of product event like launch or conference is added, add that here as well
 - (BOOL)doProductEventsNeedToBeAddedRefreshed;
 
+#pragma mark - Methods for Price Change Data
+
+// Get all the price change events and details from the data source APIs
+- (void)getAllPriceChangeEventsFromApi;
+
 #pragma mark - Methods to call Company Stock Data Source APIs
 
 // Get the historical and current stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.
