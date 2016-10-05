@@ -1920,6 +1920,71 @@ bool eventsUpdated = NO;
             // TO DO: Delete Later
             NSLog(@"The ytd alarm status is: %@%%", ytdChangeStr);
             
+            // Check if any of the alarms are true. If yes, add them to the events db as a price change event
+            NSDate *todaysDate = [NSDate date];
+            NSString *specificEventType = nil;
+/*
+            // If event is of type price change set type filter to be more generic depending on the type of price change event
+            // "50.12% up today" "50.12% down today" "10.12% down 30 days" "30.12% down ytd"
+            NSPredicate *eventPredicate = nil;
+            // For daily change event - % up today
+            if ([eventType containsString:@"% up today"]) {
+                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up today"];
+            }
+            // For daily change event - % down today
+            if ([eventType containsString:@"% down today"]) {
+                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down today"];
+            }
+            // For 30 days change event - % down 30 days
+            else if ([eventType containsString:@"% down 30 days"]) {
+                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down 30 days"];
+            }
+            // For 30 days change event - % up 30 days
+            else if ([eventType containsString:@"% up 30 days"]) {
+                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up 30 days"];
+            }
+            // For year to date change event - % down ytd
+            else if ([eventType containsString:@"% down ytd"]) {
+                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down ytd"];
+            }
+            // For year to date change event - % up ytd
+            else if ([eventType containsString:@"% up ytd"]) {
+                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up ytd"];
+            }
+*/
+            
+            // If daily alarm is true, add it to the db
+            if(dailyAlarm) {
+                
+                // Construct the event type string which is generic in the following section % down today but preceded by specific %
+                if ([dailyChangeStr containsString:@"-"]) {
+                    specificEventType = [NSString stringWithFormat:@"%@%% down today",dailyChangeStr];
+                } else {
+                    specificEventType = [NSString stringWithFormat:@"%@%% up today",dailyChangeStr];
+                }
+                
+                // Insert into the events datastore
+                // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
+                [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+            }
+            
+            // If 30 days alarm is true, add it to the db if the following conditions are met: a) There hasn't been a 30 days alarm of the same type in the last 7 days. This is to ensure we are only triggering the 30 days price change a max of 4 times in a month.
+            if(dailyAlarm) {
+                
+                // Construct the event type string which is generic in the following section % down today but preceded by specific %
+                if ([dailyChangeStr containsString:@"-"]) {
+                    specificEventType = [NSString stringWithFormat:@"%@%% down today",dailyChangeStr];
+                } else {
+                    specificEventType = [NSString stringWithFormat:@"%@%% up today",dailyChangeStr];
+                }
+                
+                // Insert into the events datastore
+                // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
+                [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+            }
+
+            
+            
             // Get the event raw name e.g. iPhone 7
           /*  NSString *eventName = [event objectForKey:@"name"];
             // TO DO: Delete Later
@@ -2340,6 +2405,8 @@ bool eventsUpdated = NO;
         NSNumber *prevRelatedEvent1Price = emptyPlaceholder;
         
         NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
+        // Set the formatter to be GMT since dates are always GMT and formatters are defaulted to local timezone.
+        [priceDateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
         [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
         
         // Iterate through price/details arrays within the parsed data set

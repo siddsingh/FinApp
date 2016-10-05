@@ -487,6 +487,8 @@
                     // Insert history, with previous event 1 date being the market open date 30 days ago and previous event 1 related date being the market open date at the beginning of the year.
                     // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
                     NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
+                    // To Do: Delete when shipping v2.7
+                    NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
                     [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
                 }
                 // Else update the non price related data, not including current date, on the event history from the event. We don't include the current date as current date is set only once a day which is when the user first accesses the event.
