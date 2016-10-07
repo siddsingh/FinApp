@@ -2091,6 +2091,77 @@ bool eventsUpdated = NO;
     }
 }
 
+// Return if a 30 day or ytd price change alarm already exists. For the 30 days alarm to already exist the following conditions should be met: a) There hasn't been a 30 days alarm of the same type in the last 7 days. This is to ensure we are only triggering the 30 days price change a max of 4 times in a month. For ytd the conditions are: a) There hasn't been a ytd alarm in the last 15 days
+- (BOOL)doesPriceChangeEventExistFor:(NSString *)eventTicker parentEventType:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL exists = NO;
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // For price change events the event type is a fuzzy match.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventPredicate = nil;
+    // For 30 days change event - % down 30 days
+    if ([eventType containsString:@"% down 30 days"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",eventTicker,@"% down 30 days"];
+    }
+    // For 30 days change event - % up 30 days
+    else if ([eventType containsString:@"% up 30 days"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",eventTicker,@"% up 30 days"];
+    }
+    // For year to date change event - % down ytd
+    else if ([eventType containsString:@"% down ytd"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",eventTicker,@"% down ytd"];
+    }
+    // For year to date change event - % up ytd
+    else if ([eventType containsString:@"% up ytd"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",eventTicker,@"% up ytd"];
+    }
+    // If not a price change event, it's an exact match to the type string
+    else {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type =[c] %@",eventTicker,eventType];
+    }
+
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting a price change event, while checking for it's existence, from data store failed: %@",error.description);
+    }
+    if (events.count > 1) {
+        NSLog(@"ERROR: Found more than 1 price change event for ticker:%@ and event type:%@ in the Event Data Store", eventTicker, eventType);
+    }
+    // If the event exists, check for conditions and set return value accordingly.
+    if (events.count >= 1) {
+        
+        Event *existingEvent = nil;
+        existingEvent  = events[0];
+        
+        // For 30 days change events check to see if this event was under 7 days ago and if yes return true
+        if ([eventType containsString:@"30 days"]) {
+            
+            if([self calculateDistanceFromEventDate:existingEvent.date] < 7) {
+                exists = YES;
+            }
+        }
+        
+        // For ytd change events check to see if this event was under 15 days ago and if yes return true
+        if ([eventType containsString:@"ytd"]) {
+                   
+            if([self calculateDistanceFromEventDate:existingEvent.date] < 15) {
+                exists = YES;
+            }
+        }
+    }
+    
+    // else return false
+    return exists;
+}
+
 #pragma mark - Methods to call Company Stock Data Source APIs
 
 // Get the historical stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.
@@ -3389,6 +3460,18 @@ bool eventsUpdated = NO;
     NSDate *formattedDate = [aGregorianCalendar dateFromComponents:dateComponents];
     
     return formattedDate;
+}
+
+// Calculate how many days is it from the given event date to today.
+- (NSInteger)calculateDistanceFromEventDate:(NSDate *)eventDate
+{
+    // Calculate the number of days between event date and today's date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSUInteger unitFlags =  NSCalendarUnitDay;
+    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:eventDate toDate:[NSDate date] options:0];
+    NSInteger difference = [diffDateComponents day];
+    
+    return difference;
 }
 
 @end

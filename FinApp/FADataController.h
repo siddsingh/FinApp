@@ -150,6 +150,9 @@
 // Get all the price change events and details from the data source APIs
 - (void)getAllPriceChangeEventsFromApi;
 
+// Return if a 30 day or ytd price change alarm already exists. For the 30 days alarm to already exist the following conditions should be met: a) There hasn't been a 30 days alarm of the same type in the last 7 days. This is to ensure we are only triggering the 30 days price change a max of 4 times in a month. For ytd the conditions are: a) There hasn't been a ytd alarm in the last 15 days
+- (BOOL)doesPriceChangeEventExistFor:(NSString *)eventTicker parentEventType:(NSString *)eventType;
+
 #pragma mark - Methods to call Company Stock Data Source APIs
 
 // Get the historical and current stock prices for a company given it's ticker and the event type for which the historical data is being asked for. Currently only supported event type is Quarterly Earnings. Also, the listed company ticker and event type, together represent the event uniquely. Finally, the most current stock price that we have is yesterday.
