@@ -1923,35 +1923,6 @@ bool eventsUpdated = NO;
             // Check if any of the alarms are true. If yes, add them to the events db as a price change event
             NSDate *todaysDate = [NSDate date];
             NSString *specificEventType = nil;
-/*
-            // If event is of type price change set type filter to be more generic depending on the type of price change event
-            // "50.12% up today" "50.12% down today" "10.12% down 30 days" "30.12% down ytd"
-            NSPredicate *eventPredicate = nil;
-            // For daily change event - % up today
-            if ([eventType containsString:@"% up today"]) {
-                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up today"];
-            }
-            // For daily change event - % down today
-            if ([eventType containsString:@"% down today"]) {
-                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down today"];
-            }
-            // For 30 days change event - % down 30 days
-            else if ([eventType containsString:@"% down 30 days"]) {
-                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down 30 days"];
-            }
-            // For 30 days change event - % up 30 days
-            else if ([eventType containsString:@"% up 30 days"]) {
-                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up 30 days"];
-            }
-            // For year to date change event - % down ytd
-            else if ([eventType containsString:@"% down ytd"]) {
-                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% down ytd"];
-            }
-            // For year to date change event - % up ytd
-            else if ([eventType containsString:@"% up ytd"]) {
-                eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up ytd"];
-            }
-*/
             
             // If daily alarm is true, add it to the db
             if(dailyAlarm) {
@@ -1969,121 +1940,40 @@ bool eventsUpdated = NO;
             }
             
             // If 30 days alarm is true, add it to the db if the following conditions are met: a) There hasn't been a 30 days alarm of the same type in the last 7 days. This is to ensure we are only triggering the 30 days price change a max of 4 times in a month.
-            if(dailyAlarm) {
+            if(thirtyAlarm) {
                 
-                // Construct the event type string which is generic in the following section % down today but preceded by specific %
-                if ([dailyChangeStr containsString:@"-"]) {
-                    specificEventType = [NSString stringWithFormat:@"%@%% down today",dailyChangeStr];
+                
+                // Construct the event type string which is generic in the following section % down 30 days but preceded by specific %
+                if ([thirtyChangeStr containsString:@"-"]) {
+                    specificEventType = [NSString stringWithFormat:@"%@%% down 30 days",thirtyChangeStr];
                 } else {
-                    specificEventType = [NSString stringWithFormat:@"%@%% up today",dailyChangeStr];
+                    specificEventType = [NSString stringWithFormat:@"%@%% up 30 days",dailyChangeStr];
                 }
-                
-                // Insert into the events datastore
-                // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
-                [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                      
+                if (![self doesPriceChangeEventExistFor:parentTicker parentEventType:specificEventType]) {
+                    // Insert into the events datastore
+                    // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
+                    [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                }
             }
 
-            
-            
-            // Get the event raw name e.g. iPhone 7
-          /*  NSString *eventName = [event objectForKey:@"name"];
-            // TO DO: Delete Later
-            //NSLog(@"The event raw name is: %@", eventName);
-            
-            // Get the event type
-            NSString *eventType = [event objectForKey:@"type"];
-            // TO DO: Delete Later
-            //NSLog(@"The event type is: %@", eventType);
-            
-            // Construct the formatted event name from raw name and event type e.g. iPhone 7 Launch
-            NSArray *typeComponents = [eventType componentsSeparatedByString:@"_"];
-            eventName = [eventName stringByAppendingString:@" "];
-            eventName = [eventName stringByAppendingString:typeComponents.lastObject];
-            // TO DO: Delete Later
-            //NSLog(@"The event formatted name is: %@", eventName);
-            
-            // Get the event date
-            NSString *eventDateStr =  [event objectForKey:@"date"];
-            NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
-            [eventDateFormatter setDateFormat:@"yyyy-MM-dd"];
-            NSDate *eventDate = [eventDateFormatter dateFromString:eventDateStr];
-            // TO DO: Delete Later
-            //NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
-            
-            // Get the time label
-            NSString *timeLabel = [event objectForKey:@"exactTimeLabel"];
-            // TO DO: Delete Later
-            //NSLog(@"The event time label is: %@", timeLabel);
-            
-            // TO DO: Fix when you add a new table in the data model for event characteristics.
-            // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
-            NSString *eventAddtlInfo = [NSString stringWithFormat:@"%@_%@_%@_%@", [event objectForKey:@"impact"], [event objectForKey:@"impactDescription"], [event objectForKey:@"moreInfoTitle"], [event objectForKey:@"moreInfoUrl"]];
-            // TO DO: Delete Later
-            //NSLog(@"The event addtl info with Impact, Impact Description, More Info Title and More Info Url is: %@", eventAddtlInfo);
-            
-            // Get the updated on date
-            NSString *updatedOnDateStr = [event objectForKey:@"updated"];
-            NSDate *updatedOnDate = [eventDateFormatter dateFromString:updatedOnDateStr];
-            // TO DO: Delete Later
-            //NSLog(@"The updated on date formatted as a Date: %@",updatedOnDate);
-            
-            // Construct if the event is "Estimated" or "Confirmed" based on confidence value
-            // Currently, keeping it simple, if the confidence is 0.5 it's estimated, if it's 1.0 it's confirmed.
-            NSString *confidenceStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"confidence"]];
-            if ([confidenceStr isEqualToString:@"0.5"]) {
-                confidenceStr = @"Estimated";
-            }
-            if ([confidenceStr isEqualToString:@"1"]) {
-                confidenceStr = @"Confirmed";
-            }
-            // TO DO: Delete Later
-            //NSLog(@"The confidence string is: %@",confidenceStr);
-            
-            // Check if this event is approved or not. Only if approved it will be added to local data store.
-            // Before updating, check if the earnings event for that company exists. If not, sync it.
-            BOOL approved = [[event objectForKey:@"approved"] boolValue];
-            if(approved) {
-                // TO DO: Delete Later
-                //NSLog(@"This entry is APPROVED");
+            // If ytd alarm is true, add it to the db if the following conditions are met: a) There hasn't been a ytd alarm of the same type in the last 15 days. This is to ensure we are only triggering the ytd price change a max of 2 times in a month.
+            if(ytdAlarm) {
                 
-                // Check if earnings event exists for this ticker. If not fetch it, since we don't want a company that has only a product event and no earnings event.
-                if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
-                    // TO DO: Delete Later
-                    //NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
-                    [self getAllEventsFromApiWithTicker:parentTicker];
+                
+                // Construct the event type string which is generic in the following section % down ytd but preceded by specific %
+                if ([thirtyChangeStr containsString:@"-"]) {
+                    specificEventType = [NSString stringWithFormat:@"%@%% down ytd",thirtyChangeStr];
+                } else {
+                    specificEventType = [NSString stringWithFormat:@"%@%% up ytd",dailyChangeStr];
                 }
                 
-                // Insert each instance into the events datastore
-                [self upsertEventWithDate:eventDate relatedDetails:timeLabel relatedDate:updatedOnDate type:eventName certainty:confidenceStr listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
-                
-                // TO DO: Fix when you add a new table in the data model for event characteristics.
-                // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
-                [self insertHistoryWithPreviousEvent1Date:nil previousEvent1Status:eventAddtlInfo previousEvent1RelatedDate:nil currentDate:nil previousEvent1Price:nil previousEvent1RelatedPrice:nil currentPrice:nil parentEventTicker:parentTicker parentEventType:eventName];
-                
-                // If this product event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
-                if ([confidenceStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:parentTicker eventType:eventName]) {
-                    //TO DO: For testing, delete before shipping v 2.5
-                    //NSLog(@"This product event just went from estimated to confirmed:%@ %@ with status string:%@",parentTicker,eventName,confidenceStr);
-                    // Create array that contains {eventType,companyTicker,eventDateText} to pass on to the notification
-                    NSString *notifEventType = [NSString stringWithFormat: @"%@", eventName];
-                    NSString *notifCompanyTicker = [NSString stringWithFormat: @"%@", parentTicker];
-                    // Format the eventDateText to include the timing details
-                    // Show the event date
-                    NSDateFormatter *notifEventDateFormatter = [[NSDateFormatter alloc] init];
-                    [notifEventDateFormatter setDateFormat:@"EEEE MMMM dd"];
-                    NSString *notifEventDateTxt = [notifEventDateFormatter stringFromDate:eventDate];
-                    NSString *notifEventTimeString = timeLabel;
-                    // Append timing information to the event date if it's known
-                    notifEventDateTxt = [NSString stringWithFormat:@"%@ %@ ",notifEventDateTxt,notifEventTimeString];
-                    
-                    // Fire the notification, passing on the necessary information
-                    [self sendCreateReminderNotificationWithEventInformation:@[notifEventType, notifCompanyTicker, notifEventDateTxt]];
+                if (![self doesPriceChangeEventExistFor:parentTicker parentEventType:specificEventType]) {
+                    // Insert into the events datastore
+                    // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
+                    [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                 }
-                
-            } else {
-                // TO DO: Delete Later
-                //NSLog(@"This entry is NOT APPROVED");
-            } */
+            }
         }
     } else {
         // Log error to console
@@ -2091,7 +1981,7 @@ bool eventsUpdated = NO;
     }
 }
 
-// Return if a 30 day or ytd price change alarm already exists. For the 30 days alarm to already exist the following conditions should be met: a) There hasn't been a 30 days alarm of the same type in the last 7 days. This is to ensure we are only triggering the 30 days price change a max of 4 times in a month. For ytd the conditions are: a) There hasn't been a ytd alarm in the last 15 days
+// Return if a 30 day or ytd price change alarm already exists. For the 30 days alarm to already exist the following conditions should be met: a) There's been a 30 days alarm of the same type in the last 7 days. This is to ensure we are only triggering the 30 days price change a max of 4 times in a month. For ytd the conditions are: a) There has been a ytd alarm in the last 15 days
 - (BOOL)doesPriceChangeEventExistFor:(NSString *)eventTicker parentEventType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];

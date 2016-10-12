@@ -154,7 +154,7 @@
 
 #pragma mark - State Setup Rfresh
 
-// Refresh events that are likely to be updated, from API. Additionally also get the events for trending tickers initially. Check to see if product events need to be added or refreshed. If yes, do that. Currently product events are being fetched whole each time. Typically called in a background thread.
+// Refresh events that are likely to be updated, from API. Additionally also get the events for trending tickers initially. Check to see if product events need to be added or refreshed. If yes, do that. Currently product events are being fetched whole each time. Plus  Typically called in a background thread.
 - (void)refreshEventsIfNeededFromApiInBackgroundWithDataController:(FADataController *)existingDC
 {
     // TO DO: Uncomment for actual use. Comment for test data for event update testing.
