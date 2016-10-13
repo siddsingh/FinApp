@@ -1,15 +1,15 @@
 {
     "responseData":[
                     {
-                        "ticker":"GOOG",
+                        "ticker":"GOOGL",
                         "alert_ytd":false,
                         "last":741.19,
                         "alert_30days":false,
-                        "change_1day":0.57,
+                        "change_1day":5.57,
                         "change_30days":1.77,
                         "change_ytd":-0.09,
                         "1_day_ago":736.96,
-                        "alert_1day":false,
+                        "alert_1day":true,
                         "30_days_ago":728.28,
                         "start_of_year":741.84
                     },
@@ -17,14 +17,27 @@
                         "ticker":"AAPL",
                         "alert_ytd":false,
                         "last":99.96,
-                        "alert_30days":false,
+                        "alert_30days":true,
                         "change_1day":0.09,
-                        "change_30days":1.03,
+                        "change_30days":-10.03,
                         "change_ytd":-5.12,
                         "1_day_ago":99.87,
                         "alert_1day":false,
                         "30_days_ago":98.94,
                         "start_of_year":105.35
+                    },
+                    {
+                        "ticker":"FB",
+                        "alert_ytd":true,
+                        "last":741.19,
+                        "alert_30days":false,
+                        "change_1day":0.57,
+                        "change_30days":1.77,
+                        "change_ytd":20.09,
+                        "1_day_ago":736.96,
+                        "alert_1day":false,
+                        "30_days_ago":728.28,
+                        "start_of_year":741.84
                     }
                   ]
 }

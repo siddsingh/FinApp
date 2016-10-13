@@ -1947,7 +1947,7 @@ bool eventsUpdated = NO;
                 if ([thirtyChangeStr containsString:@"-"]) {
                     specificEventType = [NSString stringWithFormat:@"%@%% down 30 days",thirtyChangeStr];
                 } else {
-                    specificEventType = [NSString stringWithFormat:@"%@%% up 30 days",dailyChangeStr];
+                    specificEventType = [NSString stringWithFormat:@"%@%% up 30 days",thirtyChangeStr];
                 }
                       
                 if (![self doesPriceChangeEventExistFor:parentTicker parentEventType:specificEventType]) {
@@ -1963,9 +1963,9 @@ bool eventsUpdated = NO;
                 
                 // Construct the event type string which is generic in the following section % down ytd but preceded by specific %
                 if ([thirtyChangeStr containsString:@"-"]) {
-                    specificEventType = [NSString stringWithFormat:@"%@%% down ytd",thirtyChangeStr];
+                    specificEventType = [NSString stringWithFormat:@"%@%% down ytd",ytdChangeStr];
                 } else {
-                    specificEventType = [NSString stringWithFormat:@"%@%% up ytd",dailyChangeStr];
+                    specificEventType = [NSString stringWithFormat:@"%@%% up ytd",ytdChangeStr];
                 }
                 
                 if (![self doesPriceChangeEventExistFor:parentTicker parentEventType:specificEventType]) {
@@ -2812,8 +2812,9 @@ bool eventsUpdated = NO;
     NSInteger daysBetween = [components day];
     // TO DO: Delete Later before shipping v2.5
     //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    // TO DO: Commenting this since we want to sync everytime the user opens the app
     // Refresh only if a day has passed since last refresh
-    if((int)daysBetween > 0) {
+    //if((int)daysBetween > 0) {
         
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];
@@ -2832,18 +2833,29 @@ bool eventsUpdated = NO;
             components = [gregorianCalendar components:NSCalendarUnitDay fromDate:todaysDate toDate:eventDate options:0];
             daysBetween = [components day];
             
+            // Start the busy spinner only the first time
+            if (!eventsUpdated) {
+             // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
+             dispatch_async(dispatch_get_main_queue(), ^{
+             // TO DO: Delete Later
+             //NSLog(@"About to start busy spinner");
+             [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+             });
+             }
+            
             // See if the event qualifies for the update. If it does, call the remote data source to update it.
             if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
                 
+                // TO DO: Delete before shipping v2.7
                 // Start the busy spinner only the first time
-                if (!eventsUpdated) {
+               /* if (!eventsUpdated) {
                     // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
                     dispatch_async(dispatch_get_main_queue(), ^{
                         // TO DO: Delete Later
                         //NSLog(@"About to start busy spinner");
                         [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
                     });
-                }
+                } */
                 
                 [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
                 // TO DO: Delete before shipping v2.0
@@ -2868,7 +2880,14 @@ bool eventsUpdated = NO;
             //NSLog(@"About to add product events from Knotifi Data Platform");
             [self getAllProductEventsFromApi];
         }
-        
+    
+        // Fetch any price change events
+        [self getAllPriceChangeEventsFromApi];
+    
+        // Setting events updated to true as new price events and new product events might be added. Later make sure
+        // it's only getting set to true if truly new events have been added.
+        eventsUpdated = YES;
+    
         // Set events sync status to "RefreshCheckDone" means a check to see if refreshed events data is available is done. This also sets the event sync date to today.
         [self updateUserWithEventSyncStatus:@"RefreshCheckDone"];
         
@@ -2883,7 +2902,7 @@ bool eventsUpdated = NO;
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
             });
         }
-    }
+  //  }
 }
 
 #pragma mark - User State Related
