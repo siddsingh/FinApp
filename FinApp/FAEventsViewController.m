@@ -1305,7 +1305,12 @@
         if (([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"])&&[selectedCell.eventCertainty.text isEqualToString:@"Estimated"]) {
             [eventDetailsViewController setEventScheduleStr:[NSString stringWithFormat:@"%@ %@",selectedCell.eventCertainty.text,selectedCell.eventDate.text]];
             
-        } else {
+        }
+        // For price change events, there's no schedule
+        else if ([eventType containsString:@"% up"]||[eventType containsString:@"% down"]) {
+            [eventDetailsViewController setEventScheduleStr:@" "];
+        }
+        else {
             [eventDetailsViewController setEventScheduleStr:selectedCell.eventDate.text];
         }
         
@@ -1475,6 +1480,8 @@
         formattedEventType = [NSString stringWithFormat:@"%@ %@",rawEventType,@"Conference"];
     } else if (([addtlInfo isEqualToString:@"Confirmed"]||[addtlInfo isEqualToString:@"Estimated"])&&([rawEventType containsString:@"Launch"])) {
         // Do Nothing as for Launch the full event type already exists
+    } else if ([rawEventType containsString:@"% up"]||[rawEventType containsString:@"% down"]) {
+        // Do Nothing as for price events the full event type already exists
     }
     else {
         formattedEventType = [NSString stringWithFormat:@"%@ %@",addtlInfo,rawEventType];
@@ -1558,6 +1565,11 @@
                 eventDateString = [NSString stringWithFormat:@"%@ %@ %@",@"Late",eventDateComponents[1],eventDateComponents[3]];
             }
         }
+    }
+    
+    // For price change events, there's no schedule
+    if ([rawEventType containsString:@"% up"]||[rawEventType containsString:@"% down"]) {
+        eventDateString = @" ";
     }
     
     return eventDateString;
