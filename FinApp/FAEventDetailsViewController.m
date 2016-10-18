@@ -77,6 +77,15 @@
     // Set color of back navigation item based on event type
     self.navigationController.navigationBar.tintColor = [self getColorForEventType:self.eventType];
     
+    // Make the Set Reminder button disabled if the event is of type price change
+    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+        
+        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+        [self.reminderButton setTitle:@"NOT AVAILABLE" forState:UIControlStateNormal];
+        [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.reminderButton setEnabled:NO];
+    }
+    
     // Register a listener for guidance messages to be shown to the user in the messages bar
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(userGuidanceGenerated:)

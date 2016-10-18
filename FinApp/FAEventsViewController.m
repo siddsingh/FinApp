@@ -468,7 +468,7 @@
             NSString *eventType = [self formatBackToEventType:selectedCell.eventDescription.text withAddedInfo:selectedCell.eventCertainty.text];
             
             // If Quarterly Earnings get the historical data for display in the details
-            if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+            if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]) {
                 
                 // Set the busy spinner to show that details are being fetched. Do this in a background thread as the main
                 // thread is being taken up by the table view. It's a best practice.
