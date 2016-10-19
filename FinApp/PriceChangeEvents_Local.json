@@ -31,11 +31,11 @@
                         "alert_ytd":true,
                         "last":741.19,
                         "alert_30days":false,
-                        "change_1day":0.57,
+                        "change_1day":-10.57,
                         "change_30days":1.77,
                         "change_ytd":20.09,
                         "1_day_ago":736.96,
-                        "alert_1day":false,
+                        "alert_1day":true,
                         "30_days_ago":728.28,
                         "start_of_year":741.84
                     }

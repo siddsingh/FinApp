@@ -467,7 +467,8 @@
             // Earnings -> Quarterly Earnings, Fed Meeting -> Jan Fed Meeting, Jobs Report -> Jan Jobs Report and so on.
             NSString *eventType = [self formatBackToEventType:selectedCell.eventDescription.text withAddedInfo:selectedCell.eventCertainty.text];
             
-            // If Quarterly Earnings get the historical data for display in the details
+            // If Quarterly Earnings or price change event get the historical data for display in the details
+            // We basically use the quarterly earnings event history to keep track of the stock prices for price change events since there cannot be a price change event for a ticker that we don't have the quarterly earnings for.
             if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]) {
                 
                 // Set the busy spinner to show that details are being fetched. Do this in a background thread as the main
@@ -476,6 +477,9 @@
                 
                 // Get the ticker for the Quarterly Earnings
                 NSString *eventTicker = selectedCell.companyTicker.text;
+                
+                // Since we  use the quarterly earnings event history to keep track of the stock prices for price change events, use the Quarterly Earnings as the event type, even for price change events
+                eventType = @"Quarterly Earnings";
                 
                 // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
                 // Get today's date

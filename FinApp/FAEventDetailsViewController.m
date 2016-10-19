@@ -209,9 +209,11 @@
     // Get the event details parts of which will be displayed in the details table
     Event *eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:self.eventType];
     
-    // Get the event history, only if the event type is quarterly earnings, to be displayed as the details based on parent company ticker and event type. Assumption is that ticker and event type uniquely identify an event.
-    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
+    // Get the event history, only if the event type is quarterly earnings or price change event, to be displayed as the details based on parent company ticker and event type. Assumption is that ticker and event type uniquely identify an event.
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]||[self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+        
+        // Since we use the eventhistory for the quarterly earnings event for price events, use the string "Quarterly Earnings" instead of self.eventType
+        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:@"Quarterly Earnings"];
     }
     
     // Display the appropriate details based on the row no
@@ -225,7 +227,7 @@
             //cell.titleLabel.backgroundColor = [UIColor whiteColor];
             //[[cell titleLabel] setText:@""];
 
-            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]||[self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
                 [[cell descriptionArea] setText:@"Current price"];
                 if ([self.currentPriceAndChange containsString:@"-"]) {
                     // Set color to Red
@@ -319,7 +321,7 @@
 
             // Display Label
             // EPS
-            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]||[self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
                 // Text
                 // Get the 30 days prior date
                 // More detailed formatting if needed in the future
@@ -400,7 +402,7 @@
             [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
             
             // Image/Value
-            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]||[self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
                 // Text
                 // Get the start of the year date
                 // More detailed formatting in case you need it later.
@@ -631,6 +633,9 @@
     }
     if ([self.eventType containsString:@"Jobs Report"]) {
         searchTerm = @"jobs report us";
+    }
+    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+        searchTerm = [NSString stringWithFormat:@"%@",self.parentTicker];
     }
     
     // Remove any spaces in the URL query string params
@@ -949,6 +954,23 @@
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         numberOfPieces = 1;
     }
+    
+    // Price change events we want to show the current stock price and 30 day and ytd change.
+    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+        
+        numberOfPieces = 1;
+        // Get the event history.
+        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
+        
+        // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
+        double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+        double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+        if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
+            numberOfPieces = 3;
+        } else {
+            numberOfPieces = 1;
+        }
+    }
         
     return numberOfPieces;
 }
@@ -1204,7 +1226,7 @@
 {
     NSString *description = @"Data Not Available";
     
-    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+    if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]) {
         // More detailed formatting if needed for the future
         //description = [NSString stringWithFormat:@"1 month price change(%@).",infoString];
         description = [NSString stringWithFormat:@"1 month price change"];
@@ -1234,7 +1256,7 @@
 {
     NSString *description = @"Data Not Available";
     
-    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+    if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]) {
         // More detailed formatting in case you need it later
         //description = [NSString stringWithFormat:@"Year to date price change(%@).",infoString];
         description = [NSString stringWithFormat:@"Year to date price change"];
