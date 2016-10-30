@@ -1796,78 +1796,67 @@ bool eventsUpdated = NO;
 // Get all the price change events and details from the data source APIs
 - (void)getAllPriceChangeEventsFromApi
 {
-    // TO DO: Delete this later as we are getting this from the cloud now
-    // Get the price change events file path
-     NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"PriceChangeEvents_Local" ofType:@"json"];
-     // TO DO: Delete Later
-     NSLog(@"Found the json file at: %@",eventsFilePath);
-     
-     // Parse the product events file contents
-     /* This is the current JSON structure of the response
-      "responseData":[
-      {
-      "ticker":"GOOG",
-      "alert_ytd":false,
-      "last":741.19,
-      "alert_30days":false,
-      "change_1day":0.57,
-      "change_30days":1.77,
-      "change_ytd":-0.09,
-      "1_day_ago":736.96,
-      "alert_1day":false,
-      "30_days_ago":728.28,
-      "start_of_year":741.84
-      },
-      {
-      "ticker":"AAPL",
-      "alert_ytd":false,
-      "last":99.96,
-      "alert_30days":false,
-      "change_1day":0.09,
-      "change_30days":1.03,
-      "change_ytd":-5.12,
-      "1_day_ago":99.87,
-      "alert_1day":false,
-      "30_days_ago":98.94,
-      "start_of_year":105.35
-      }
-      ] */
+    // Call the Price change data source API to get the price change events. The API is:
+    // 104.197.243.153/ticker/prices/MSFT,AAPL,GM,BABA,UA,TSLA,GOOGL,SQ,EA,FB,GPRO,ANET,SNE,ATVI,BOX,LULU,ORCL,NKE,BAC/changes
+
+    // First construct the string for all the tickers that are being tracked. This is basically all the tickers for whom we have quarterly earnings events, since earnings events is the superset of tickers that have events.
+    NSFetchedResultsController *eventsController = [self getAllFutureEarningsEvents];
+    NSArray *fetchedEvents = [eventsController fetchedObjects];
+    NSMutableString *tickersToFetch = [NSMutableString stringWithString:@""];
+    for (Event *fetchedEvent in fetchedEvents) {
+        
+        [tickersToFetch appendString:fetchedEvent.listedCompany.ticker];
+        [tickersToFetch appendString:@","];
+    }
+    [tickersToFetch deleteCharactersInRange:NSMakeRange([tickersToFetch length]-1, 1)];
+    // TO DO: Delete before shipping v2.7
+    NSLog(@"**************************************The tickers to be fetched are:%@",tickersToFetch);
     
-     // Get the contents into a parsed object
-     NSError *error;
-     NSString *eventsJsonStr = [[NSString alloc] initWithContentsOfFile:eventsFilePath encoding:NSUTF8StringEncoding error:&error];
-     NSDictionary *parsedContents = [NSJSONSerialization JSONObjectWithData:[eventsJsonStr dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-    
-    // Get all the product events and their details from the Knotifi Data Platform. Call the following API:
-    // 104.197.243.153/productevent/
-    /* This is the current JSON structure of the response
-     "responseData":[
-     {
-     "impact":"Very High",
-     "confidence":0.5,
-     "name":"iPhone 7",
-     "exactTimeLabel":"12:00:00 AM ET",
-     "ticker":"AAPL",
-     "moreInfoTitle":"iPhone 7 Roundup on Mac Rumors",
-     "approved":true,
-     "updated":"2016-05-10",
-     "impactDescription":"The iPhone is about 62% of Apple's revenue.",
-     "date":"2016-09-15",
-     "exactTime":"2016-09-15T00:00:00 US/Eastern",
-     "type":"Product_Launch",
-     "id":1,
-     "moreInfoUrl":"http://www.macrumors.com/roundup/iphone-7"
-     }, */
-    
-    // The API endpoint URL
-   /* NSString *endpointURL = @"http://104.197.243.153/productevent/";
-    NSError * error = nil;
+    // Construct the API URL to call
+    NSString *endpointURL = @"http://104.197.243.153/ticker/prices/";
+    endpointURL = [NSString stringWithFormat:@"%@%@/changes",endpointURL,tickersToFetch];
     NSURLResponse *response = nil;
     
     // Make the call synchronously
+    NSError *error;
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
     NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-                                                             error:&error]; */
+                                                             error:&error];
+    
+    /* This is the current JSON structure of the response
+     "responseData" : -{
+     "BABA" : -{
+     "alert_ytd" : true,
+     "last" : 102.38,
+     "alert_30days" : false,
+     "change_1day" : -0.39,
+     "change_30days" : -1.98,
+     "30_day_threshold" : 10,
+     "change_ytd" : 33.5,
+     "last_date" : 2016-10-27T00:00:00,
+     "ytd_day_threshold" : 20,
+     "1_day_threshold" : 5,
+     "1_day_ago" : 102.78,
+     "alert_1day" : false,
+     "30_days_ago" : 104.45,
+     "start_of_year" : 76.69
+     },
+     "BOX" : -{
+     "alert_ytd" : false,
+     "last" : 14.53,
+     "alert_30days" : false,
+     "change_1day" : -1.22,
+     "change_30days" : -2.22,
+     "30_day_threshold" : 10,
+     "change_ytd" : 1.18,
+     "last_date" : 2016-10-27T00:00:00,
+     "ytd_day_threshold" : 20,
+     "1_day_threshold" : 5,
+     "1_day_ago" : 14.71,
+     "alert_1day" : false,
+     "30_days_ago" : 14.86,
+     "start_of_year" : 14.36
+     }, */
     
     // Process the response
     if (error == nil)
@@ -1878,20 +1867,22 @@ bool eventsUpdated = NO;
         
         // Process the response that contains the events for the company.
         // Get the response into a parsed object
-       /* NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:responseData
+        NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:responseData
                                                                        options:kNilOptions
-                                                                         error:&error]; */
+                                                                         error:&error];
+        NSDictionary *parsedEvents = [parsedResponse objectForKey:@"responseData"];
         
-        // Loop through the parsed object to get the various product events and their details
-        // Get the list of events first
-        NSArray *parsedEvents = [parsedContents objectForKey:@"responseData"];
-        
-        for (NSDictionary *event in parsedEvents) {
+        // Loop through the parsed events
+        NSDictionary *event = nil;
+        for(id key in parsedEvents) {
             
             // Get the ticker for the event's parent company
-            NSString *parentTicker = [event objectForKey:@"ticker"];
+            NSString *parentTicker = key;
             // TO DO: Delete Later
             NSLog(@"The event parent company is: %@", parentTicker);
+            
+            // Get the event/s associated with the ticker
+            event = [parsedEvents objectForKey:key];
             
             // Get the 1d alarm status
             BOOL dailyAlarm = [[event objectForKey:@"alert_1day"] boolValue];
@@ -1929,6 +1920,7 @@ bool eventsUpdated = NO;
                 
                 // Construct the event type string which is generic in the following section % down today but preceded by specific %
                 if ([dailyChangeStr containsString:@"-"]) {
+                    dailyChangeStr = [dailyChangeStr substringFromIndex:1];
                     specificEventType = [NSString stringWithFormat:@"%@%% down today",dailyChangeStr];
                 } else {
                     specificEventType = [NSString stringWithFormat:@"%@%% up today",dailyChangeStr];
@@ -1945,6 +1937,7 @@ bool eventsUpdated = NO;
                 
                 // Construct the event type string which is generic in the following section % down 30 days but preceded by specific %
                 if ([thirtyChangeStr containsString:@"-"]) {
+                    thirtyChangeStr = [thirtyChangeStr substringFromIndex:1];
                     specificEventType = [NSString stringWithFormat:@"%@%% down 30 days",thirtyChangeStr];
                 } else {
                     specificEventType = [NSString stringWithFormat:@"%@%% up 30 days",thirtyChangeStr];
@@ -1962,7 +1955,8 @@ bool eventsUpdated = NO;
                 
                 
                 // Construct the event type string which is generic in the following section % down ytd but preceded by specific %
-                if ([thirtyChangeStr containsString:@"-"]) {
+                if ([ytdChangeStr containsString:@"-"]) {
+                    ytdChangeStr = [ytdChangeStr substringFromIndex:1];
                     specificEventType = [NSString stringWithFormat:@"%@%% down ytd",ytdChangeStr];
                 } else {
                     specificEventType = [NSString stringWithFormat:@"%@%% up ytd",ytdChangeStr];
