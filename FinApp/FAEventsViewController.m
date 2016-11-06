@@ -1672,6 +1672,17 @@
         eventImage = [UIImage imageNamed:@"ProdListCircle"];
     }
     
+    // For price change events, there's no schedule
+    if ([eventType containsString:@"% up"]) {
+        
+        eventImage = [UIImage imageNamed:@"PriceIncreaseListCircle"];
+    }
+    
+    if([eventType containsString:@"% down"]) {
+        
+        eventImage = [UIImage imageNamed:@"PriceDecreaseListCircle"];
+    }
+    
     return eventImage;
 }
 
