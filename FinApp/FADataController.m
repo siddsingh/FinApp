@@ -1793,7 +1793,240 @@ bool eventsUpdated = NO;
 
 #pragma mark - Methods for Price Change Data
 
-// Get all the price change events and details from the data source APIs
+// Get all the price change events and details from the data source APIs. This is the new version that uses the same data source as used for getting prices elsewhere.
+- (void)getAllPriceChangeEventsFromApiNew
+{
+    // Call the Price change data source API to get the price change events. The API is:
+    // marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=UA,FB,GPRO
+    
+    // First construct the string for all the tickers that are being tracked. This is basically all the tickers for whom we have quarterly earnings events, since earnings events is the superset of tickers that have events.
+    NSFetchedResultsController *eventsController = [self getAllFutureEarningsEvents];
+    NSArray *fetchedEvents = [eventsController fetchedObjects];
+    NSMutableString *tickersToFetch = [NSMutableString stringWithString:@""];
+    for (Event *fetchedEvent in fetchedEvents) {
+        
+        [tickersToFetch appendString:fetchedEvent.listedCompany.ticker];
+        [tickersToFetch appendString:@","];
+    }
+    [tickersToFetch deleteCharactersInRange:NSMakeRange([tickersToFetch length]-1, 1)];
+    // TO DO: Delete before shipping v2.7
+    NSLog(@"**************************************The tickers to be fetched are:%@",tickersToFetch);
+    
+    // Construct the API URL to call
+    NSString *endpointURL = @"http://marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=";
+    endpointURL = [NSString stringWithFormat:@"%@%@",endpointURL,tickersToFetch];
+    NSURLResponse *response = nil;
+    
+    // Make the call synchronously
+    NSError *error;
+    NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+                                                             error:&error];
+    // This is the API response
+    /* {
+     "status":{
+     "code":200,
+     "message":"Success."
+     },
+     "results":[
+     {
+     "symbol":"UA",
+     "exchange":"BATS",
+     "name":"Under Armour",
+     "dayCode":"3",
+     "serverTimestamp":"2016-11-06T09:18:17-06:00",
+     "mode":"i",
+     "lastPrice":30.8,
+     "tradeTimestamp":"2016-11-03T00:00:00-05:00",
+     "netChange":30.8,
+     "percentChange":0,
+     "unitCode":null,
+     "open":0,
+     "high":0,
+     "low":0,
+     "close":"",
+     "flag":"",
+     "volume":0
+     },*/
+    
+    // Process the response
+    if (error == nil)
+    {
+        // Process the response that contains the price information for the company
+        NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                       options:kNilOptions
+                                                                         error:&error];
+        
+        // Get the list of data slices from the overall data set
+        NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
+        
+        // TO DO: Delete Later before shipping v2.7
+        NSLog(@"The parsed quote response data set is:%@",parsedDataSets.description);
+        
+        // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
+        // then you don't want to process the data and enter as historical prices.
+        // If response is not correct, show the user an error message
+        if ([parsedDataSets.description isEqualToString:@"<null>"])
+        {
+            // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
+            // TO DO: Delete Later before shipping v2.7
+            NSLog(@"Trapping the current price error");
+            
+        }
+        // Else process response to enter historical prices
+        else
+        {
+            
+            // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
+            NSNumber *percentChangeSinceYest = [[NSNumber alloc] initWithFloat:999999.9];
+            
+            // To Do: Delete before shipping v2.7
+            NSLog(@"****percentChangeSinceYest before parsing API response is: %f", percentChangeSinceYest);
+            
+            // Iterate through price array within the parsed data set, which only contains one dictionary.
+            for (NSDictionary *parsedDetailsList in parsedDataSets) {
+                
+                // Get the current price
+                currentPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"lastPrice"] doubleValue]];
+                
+                // Get percentage changed since yesterday
+                percentChangeSinceYest = [[NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"percentChange"] doubleValue]];
+                                          
+                if(percentChange == 0.0) {
+                    
+                    NSLog(@"");
+                }
+                
+                // Construct the change string i.e. netchange_percentchange
+                /*NSString *currPrice = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"lastPrice"] floatValue]];
+                NSString *netChange = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"netChange"] floatValue]];
+                NSString *percentChange = [NSString stringWithFormat:@"%.02f",[[parsedDetailsList objectForKey:@"percentChange"] floatValue]];
+                changeString = [NSString stringWithFormat:@"%@_%@_%@",currPrice,netChange,percentChange];*/
+            }
+            
+            // Enter the current price into the event history table
+            [self updateEventHistoryWithCurrentPrice:currentPrice parentEventTicker:companyTicker parentEventType:eventType];
+            
+            
+            
+            
+        
+        
+        // TO DO: Delete Later, for testing
+        //NSLog(@"The endpoint being called for getting product events information is:%@",endpointURL);
+        //NSLog(@"The API response for getting product events information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
+        
+        // Process the response that contains the events for the company.
+        // Get the response into a parsed object
+        NSDictionary *parsedResponse = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                       options:kNilOptions
+                                                                         error:&error];
+        NSDictionary *parsedEvents = [parsedResponse objectForKey:@"responseData"];
+        
+        // Loop through the parsed events
+        NSDictionary *event = nil;
+        for(id key in parsedEvents) {
+            
+            // Get the ticker for the event's parent company
+            NSString *parentTicker = key;
+            // TO DO: Delete Later
+            NSLog(@"The event parent company is: %@", parentTicker);
+            
+            // Get the event/s associated with the ticker
+            event = [parsedEvents objectForKey:key];
+            
+            // Get the 1d alarm status
+            BOOL dailyAlarm = [[event objectForKey:@"alert_1day"] boolValue];
+            // TO DO: Delete Later
+            NSLog(@"The 1d alarm status is: %d", dailyAlarm);
+            // Get the 1d change string
+            NSString *dailyChangeStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"change_1day"]];
+            // TO DO: Delete Later
+            NSLog(@"The 1d change is: %@%%", dailyChangeStr);
+            
+            // Get the 30 days alarm status
+            BOOL thirtyAlarm = [[event objectForKey:@"alert_30days"] boolValue];
+            // TO DO: Delete Later
+            NSLog(@"The 30 days alarm status is: %d", thirtyAlarm);
+            // Get the 30 days change string
+            NSString *thirtyChangeStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"change_30days"]];
+            // TO DO: Delete Later
+            NSLog(@"The 30 days change is: %@%%", thirtyChangeStr);
+            
+            // Get the ytd alarm status
+            BOOL ytdAlarm = [[event objectForKey:@"alert_ytd"] boolValue];
+            // TO DO: Delete Later
+            NSLog(@"The ytd alarm status is: %d", ytdAlarm);
+            // Get the ytd change string
+            NSString *ytdChangeStr = [NSString stringWithFormat: @"%@", [event objectForKey:@"change_ytd"]];
+            // TO DO: Delete Later
+            NSLog(@"The ytd alarm status is: %@%%", ytdChangeStr);
+            
+            // Check if any of the alarms are true. If yes, add them to the events db as a price change event
+            NSDate *todaysDate = [NSDate date];
+            NSString *specificEventType = nil;
+            
+            // If daily alarm is true, add it to the db
+            if(dailyAlarm) {
+                
+                // Construct the event type string which is generic in the following section % down today but preceded by specific %
+                if ([dailyChangeStr containsString:@"-"]) {
+                    dailyChangeStr = [dailyChangeStr substringFromIndex:1];
+                    specificEventType = [NSString stringWithFormat:@"%@%% down today",dailyChangeStr];
+                } else {
+                    specificEventType = [NSString stringWithFormat:@"%@%% up today",dailyChangeStr];
+                }
+                
+                // Insert into the events datastore
+                // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
+                [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+            }
+            
+            // If 30 days alarm is true, add it to the db if the following conditions are met: a) There hasn't been a 30 days alarm of the same type in the last 7 days. This is to ensure we are only triggering the 30 days price change a max of 4 times in a month.
+            if(thirtyAlarm) {
+                
+                
+                // Construct the event type string which is generic in the following section % down 30 days but preceded by specific %
+                if ([thirtyChangeStr containsString:@"-"]) {
+                    thirtyChangeStr = [thirtyChangeStr substringFromIndex:1];
+                    specificEventType = [NSString stringWithFormat:@"%@%% down 30 days",thirtyChangeStr];
+                } else {
+                    specificEventType = [NSString stringWithFormat:@"%@%% up 30 days",thirtyChangeStr];
+                }
+                
+                if (![self doesPriceChangeEventExistFor:parentTicker parentEventType:specificEventType]) {
+                    // Insert into the events datastore
+                    // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
+                    [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                }
+            }
+            
+            // If ytd alarm is true, add it to the db if the following conditions are met: a) There hasn't been a ytd alarm of the same type in the last 15 days. This is to ensure we are only triggering the ytd price change a max of 2 times in a month.
+            if(ytdAlarm) {
+                
+                
+                // Construct the event type string which is generic in the following section % down ytd but preceded by specific %
+                if ([ytdChangeStr containsString:@"-"]) {
+                    ytdChangeStr = [ytdChangeStr substringFromIndex:1];
+                    specificEventType = [NSString stringWithFormat:@"%@%% down ytd",ytdChangeStr];
+                } else {
+                    specificEventType = [NSString stringWithFormat:@"%@%% up ytd",ytdChangeStr];
+                }
+                
+                if (![self doesPriceChangeEventExistFor:parentTicker parentEventType:specificEventType]) {
+                    // Insert into the events datastore
+                    // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
+                    [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                }
+            }
+        }
+    } else {
+        // Log error to console
+        NSLog(@"ERROR: Could not get price events data from the API Data Source. Error description: %@",error.description);
+    }
+}
+
+// Get all the price change events and details from the data source APIs. This is the old data source that we don't use anymore
 - (void)getAllPriceChangeEventsFromApi
 {
     // Call the Price change data source API to get the price change events. The API is:

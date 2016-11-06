@@ -147,6 +147,9 @@
 
 #pragma mark - Methods for Price Change Data
 
+// Get all the price change events and details from the data source APIs. This is the new version that uses the same data source as used for getting prices elsewhere.
+- (void)getAllPriceChangeEventsFromApiNew;
+
 // Get all the price change events and details from the data source APIs
 - (void)getAllPriceChangeEventsFromApi;
 
