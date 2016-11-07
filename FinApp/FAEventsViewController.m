@@ -71,7 +71,7 @@
     [self.navigationController.navigationBar.topItem setTitle:[[todayDateFormatter stringFromDate:[NSDate date]] uppercaseString]];*/
     
     // Set navigation bar header to title "Upcoming Events"
-    [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING EVENTS"];
+    [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
     
     // Change the color of the events search bar placeholder text and text entered to be a black text color.
     [self.eventsSearchBar setBackgroundImage:[UIImage new]];
