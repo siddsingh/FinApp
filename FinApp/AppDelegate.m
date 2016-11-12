@@ -186,7 +186,7 @@
     NSInteger daysBetweenEventSyncs = [eventComponents day];
     
     // TO DO: For testing, comment before shipping. Keeping it around for future pre seeding testing.
-    //NSLog(@"Days since last company sync:%ld and syncstatus is:%@",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus]);
+    NSLog(@"Days since last company sync:%ld and syncstatus is:%@ and no of days since event sync are:%ld",(long)daysBetween,[companyUpdateDataController getCompanySyncStatus],(long)daysBetweenEventSyncs);
     
     // If it's been 45 days since the last company sync, do an incremental sync, only if the event sync for the day is done
     if (((int)daysBetween >= 45)&&((int)daysBetweenEventSyncs <= 0))

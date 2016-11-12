@@ -2952,9 +2952,8 @@ bool eventsUpdated = NO;
     NSInteger daysBetween = [components day];
     // TO DO: Delete Later before shipping v2.5
     //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
-    // TO DO: Commenting this since we want to sync everytime the user opens the app
     // Refresh only if a day has passed since last refresh
-    //if((int)daysBetween > 0) {
+    if((int)daysBetween > 0) {
         
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];
@@ -3042,7 +3041,7 @@ bool eventsUpdated = NO;
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
             });
         }
-  //  }
+    }
 }
 
 #pragma mark - User State Related
