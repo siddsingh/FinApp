@@ -107,7 +107,13 @@
     self.primaryDataController = [[FADataController alloc] init];
     
     // Ensure that the remote fetch spinner is not animating thus hidden
-    [self.remoteFetchSpinner stopAnimating];
+    // TO DO: Testing. Using the logic after. Remove this if it works.
+    //[self.remoteFetchSpinner stopAnimating];
+    if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"RefreshCheckDone"]) {
+        [self.remoteFetchSpinner stopAnimating];
+    } else {
+        [self.remoteFetchSpinner startAnimating];
+    }
     
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
     /*NSDate *today = [NSDate date];

@@ -62,6 +62,21 @@
     // TO DO: Disabling to not track development events. Enable before shipping.
     /*[[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];*/
+
+    // Get a data controller that you will use later.
+    FADataController *viewDataController = [[FADataController alloc] init];
+    
+    // Check if updated events data has been synced at least once. That means the user has seen the tutorial at least once, which means it can be skipped.
+    if ([[viewDataController getEventSyncStatus] isEqualToString:@"RefreshCheckDone"]) {
+        [self configViewControllerWithName:@"FAEventsNavController"];
+    }
+    // Else show the tutorial controller
+    else {
+        [self configViewControllerWithName:@"FATutorialViewController"];
+    }
+    
+    // TO DO: Testing. Delete later before shipping v2.7
+    NSLog(@"Did finish launching with options");
     
     return YES;
 }
@@ -83,6 +98,9 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    // TO DO: Testing. Delete later before shipping v2.7
+    NSLog(@"Application did become active");
     
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
@@ -278,6 +296,21 @@
     else {
         return YES;
     }
+}
+
+#pragma mark - View Controller Selection
+
+// Configure view controller based on name
+- (void) configViewControllerWithName:(NSString *)controllerStoryboardId
+{
+    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    UIViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:controllerStoryboardId];
+    
+    self.window.rootViewController = viewController;
+    [self.window makeKeyAndVisible];
 }
 
 #pragma mark - Core Data stack

@@ -1105,7 +1105,7 @@
         <!--TutorialViewController-->
         <scene sceneID="BEX-p0-ZYM">
             <objects>
-                <viewController title="TutorialViewController" id="0h3-IF-CPY" customClass="FATutorialViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FATutorialViewController" title="TutorialViewController" id="0h3-IF-CPY" customClass="FATutorialViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="rnl-kk-oF0"/>
                         <viewControllerLayoutGuide type="bottom" id="ylR-G0-jDN"/>
@@ -1139,7 +1139,7 @@
         <!--Navigation Controller-->
         <scene sceneID="YHy-wl-yXy">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4aJ-Kn-nti" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="FAEventsNavController" automaticallyAdjustsScrollViewInsets="NO" id="4aJ-Kn-nti" sceneMemberID="viewController">
                     <toolbarItems/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="HkX-OL-YN2">
