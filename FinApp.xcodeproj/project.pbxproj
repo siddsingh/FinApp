@@ -15,6 +15,8 @@
 		9E2C2A4A1C8786DC00297F37 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */; };
 		9E2F49571CE1622700D51401 /* ProductEvents_2016_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */; };
 		9E2F49581CE1622800D51401 /* ProductEvents_2016_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */; };
+		9E44C29B1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */; };
+		9E44C29C1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */; };
 		9E602D1A19E655DF00ACDEC6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1919E655DF00ACDEC6 /* main.m */; };
 		9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */; };
 		9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */; };
@@ -61,6 +63,8 @@
 		9E1BF82D1DA1FA6000D50E4F /* PriceChangeEvents_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = PriceChangeEvents_Local.json; sourceTree = "<group>"; };
 		9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ProductEvents_2016_Local.json; sourceTree = "<group>"; };
+		9E44C2991DD6A3B7009D9317 /* FATutorialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FATutorialViewController.h; sourceTree = "<group>"; };
+		9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FATutorialViewController.m; sourceTree = "<group>"; };
 		9E602D1419E655DF00ACDEC6 /* Knotifi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Knotifi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D1819E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E602D1919E655DF00ACDEC6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -154,6 +158,8 @@
 				9E602D1B19E655DF00ACDEC6 /* AppDelegate.h */,
 				9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */,
 				9E681D4B1A43B08F00FC5E5D /* FAEventsViewController.h */,
+				9E44C2991DD6A3B7009D9317 /* FATutorialViewController.h */,
+				9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */,
 				9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */,
 				9E681D4E1A4A660D00FC5E5D /* FAEventsTableViewCell.h */,
 				9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */,
@@ -333,6 +339,7 @@
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
 				9E0AC7B81C6EB9CA0078EAA5 /* FACompanyInfoStore.m in Sources */,
 				9E79C9371BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */,
+				9E44C29B1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */,
 				9E602D1A19E655DF00ACDEC6 /* main.m in Sources */,
 				9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */,
 				9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */,
@@ -349,6 +356,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */,
+				9E44C29C1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */,
 				9E79C9381BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */,
 				9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */,
 				9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */,

@@ -3042,6 +3042,36 @@ bool eventsUpdated = NO;
             });
         }
     }
+    // Get price changes every time
+    else {
+        // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // TO DO: Delete Later
+            //NSLog(@"About to start busy spinner");
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+        });
+        
+        // Check to see if product events need to be added or refreshed. If yes, do that.
+        // *****NOTE*****Currently always returning true since we have not implemented update logic
+        if ([self doProductEventsNeedToBeAddedRefreshed]) {
+            
+            // TO DO: Delete Later
+            //NSLog(@"About to add product events from Knotifi Data Platform");
+            [self getAllProductEventsFromApi];
+        }
+
+        // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
+        [self getAllPriceChangeEventsFromApiNew];
+        
+        // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.
+        // Any async UI element update has to happen in the main thread.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sendEventsChangeNotification];
+            // TO DO: Delete Later.
+            //NSLog(@"About to stop busy spinner");
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+        });
+    }
 }
 
 #pragma mark - User State Related
