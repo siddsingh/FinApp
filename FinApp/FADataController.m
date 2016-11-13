@@ -3042,7 +3042,7 @@ bool eventsUpdated = NO;
             });
         }
     }
-    // Get price changes every time
+    // Get product events and price changes every time
     else {
         // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
         dispatch_async(dispatch_get_main_queue(), ^{

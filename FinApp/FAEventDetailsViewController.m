@@ -604,8 +604,13 @@
     
     // Send them to different sites with different queries based on which site has the best informtion for that event type
     
+    // TO DO: If you want to revert to using Bing
     // Bing News is the default we are going with for now
-    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+    searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    
+    // Google news is default for now
+    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
     
     // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
@@ -635,7 +640,7 @@
         searchTerm = @"jobs report us";
     }
     if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-        searchTerm = [NSString stringWithFormat:@"%@",self.parentTicker];
+        searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentTicker,@"stock"];
     }
     
     // Remove any spaces in the URL query string params
@@ -1310,9 +1315,19 @@
         // Econ Blue
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
-    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         // Product Brown
         colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
+    }
+    if ([self.eventType containsString:@"% up"])
+    {
+        // Kinda Green
+        colorToReturn = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+    }
+    if ([self.eventType containsString:@"% down"])
+    {
+        // Kinda Red
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:63.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;
