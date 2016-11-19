@@ -1,0 +1,233 @@
+{
+ "eventSets":[
+              {
+                "name":"Fed Meeting",
+                "identifier":"ECONOMY_FOMC",
+                "agency":"Federal Open Market Committee",
+                "impact":"Very High",
+                "impactReason":"Outcome determines key interest rates.",
+                "sectorsImpacted":"Financial",
+                "shortDescription":"Meeting between federal officials to determine future monetary policy.",
+                "moreInfoUrl":"http://www.federalreserve.gov/monetarypolicy/default.htm",
+                "tip":"If short term interest rates go up, banks typically benefit because they can earn more.",
+                "timing":"2:00 p.m. ET",
+                "instances":[
+                             {
+                                "date":20160127,
+                                "relatedPeriod":"Jan"
+                             },
+                             {
+                                "date":20160316,
+                                "relatedPeriod":"Mar"
+                             },
+                             {
+                                "date":20160427,
+                                "relatedPeriod":"Apr"
+                             },
+                             {
+                                "date":20160615,
+                                "relatedPeriod":"Jun"
+                             },
+                             {
+                                "date":20160727,
+                                "relatedPeriod":"Jul"
+                             },
+                             {
+                                "date":20160921,
+                                "relatedPeriod":"Sep"
+                             },
+                             {
+                                "date":20161102,
+                                "relatedPeriod":"Nov"
+                             },
+                             {
+                                "date":20161214,
+                                "relatedPeriod":"Dec"
+                             }
+                ],
+                "datesPressConference":[20160316,20160615,20160921,20161214]
+              },
+              {
+                "name":"Jobs Report",
+                "identifier":"ECONOMY_BLS",
+                "agency":"Bureau of Labor Statistics",
+                "impact":"Very High",
+                "impactReason":"Reflects the health of the job market.",
+                "sectorsImpacted":"All",
+                "shortDescription":"An estimate of the number of people who have jobs and those that don't.",
+                "moreInfoUrl":"http://www.bls.gov/mobile/mobile_releases.htm",
+                "tip":"Watch the jobless rate. In a strong labor market this decreases.",
+                "timing":"8:30 a.m. ET",
+                "instances":[
+                             {
+                                "date":20160205,
+                                "relatedPeriod":"Jan"
+                             },
+                             {
+                                "date":20160304,
+                                "relatedPeriod":"Feb"
+                             },
+                             {
+                                "date":20160401,
+                                "relatedPeriod":"Mar"
+                             },
+                             {
+                                "date":20160506,
+                                "relatedPeriod":"Apr"
+                             },
+                             {
+                                "date":20160603,
+                                "relatedPeriod":"May"
+                             },
+                             {
+                                "date":20160708,
+                                "relatedPeriod":"Jun"
+                             },
+                             {
+                                "date":20160805,
+                                "relatedPeriod":"Jul"
+                             },
+                             {
+                                "date":20160902,
+                                "relatedPeriod":"Aug"
+                             },
+                             {
+                                "date":20161007,
+                                "relatedPeriod":"Sep"
+                             },
+                             {
+                                "date":20161104,
+                                "relatedPeriod":"Oct"
+                             },
+                             {
+                                "date":20161202,
+                                "relatedPeriod":"Nov"
+                             }
+                ]
+              },
+              {
+                "name":"Consumer Confidence",
+                "identifier":"ECONOMY_TCB",
+                "agency":"The Conference Board",
+                "impact":"Medium",
+                "impactReason":"Indicator of future personal spending.",
+                "sectorsImpacted":"Retail",
+                "shortDescription":"Measure of how likely people are to spend money in the future.",
+                "moreInfoUrl":"https://www.conference-board.org/data/consumerconfidence.cfm",
+                "tip":"Consumers account for about two-thirds of the nation's economic activity.",
+                "timing":"10:00 a.m. ET",
+                "instances":[
+                             {
+                                "date":20160126,
+                                "relatedPeriod":"Jan"
+                             },
+                             {
+                                "date":20160223,
+                                "relatedPeriod":"Feb"
+                             },
+                             {
+                                "date":20160329,
+                                "relatedPeriod":"Mar"
+                             },
+                             {
+                                "date":20160426,
+                                "relatedPeriod":"Apr"
+                             },
+                             {
+                                "date":20160531,
+                                "relatedPeriod":"May"
+                             },
+                             {
+                                "date":20160628,
+                                "relatedPeriod":"Jun"
+                             },
+                             {
+                                "date":20160726,
+                                "relatedPeriod":"Jul"
+                             },
+                             {
+                                "date":20160830,
+                                "relatedPeriod":"Aug"
+                             },
+                             {
+                                "date":20160927,
+                                "relatedPeriod":"Sep"
+                             },
+                             {
+                                "date":20161025,
+                                "relatedPeriod":"Oct"
+                             },
+                             {
+                                "date":20161129,
+                                "relatedPeriod":"Nov"
+                             },
+                             {
+                                "date":20161227,
+                                "relatedPeriod":"Dec"
+                             }
+                ]
+              },
+              {
+                "name":"GDP Release",
+                "identifier":"ECONOMY_BEA",
+                "agency":"Bureau of Economic Analysis",
+                "impact":"Medium",
+                "impactReason":"Scorecard of the country's economic health.",
+                "sectorsImpacted":"All",
+                "shortDescription":"GDP is a measure of the country's economic health.",
+                "moreInfoUrl":"http://www.bea.gov/newsreleases/news_release_sort_national.htm",
+                "tip":"Decreasing GDP for 2 or more quarters indicates a recession.",
+                "timing":"8:30 a.m. ET",
+                "instances":[
+                             {
+                                "date":20160129,
+                                "relatedPeriod":"Q4 2015 Initial"
+                             },
+                             {
+                                "date":20160226,
+                                "relatedPeriod":"Q4 2015 Second"
+                             },
+                             {
+                                "date":20160325,
+                                "relatedPeriod":"Q4 2015 Third"
+                             },
+                             {
+                                "date":20160428,
+                                "relatedPeriod":"Q1 Initial"
+                             },
+                             {
+                                "date":20160527,
+                                "relatedPeriod":"Q1 Second"
+                             },
+                             {
+                                "date":20160628,
+                                "relatedPeriod":"Q1 Third"
+                             },
+                             {
+                                "date":20160729,
+                                "relatedPeriod":"Q2 Initial"
+                             },
+                             {
+                                "date":20160826,
+                                "relatedPeriod":"Q2 Second"
+                             },
+                             {
+                                "date":20160929,
+                                "relatedPeriod":"Q2 Third"
+                             },
+                             {
+                                "date":20161028,
+                                "relatedPeriod":"Q3 Initial"
+                             },
+                             {
+                                "date":20161129,
+                                "relatedPeriod":"Q3 Second"
+                             },
+                             {
+                                "date":20161222,
+                                "relatedPeriod":"Q3 Third"
+                             }
+                ]
+              }
+ ]
+}
