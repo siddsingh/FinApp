@@ -16,6 +16,7 @@
 - (void)awakeFromNib {
     
     // Initialization code
+    [super awakeFromNib];
     
     // Add a tap gesture recognizer to the related data description area to capture link clicks
     UITapGestureRecognizer *linkTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(textViewTapped:)];

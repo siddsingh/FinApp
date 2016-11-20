@@ -49,6 +49,10 @@
         [econEventDataController getAllEconomicEventsFromLocalStorage];
     }*/
     
+    // Syncing the latest set of companies and tickers from local file
+    FADataController *tickersDataController = [[FADataController alloc] init];
+    [tickersDataController getAllTickersAndNamesFromLocalStorage];
+    
     // Set the status bar text color to white. This is done in conjunction with setting View controller-based status bar appearance property to NO in Info.plist. To revert delete that property and remove this line.
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     // With a light app theme, setting the status bar style to default dark theme. 

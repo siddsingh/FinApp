@@ -131,6 +131,11 @@
 // Get the event details for a company given it's ticker. NOTE: This is somewhat of a misnomer as this call only fetches the earnings event details not others like product events.
 - (void)getAllEventsFromApiWithTicker:(NSString *)companyTicker;
 
+#pragma mark - Methods to call Company names and tickers from local files
+
+// Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
+- (void)getAllTickersAndNamesFromLocalStorage;
+
 #pragma mark - Methods to call Economic Events Data Sources
 
 // Get all the economic events and details from local storage, which currently is a json file and write them to the data store.

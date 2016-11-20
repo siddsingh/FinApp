@@ -1012,7 +1012,8 @@ bool eventsUpdated = NO;
         noOfPages = [[self getTotalNoOfCompanyPagesToSync] integerValue];
         
         // TO DO: For testing, comment before shipping
-        //NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
+        // TO DO: Comment before shipping v2.7
+        NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
     }
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
@@ -1476,6 +1477,86 @@ bool eventsUpdated = NO;
     }
 }
 
+#pragma mark - Methods to call Company names and tickers from local files
+
+// Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
+- (void)getAllTickersAndNamesFromLocalStorage
+{
+    // Get the economic events file path
+    NSString *tickersFilePath = [[NSBundle mainBundle] pathForResource:@"ZEA-datasets-codes_20161119" ofType:@"csv"];
+    // TO DO: Delete Later
+    NSLog(@"Found the json file at: %@",tickersFilePath);
+    
+    // Parse the file contents
+    
+    // Get the contents into a parsed object
+    NSError *error;
+    NSMutableArray *tickerStrs = [NSMutableArray array];
+    NSMutableArray *nameStrs = [NSMutableArray array];
+    
+    NSString *tickersStr = [[NSString alloc] initWithContentsOfFile:tickersFilePath encoding:NSUTF8StringEncoding error:&error];
+    NSArray* tickerRows = [tickersStr componentsSeparatedByString:@"\n"];
+    for (NSString *tickerRow in tickerRows){
+        
+        if (![tickerRow isEqualToString:@""] ) {
+            NSArray* tickerColumns = [tickerRow componentsSeparatedByString:@","];
+            [tickerStrs addObject:tickerColumns[0]];
+            [nameStrs addObject:tickerColumns[1]];
+        }
+    }
+    
+    // Loop through the tickers and add the tickers and names to the database
+    int tickerIndex = 0;
+    NSString *companyTicker = nil;
+    NSString *companyNameString = nil;
+    NSRange forString;
+    NSString *endTickerString = nil;
+    NSRange endTicker;
+    NSRange companyNameRange;
+    NSString *companyName = nil;
+    
+    for (NSString *tickerStr in tickerStrs) {
+        
+        // Get the company ticker and company name string
+        companyTicker = tickerStr;
+        // Strip out ZEA/
+        companyTicker = [companyTicker stringByReplacingOccurrencesOfString:@"ZEA/" withString:@""];
+        // Replace underscore in certain ticker names with . e.g.GRP_U -> GRP.U
+        companyTicker = [companyTicker stringByReplacingOccurrencesOfString:@"_" withString:@"."];
+
+        companyNameString = [nameStrs objectAtIndex:tickerIndex];
+        // TO DO: For testing, comment before shipping
+        //NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
+        
+        // TO DO: Delete before shipping v2.7
+        NSLog(@"The Full Name String is:%@",companyNameString);
+        
+        // Extract the company name from the company name string
+        forString = [companyNameString rangeOfString:@"for"];
+        endTickerString = [NSString stringWithFormat:@"(%@)",companyTicker];
+        endTicker = [companyNameString rangeOfString:endTickerString];
+        companyNameRange = NSMakeRange(forString.location + 4, (endTicker.location - forString.location) - 5);
+        companyName = [companyNameString substringWithRange:companyNameRange];
+        // If there is a period at the end, remove it
+        if ([companyName length] > 0) {
+            if([companyName hasSuffix:@"."])
+            {
+                companyName = [companyName substringToIndex:[companyName length]-1];
+            }
+        }
+        
+        // TO DO: Delete before shipping v2.7
+        NSLog(@"The Ticker String is:%@",companyTicker);
+        NSLog(@"The Name String is:%@",companyName);
+        
+        // Add company ticker and name into the data store
+        // [self insertUniqueCompanyWithTicker:companyTicker name:companyName];
+        
+        ++tickerIndex;
+    }
+    
+}
+
 #pragma mark - Methods to call Economic Events Data Sources
 
 // Get all the economic events and details from local storage, which currently is a json file and write them to the data store.
@@ -1612,8 +1693,10 @@ bool eventsUpdated = NO;
      "moreInfoUrl":"http://www.macrumors.com/roundup/iphone-7"
      }, */
     
-    // The API endpoint URL
-    NSString *endpointURL = @"http://104.197.243.153/productevent/";
+    // The API endpoint URL  http://104.155.142.172/
+    // Old endpoint URL
+    // NSString *endpointURL = @"http://104.197.243.153/productevent/";
+    NSString *endpointURL = @"http://104.155.142.172/productevent/";
     NSError * error = nil;
     NSURLResponse *response = nil;
     

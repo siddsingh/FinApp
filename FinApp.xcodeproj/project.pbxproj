@@ -37,6 +37,10 @@
 		9E79C92C1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */; };
 		9E79C9371BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */; };
 		9E79C9381BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */; };
+		9E81709C1DE0DD610066C85B /* EconomicEvents_2017.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E81709B1DE0DD610066C85B /* EconomicEvents_2017.json */; };
+		9E81709D1DE0DD610066C85B /* EconomicEvents_2017.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E81709B1DE0DD610066C85B /* EconomicEvents_2017.json */; };
+		9E81709F1DE11FBC0066C85B /* ZEA-datasets-codes_20161119.csv in Resources */ = {isa = PBXBuildFile; fileRef = 9E81709E1DE11FBB0066C85B /* ZEA-datasets-codes_20161119.csv */; };
+		9E8170A01DE11FBC0066C85B /* ZEA-datasets-codes_20161119.csv in Resources */ = {isa = PBXBuildFile; fileRef = 9E81709E1DE11FBB0066C85B /* ZEA-datasets-codes_20161119.csv */; };
 		9EA8E47C1C99053C002B1F5E /* EconomicEvents_2016.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EA8E47B1C99053C002B1F5E /* EconomicEvents_2016.json */; };
 		9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE51B82CEB9008A0370 /* Action.m */; };
 		9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9EBD8EE71BA38DA9008A0370 /* BaseVisualAssets.xcassets */; };
@@ -97,6 +101,8 @@
 		9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsViewController.m; sourceTree = "<group>"; };
 		9E79C9351BDAC78F007E17B6 /* FAEventDetailsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventDetailsTableViewCell.h; sourceTree = "<group>"; };
 		9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsTableViewCell.m; sourceTree = "<group>"; };
+		9E81709B1DE0DD610066C85B /* EconomicEvents_2017.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = EconomicEvents_2017.json; sourceTree = "<group>"; };
+		9E81709E1DE11FBB0066C85B /* ZEA-datasets-codes_20161119.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ZEA-datasets-codes_20161119.csv"; sourceTree = "<group>"; };
 		9EA8E47B1C99053C002B1F5E /* EconomicEvents_2016.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = EconomicEvents_2016.json; sourceTree = "<group>"; };
 		9EBD8EE41B82CEB9008A0370 /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
 		9EBD8EE51B82CEB9008A0370 /* Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Action.m; sourceTree = "<group>"; };
@@ -177,9 +183,11 @@
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */,
 				9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */,
+				9E81709E1DE11FBB0066C85B /* ZEA-datasets-codes_20161119.csv */,
 				9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */,
 				9E1BF82D1DA1FA6000D50E4F /* PriceChangeEvents_Local.json */,
 				9EA8E47B1C99053C002B1F5E /* EconomicEvents_2016.json */,
+				9E81709B1DE0DD610066C85B /* EconomicEvents_2017.json */,
 				9EBD8EE41B82CEB9008A0370 /* Action.h */,
 				9EBD8EE51B82CEB9008A0370 /* Action.m */,
 				9E7586441AF44679009DD7B2 /* User.h */,
@@ -268,7 +276,7 @@
 		9E602D0C19E655DF00ACDEC6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Sidd Singh";
 				TargetAttributes = {
 					9E602D1319E655DF00ACDEC6 = {
@@ -305,9 +313,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E81709F1DE11FBC0066C85B /* ZEA-datasets-codes_20161119.csv in Resources */,
 				9E602D2619E655DF00ACDEC6 /* Main.storyboard in Resources */,
 				9ECE7B471CBF60BF000F8D77 /* FinApp.sqlite in Resources */,
 				9EA8E47C1C99053C002B1F5E /* EconomicEvents_2016.json in Resources */,
+				9E81709C1DE0DD610066C85B /* EconomicEvents_2017.json in Resources */,
 				9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */,
 				9E1BF82E1DA1FA6000D50E4F /* PriceChangeEvents_Local.json in Resources */,
 				9EBD8EE81BA38DA9008A0370 /* BaseVisualAssets.xcassets in Resources */,
@@ -320,6 +330,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9ECE7B481CBF60BF000F8D77 /* FinApp.sqlite in Resources */,
+				9E81709D1DE0DD610066C85B /* EconomicEvents_2017.json in Resources */,
+				9E8170A01DE11FBC0066C85B /* ZEA-datasets-codes_20161119.csv in Resources */,
 				9E2F49581CE1622800D51401 /* ProductEvents_2016_Local.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -407,8 +419,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -418,6 +432,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -452,8 +467,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -462,6 +479,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
