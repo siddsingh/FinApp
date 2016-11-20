@@ -1482,12 +1482,14 @@ bool eventsUpdated = NO;
 // Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
 - (void)getAllTickersAndNamesFromLocalStorage
 {
-    // Get the economic events file path
+    // Get the company ticker and names file path
     NSString *tickersFilePath = [[NSBundle mainBundle] pathForResource:@"ZEA-datasets-codes_20161119" ofType:@"csv"];
     // TO DO: Delete Later
     NSLog(@"Found the json file at: %@",tickersFilePath);
     
     // Parse the file contents
+    // ***IMPORTANT: When using a new file search for " and remove the " and , in the string that contains names
+    // e.g. "Ulta Salon, Cosmetics & Fragrance Inc" should be Ulta Salon Cosmetics & Fragrance Inc
     
     // Get the contents into a parsed object
     NSError *error;
@@ -1529,7 +1531,9 @@ bool eventsUpdated = NO;
         //NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
         
         // TO DO: Delete before shipping v2.7
-        NSLog(@"The Full Name String is:%@",companyNameString);
+        //NSLog(@"The Full Ticker String is:%@",tickerStr);
+        // TO DO: Delete before shipping v2.7
+        //NSLog(@"The Full Name String is:%@",companyNameString);
         
         // Extract the company name from the company name string
         forString = [companyNameString rangeOfString:@"for"];
@@ -1546,11 +1550,11 @@ bool eventsUpdated = NO;
         }
         
         // TO DO: Delete before shipping v2.7
-        NSLog(@"The Ticker String is:%@",companyTicker);
-        NSLog(@"The Name String is:%@",companyName);
+        NSLog(@"The Name  is:%@",companyName);
+        NSLog(@"The Ticker is:%@",companyTicker);
         
         // Add company ticker and name into the data store
-        // [self insertUniqueCompanyWithTicker:companyTicker name:companyName];
+        [self insertUniqueCompanyWithTicker:companyTicker name:companyName];
         
         ++tickerIndex;
     }

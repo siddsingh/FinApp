@@ -49,10 +49,6 @@
         [econEventDataController getAllEconomicEventsFromLocalStorage];
     }*/
     
-    // Syncing the latest set of companies and tickers from local file
-    FADataController *tickersDataController = [[FADataController alloc] init];
-    [tickersDataController getAllTickersAndNamesFromLocalStorage];
-    
     // Set the status bar text color to white. This is done in conjunction with setting View controller-based status bar appearance property to NO in Info.plist. To revert delete that property and remove this line.
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     // With a light app theme, setting the status bar style to default dark theme. 
@@ -67,16 +63,44 @@
     /*[[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];*/
 
-    // Get a data controller that you will use later.
-    FADataController *viewDataController = [[FADataController alloc] init];
-    
-    // Check if updated events data has been synced at least once. That means the user has seen the tutorial at least once, which means it can be skipped.
-    if ([[viewDataController getEventSyncStatus] isEqualToString:@"RefreshCheckDone"]) {
-        [self configViewControllerWithName:@"FAEventsNavController"];
-    }
-    // Else show the tutorial controller
-    else {
+     
+    // Check to see if application has been used by the user at least once. If not
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"UsedOnce"])
+    {
+        // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
+        
+        // Update the list of companies in a background task
+        __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
+            
+            // Stopped or ending the task outright.
+            [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
+            backgroundFetchTask = UIBackgroundTaskInvalid;
+        }];
+        
+        // Start the long-running task and return immediately.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
+            // Delete before shipping v2.7
+            NSLog(@"About to start the background get incremental companies from local file");
+            
+            // Create a new FADataController so that this thread has its own MOC
+            FADataController *tickerBkgrndDataController = [[FADataController alloc] init];
+            
+            [tickerBkgrndDataController getAllTickersAndNamesFromLocalStorage];
+            
+            [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
+            backgroundFetchTask = UIBackgroundTaskInvalid;
+        });
+        
+        // Set that the user has used the app at least once
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"UsedOnce"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    // If yes
+    else {
+        [self configViewControllerWithName:@"FAEventsNavController"];
     }
     
     // TO DO: Testing. Delete later before shipping v2.7
@@ -126,7 +150,9 @@
         [self refreshCompanyInfoIfNeededFromApiInBackground]; */
         
         // TO DO: COMMENT FOR PRE SEEDING DB: This does an incremental update of newer companies since the last time the data was synced. This data should already be captured in the preseeding, so not needed for preseeding.
-        [self doCompanyUpdateInBackground];
+        // Not needed any longer, instead sync from local file earlier in this method.
+        //[self doCompanyUpdateInBackground];
+        
         
         // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data.
        // Async processing of non ui tasks should not be done on the main thread.
