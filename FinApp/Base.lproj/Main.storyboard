@@ -122,7 +122,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="77"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GMC-5M-9zB" id="EdO-do-03K">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="77"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="76"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Company Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s1x-IM-BDA">
@@ -214,7 +214,7 @@
                                                     </variation>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Confirmed" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y7j-P2-Lf8">
-                                                    <rect key="frame" x="300" y="42.5" width="47" height="11"/>
+                                                    <rect key="frame" x="300" y="43" width="47" height="11"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="11" id="BP1-jC-yIg"/>
                                                         <constraint firstAttribute="width" constant="47" id="tSz-sa-Aox"/>
@@ -1101,7 +1101,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PEM-uf-cSM">
-                                <rect key="frame" x="37.5" y="40" width="300" height="50"/>
+                                <rect key="frame" x="37.5" y="28" width="300" height="50"/>
                                 <color key="backgroundColor" red="0.4062454144" green="0.71248259250000001" blue="0.14636443830000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="300" id="2ff-kN-EqZ"/>
@@ -1122,8 +1122,9 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="KnotifiIntro" translatesAutoresizingMaskIntoConstraints="NO" id="PQE-Lx-vjj">
-                                <rect key="frame" x="37.5" y="110" width="300" height="537"/>
+                                <rect key="frame" x="37.5" y="90" width="300" height="504"/>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="504" id="YNJ-4D-v2U"/>
                                     <constraint firstAttribute="width" constant="300" id="b5V-Vs-B5L"/>
                                 </constraints>
                             </imageView>
@@ -1131,10 +1132,9 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="PEM-uf-cSM" firstAttribute="centerY" secondItem="EJW-i2-QFe" secondAttribute="centerY" id="0lJ-TB-uYU"/>
-                            <constraint firstItem="PQE-Lx-vjj" firstAttribute="top" secondItem="PEM-uf-cSM" secondAttribute="bottom" constant="20" id="27f-Da-ueC"/>
+                            <constraint firstItem="PQE-Lx-vjj" firstAttribute="top" secondItem="PEM-uf-cSM" secondAttribute="bottom" constant="12" id="27f-Da-ueC"/>
                             <constraint firstItem="PEM-uf-cSM" firstAttribute="centerX" secondItem="EJW-i2-QFe" secondAttribute="centerX" id="PZV-Si-pHg"/>
-                            <constraint firstItem="PEM-uf-cSM" firstAttribute="top" secondItem="rnl-kk-oF0" secondAttribute="bottom" constant="20" id="Pl6-Ne-Ipv"/>
-                            <constraint firstItem="ylR-G0-jDN" firstAttribute="top" secondItem="PQE-Lx-vjj" secondAttribute="bottom" constant="20" id="R8D-Zo-TJf"/>
+                            <constraint firstItem="PEM-uf-cSM" firstAttribute="top" secondItem="rnl-kk-oF0" secondAttribute="bottom" constant="8" id="Pl6-Ne-Ipv"/>
                             <constraint firstItem="PQE-Lx-vjj" firstAttribute="top" secondItem="PEM-uf-cSM" secondAttribute="bottom" constant="20" id="WGk-dG-gH7"/>
                             <constraint firstItem="PEM-uf-cSM" firstAttribute="centerX" secondItem="EJW-i2-QFe" secondAttribute="centerX" id="df1-Tg-v7m"/>
                             <constraint firstItem="PQE-Lx-vjj" firstAttribute="centerX" secondItem="EJW-i2-QFe" secondAttribute="centerX" id="hWy-wZ-XFE"/>
@@ -1152,7 +1152,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Eqa-a4-2iU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="457" y="-738"/>
+            <point key="canvasLocation" x="453.75" y="-739.43661971830988"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="YHy-wl-yXy">
@@ -1183,6 +1183,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="KnotifiIntro" width="621" height="1104"/>
+        <image name="KnotifiIntro" width="621" height="1105"/>
     </resources>
 </document>
