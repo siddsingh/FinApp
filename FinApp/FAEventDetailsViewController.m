@@ -327,8 +327,8 @@
                 // More detailed formatting if needed in the future
                 
                 // TO DO: Comment 1st line and delete second line before shipping v2.7
-                NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
-                NSLog(@"30 days price change range is:%@",priorEndDateToYestString);
+                //NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
+                //NSLog(@"30 days price change range is:%@",priorEndDateToYestString);
                 
                 //[[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:priorEndDateToYestString]];
                 [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:@""]];
@@ -337,7 +337,7 @@
                 double prev1RelatedPriceDbl = [[eventHistoryData previous1Price] doubleValue];
                 double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
                 // TO DO: Comment 1st line and delete second line before shipping v2.7
-                NSLog(@"The 30 days ago price was:%f and current price is:%f",prev1RelatedPriceDbl,currentPriceDbl);
+                //NSLog(@"The 30 days ago price was:%f and current price is:%f",prev1RelatedPriceDbl,currentPriceDbl);
                 if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
                 {
                     double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
@@ -408,8 +408,8 @@
                 // More detailed formatting in case you need it later.
                 
                 // TO DO: Comment 1st line and delete second line before shipping v2.7
-                NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1RelatedDate]];
-                NSLog(@"ytd price change range is:%@",priorEarningsDateToYestString);
+                //NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1RelatedDate]];
+                //NSLog(@"ytd price change range is:%@",priorEarningsDateToYestString);
                 
                 //[[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:priorEarningsDateToYestString]];
                 [[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:@""]];
@@ -418,7 +418,7 @@
                 double prev1PriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
                 double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
                 // TO DO: Comment 1st line and delete second line before shipping v2.7
-                NSLog(@"The first day of the yr price was:%f and current price is:%f",prev1PriceDbl,currentPriceDbl);
+                //NSLog(@"The first day of the yr price was:%f and current price is:%f",prev1PriceDbl,currentPriceDbl);
                 if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
                 {
                     double priceDiff = currentPriceDbl - prev1PriceDbl;
@@ -567,10 +567,10 @@
         
         // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Unset Reminder"
+        [FBSDKAppEvents logEvent:@"Unset Reminder"
                       parameters:@{ @"Ticker" : self.parentTicker,
                                     @"Event Type" : self.eventType,
-                                    @"Event Certainty" : self.eventCertainty } ];*/
+                                    @"Event Certainty" : self.eventCertainty } ];
     }
     
     // If not, create the reminder and style the button to post set styling
@@ -586,10 +586,10 @@
         
         // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Create Reminder"
+        [FBSDKAppEvents logEvent:@"Create Reminder"
                       parameters:@{ @"Ticker" : self.parentTicker,
                                     @"Event Type" : self.eventType,
-                                    @"Event Certainty" : self.eventCertainty } ];*/
+                                    @"Event Certainty" : self.eventCertainty } ];
     }
 }
 
@@ -653,10 +653,10 @@
         
         // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"External Action Clicked"
+        [FBSDKAppEvents logEvent:@"External Action Clicked"
          parameters:@{ @"Action Title" : @"See News",
          @"Action Query" : searchTerm,
-         @"Action URL" : [targetURL absoluteString]} ];*/
+         @"Action URL" : [targetURL absoluteString]} ];
         
         [[UIApplication sharedApplication] openURL:targetURL];
     }
@@ -1214,9 +1214,9 @@
 {
     // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
     // TO DO: Disabling to not track development events. Enable before shipping.
-    /*[FBSDKAppEvents logEvent:@"External Action Clicked"
+    [FBSDKAppEvents logEvent:@"External Action Clicked"
                   parameters:@{ @"Action Title" : textView.text,
-                                @"Action URL" : [URL absoluteString] } ];*/
+                                @"Action URL" : [URL absoluteString] } ];
     
     // TO DO FINAL: Delete after final test
     //NSLog(@"LINK CLICKED:%@ %@", textView.text, URL);

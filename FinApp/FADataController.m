@@ -1013,7 +1013,7 @@ bool eventsUpdated = NO;
         
         // TO DO: For testing, comment before shipping
         // TO DO: Comment before shipping v2.7
-        NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
+        //NSLog(@"**************Entered the get all companies background thread with page No to start from:%ld", (long)pageNo);
     }
     
     // Retrieve first page to get no of pages and then keep retrieving till you get all pages.
@@ -1485,7 +1485,7 @@ bool eventsUpdated = NO;
     // Get the company ticker and names file path
     NSString *tickersFilePath = [[NSBundle mainBundle] pathForResource:@"ZEA-datasets-codes_20161119" ofType:@"csv"];
     // TO DO: Delete Later
-    NSLog(@"Found the json file at: %@",tickersFilePath);
+    //NSLog(@"Found the json file at: %@",tickersFilePath);
     
     // Parse the file contents
     // ***IMPORTANT: When using a new file search for " and remove the " and , in the string that contains names
@@ -1550,8 +1550,8 @@ bool eventsUpdated = NO;
         }
         
         // TO DO: Delete before shipping v2.7
-        NSLog(@"The Name  is:%@",companyName);
-        NSLog(@"The Ticker is:%@",companyTicker);
+        //NSLog(@"The Name  is:%@",companyName);
+        //NSLog(@"The Ticker is:%@",companyTicker);
         
         // Add company ticker and name into the data store
         [self insertUniqueCompanyWithTicker:companyTicker name:companyName];
@@ -1897,7 +1897,7 @@ bool eventsUpdated = NO;
     }
     [tickersToFetch deleteCharactersInRange:NSMakeRange([tickersToFetch length]-1, 1)];
     // TO DO: Delete before shipping v2.7
-    NSLog(@"**************************************The tickers to be fetched are:%@",tickersToFetch);
+    //NSLog(@"**************************************The tickers to be fetched are:%@",tickersToFetch);
     
     // Construct the API URL to call
     NSString *endpointURL = @"http://marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=";
@@ -1948,7 +1948,7 @@ bool eventsUpdated = NO;
         NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
         
         // TO DO: Delete Later before shipping v2.7
-        NSLog(@"The parsed quote response data set is:%@",parsedDataSets.description);
+        //NSLog(@"The parsed quote response data set is:%@",parsedDataSets.description);
         
         // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
         // then you don't want to process the data and enter as historical prices.
@@ -1957,7 +1957,7 @@ bool eventsUpdated = NO;
         {
             // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
             // TO DO: Delete Later before shipping v2.7
-            NSLog(@"Trapping the current price error");
+            //NSLog(@"Trapping the current price error");
             
         }
         // Else process response to enter historical prices
@@ -1970,7 +1970,7 @@ bool eventsUpdated = NO;
             NSDate *todaysDate = [NSDate date];
             
             // To Do: Delete before shipping v2.7
-            NSLog(@"****percentChangeSinceYest before parsing API response is: %@", percentChangeSinceYest);
+            //NSLog(@"****percentChangeSinceYest before parsing API response is: %@", percentChangeSinceYest);
             
             // Iterate through price array within the parsed data set, which only contains one dictionary.
             for (NSDictionary *parsedDetailsList in parsedDataSets) {
@@ -1987,17 +1987,17 @@ bool eventsUpdated = NO;
                 if([percentChangeSinceYest doubleValue] == 0.0) {
                     
                     // To Do: Delete before shipping v2.7
-                    NSLog(@"****ticker is: %@", companySymbol);
-                    NSLog(@"percentChange is 0");
-                    NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
+                    //NSLog(@"****ticker is: %@", companySymbol);
+                    //NSLog(@"percentChange is 0");
+                    //NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
                 }
                                           
-                if([percentChangeSinceYest doubleValue] >= 3.0) {
+                if([percentChangeSinceYest doubleValue] >= 4.0) {
                     
                     // To Do: Delete before shipping v2.7
-                    NSLog(@"****ticker is: %@", companySymbol);
-                    NSLog(@"percentChangeSinceYest is greater than equal to 3.0");
-                    NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
+                    //NSLog(@"****ticker is: %@", companySymbol);
+                    //NSLog(@"percentChangeSinceYest is greater than equal to 3.0");
+                    //NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
                     
                     specificEventType = [NSString stringWithFormat:@"%@%% up today",percentChangeSinceYestStr];
                     // Insert into the events datastore
@@ -2005,12 +2005,12 @@ bool eventsUpdated = NO;
                     [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                 }
                                           
-                if([percentChangeSinceYest doubleValue] <= -3.0) {
+                if([percentChangeSinceYest doubleValue] <= -4.0) {
                     
                     // To Do: Delete before shipping v2.7
-                    NSLog(@"****ticker is: %@", companySymbol);
-                    NSLog(@"percentChangeSinceYest is less than equal to -3.0");
-                    NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
+                    //NSLog(@"****ticker is: %@", companySymbol);
+                    //NSLog(@"percentChangeSinceYest is less than equal to -3.0");
+                    //NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
                     
                     percentChangeSinceYestStr = [percentChangeSinceYestStr substringFromIndex:1];
                     specificEventType = [NSString stringWithFormat:@"%@%% down today",percentChangeSinceYestStr];
@@ -2043,7 +2043,7 @@ bool eventsUpdated = NO;
     }
     [tickersToFetch deleteCharactersInRange:NSMakeRange([tickersToFetch length]-1, 1)];
     // TO DO: Delete before shipping v2.7
-    NSLog(@"**************************************The tickers to be fetched are:%@",tickersToFetch);
+    //NSLog(@"**************************************The tickers to be fetched are:%@",tickersToFetch);
     
     // Construct the API URL to call
     NSString *endpointURL = @"http://104.197.243.153/ticker/prices/";
@@ -2277,6 +2277,36 @@ bool eventsUpdated = NO;
     
     // else return false
     return exists;
+}
+
+// Delete all daily change events from the db
+- (void)deleteAllDailyPriceChangeEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // For price change events the event type is a fuzzy match.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    
+    // Filter for daily events
+    NSPredicate *eventPredicate = nil;
+    eventPredicate = [NSPredicate predicateWithFormat:@"type contains %@ AND type contains %@",@"%",@"today"];
+    
+    // Fetch all the daily events
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting a daily price change event, while trying to delete all of them, from data store failed: %@",error.description);
+    }
+    
+    // Delete all the daily events
+    for (NSManagedObject *dailyEvent in events) {
+        
+        [dataStoreContext deleteObject:dailyEvent];
+    }
 }
 
 #pragma mark - Methods to call Company Stock Data Source APIs
@@ -2568,7 +2598,7 @@ bool eventsUpdated = NO;
     NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
     
     // TO DO: Delete Later v2.7
-    NSLog(@"The parsed data set for history is:%@",parsedDataSets.description);
+    //NSLog(@"The parsed data set for history is:%@",parsedDataSets.description);
     
     // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
     // then you don't want to process the data and enter as historical prices.
@@ -2577,7 +2607,7 @@ bool eventsUpdated = NO;
     {
         // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
         // TO DO: Delete Later before shipping v2.7
-        NSLog(@"Trapping the historical price error");
+        //NSLog(@"Trapping the historical price error");
         
     }
     // Else process response to enter historical prices
@@ -2605,7 +2635,7 @@ bool eventsUpdated = NO;
             historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
             prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
             // TO DO: Comment 1st line and delete second line before shipping v2.7
-            NSLog(@"The 30 days ago date in the history parsing logic is:%@",prevEvent1Date);
+            //NSLog(@"The 30 days ago date in the history parsing logic is:%@",prevEvent1Date);
             prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
             
             // Get the prices for the various dates and write them to the history data store
@@ -2660,7 +2690,7 @@ bool eventsUpdated = NO;
         NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
         
         // TO DO: Delete Later before shipping v2.7
-        NSLog(@"The parsed quote response data set is:%@",parsedDataSets.description);
+        //NSLog(@"The parsed quote response data set is:%@",parsedDataSets.description);
         
         // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
         // then you don't want to process the data and enter as historical prices.
@@ -2669,7 +2699,7 @@ bool eventsUpdated = NO;
         {
             // TO DO: Ideally show user an error message but currently for simplicity we want to keep this transparent to the user.
             // TO DO: Delete Later before shipping v2.7
-            NSLog(@"Trapping the current price error");
+            //NSLog(@"Trapping the current price error");
             
         }
         // Else process response to enter historical prices
@@ -3148,6 +3178,8 @@ bool eventsUpdated = NO;
         }
 
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
+        // Delete the existing daily price change events from the db to not create duplicates
+        [self deleteAllDailyPriceChangeEvents];
         [self getAllPriceChangeEventsFromApiNew];
         
         // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.

@@ -60,8 +60,8 @@
     
     // TRACKING EVENT: SETUP: Adding the FB SDK
     // TO DO: Disabling to not track development events. Enable before shipping.
-    /*[[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];*/
+    [[FBSDKApplicationDelegate sharedInstance] application:application
+                             didFinishLaunchingWithOptions:launchOptions];
 
      
     // Check to see if application has been used by the user at least once. If not
@@ -83,7 +83,7 @@
             
             // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
             // Delete before shipping v2.7
-            NSLog(@"About to start the background get incremental companies from local file");
+            //NSLog(@"About to start the background get incremental companies from local file");
             
             // Create a new FADataController so that this thread has its own MOC
             FADataController *tickerBkgrndDataController = [[FADataController alloc] init];
@@ -104,7 +104,7 @@
     }
     
     // TO DO: Testing. Delete later before shipping v2.7
-    NSLog(@"Did finish launching with options");
+    //NSLog(@"Did finish launching with options");
     
     return YES;
 }
@@ -128,7 +128,7 @@
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
     // TO DO: Testing. Delete later before shipping v2.7
-    NSLog(@"Application did become active");
+    //NSLog(@"Application did become active");
     
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
@@ -168,7 +168,7 @@
         
         // TRACKING EVENT: App Launch: Application was launched.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        //[FBSDKAppEvents activateApp];
+        [FBSDKAppEvents activateApp];
     }
 }
 
