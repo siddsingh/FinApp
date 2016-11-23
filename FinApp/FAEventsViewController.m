@@ -1094,8 +1094,8 @@
     }
 
     [self.eventsListTable reloadData];
-    // TO DO: Delete before shipping v2
-    //NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");
+    //TO DO: Delete before shipping v2.8
+    NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");
 }
 
 // Show the error message for a temporary period and then fade it if a user message has been generated

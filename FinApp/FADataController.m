@@ -2307,6 +2307,9 @@ bool eventsUpdated = NO;
         
         [dataStoreContext deleteObject:dailyEvent];
     }
+    
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
 }
 
 #pragma mark - Methods to call Company Stock Data Source APIs
@@ -3180,6 +3183,8 @@ bool eventsUpdated = NO;
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
         // Delete the existing daily price change events from the db to not create duplicates
         [self deleteAllDailyPriceChangeEvents];
+        // TO DO: Delete before shipping v2.8
+        //NSLog(@"About to fetch new daily price change event");
         [self getAllPriceChangeEventsFromApiNew];
         
         // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.
@@ -3630,8 +3635,8 @@ bool eventsUpdated = NO;
 // Send a notification that the list of events has changed (updated)
 - (void)sendEventsChangeNotification {
     
-    // TO DO: Delete Before Shipping v2
-    //NSLog(@"EVENT RELOAD: From Data Controller");
+    // TO DO: Delete Before Shipping v2.8
+    NSLog(@"EVENT RELOAD: From Data Controller");
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 
