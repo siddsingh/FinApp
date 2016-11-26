@@ -1967,7 +1967,14 @@ bool eventsUpdated = NO;
             NSString *specificEventType = nil;
             NSString *companySymbol = nil;
             NSString *percentChangeSinceYestStr = nil;
-            NSDate *todaysDate = [NSDate date];
+            // Set the event date to today by default
+            NSDate *eventDate = [NSDate date];
+            NSString *eventDateStr = nil;
+            NSArray *dateComponents;
+            NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+            [eventDateFormatter setDateFormat:@"yyyy-MM-dd"];
+            // TO DO: Use later when you want to work with times as well
+            //[eventDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss-HH:mm"];
             
             // To Do: Delete before shipping v2.7
             //NSLog(@"****percentChangeSinceYest before parsing API response is: %@", percentChangeSinceYest);
@@ -1977,6 +1984,15 @@ bool eventsUpdated = NO;
                 
                 // Get the company ticker
                 companySymbol = [parsedDetailsList objectForKey:@"symbol"];
+                
+                // Get the last trade date
+                dateComponents = [[parsedDetailsList objectForKey:@"tradeTimestamp"] componentsSeparatedByString:@"T"];
+                eventDateStr =  [NSString stringWithFormat: @"%@", dateComponents[0]];
+                // TO DO: Delete before shipping v2.8
+                NSLog(@"The date string on which the daily price change event takes place: %@",eventDateStr);
+                // Convert from string to Date
+                eventDate = [eventDateFormatter dateFromString:eventDateStr];
+                NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
             
                 // Get percentage changed since yesterday
                 percentChangeSinceYest = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"percentChange"] doubleValue]];
@@ -2002,7 +2018,7 @@ bool eventsUpdated = NO;
                     specificEventType = [NSString stringWithFormat:@"%@%% up today",percentChangeSinceYestStr];
                     // Insert into the events datastore
                     // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
-                    [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                    [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                 }
                                           
                 if([percentChangeSinceYest doubleValue] <= -4.0) {
@@ -2016,7 +2032,7 @@ bool eventsUpdated = NO;
                     specificEventType = [NSString stringWithFormat:@"%@%% down today",percentChangeSinceYestStr];
                     // Insert into the events datastore
                     // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
-                    [self upsertEventWithDate:todaysDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                    [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                 }
             }
         }
@@ -3636,7 +3652,7 @@ bool eventsUpdated = NO;
 - (void)sendEventsChangeNotification {
     
     // TO DO: Delete Before Shipping v2.8
-    NSLog(@"EVENT RELOAD: From Data Controller");
+    //NSLog(@"EVENT RELOAD: From Data Controller");
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 
