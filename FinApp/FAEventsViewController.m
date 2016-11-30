@@ -551,6 +551,79 @@
     }
 }
 
+#pragma mark - Following Related
+
+// Make Sure the table row, if it should be, is editable
+// TO DO: Before shipping v2.8: Do I really need this method ?
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return YES;
+}
+
+// TO DO: Understand this method better. Basically need this to be able to use the custom UITableViewRowAction
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+}
+
+// TO DO: Move to unused once reminder creation is ported to details screen.
+// Add the following actions on swiping each event row: 1) "Set Reminder" if reminder hasn't already been created, else
+// display a message that reminder has aleady been set.
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    // Get the cell for the row on which the action is being exercised
+    FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+    
+    // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
+    // If the formatting changes, it needs to be changed here to accomodate as well.
+    NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", cell.eventDescription.text];
+    
+    UITableViewRowAction *setReminderAction;
+    
+    // Check to see if a reminder action has already been created for the event represented by the cell.
+    // If yes, show a appropriately formatted status action.
+    if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
+    {
+        // Create the "Reimder Already Set" Action and handle it being exercised.
+        setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Reminder Set" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+            
+            // Slide the row back over the action.
+            // TO DO: See if you can animate the slide back.
+            [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            
+            // Let the user know a reminder is already set for this ticker.
+            [self sendUserMessageCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
+        }];
+        
+        // Format the Action UI to be the correct color and everything
+        setReminderAction.backgroundColor = [UIColor grayColor];
+    }
+    // If not, create the set reminder action
+    else
+    {
+        // Create the "Set Reminder" Action and handle it being exercised.
+        setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Set Reminder" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+            
+            // Get the cell for the row on which the action is being exercised
+            FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+            NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
+            
+            // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+            // TO DO: Decide if you want to close the slid out action, before the user has provided
+            // access. Currently it's weird where the action closes and then the access popup is shown.
+            [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
+            
+            // Slide the row back over the action.
+            // TO DO: See if you can animate the slide back.
+            [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+        }];
+        
+        // Format the Action UI to be the correct color and everything
+        setReminderAction.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+    }
+    
+    return @[setReminderAction];
+}
+
 #pragma mark - Data Source API
 
 // Get all companies from API. Typically called in a background thread
@@ -2014,4 +2087,6 @@
  return creationSuccess;
  } */
 
+- (IBAction)mainNavSelectAction:(id)sender {
+}
 @end

@@ -112,7 +112,7 @@
                                 </connections>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
-                                <rect key="frame" x="0.0" y="112" width="375" height="491"/>
+                                <rect key="frame" x="0.0" y="112" width="375" height="461"/>
                                 <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="separatorColor" red="0.80784313730000001" green="0.81176470590000005" blue="0.81568627449999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -377,6 +377,17 @@
                                     <action selector="eventTypeSelectAction:" destination="WNQ-2i-B77" eventType="valueChanged" id="1kr-Zo-Gfo"/>
                                 </connections>
                             </segmentedControl>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="iRe-G1-Ld7">
+                                <rect key="frame" x="0.0" y="575" width="375" height="29"/>
+                                <segments>
+                                    <segment title="EVENTS"/>
+                                    <segment title="FOLLOWING"/>
+                                </segments>
+                                <color key="tintColor" red="0.4062454144" green="0.71248259250000001" blue="0.14636443830000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <action selector="mainNavSelectAction:" destination="WNQ-2i-B77" eventType="valueChanged" id="MYL-af-dw6"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -389,6 +400,7 @@
                             <constraint firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="5iW-N5-6CB">
                                 <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
                             </constraint>
+                            <constraint firstItem="iRe-G1-Ld7" firstAttribute="trailing" secondItem="KbY-6m-WGH" secondAttribute="trailing" id="6BK-L0-fOS"/>
                             <constraint firstAttribute="centerX" secondItem="KbY-6m-WGH" secondAttribute="centerX" id="6QW-kk-iAp"/>
                             <constraint firstItem="RVP-gf-zre" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" constant="-16" id="6qV-Eg-pXL"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" constant="-16" id="7UA-yu-WEj"/>
@@ -398,7 +410,7 @@
                             </constraint>
                             <constraint firstItem="Urn-fH-Oqh" firstAttribute="top" secondItem="kvC-1T-x6w" secondAttribute="bottom" constant="3" id="FNa-yc-mzH"/>
                             <constraint firstItem="nfw-0u-xss" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" id="GAJ-cr-gj4"/>
-                            <constraint firstItem="Nql-41-vTF" firstAttribute="top" secondItem="KbY-6m-WGH" secondAttribute="bottom" id="GDE-28-ix6"/>
+                            <constraint firstItem="Nql-41-vTF" firstAttribute="top" secondItem="KbY-6m-WGH" secondAttribute="bottom" constant="30" id="GDE-28-ix6"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" constant="-16" id="I39-eR-HUe"/>
                             <constraint firstAttribute="trailing" secondItem="RVP-gf-zre" secondAttribute="trailing" id="IbK-RO-df6">
                                 <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
@@ -434,6 +446,7 @@
                             </constraint>
                             <constraint firstAttribute="trailing" secondItem="KbY-6m-WGH" secondAttribute="trailing" id="dJ7-j4-6XC"/>
                             <constraint firstItem="RVP-gf-zre" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" id="dxy-UF-mBd"/>
+                            <constraint firstItem="iRe-G1-Ld7" firstAttribute="bottom" secondItem="Nql-41-vTF" secondAttribute="top" id="emp-vN-KPS"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" id="fU7-bv-4Cf"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Urn-fH-Oqh" secondAttribute="trailing" id="gXl-HZ-uhG"/>
                             <constraint firstItem="Nql-41-vTF" firstAttribute="top" secondItem="KbY-6m-WGH" secondAttribute="bottom" id="hAn-1M-pGq"/>
@@ -462,6 +475,7 @@
                             <constraint firstAttribute="centerX" secondItem="kvC-1T-x6w" secondAttribute="centerX" id="w4K-hf-TI5">
                                 <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
                             </constraint>
+                            <constraint firstItem="iRe-G1-Ld7" firstAttribute="leading" secondItem="KbY-6m-WGH" secondAttribute="leading" id="z8M-cc-tbY"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="trailing" secondItem="fPu-sh-VAw" secondAttribute="trailingMargin" id="zf7-V9-haM"/>
                         </constraints>
                         <variation key="default">
@@ -533,6 +547,7 @@
                         <outlet property="eventsListTable" destination="KbY-6m-WGH" id="U1B-qA-4Xm"/>
                         <outlet property="eventsSearchBar" destination="nfw-0u-xss" id="pfV-29-mXe"/>
                         <outlet property="focusBar" destination="7Cj-9c-Flh" id="CjA-qO-Zek"/>
+                        <outlet property="mainNavSelector" destination="iRe-G1-Ld7" id="XrM-4M-1oq"/>
                         <outlet property="messageBar" destination="RVP-gf-zre" id="oAs-Ba-0Ep"/>
                         <outlet property="remoteFetchSpinner" destination="kvC-1T-x6w" id="Pbt-nP-0Xf"/>
                         <segue destination="4jH-eb-uDY" kind="show" identifier="ShowEventDetails1" id="qyp-oL-r3P"/>
@@ -540,7 +555,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1ub-g1-2Pv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1146" y="552"/>
+            <point key="canvasLocation" x="1144.8" y="551.87406296851577"/>
         </scene>
         <!--Event Details View Controller-->
         <scene sceneID="FTZ-Sk-bv7">

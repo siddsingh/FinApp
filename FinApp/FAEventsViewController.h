@@ -53,6 +53,12 @@
 // Event type selection action
 - (IBAction)eventTypeSelectAction:(id)sender;
 
+// Segmented control for selecting main navigation options.
+@property (weak, nonatomic) IBOutlet UISegmentedControl *mainNavSelector;
+
+// Main navigation selection option
+- (IBAction)mainNavSelectAction:(id)sender;
+
 // Underline bar to draw focus to a certain area
 @property (weak, nonatomic) IBOutlet UILabel *focusBar;
 
