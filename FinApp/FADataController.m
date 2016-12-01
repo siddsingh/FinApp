@@ -3099,7 +3099,6 @@ bool eventsUpdated = NO;
         // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
         // 2. If the confirmed date of the event is in the past.
         // An earnings event that overall qualifies will be refetched from the remote data source and updated in the local data store.
-        // NOTE: TO DO: Fix when implementing server side storage of econ events. Currently economic events don't get picked up for refresh as the certainty field for them is used to store their time period information which does not match the if filter and hence don't get picked up.
         for (Event *localEvent in eventResultsController.fetchedObjects)
         {
             // Get the event's date
@@ -3118,24 +3117,28 @@ bool eventsUpdated = NO;
              });
              }
             
-            // See if the event qualifies for the update. If it does, call the remote data source to update it.
-            if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
+            // See if the event is Quarterly Earnings
+            if ([localEvent.type isEqualToString:@"Quarterly Earnings"]) {
                 
-                // TO DO: Delete before shipping v2.7
-                // Start the busy spinner only the first time
-               /* if (!eventsUpdated) {
-                    // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        // TO DO: Delete Later
-                        //NSLog(@"About to start busy spinner");
-                        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
-                    });
-                } */
-                
-                [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
-                // TO DO: Delete before shipping v2.0
-                //NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
-                eventsUpdated = YES;
+                // See if the event qualifies for the update. If it does, call the remote data source to update it.
+                if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
+                    
+                    // TO DO: Delete before shipping v2.7
+                    // Start the busy spinner only the first time
+                    /* if (!eventsUpdated) {
+                     // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                     // TO DO: Delete Later
+                     //NSLog(@"About to start busy spinner");
+                     [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+                     });
+                     } */
+                    
+                    [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
+                    // TO DO: Delete before shipping v2.0
+                    //NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
+                    eventsUpdated = YES;
+                }
             }
         }
         

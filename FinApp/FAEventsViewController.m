@@ -607,8 +607,8 @@
         // Format the Action UI to be the correct color and everything
         //setReminderAction.backgroundColor = [UIColor grayColor];
     }
-    
-    // For an econ event, put a Set Reminder button, as we are not supporting following these yet.
+    ///////// What do you want to do with a price change event, since you can't create a reminder for it.
+    ///////// Else, for a non followable event (currently econ event), put a Set Reminder button, as we are not supporting following these yet.
     
     // Check to see if a reminder action has already been created for the event represented by the cell.
     // If yes, show a appropriately formatted status action.
@@ -1336,41 +1336,78 @@
 // Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
 - (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell withDataController:(FADataController *)appropriateDataController {
     
-    // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
-    // If the formatting changes, it needs to be changed here to accomodate as well.
-    NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", eventCell.eventDescription.text];
+    // Format event display name back to event type for logic in the destination
+    NSString *cellEventType = [self formatBackToEventType:eventCell.eventDescription.text withAddedInfo:eventCell.eventCertainty.text];
     NSString *cellCompanyTicker = eventCell.companyTicker.text;
     NSString *cellEventDateText = eventCell.eventDate.text;
     NSString *cellEventCertainty = eventCell.eventCertainty.text;
     
+    // TO DO: Delete before shipping v2.8
     NSLog(@"Event Cell type is:%@ Ticker is:%@ DateText is:%@ and Certainty is:%@", cellEventType, cellCompanyTicker, cellEventDateText, cellEventCertainty);
     
-    // Check to see if the event represented by the cell is estimated or confirmed ?
-    // If confirmed create and save to action data store
-    if ([eventCell.eventCertainty.text isEqualToString:@"Confirmed"]) {
+    // Check to see if the event is of type Earnings, Product Event or Economic event.
+    // Earnings
+    if ([cellEventType isEqualToString:@"Quarterly Earnings"]) {
         
-        NSLog(@"About to create a reminder, since this event is confirmed");
+        // Check to see if the event represented by the cell is estimated or confirmed ?
+        // If confirmed create and save to action data store
+        if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+            
+            // Create the reminder and show user the appropriate message
+            BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
+            if (success) {
+                // Add action to the action data store with status created
+                [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
+                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
+            } else {
+                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unable to follow %@",cellCompanyTicker]];
+            }
+        }
+        // If estimated add to action data store for later processing
+        else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
+            
+            // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
+            [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
+        }
+    }
+    // Economic Event
+    if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]) {
         
         // Create the reminder and show user the appropriate message
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
         if (success) {
-            NSLog(@"Successfully created the reminder");
             [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
             // Add action to the action data store with status created
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
         } else {
-            NSLog(@"Actual Reminder Creation failed");
             [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
         }
     }
-    // If estimated add to action data store for later processing
-    else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
+    // Product Event.
+    if ([cellEventType containsString:@"Launch"]||[cellEventType containsString:@"Conference"]) {
         
-        NSLog(@"About to queue a reminder for later creation, since this event is not confirmed");
-        
-        // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
-        [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-        [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+        // Check to see if the event represented by the cell is estimated or confirmed ?
+        // If confirmed create and save to action data store
+        if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+            
+            // Create the reminder and show user the appropriate message
+            BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
+            if (success) {
+                // Add action to the action data store with status created
+                [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
+                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
+            } else {
+                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unable to follow %@",cellCompanyTicker]];;
+            }
+        }
+        // If estimated add to action data store for later processing
+        else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
+            
+            // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
+            [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
+        }
     }
 }
 
