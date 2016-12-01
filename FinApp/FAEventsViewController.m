@@ -565,19 +565,50 @@
     
 }
 
-// TO DO: Move to unused once reminder creation is ported to details screen.
-// Add the following actions on swiping each event row: 1) "Set Reminder" if reminder hasn't already been created, else
-// display a message that reminder has aleady been set.
+// Add the right actions to each row in the table.
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     // Get the cell for the row on which the action is being exercised
     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
     
-    // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
-    // If the formatting changes, it needs to be changed here to accomodate as well.
-    NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", cell.eventDescription.text];
+    // Format event display name back to event type for logic in the destination
+    NSString *cellEventType = [self formatBackToEventType:cell.eventDescription.text withAddedInfo:cell.eventCertainty.text];
     
     UITableViewRowAction *setReminderAction;
+    
+    // String to hold the action name
+    NSString *actionName = nil;
+    
+    // If the cell contains a followable event, add and process following of the ticker
+    if ([self isEventFollowable:cellEventType]) {
+        
+        actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
+        
+        setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+            
+            // Get the cell for the row on which the action is being exercised
+            FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+            // TO DO: Delete before shipping v2.0
+            NSLog(@"Clicked the Follow Action with ticker %@",cell.companyTicker.text);
+            
+            // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+            // TO DO: Decide if you want to close the slid out action, before the user has provided
+            // access. Currently it's weird where the action closes and then the access popup is shown.
+            [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
+            
+            // Slide the row back over the action.
+            // TO DO: See if you can animate the slide back.
+            [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            
+            // Let the user know a reminder is already set for this ticker.
+            [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cell.companyTicker.text]];
+        }];
+        
+        // Format the Action UI to be the correct color and everything
+        //setReminderAction.backgroundColor = [UIColor grayColor];
+    }
+    
+    // For an econ event, put a Set Reminder button, as we are not supporting following these yet.
     
     // Check to see if a reminder action has already been created for the event represented by the cell.
     // If yes, show a appropriately formatted status action.
@@ -600,11 +631,14 @@
     // If not, create the set reminder action
     else
     {
+        
+        
         // Create the "Set Reminder" Action and handle it being exercised.
         setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Set Reminder" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
             
             // Get the cell for the row on which the action is being exercised
             FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+            // TO DO: Delete before shipping v2.0
             NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
             
             // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
@@ -1242,6 +1276,103 @@
     return _userEventStore;
 }
 
+// Present the user with an access request to their reminders if it's not already been done. Once that is done
+// or access is already provided, create the reminder.
+// TO DO: Change the name FinApp to whatever the real name will be.
+- (void)requestAccessToUserEventStoreAndProcessReminderFromCell:(FAEventsTableViewCell *)eventCell {
+    
+    // Get the current access status to the user's event store for event type reminder.
+    EKAuthorizationStatus accessStatus = [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder];
+    
+    // Depending on the current access status, choose what to do. Idea is to request access from a user
+    // only if he hasn't granted it before.
+    switch (accessStatus) {
+            
+            // If the user hasn't provided access, show an appropriate error message.
+        case EKAuthorizationStatusDenied:
+        case EKAuthorizationStatusRestricted: {
+            // TO DO: Delete before shipping v2.8
+            NSLog(@"Authorization Status for Reminders is Denied or Restricted");
+            [self sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi."];
+            break;
+        }
+            
+            // If the user has already provided access, create the reminder.
+        case EKAuthorizationStatusAuthorized: {
+            // TO DO: Delete before shipping v2.8
+            NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
+            [self processReminderForEventInCell:eventCell withDataController:self.primaryDataController];
+            break;
+        }
+            
+            // If the app hasn't requested access or the user hasn't decided yet, present the user with the
+            // authorization dialog. If the user approves create the reminder. If user rejects, show error message.
+        case EKAuthorizationStatusNotDetermined: {
+            
+            // create a weak reference to the controller, since you want to create the reminder, in
+            // a non main thread where the authorization dialog is presented.
+            __weak FAEventsViewController *weakPtrToSelf = self;
+            [self.userEventStore requestAccessToEntityType:EKEntityTypeReminder
+                                                completion:^(BOOL grantedByUser, NSError *error) {
+                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                        if (grantedByUser) {
+                                                            // TO DO: Delete before shipping v2.8
+                                                            NSLog(@"Authorization Status for Reminders was enabled by user. About to create the reminder");
+                                                            // Create a new Data Controller so that this thread has it's own MOC
+                                                            FADataController *afterAccessDataController = [[FADataController alloc] init];
+                                                            [weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
+                                                        } else {
+                                                            // TO DO: Delete before shipping v2.8
+                                                            NSLog(@"Authorization Status for Reminders was rejected by user.");
+                                                            [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi."];
+                                                        }
+                                                    });
+                                                }];
+            break;
+        }
+    }
+}
+
+// Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
+- (void)processReminderForEventInCell:(FAEventsTableViewCell *)eventCell withDataController:(FADataController *)appropriateDataController {
+    
+    // NOTE: Formatting Event Type to be "Quarterly Earnings" based on "Quarterly" that comes from the UI.
+    // If the formatting changes, it needs to be changed here to accomodate as well.
+    NSString *cellEventType = [NSString stringWithFormat:@"%@ Earnings", eventCell.eventDescription.text];
+    NSString *cellCompanyTicker = eventCell.companyTicker.text;
+    NSString *cellEventDateText = eventCell.eventDate.text;
+    NSString *cellEventCertainty = eventCell.eventCertainty.text;
+    
+    NSLog(@"Event Cell type is:%@ Ticker is:%@ DateText is:%@ and Certainty is:%@", cellEventType, cellCompanyTicker, cellEventDateText, cellEventCertainty);
+    
+    // Check to see if the event represented by the cell is estimated or confirmed ?
+    // If confirmed create and save to action data store
+    if ([eventCell.eventCertainty.text isEqualToString:@"Confirmed"]) {
+        
+        NSLog(@"About to create a reminder, since this event is confirmed");
+        
+        // Create the reminder and show user the appropriate message
+        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
+        if (success) {
+            NSLog(@"Successfully created the reminder");
+            [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+            // Add action to the action data store with status created
+            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
+        } else {
+            NSLog(@"Actual Reminder Creation failed");
+            [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
+        }
+    }
+    // If estimated add to action data store for later processing
+    else if ([eventCell.eventCertainty.text isEqualToString:@"Estimated"]) {
+        
+        NSLog(@"About to queue a reminder for later creation, since this event is not confirmed");
+        
+        // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+        [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
+        [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+    }
+}
 
 // Actually create the reminder in the user's default calendar and return success or failure depending on the outcome.
 - (BOOL)createReminderForEventOfType:(NSString *)eventType withTicker:(NSString *)companyTicker dateText:(NSString *)eventDateText andDataController:(FADataController *)reminderDataController  {
@@ -1570,6 +1701,17 @@
     return formattedEventType;
 }
 
+// Check to see if the event is of a type that it is followable. Currently price change events, or a product event or an earnings event, are followable. Econ events are not.
+- (BOOL)isEventFollowable:(NSString *)eventType
+{
+    BOOL returnVal = NO;
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]||[eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        returnVal = YES;
+    }
+    
+    return returnVal;
+}
 
 // Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
 - (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails withStatus:(NSString *)eventStatus

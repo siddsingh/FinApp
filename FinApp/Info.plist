@@ -65,9 +65,9 @@
 		</dict>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Knotifi uses the calendar to create reminders for events</string>
+	<string>Knotifi uses the calendar for enable you to track key events.</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>Knotifi uses Reminders to create alerts for events</string>
+	<string>Knotifi uses Reminders to send you key event alerts.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
