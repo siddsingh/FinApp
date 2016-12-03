@@ -582,77 +582,106 @@
     // If the cell contains a followable event, add and process following of the ticker
     if ([self isEventFollowable:cellEventType]) {
         
-        actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
-        
-        setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+        // For a price change event do nothing as you can't really follow it
+        if ([cellEventType containsString:@"% up"]||[cellEventType containsString:@"% down"])
+        {
+        }
+        // For quarterly earnings or product events, create a reminder which indicates that this ticker is being followed
+        else {
             
-            // Get the cell for the row on which the action is being exercised
-            FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
-            // TO DO: Delete before shipping v2.0
-            NSLog(@"Clicked the Follow Action with ticker %@",cell.companyTicker.text);
-            
-            // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
-            // TO DO: Decide if you want to close the slid out action, before the user has provided
-            // access. Currently it's weird where the action closes and then the access popup is shown.
-            [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
-            
-            // Slide the row back over the action.
-            // TO DO: See if you can animate the slide back.
-            [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-            
-            // Let the user know a reminder is already set for this ticker.
-            [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cell.companyTicker.text]];
-        }];
-        
-        // Format the Action UI to be the correct color and everything
-        //setReminderAction.backgroundColor = [UIColor grayColor];
+            // Check to see if a reminder action has already been created for the event represented by the cell.
+            // If yes, show a appropriately formatted status action, in this case that you are following the ticker.
+            if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
+            {
+                actionName = [NSString stringWithFormat:@"Following %@",cell.companyTicker.text];
+                
+                // Create the "Reimder Already Set" Action and handle it being exercised.
+                setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+                    
+                    // Slide the row back over the action.
+                    // TO DO: See if you can animate the slide back.
+                    [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    
+                    // Let the user know a reminder is already set for this ticker.
+                    [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",cell.companyTicker.text]];
+                }];
+                
+                // Format the Action UI to be the correct color and everything
+                setReminderAction.backgroundColor = [UIColor grayColor];
+            }
+            // If not create the folow action
+            {
+                actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
+                
+                setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+                    
+                    // Get the cell for the row on which the action is being exercised
+                    FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+                    // TO DO: Delete before shipping v2.0
+                    NSLog(@"Clicked the Follow Action with ticker %@",cell.companyTicker.text);
+                    
+                    // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+                    // TO DO: Decide if you want to close the slid out action, before the user has provided
+                    // access. Currently it's weird where the action closes and then the access popup is shown.
+                    [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
+                    
+                    // Slide the row back over the action.
+                    // TO DO: See if you can animate the slide back.
+                    [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    
+                    // Let the user know a reminder is already set for this ticker.
+                    [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cell.companyTicker.text]];
+                }];
+                
+                // Format the Action UI to be the correct color and everything
+                //setReminderAction.backgroundColor = [UIColor grayColor];
+            }
+        }
     }
-    ///////// What do you want to do with a price change event, since you can't create a reminder for it.
     ///////// Else, for a non followable event (currently econ event), put a Set Reminder button, as we are not supporting following these yet.
-    
-    // Check to see if a reminder action has already been created for the event represented by the cell.
-    // If yes, show a appropriately formatted status action.
-    if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
-    {
-        // Create the "Reimder Already Set" Action and handle it being exercised.
-        setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Reminder Set" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+    else {
+        // Check to see if a reminder action has already been created for the event represented by the cell.
+        // If yes, show a appropriately formatted status action.
+        if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
+        {
+            // Create the "Reimder Already Set" Action and handle it being exercised.
+            setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Reminder Set" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+                
+                // Slide the row back over the action.
+                // TO DO: See if you can animate the slide back.
+                [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                
+                // Let the user know a reminder is already set for this ticker.
+                [self sendUserMessageCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
+            }];
             
-            // Slide the row back over the action.
-            // TO DO: See if you can animate the slide back.
-            [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            // Format the Action UI to be the correct color and everything
+            setReminderAction.backgroundColor = [UIColor grayColor];
+        }
+        // If not, create the set reminder action
+        else
+        {
+            // Create the "Set Reminder" Action and handle it being exercised.
+            setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Set Reminder" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+                
+                // Get the cell for the row on which the action is being exercised
+                FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+                // TO DO: Delete before shipping v2.0
+                NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
+                
+                // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+                // TO DO: Decide if you want to close the slid out action, before the user has provided
+                // access. Currently it's weird where the action closes and then the access popup is shown.
+                [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
+                
+                // Slide the row back over the action.
+                // TO DO: See if you can animate the slide back.
+                [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            }];
             
-            // Let the user know a reminder is already set for this ticker.
-            [self sendUserMessageCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
-        }];
-        
-        // Format the Action UI to be the correct color and everything
-        setReminderAction.backgroundColor = [UIColor grayColor];
-    }
-    // If not, create the set reminder action
-    else
-    {
-        
-        
-        // Create the "Set Reminder" Action and handle it being exercised.
-        setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Set Reminder" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-            
-            // Get the cell for the row on which the action is being exercised
-            FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
-            // TO DO: Delete before shipping v2.0
-            NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
-            
-            // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
-            // TO DO: Decide if you want to close the slid out action, before the user has provided
-            // access. Currently it's weird where the action closes and then the access popup is shown.
-            [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
-            
-            // Slide the row back over the action.
-            // TO DO: See if you can animate the slide back.
-            [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        }];
-        
-        // Format the Action UI to be the correct color and everything
-        setReminderAction.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            // Format the Action UI to be the correct color and everything
+            setReminderAction.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+        }
     }
     
     return @[setReminderAction];
