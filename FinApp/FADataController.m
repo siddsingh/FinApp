@@ -567,6 +567,27 @@ bool eventsUpdated = NO;
     return existingEvent;
 }
 
+// Get all events for the given event Company Ticker.
+- (NSArray *)getAllEventsForParentEventTicker:(NSString *)eventCompanyTicker {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the events by doing a case insensitive query on parent company Ticker.
+    NSFetchRequest *eventsFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventsPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@",eventCompanyTicker];
+    [eventsFetchRequest setEntity:eventEntity];
+    [eventsFetchRequest setPredicate:eventsPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventsFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting all event for ticker: %@ from data store failed: %@",eventCompanyTicker,error.description);
+    }
+    
+    return events;
+}
+
 // Check to see an event of a certain type exists for a given company ticker. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (BOOL)doesEventExistForParentEventTicker:(NSString *)eventCompanyTicker andEventType:(NSString *)eventType {
     
