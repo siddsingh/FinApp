@@ -557,7 +557,18 @@
 // TO DO: Before shipping v2.8: Do I really need this method ?
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    return YES;
+    // If a filter has been specified, meaning it's in search mode, don't allow edit if it's in the "GET EVENTS" mode.
+    if (self.filterSpecified) {
+        if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]) {
+            return NO;
+        }
+        else {
+            return YES;
+        }
+    }
+    else {
+        return YES;
+    }
 }
 
 // TO DO: Understand this method better. Basically need this to be able to use the custom UITableViewRowAction
@@ -582,12 +593,65 @@
     // If the cell contains a followable event, add and process following of the ticker
     if ([self isEventFollowable:cellEventType]) {
         
-        // For a price change event do nothing as you can't really follow it
+        // For a price change event, create reminders for all followable events for that ticker thus indicating this ticker is being followed
         if ([cellEventType containsString:@"% up"]||[cellEventType containsString:@"% down"])
         {
+            // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed
+            // TO DO: Hardcoding this for now to be quarterly earnings
+            if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:@"Quarterly Earnings"])
+            {
+                actionName = [NSString stringWithFormat:@"Following %@",cell.companyTicker.text];
+                
+                // Create the "Reimder Already Set" Action and handle it being exercised.
+                setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+                    
+                    // Slide the row back over the action.
+                    // TO DO: See if you can animate the slide back.
+                    [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    
+                    // Let the user know a reminder is already set for this ticker.
+                    [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",cell.companyTicker.text]];
+                }];
+                
+                // Format the Action UI to be the correct color and everything
+                setReminderAction.backgroundColor = [UIColor grayColor];
+            }
+            else
+            // If not create the follow action
+            {
+                actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
+                
+                setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+                    
+                    // Get the cell for the row on which the action is being exercised
+                    FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+                    // TO DO: Delete before shipping v2.0
+                    NSLog(@"Clicked the Follow Action with ticker %@",cell.companyTicker.text);
+                    
+                    // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+                    // TO DO: Decide if you want to close the slid out action, before the user has provided
+                    // access. Currently it's weird where the action closes and then the access popup is shown.
+                    [self requestAccessToUserEventStoreAndProcessReminderFromCell:cell];
+                    
+                    // Slide the row back over the action.
+                    // TO DO: See if you can animate the slide back.
+                    [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    
+                    // Let the user know a reminder is already set for this ticker.
+                    [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cell.companyTicker.text]];
+                }];
+                
+                // Format the Action UI to be the correct color and everything
+                //setReminderAction.backgroundColor = [UIColor grayColor];
+            }
         }
         // For quarterly earnings or product events, create a reminder which indicates that this ticker is being followed
         else {
+            
+            // TO DO: Delete after shipping v2.8
+            NSLog(@"*****Entering the processing loop for following with ticker:%@ and event type:%@",cell.companyTicker.text,cellEventType);
+            NSLog(@"*****Does reminder action exist for the above event:%d",[self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType]);
+            
             
             // Check to see if a reminder action has already been created for the event represented by the cell.
             // If yes, show a appropriately formatted status action, in this case that you are following the ticker.
@@ -609,6 +673,7 @@
                 // Format the Action UI to be the correct color and everything
                 setReminderAction.backgroundColor = [UIColor grayColor];
             }
+            else
             // If not create the follow action
             {
                 actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
@@ -723,6 +788,8 @@
             // TO DO: Delete before shipping v2.8
             NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
             [self processReminderForEventInCell:eventCell withDataController:self.primaryDataController];
+            // Create all reminders for all followable events for this ticker. Does not do anything for econ events.
+            [self createAllRemindersForFollowedTicker:eventCell.companyTicker.text withDataController:self.primaryDataController];
             break;
         }
             
@@ -742,6 +809,8 @@
                                                             // Create a new Data Controller so that this thread has it's own MOC
                                                             FADataController *afterAccessDataController = [[FADataController alloc] init];
                                                             [weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
+                                                            // Create all reminders for all followable events for this ticker. Does not do anything for econ events
+                                                            [weakPtrToSelf createAllRemindersForFollowedTicker:eventCell.companyTicker.text withDataController:afterAccessDataController];
                                                         } else {
                                                             // TO DO: Delete before shipping v2.8
                                                             NSLog(@"Authorization Status for Reminders was rejected by user.");
@@ -830,6 +899,12 @@
             [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
         }
     }
+    // TO DO: Before shipping v2.8. Add this logic to processReminderForEventInCell in the detail view as well.
+    // Price Change event. Do nothing currently
+    if ([cellEventType containsString:@"% up"]||[cellEventType containsString:@"% down"])
+    {
+        
+    }
 }
 
 // Create reminders for all followable events (currently earnings and product events) for a given ticker, if it's not already been created
@@ -863,6 +938,7 @@
                 if ([self.primaryDataController doesReminderActionExistForEventWithTicker:ticker eventType:cellEventType])
                 {
                 }
+                else
                 // If not create the reminder or queue it up depending on the confirmed status
                 {
                     // TO DO: Delete before shipping v2.0
