@@ -197,18 +197,36 @@
     // Set Current Stock Price & Change String to "NA" which is the default value.
     self.currPriceAndChange = [NSString stringWithFormat:@"NA"];
     
-    // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-        self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+    // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown. Also factor in if the following nav is selected or not.
+    // If All Events is selected.
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+        }
     }
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-        self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
-    }
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-        self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
-    }
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-        self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+    // If not, that means following is selected
+    else {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
+        }
     }
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
@@ -297,7 +315,7 @@
         }
     }
     
-    // If not, show all events
+    // If not, show all events or following events based on navigation filter
     else {
         // Use all events results set
         id eventSection = [[self.eventResultsController sections] objectAtIndex:section];

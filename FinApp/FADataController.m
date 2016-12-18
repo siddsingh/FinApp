@@ -285,6 +285,7 @@ bool eventsUpdated = NO;
 
 // Get all future events including today. Returns a results controller with identities of all Events recorded, but no more
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// NOTE: Thid does not get the price change events as they are only available as following events.
 - (NSFetchedResultsController *)getAllFutureEvents
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -297,7 +298,7 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@", todaysDate];
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type =[c] %@ OR listedCompany.ticker contains %@ OR type contains[cd] %@ OR type contains[cd] %@)", todaysDate, @"Quarterly Earnings", @"ECONOMY_", @"Launch", @"Conference"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -307,7 +308,38 @@ bool eventsUpdated = NO;
                                                                             cacheName:nil];
     NSError *error;
     if (![self.resultsController performFetch:&error]) {
-        NSLog(@"ERROR: Getting all future events from data store failed: %@",error.description);
+        NSLog(@"ERROR: Getting all future events, except price change events, from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
+// Get all future following events including today. Returns a results controller with identities of all Events recorded, but no more
+// than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// NOTE: This gets the price change events as well since they are available as following events.
+- (NSFetchedResultsController *)getAllFollowingFutureEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (NOT (listedCompany.ticker contains %@)) AND (ANY actions.type == %@)", todaysDate, @"ECONOMY_", @"OSReminder"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all future following events, including price change events, from data store failed: %@",error.description);
     }
     
     return self.resultsController;
