@@ -935,7 +935,7 @@
                 
                 // Check to see if a reminder action has already been created for this event.
                 // If yes, do nothing.
-                if ([self.primaryDataController doesReminderActionExistForEventWithTicker:ticker eventType:cellEventType])
+                if ([appropriateDataController doesReminderActionExistForEventWithTicker:ticker eventType:cellEventType])
                 {
                 }
                 else

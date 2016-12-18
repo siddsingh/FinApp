@@ -54,37 +54,83 @@
     [self.eventTitle setText:[self.eventType uppercaseString]];
     [self.eventSchedule setText:[self.eventScheduleStr uppercaseString]];
     
-    // Check to see if a reminder has already been created for the event.
-    // If yes, show the appropriate styling
-    if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
-    {
-        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-        [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
-        [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    }
-    // If not, show the appropriate styling
-    else
-    {
-        // Set button color based on event type
-        [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
-        [self.reminderButton setTitle:@"SET REMINDER" forState:UIControlStateNormal];
-        [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    }
+    // Set status of button to Follow or Following (for all events except econ events) and to Set Reminder or Reminder Set (for econ events)
     
+    // String to hold the action name
+    NSString *actionName = nil;
+    
+    // If the cell contains a followable event, set status to Follow or Following
+    if ([self isEventFollowable:self.eventType]) {
+        
+        // For a price change event
+        if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"])
+        {
+            // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed
+            // TO DO: Hardcoding this for now to be quarterly earnings
+            if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:@"Quarterly Earnings"])
+            {
+                actionName = [NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker];
+                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            }
+            else
+            // If not create show the follow action
+            {
+                actionName = [NSString stringWithFormat:@"FOLLOW %@",self.parentTicker];
+                // Set button color based on event type
+                [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+                [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            }
+        }
+        // For quarterly earnings or product events
+        else {
+            
+            // Check to see if a reminder action has already been created for the event which means this ticker is already being followed
+            if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
+            {
+                actionName = [NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker];
+                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            }
+            else
+            // If not show the follow action
+            {
+                actionName = [NSString stringWithFormat:@"FOLLOW %@",self.parentTicker];
+                // Set button color based on event type
+                [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+                [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            }
+        }
+    }
+    ///////// Else, for a non followable event (currently econ event), show a Set Reminder or Reminder Set button
+    else {
+        // Check to see if a reminder action has already been created for the event represented by the cell.
+        // If yes, show the Reminder set action.
+        if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
+        {
+            [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
+            [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        }
+        // If not, show the set reminder action
+        else
+        {
+            // Set button color based on event type
+            [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+            [self.reminderButton setTitle:@"SET REMINDER" forState:UIControlStateNormal];
+            [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        }
+    }
+
     // Set color of "See News" button based on event type
     [self.newsButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     
     // Set color of back navigation item based on event type
     self.navigationController.navigationBar.tintColor = [self getColorForEventType:self.eventType];
-    
-    // Make the Set Reminder button disabled if the event is of type price change
-    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-        
-        [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-        [self.reminderButton setTitle:@"NOT AVAILABLE" forState:UIControlStateNormal];
-        [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [self.reminderButton setEnabled:NO];
-    }
     
     // Register a listener for guidance messages to be shown to the user in the messages bar
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -559,37 +605,116 @@
 // Action to take when Reminder button is pressed, which is set a reminder if reminder hasn't already been created, else display a message that reminder has aleady been set.
 - (IBAction)reminderAction:(id)sender {
     
-    // Check to see if a reminder has already been created for the event.
-    // If yes let the user know a reminder is already set for this ticker.
-    if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
-    {
-        [self sendUserGuidanceCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
+    // If it's a followable event, process following of the ticker
+    if ([self isEventFollowable:self.eventType]) {
         
-        // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
-        // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Unset Reminder"
-                      parameters:@{ @"Ticker" : self.parentTicker,
-                                    @"Event Type" : self.eventType,
-                                    @"Event Certainty" : self.eventCertainty } ];
+        // For a price change event, create reminders for all followable events for that ticker thus indicating this ticker is being followed
+        if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"])
+        {
+            // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed
+            // TO DO: Hardcoding this for now to be quarterly earnings
+            if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:@"Quarterly Earnings"])
+            {
+                // Show appropriate message
+                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",self.parentTicker]];
+                
+                // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Unset Reminder"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event Type" : self.eventType,
+                                            @"Event Certainty" : self.eventCertainty } ];
+            }
+            else
+            // If not trigger following
+            {
+                // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+                [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
+                
+                // Style the button to post set styling
+                [self.reminderButton setBackgroundColor:[UIColor grayColor]];
+                [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker] forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                
+                // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Create Reminder"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event Type" : self.eventType,
+                                            @"Event Certainty" : self.eventCertainty } ];
+            }
+        }
+        // For quarterly earnings or product events, either show already following or take follow action
+        else {
+            
+            // Check to see if a reminder action has already been created for the event represented by the cell.
+            // If yes, show a appropriately formatted message.
+            if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
+            {
+                // Show appropriate message
+                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",self.parentTicker]];
+                
+                // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Unset Reminder"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event Type" : self.eventType,
+                                            @"Event Certainty" : self.eventCertainty } ];
+            }
+            else
+            // If not take the follow action
+            {
+                // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+                [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
+                
+                // Style the button to post set styling
+                [self.reminderButton setBackgroundColor:[UIColor grayColor]];
+                [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker] forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                
+                // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Create Reminder"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event Type" : self.eventType,
+                                            @"Event Certainty" : self.eventCertainty } ];
+            }
+        }
     }
-    
-    // If not, create the reminder and style the button to post set styling
-    else
-    {
-        // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
-        [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
+    ///////// Else, for a non followable event (currently econ event), process Set Reminder/Reminder Set as usual
+    else {
+        // Check to see if a reminder has already been created for the event.
+        // If yes let the user know a reminder is already set for this ticker.
+        if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
+        {
+            [self sendUserGuidanceCreatedNotificationWithMessage:@"Day before reminder already set."];
+            
+            // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            [FBSDKAppEvents logEvent:@"Unset Reminder"
+                          parameters:@{ @"Ticker" : self.parentTicker,
+                                        @"Event Type" : self.eventType,
+                                        @"Event Certainty" : self.eventCertainty } ];
+        }
         
-        // Style the button to post set styling
-        [self.reminderButton setBackgroundColor:[UIColor grayColor]];
-        [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
-        [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        
-        // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
-        // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Create Reminder"
-                      parameters:@{ @"Ticker" : self.parentTicker,
-                                    @"Event Type" : self.eventType,
-                                    @"Event Certainty" : self.eventCertainty } ];
+        // If not, create the reminder and style the button to post set styling
+        else
+        {
+            // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+            [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
+            
+            // Style the button to post set styling
+            [self.reminderButton setBackgroundColor:[UIColor grayColor]];
+            [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
+            [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            
+            // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            [FBSDKAppEvents logEvent:@"Create Reminder"
+                          parameters:@{ @"Ticker" : self.parentTicker,
+                                        @"Event Type" : self.eventType,
+                                        @"Event Certainty" : self.eventCertainty } ];
+        }
     }
 }
 
@@ -711,6 +836,8 @@
                                                             FADataController *afterAccessDataController = [[FADataController alloc] init];
                                                             //[weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
                                                             [weakPtrToSelf processReminderForEventType:eventType companyTicker:parentTicker eventDateText:evtDateText eventCertainty:evtCertainty withDataController:afterAccessDataController];
+                                                            // Create all reminders for all followable events for this ticker. Does not do anything for econ events
+                                                            [weakPtrToSelf createAllRemindersInDetailsViewForFollowedTicker:parentTicker withDataController:afterAccessDataController];
                                                         } else {
                                                             [weakPtrToSelf sendUserGuidanceCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
                                                         }
@@ -793,6 +920,68 @@
             // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
             [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+        }
+    }
+}
+
+// Create reminders for all followable events (currently earnings and product events) for a given ticker, if it's not already been created
+- (void)createAllRemindersInDetailsViewForFollowedTicker:(NSString *)ticker withDataController:(FADataController *)appropriateDataController {
+    
+    NSString *cellEventType = nil;
+    NSString *cellEventDateText = nil;
+    NSString *cellEventCertainty = nil;
+    
+    // Get all events for a ticker
+    NSArray *allEvents = [appropriateDataController getAllEventsForParentEventTicker:ticker];
+    for (Event *fetchedEvent in allEvents) {
+        
+        // Get event details
+        cellEventType = fetchedEvent.type;
+        cellEventDateText = [self formatDateBasedOnEventType:fetchedEvent.type withDate:fetchedEvent.date withRelatedDetails:fetchedEvent.relatedDetails withStatus:fetchedEvent.certainty];
+        cellEventCertainty = fetchedEvent.certainty;
+        
+        // If the event is a followable event, create a reminder for it
+        if ([self isEventFollowable:cellEventType]) {
+            
+            // For a price change event do nothing as you can't really follow it
+            if ([cellEventType containsString:@"% up"]||[cellEventType containsString:@"% down"])
+            {
+            }
+            // For quarterly earnings or product events, create a reminder which indicates that this ticker is being followed
+            else {
+                
+                // Check to see if a reminder action has already been created for this event.
+                // If yes, do nothing.
+                if ([appropriateDataController doesReminderActionExistForEventWithTicker:ticker eventType:cellEventType])
+                {
+                }
+                else
+                    // If not create the reminder or queue it up depending on the confirmed status
+                {
+                    // TO DO: Delete before shipping v2.0
+                    NSLog(@"Creating the following reminder for event %@ for ticker %@",cellEventType,ticker);
+                    
+                    // Check to see if the event is estimated or confirmed ?
+                    // If confirmed create and save to action data store
+                    if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+                        
+                        // Create the reminder and show user the appropriate message
+                        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:ticker dateText:cellEventDateText andDataController:appropriateDataController];
+                        if (success) {
+                            // Add action to the action data store with status created
+                            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:ticker eventType:cellEventType];
+                        } else {
+                            NSLog(@"ERROR: Unable to create the following reminder for confirmed event %@ for ticker %@",cellEventType,ticker);
+                        }
+                    }
+                    // If estimated add to action data store for later processing
+                    else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
+                        
+                        // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+                        [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:ticker eventType:cellEventType];
+                    }
+                }
+            }
         }
     }
 }
@@ -1289,6 +1478,18 @@
 
 #pragma mark - utility methods
 
+// Check to see if the event is of a type that it is followable. Currently price change events, or a product event or an earnings event, are followable. Econ events are not.
+- (BOOL)isEventFollowable:(NSString *)eventType
+{
+    BOOL returnVal = NO;
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]||[eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        returnVal = YES;
+    }
+    
+    return returnVal;
+}
+
 // Return the appropriate color for event distance based on how far it is from today.
 - (UIColor *)getColorForEventType:(NSString *)eventType
 {
@@ -1331,6 +1532,90 @@
     }
     
     return colorToReturn;
+}
+
+// Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
+- (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails withStatus:(NSString *)eventStatus
+{
+    
+    NSDateFormatter *eventDateFormatter = [[NSDateFormatter alloc] init];
+    [eventDateFormatter setDateFormat:@"EEE MMMM dd"];
+    NSString *eventDateString = [eventDateFormatter stringFromDate:eventDate];
+    NSString *eventTimeString = eventRelatedDetails;
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        // Append related details (timing information) to the event date if it's known
+        if (![eventTimeString isEqualToString:@"Unknown"]) {
+            //Format "After Market Close","Before Market Open", "During Market Trading" to be "After Close" & "Before Open" & "During Open"
+            if ([eventTimeString isEqualToString:@"After Market Close"]) {
+                eventTimeString = [NSString stringWithFormat:@"After Close"];
+            }
+            if ([eventTimeString isEqualToString:@"Before Market Open"]) {
+                eventTimeString = [NSString stringWithFormat:@"Before Open"];
+            }
+            if ([eventTimeString isEqualToString:@"During Market Trading"]) {
+                eventTimeString = [NSString stringWithFormat:@"While Open"];
+            }
+            eventDateString = [NSString stringWithFormat:@"%@ %@ ",eventDateString,eventTimeString];
+        }
+    }
+    
+    if ([rawEventType containsString:@"Fed Meeting"]) {
+        
+        eventTimeString = @"2 p.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    
+    if ([rawEventType containsString:@"Jobs Report"]) {
+        
+        eventTimeString = @"8:30 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    
+    if ([rawEventType containsString:@"Consumer Confidence"]) {
+        
+        eventTimeString = @"10 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    
+    if ([rawEventType containsString:@"GDP Release"]) {
+        
+        eventTimeString = @"8:30 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    
+    if ([rawEventType containsString:@"Launch"]||[rawEventType containsString:@"Conference"]) {
+        
+        if ([eventStatus isEqualToString:@"Confirmed"]) {
+            eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+        }
+        // If status is not confirmed set 1-10 as Early 10-20 Mid 20-30/31 as Late
+        if ([eventStatus isEqualToString:@"Estimated"]) {
+            
+            // Get the year in the event date as rumored product events could well be in the next year
+            [eventDateFormatter setDateFormat:@"EEE MMMM dd y"];
+            eventDateString = [eventDateFormatter stringFromDate:eventDate];
+            NSArray *eventDateComponents = [eventDateString componentsSeparatedByString:@" "];
+            NSString *eventDayString = eventDateComponents[2];
+            int eventDay = [eventDayString intValue];
+            // Return an appropriately formatted string
+            if (eventDay <= 10) {
+                eventDateString = [NSString stringWithFormat:@"%@ %@ %@",@"Early",eventDateComponents[1],eventDateComponents[3]];
+            } else if (eventDay <= 20) {
+                eventDateString = [NSString stringWithFormat:@"%@ %@ %@",@"Mid",eventDateComponents[1],eventDateComponents[3]];
+            } else if (eventDay <= 31) {
+                eventDateString = [NSString stringWithFormat:@"%@ %@ %@",@"Late",eventDateComponents[1],eventDateComponents[3]];
+            }
+        }
+    }
+    
+    // For price change events, there's no schedule
+    if ([rawEventType containsString:@"% up"]||[rawEventType containsString:@"% down"]) {
+        eventDateString = @" ";
+    }
+    
+    return eventDateString;
 }
 
 #pragma mark - unused code
