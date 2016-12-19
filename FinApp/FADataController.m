@@ -342,6 +342,9 @@ bool eventsUpdated = NO;
         NSLog(@"ERROR: Getting all future following events, including price change events, from data store failed: %@",error.description);
     }
     
+    // TO DO: Delete before shipping v2.8
+    NSLog(@"CALLED ALL FUTURE FOLLOWING EVENTS");
+    
     return self.resultsController;
 }
 
@@ -360,6 +363,36 @@ bool eventsUpdated = NO;
     // Set the filter for date and event type
     // Searching for events of type "Quarterly Earnings"
     NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND type =[c] %@", todaysDate, @"Quarterly Earnings"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all future earnings events from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
+// Get all future following earnings events including today. Returns a results controller with identities of all earnings Events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllFollowingFutureEarningsEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter for date and event type
+    // Searching for events of type "Quarterly Earnings"
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND type =[c] %@ AND (ANY actions.type == %@)", todaysDate, @"Quarterly Earnings", @"OSReminder"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -404,6 +437,36 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
+// Get all following future economic events including today. Returns a results controller with identities of all economic events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// Currently this is empty as we haven't figured out how to follow Econ Events
+- (NSFetchedResultsController *)getAllFollowingFutureEconEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter for date and event type
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND listedCompany.ticker contains %@ AND type =[c] %@", todaysDate, @"ECONOMY_", @"DOES_NOT_EXIST"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all future events from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
 // Get all future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents
@@ -420,6 +483,37 @@ bool eventsUpdated = NO;
     // Set the event and date filter
     // NOTE: If there is a new type of product event like launch or conference added, add that here as well
     NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@)", todaysDate, @"Launch", @"Conference"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all future events from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
+// Get all following future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// NOTE: If there is a new type of product event like launch or conference added, add that here as well.
+- (NSFetchedResultsController *)getAllFollowingFutureProductEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the event and date filter
+    // NOTE: If there is a new type of product event like launch or conference added, add that here as well
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@) AND (ANY actions.type == %@)", todaysDate, @"Launch", @"Conference", @"OSReminder"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];

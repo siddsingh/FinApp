@@ -103,6 +103,19 @@
         [self.focusBar setTintColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
     }
     
+    // Format the main nav type selector
+    // Set text color of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
+    [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
+    // Set text color for the segment selected for the very first time which is Black for ALL events type. Also set focus bar to draw focus to the search bar to the same color.
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+        [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
+        // TO DO: Nav Focus Bar Related. Use or delete later
+        /*
+        [self.focusBar setTextColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
+        [self.focusBar setBackgroundColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
+        [self.focusBar setTintColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]]; */
+    }
+
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
     
@@ -199,7 +212,9 @@
     
     // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown. Also factor in if the following nav is selected or not.
     // If All Events is selected.
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+        
+        // Get the right future events depending on event type
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFutureEvents];
         }
@@ -213,8 +228,9 @@
             self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
         }
     }
-    // If not, that means following is selected
-    else {
+    // If following is selected in which case show the right following events
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+        // Show all following events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
         }
@@ -222,7 +238,7 @@
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
@@ -1554,6 +1570,68 @@
     }
 }
 
+#pragma mark - Main Nav Selection
+// When a main nav type selection has been made, change the color of the selected type and 1) show the appropriate event types in the results table 2) Set the correct search bar placeholder text 3) Clear out the search context
+- (IBAction)mainNavSelectAction:(id)sender {
+    
+    // Set events selector to All Events
+    [self.eventTypeSelector setSelectedSegmentIndex:0];
+    [self.eventTypeSelector sendActionsForControlEvents:UIControlEventValueChanged];
+    
+    [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
+    // TO DO: Nav Focus Bar Related. Use or delete later
+    /*
+     [self.focusBar setTextColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
+     [self.focusBar setBackgroundColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
+     [self.focusBar setTintColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]]; */
+    // Clear out the search context
+    [self.eventsSearchBar setText:@""];
+    [self searchBar:self.eventsSearchBar textDidChange:@""];
+    
+    // Set correct search bar placeholder text
+    self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
+
+    // If All Events is selected.
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+        
+        // Get the right future events depending on event type
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+        }
+        
+        // TRACKING EVENT: Main Nav Type Selected: User selected events nav type
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"Nav Type Selected"
+                      parameters:@{ @"Nav Type" : @"Events" } ];
+    }
+    // If following is selected in which case show the right following events
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+        
+        // Show all following events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
+        }
+    }
+}
+
 #pragma mark - Notifications
 
 // Send a notification to the events list controller with a message that should be shown to the user
@@ -2450,6 +2528,4 @@
  return creationSuccess;
  } */
 
-- (IBAction)mainNavSelectAction:(id)sender {
-}
 @end

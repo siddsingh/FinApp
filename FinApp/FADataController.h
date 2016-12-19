@@ -65,12 +65,24 @@
 // Get all future earnings events including today. Returns a results controller with identities of all earnings Events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllFutureEarningsEvents;
 
+// Get all future following earnings events including today. Returns a results controller with identities of all earnings Events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllFollowingFutureEarningsEvents;
+
 // Get all future economic events including today. Returns a results controller with identities of all economic events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllFutureEconEvents;
+
+// Get all following future economic events including today. Returns a results controller with identities of all economic events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// Currently this is empty as we haven't figured out how to follow Econ Events
+- (NSFetchedResultsController *)getAllFollowingFutureEconEvents;
 
 // Get all future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents;
+
+
+// Get all following future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// NOTE: If there is a new type of product event like launch or conference added, add that here as well.
+- (NSFetchedResultsController *)getAllFollowingFutureProductEvents;
 
 // Search and return all future events that match the search text dpending on the display event type. Note this is different from the type field on the event data object: 0. All (all eventTypes) 1. "Earnings" (Quarterly Earnings) 2. "Economic" (Economic Event) 3. "Product" (Product Event).NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 // Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the data store at a time.
