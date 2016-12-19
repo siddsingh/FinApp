@@ -1490,9 +1490,15 @@
         // Set correct search bar placeholder text
         self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
         
-        // Query all future events, including today.
-        self.eventResultsController = [self.primaryDataController getAllFutureEvents];
-        [self.eventsListTable reloadData];
+        // Query all future events or future following events, including today.
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+            [self.eventsListTable reloadData];
+        }
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
+            [self.eventsListTable reloadData];
+        }
         
         // TRACKING EVENT: Event Type Selected: User selected All event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1513,9 +1519,15 @@
         // Set correct search bar placeholder text
         self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
         
-        // Query all future earnings events, including today.
-        self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
-        [self.eventsListTable reloadData];
+        // Query all future earnings events or following future events, including today.
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
+            [self.eventsListTable reloadData];
+        }
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
+            [self.eventsListTable reloadData];
+        }
         
         // TRACKING EVENT: Event Type Selected: User selected Earnings event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1536,9 +1548,15 @@
         // Set correct search bar placeholder text
         self.eventsSearchBar.placeholder = @"EVENT";
         
-        // Query all future economic events, including today.
-        self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
-        [self.eventsListTable reloadData];
+        // Query all future economic events or following economic events, including today.
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+            [self.eventsListTable reloadData];
+        }
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
+            [self.eventsListTable reloadData];
+        }
         
         // TRACKING EVENT: Event Type Selected: User selected Economic event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1560,8 +1578,14 @@
         self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
         
         // Query all future product events, including today.
-        self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
-        [self.eventsListTable reloadData];
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+            [self.eventsListTable reloadData];
+        }
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
+            [self.eventsListTable reloadData];
+        }
         
         // TRACKING EVENT: Event Type Selected: User selected Product event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1574,25 +1598,20 @@
 // When a main nav type selection has been made, change the color of the selected type and 1) show the appropriate event types in the results table 2) Set the correct search bar placeholder text 3) Clear out the search context
 - (IBAction)mainNavSelectAction:(id)sender {
     
-    // Set events selector to All Events
-    [self.eventTypeSelector setSelectedSegmentIndex:0];
-    [self.eventTypeSelector sendActionsForControlEvents:UIControlEventValueChanged];
-    
     [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
-    // TO DO: Nav Focus Bar Related. Use or delete later
-    /*
-     [self.focusBar setTextColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
-     [self.focusBar setBackgroundColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
-     [self.focusBar setTintColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]]; */
+    
     // Clear out the search context
     [self.eventsSearchBar setText:@""];
     [self searchBar:self.eventsSearchBar textDidChange:@""];
     
     // Set correct search bar placeholder text
     self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
-
+    // Set events selector to All Events
+    [self.eventTypeSelector setSelectedSegmentIndex:0];
+    [self.eventTypeSelector sendActionsForControlEvents:UIControlEventValueChanged];
+    
     // If All Events is selected.
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+  /*  if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
         
         // Get the right future events depending on event type
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
@@ -1629,7 +1648,7 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
         }
-    }
+    } */
 }
 
 #pragma mark - Notifications
