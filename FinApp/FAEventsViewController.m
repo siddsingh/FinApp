@@ -1137,23 +1137,45 @@
     
     // Validate search text entered. If valid
     if ([self searchTextValid:searchBar.text]) {
-    
+        
         // Check to see if "All" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"All"];
-            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-            // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
             
-            // If no events are found, search for the name and ticker fields on the companies data store.
-            if ([self.filteredResultsController fetchedObjects].count == 0) {
-                
-                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
-                
-                // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"All"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
-                self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, search for the name and ticker fields on the companies data store.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                    
+                    // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                    // has been specified.
+                    self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                }
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"All"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, search for the name and ticker fields on the companies data store.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                    
+                    // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                    // has been specified.
+                    self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                }
             }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
@@ -1165,20 +1187,42 @@
         
         // Check to see if "Earnings" events types are selected. Search on "ticker" or "name" fields for the listed Company for earnings events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Earnings"];
-            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-            // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
             
-            // If no events are found, search for the name and ticker fields on the companies data store.
-            if ([self.filteredResultsController fetchedObjects].count == 0) {
-                
-                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
-                
-                // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Earnings"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
-                self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, search for the name and ticker fields on the companies data store.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                    
+                    // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                    // has been specified.
+                    self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                }
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Earnings"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, search for the name and ticker fields on the companies data store.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                    
+                    // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                    // has been specified.
+                    self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                }
             }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
@@ -1190,11 +1234,23 @@
         
         // Check to see if "Economic" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Economic"];
-            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-            // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Economic"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Economic"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
             self.filterSpecified = YES;
@@ -1205,11 +1261,23 @@
         
         // Check to see if "Product" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Product"];
-            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-            // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Product"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Product"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
             self.filterSpecified = YES;
@@ -1242,20 +1310,42 @@
         
         // Check to see if "All" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"All"];
-            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-            // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
             
-            // If no events are found, search for the name and ticker fields on the companies data store.
-            if ([self.filteredResultsController fetchedObjects].count == 0) {
-                
-                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
-                
-                // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"All"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
-                self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, search for the name and ticker fields on the companies data store.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                    
+                    // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                    // has been specified.
+                    self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                }
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"All"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, search for the name and ticker fields on the companies data store.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                    
+                    // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                    // has been specified.
+                    self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                }
             }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
@@ -1267,20 +1357,42 @@
         
         // Check to see if "Earnings" events types are selected. Search on "ticker" or "name" fields for the listed Company for earnings events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Earnings"];
-            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-            // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
             
-            // If no events are found, search for the name and ticker fields on the companies data store.
-            if ([self.filteredResultsController fetchedObjects].count == 0) {
-                
-                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
-                
-                // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Earnings"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
-                self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, search for the name and ticker fields on the companies data store.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                    
+                    // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                    // has been specified.
+                    self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                }
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Earnings"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, search for the name and ticker fields on the companies data store.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                    
+                    // Set the filter type to Match_Companies_NoEvents, meaning a filter matching companies with no existing events
+                    // has been specified.
+                    self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
+                }
             }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
@@ -1292,11 +1404,23 @@
         
         // Check to see if "Economic" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Economic"];
-            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-            // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Economic"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Economic"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
             self.filterSpecified = YES;
@@ -1307,11 +1431,23 @@
 
         // Check to see if "Product" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-            // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-            self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Product"];
-            // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
-            // has been specified.
-            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Product"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Product"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
             self.filterSpecified = YES;
@@ -1325,14 +1461,29 @@
         
         // Check to see if "All" events types are selected. In this case query all events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-            // Query all future events, including today, as that is the default view
-            self.eventResultsController = [self.primaryDataController getAllFutureEvents];
             
-            // Set the Filter Specified flag to false, indicating that no search filter has been specified
-            self.filterSpecified = NO;
-            
-            // Set the filter type to None_Specified i.e. no filter is specified
-            self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
             
             // Reload messages table
             [self.eventsListTable reloadData];
@@ -1343,14 +1494,29 @@
         
         // Check to see if "Earnings" events types are selected. In this case query all earnings
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-            // Query all future events, including today, as that is the default view
-            self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
             
-            // Set the Filter Specified flag to false, indicating that no search filter has been specified
-            self.filterSpecified = NO;
-            
-            // Set the filter type to None_Specified i.e. no filter is specified
-            self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
             
             // Reload messages table
             [self.eventsListTable reloadData];
@@ -1361,14 +1527,29 @@
         
         // Check to see if "Economic" events types are selected. In this case query all economic events
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-            // Query all future events, including today, as that is the default view
-            self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
             
-            // Set the Filter Specified flag to false, indicating that no search filter has been specified
-            self.filterSpecified = NO;
-            
-            // Set the filter type to None_Specified i.e. no filter is specified
-            self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
             
             // Reload messages table
             [self.eventsListTable reloadData];
@@ -1379,14 +1560,29 @@
         
         // Check to see if "Product" events types are selected. In this case query all product events.
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-            // Query all future events, including today, as that is the default view
-            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
             
-            // Set the Filter Specified flag to false, indicating that no search filter has been specified
-            self.filterSpecified = NO;
-            
-            // Set the filter type to None_Specified i.e. no filter is specified
-            self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
             
             // Reload messages table
             [self.eventsListTable reloadData];

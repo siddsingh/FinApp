@@ -88,6 +88,10 @@
 // Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the data store at a time.
 - (NSFetchedResultsController *)searchEventsFor:(NSString *)searchText eventDisplayType:(NSString *)eventType;
 
+// Search and return all following future events that match the search text dpending on the display event type. Note this is different from the type field on the event data object: 0. All (all eventTypes) 1. "Earnings" (Quarterly Earnings) 2. "Economic" (Economic Event) 3. "Product" (Product Event).NOTE: If there is a new type of product event like launch or conference added, add that here as well.
+// Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the data store at a time.
+- (NSFetchedResultsController *)searchFollowingEventsFor:(NSString *)searchText eventDisplayType:(NSString *)eventType;
+
 // Search and return all companies that match the search text on "ticker" and "name" fields for the Company.
 // Returns a results controller with identities of all companies recorded, but no more than batchSize (currently set
 // to 15) objects’ data will be fetched from the data store at a time.
