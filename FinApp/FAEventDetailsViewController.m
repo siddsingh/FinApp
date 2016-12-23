@@ -869,11 +869,11 @@
             // Create the reminder and show user the appropriate message
             BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
             if (success) {
-                [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
                 // Add action to the action data store with status created
                 [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
             } else {
-                [self sendUserGuidanceCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
+                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unable to follow %@",cellCompanyTicker]];
             }
         }
         // If estimated add to action data store for later processing
@@ -881,7 +881,7 @@
             
             // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-            [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+            [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
         }
     }
     // Economic Event
@@ -907,11 +907,11 @@
             // Create the reminder and show user the appropriate message
             BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
             if (success) {
-                [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
                 // Add action to the action data store with status created
                 [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
             } else {
-                [self sendUserGuidanceCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
+                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unable to follow %@",cellCompanyTicker]];
             }
         }
         // If estimated add to action data store for later processing
@@ -919,7 +919,7 @@
             
             // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-            [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+            [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
         }
     }
 }

@@ -393,12 +393,22 @@
         // Hide the image representing the event as this information is not needed when the user searches
         [[cell eventImage] setHidden:YES];
         
-        // Show the "Get Events" text in the event display area.
-        [[cell eventDescription] setText:@"GET EVENTS"];
-        // Set color to a link blue to provide a visual cue to click
-        cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+        // Check to see if the Events Main Nav is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            // Show the "Get Events" text in the event display area.
+            [[cell eventDescription] setText:@"GET EVENTS"];
+            // Set color to a link blue to provide a visual cue to click
+            cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+        }
+        // Check to see if the Following Main Nav is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            // Show the "Follow" text in the event display area.
+            [[cell eventDescription] setText:@"NOT FOLLOWING"];
+            // Set color to a link blue to provide a visual cue to click
+            cell.eventDescription.textColor = [UIColor colorWithRed:205.0f/255.0f green:151.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+        }
         
-        // Set the fetch state of the event cell to true
+        // Set the fetch state of the event cell to true which means either Get Events if Events main nav option is selected or Follow if the Following main nav is selected.
         // TO DO: Should you really be holding logic state at the cell level or should there
         // be a unique identifier for each event ?
         cell.eventRemoteFetch = YES;
@@ -460,30 +470,38 @@
     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
     if (cell.eventRemoteFetch) {
         
-        // Check for connectivity. If yes, process the fetch
-        if ([self checkForInternetConnectivity]) {
-            
-            // Set the remote fetch spinner to animating to show a fetch is in progress
-            [self.remoteFetchSpinner startAnimating];
-            
-            // Fetch the event for the related parent company in the background
-            // TO DO: Understand this better. PerformSelectorInBackground was causing warnings with attempting to modify UI in a background thread in iOS 9. Using dispatch async solved that error.
-            //[self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
-            dispatch_async(dispatch_get_main_queue(), ^{
+        // Check to see if the Events Main Nav is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            // Check for connectivity. If yes, process the fetch
+            if ([self checkForInternetConnectivity]) {
                 
-                [self getAllEventsFromApiInBackgroundWithTicker:(cell.companyTicker).text];
-            });
-            
-            // TRACKING EVENT: Get Earnings: User clicked the get earnings link for a company/ticker.
-            // TO DO: Disabling to not track development events. Enable before shipping.
-            [FBSDKAppEvents logEvent:@"Get Earnings"
-                          parameters:@{ @"Ticker" : (cell.companyTicker).text,
-                                        @"Name" : (cell.companyName).text } ];
+                // Set the remote fetch spinner to animating to show a fetch is in progress
+                [self.remoteFetchSpinner startAnimating];
+                
+                // Fetch the event for the related parent company in the background
+                // TO DO: Understand this better. PerformSelectorInBackground was causing warnings with attempting to modify UI in a background thread in iOS 9. Using dispatch async solved that error.
+                //[self performSelectorInBackground:@selector(getAllEventsFromApiInBackgroundWithTicker:) withObject:(cell.companyTicker).text];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [self getAllEventsFromApiInBackgroundWithTicker:(cell.companyTicker).text];
+                });
+                
+                // TRACKING EVENT: Get Earnings: User clicked the get earnings link for a company/ticker.
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Get Earnings"
+                              parameters:@{ @"Ticker" : (cell.companyTicker).text,
+                                            @"Name" : (cell.companyName).text } ];
+            }
+            // If not, show error message
+            else {
+                
+                [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+            }
         }
-        // If not, show error message
-        else {
+        // Check to see if the Following Main Nav is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             
-            [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+            // TO DO: In the future: trigger the follow action from here.
         }
     }
     // If not then, fetch event details, if the event is of type quarterly earnings before segueing to the details view
@@ -922,7 +940,7 @@
                 [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
                 [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
             } else {
-                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unable to follow %@",cellCompanyTicker]];;
+                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unable to follow %@",cellCompanyTicker]];
             }
         }
         // If estimated add to action data store for later processing
@@ -1337,7 +1355,7 @@
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
                 
-                // If no events are found, search for the name and ticker fields on the companies data store.
+                // If no events are found, that means search for the name and ticker fields on the companies data store.
                 if ([self.filteredResultsController fetchedObjects].count == 0) {
                     
                     self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
