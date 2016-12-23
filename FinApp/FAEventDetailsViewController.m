@@ -922,6 +922,11 @@
             [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
         }
     }
+    // Price Change event. Do nothing currently
+    if ([cellEventType containsString:@"% up"]||[cellEventType containsString:@"% down"])
+    {
+        
+    }
 }
 
 // Create reminders for all followable events (currently earnings and product events) for a given ticker, if it's not already been created
@@ -943,9 +948,10 @@
         // If the event is a followable event, create a reminder for it
         if ([self isEventFollowable:cellEventType]) {
             
-            // For a price change event do nothing as you can't really follow it
+            // For a price change event create a "PriceChange" action, which is only used for determining if this event ticker is being followed.
             if ([cellEventType containsString:@"% up"]||[cellEventType containsString:@"% down"])
             {
+                [appropriateDataController insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:ticker eventType:cellEventType];
             }
             // For quarterly earnings or product events, create a reminder which indicates that this ticker is being followed
             else {

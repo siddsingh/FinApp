@@ -329,7 +329,7 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (NOT (listedCompany.ticker contains %@)) AND (ANY actions.type == %@)", todaysDate, @"ECONOMY_", @"OSReminder"];
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (NOT (listedCompany.ticker contains %@)) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", todaysDate, @"ECONOMY_", @"OSReminder", @"PriceChange"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -549,7 +549,8 @@ bool eventsUpdated = NO;
     // Check to see if the event type is "All". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
     if ([eventType caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@)", searchText, searchText, searchText, todaysDate];
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT ((type contains[cd] %@) OR (type contains[cd] %@)))", searchText, searchText, searchText, todaysDate, @"% up", @"% down"];
+        //searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@)", searchText, searchText, searchText, todaysDate];
     }
     
     // Check to see if the event type is "Earnings". Search on "ticker" or "name" fields for the listed Company for earnings events
@@ -610,7 +611,7 @@ bool eventsUpdated = NO;
     // Check to see if the event type is "All". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
     if ([eventType caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT (listedCompany.ticker contains %@)) AND (ANY actions.type == %@)", searchText, searchText, searchText, todaysDate, @"ECONOMY_", @"OSReminder"];
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT (listedCompany.ticker contains %@)) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"ECONOMY_", @"OSReminder", @"PriceChange"];
     }
     
     // Check to see if the event type is "Earnings". Search on "ticker" or "name" fields for the listed Company for earnings events
@@ -2216,7 +2217,7 @@ bool eventsUpdated = NO;
                     //NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
                 }
                                           
-                if([percentChangeSinceYest doubleValue] >= 4.0) {
+                if([percentChangeSinceYest doubleValue] >= 2.0) {
                     
                     // To Do: Delete before shipping v2.7
                     //NSLog(@"****ticker is: %@", companySymbol);
@@ -2227,9 +2228,14 @@ bool eventsUpdated = NO;
                     // Insert into the events datastore
                     // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
                     [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                    // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
+                    // TO DO: Hardcoding this for now to be quarterly earnings
+                    if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
+                        [self insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:companySymbol eventType:specificEventType];
+                    }
                 }
                                           
-                if([percentChangeSinceYest doubleValue] <= -4.0) {
+                if([percentChangeSinceYest doubleValue] <= -2.0) {
                     
                     // To Do: Delete before shipping v2.7
                     //NSLog(@"****ticker is: %@", companySymbol);
@@ -2241,6 +2247,11 @@ bool eventsUpdated = NO;
                     // Insert into the events datastore
                     // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
                     [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                    // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
+                    // TO DO: Hardcoding this for now to be quarterly earnings
+                    if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
+                        [self insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:companySymbol eventType:specificEventType];
+                    }
                 }
             }
         }
