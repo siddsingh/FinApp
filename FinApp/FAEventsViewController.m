@@ -59,6 +59,9 @@
     
     // Do any additional setup after loading the view.
     
+    // TO DO: Delete before shipping v 2.8
+    NSLog(@"LOADING THE EVENTS VIEW AGAIN");
+    
     // Visual styling setup
     
     // Make the message bar fully transparent so that it's invisible to the user
@@ -842,6 +845,10 @@
             [self processReminderForEventInCell:eventCell withDataController:self.primaryDataController];
             // Create all reminders for all followable events for this ticker. Does not do anything for econ events.
             [self createAllRemindersForFollowedTicker:eventCell.companyTicker.text withDataController:self.primaryDataController];
+            // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
+            // Delete the existing daily price change events from the db to not create duplicates
+            [self.primaryDataController deleteAllDailyPriceChangeEvents];
+            [self.primaryDataController getAllPriceChangeEventsFromApiNew];
             break;
         }
             
@@ -1885,19 +1892,41 @@
     FADataController *secondaryDataController = [[FADataController alloc] init];
     
     // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-        self.eventResultsController = [secondaryDataController getAllFutureEvents];
+    
+    // If All Events is selected.
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+        
+        // Get the right future events depending on event type
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFutureEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFutureEarningsEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFutureProductEvents];
+        }
     }
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-        self.eventResultsController = [secondaryDataController getAllFutureEarningsEvents];
+    // If following is selected in which case show the right following events
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+        // Show all following events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFollowingFutureEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFollowingFutureEarningsEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFollowingFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFollowingFutureProductEvents];
+        }
     }
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-        self.eventResultsController = [secondaryDataController getAllFutureEconEvents];
-    }
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-        self.eventResultsController = [secondaryDataController getAllFutureProductEvents];
-    }
-
+    
     [self.eventsListTable reloadData];
     //TO DO: Delete before shipping v2.8
     //NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");

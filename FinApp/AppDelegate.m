@@ -64,11 +64,16 @@
                              didFinishLaunchingWithOptions:launchOptions];
 
      
-    // Check to see if application has been used by the user at least once. If not
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"UsedOnce"])
+    // Check to see if application version 2_8 has been used by the user at least once. If not
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V2_8_UsedOnce"])
     {
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
+        
+        // Sync the 2017 econ events
+        FADataController *econEventDataController = [[FADataController alloc] init];
+        NSLog(@"About to start the background incremental sync for 2017 econ events");
+        [econEventDataController getAllEconomicEventsFromLocalStorage];
         
         // Update the list of companies in a background task
         __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
@@ -88,6 +93,7 @@
             // Create a new FADataController so that this thread has its own MOC
             FADataController *tickerBkgrndDataController = [[FADataController alloc] init];
             
+            // Sync all the tickers to make sure you get the latest ones.
             [tickerBkgrndDataController getAllTickersAndNamesFromLocalStorage];
             
             [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
@@ -95,7 +101,7 @@
         });
         
         // Set that the user has used the app at least once
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"UsedOnce"];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V2_8_UsedOnce"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     // If yes

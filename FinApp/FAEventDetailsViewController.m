@@ -818,6 +818,10 @@
             // If the user has already provided access, create the reminder.
         case EKAuthorizationStatusAuthorized: {
             [self processReminderForEventType:eventType companyTicker:parentTicker eventDateText:evtDateText eventCertainty:evtCertainty withDataController:appropriateDataController];
+            // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
+            // Delete the existing daily price change events from the db to not create duplicates
+            [appropriateDataController deleteAllDailyPriceChangeEvents];
+            [appropriateDataController getAllPriceChangeEventsFromApiNew];
             break;
         }
             

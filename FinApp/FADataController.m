@@ -1736,7 +1736,7 @@ bool eventsUpdated = NO;
         companyTicker = [companyTicker stringByReplacingOccurrencesOfString:@"_" withString:@"."];
 
         companyNameString = [nameStrs objectAtIndex:tickerIndex];
-        // TO DO: For testing, comment before shipping
+        // TO DO: For testing, comment before shipping v2.8
         //NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
         
         // TO DO: Delete before shipping v2.7
@@ -1776,7 +1776,7 @@ bool eventsUpdated = NO;
 - (void)getAllEconomicEventsFromLocalStorage
 {
     // Get the economic events file path
-    NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"EconomicEvents_2016" ofType:@"json"];
+    NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"EconomicEvents_2017" ofType:@"json"];
     // TO DO: Delete Later
     //NSLog(@"Found the json file at: %@",eventsFilePath);
     
