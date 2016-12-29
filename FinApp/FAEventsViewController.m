@@ -47,6 +47,12 @@
 // Check if there is internet connectivity
 - (BOOL) checkForInternetConnectivity;
 
+// Show the busy message in the header.
+- (void)showBusyMessage;
+
+// Remove the busy message in the header to show appropriate header.
+- (void)removeBusyMessage;
+
 // User's calendar events and reminders data store
 @property (strong, nonatomic) EKEventStore *userEventStore;
 
@@ -58,9 +64,6 @@
     [super viewDidLoad];
     
     // Do any additional setup after loading the view.
-    
-    // TO DO: Delete before shipping v 2.8
-    NSLog(@"LOADING THE EVENTS VIEW AGAIN");
     
     // Visual styling setup
     
@@ -74,7 +77,7 @@
     [self.navigationController.navigationBar.topItem setTitle:[[todayDateFormatter stringFromDate:[NSDate date]] uppercaseString]];*/
     
     // Set navigation bar header to title "Upcoming Events"
-    [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
+    [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
     
     // Change the color of the events search bar placeholder text and text entered to be a black text color.
     [self.eventsSearchBar setBackgroundImage:[UIImage new]];
@@ -123,12 +126,10 @@
     self.primaryDataController = [[FADataController alloc] init];
     
     // Ensure that the remote fetch spinner is not animating thus hidden
-    // TO DO: Testing. Using the logic after. Remove this if it works.
-    //[self.remoteFetchSpinner stopAnimating];
     if ([[self.primaryDataController getEventSyncStatus] isEqualToString:@"RefreshCheckDone"]) {
-        [self.remoteFetchSpinner stopAnimating];
+        [self removeBusyMessage];
     } else {
-        [self.remoteFetchSpinner startAnimating];
+        [self showBusyMessage];
     }
     
     // TO DO: DEBUGGING: DELETE. Make one of the events confirmed to yesterday
@@ -150,7 +151,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(userMessageGenerated:)
                                                  name:@"UserMessageCreated" object:nil];
-    
     
     // Register a listener for refreshing the overall screen header, currently with today's date
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -201,7 +201,7 @@
     // If not, show error message
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection! Limited functionality available."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection. Limited functionality."];
     }
     
     // Set the Filter Specified flag to false, indicating that no search filter has been specified
@@ -479,7 +479,7 @@
             if ([self checkForInternetConnectivity]) {
                 
                 // Set the remote fetch spinner to animating to show a fetch is in progress
-                [self.remoteFetchSpinner startAnimating];
+                [self showBusyMessage];
                 
                 // Fetch the event for the related parent company in the background
                 // TO DO: Understand this better. PerformSelectorInBackground was causing warnings with attempting to modify UI in a background thread in iOS 9. Using dispatch async solved that error.
@@ -498,7 +498,7 @@
             // If not, show error message
             else {
                 
-                [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get data. Check Connection and retry."];
+                [self sendUserMessageCreatedNotificationWithMessage:@"Unable to get data. Check Connection."];
             }
         }
         // Check to see if the Following Main Nav is selected
@@ -531,7 +531,7 @@
                 
                 // Set the busy spinner to show that details are being fetched. Do this in a background thread as the main
                 // thread is being taken up by the table view. It's a best practice.
-                [self.remoteFetchSpinner performSelectorInBackground:@selector(startAnimating) withObject:self];
+                [self performSelectorInBackground:@selector(showBusyMessage) withObject:self];
                 
                 // Get the ticker for the Quarterly Earnings
                 NSString *eventTicker = selectedCell.companyTicker.text;
@@ -593,7 +593,7 @@
         
         // Stop the remote fetch spinner animation to indicate fetch is complete. Do this in a background thread as the main
         // thread is being taken up by the table view. It's a best practice.
-        [self.remoteFetchSpinner performSelectorInBackground:@selector(stopAnimating) withObject:self];
+        [self performSelectorInBackground:@selector(removeBusyMessage) withObject:self];
         
         // Perform segue to the event detail view
         [self performSegueWithIdentifier:@"ShowEventDetails1" sender:self];
@@ -772,7 +772,7 @@
                 [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                 
                 // Let the user know a reminder is already set for this ticker.
-                [self sendUserMessageCreatedNotificationWithMessage:@"Already set to be reminded of this event a day before."];
+                [self sendUserMessageCreatedNotificationWithMessage:@"Reminder already set."];
             }];
             
             // Format the Action UI to be the correct color and everything
@@ -834,7 +834,7 @@
         case EKAuthorizationStatusRestricted: {
             // TO DO: Delete before shipping v2.8
             NSLog(@"Authorization Status for Reminders is Denied or Restricted");
-            [self sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi."];
+            [self sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders (Settings>Knotifi)."];
             break;
         }
             
@@ -873,7 +873,7 @@
                                                         } else {
                                                             // TO DO: Delete before shipping v2.8
                                                             NSLog(@"Authorization Status for Reminders was rejected by user.");
-                                                            [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi."];
+                                                            [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders (Settings>Knotifi)."];
                                                         }
                                                     });
                                                 }];
@@ -907,7 +907,7 @@
             if (success) {
                 // Add action to the action data store with status created
                 [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
-                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
+                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cellCompanyTicker]];
             } else {
                 [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unable to follow %@",cellCompanyTicker]];
             }
@@ -917,7 +917,7 @@
             
             // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-            [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
+            [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cellCompanyTicker]];
         }
     }
     // Economic Event
@@ -926,11 +926,11 @@
         // Create the reminder and show user the appropriate message
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
         if (success) {
-            [self sendUserMessageCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
+            [self sendUserMessageCreatedNotificationWithMessage:@"Reminder Set"];
             // Add action to the action data store with status created
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
         } else {
-            [self sendUserMessageCreatedNotificationWithMessage:@"Oops! Unable to create a reminder for this event."];
+            [self sendUserMessageCreatedNotificationWithMessage:@"Unable to create a reminder."];
         }
     }
     // Product Event.
@@ -945,7 +945,7 @@
             if (success) {
                 // Add action to the action data store with status created
                 [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
-                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
+                [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cellCompanyTicker]];
             } else {
                 [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unable to follow %@",cellCompanyTicker]];
             }
@@ -955,7 +955,7 @@
             
             // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-            [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
+            [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cellCompanyTicker]];
         }
     }
     // Price Change event. Do nothing currently
@@ -1128,7 +1128,7 @@
     
     [eventsDataController getAllEventsFromApiWithTicker:ticker];
     
-    [self.remoteFetchSpinner stopAnimating];
+    [self removeBusyMessage];
     
     // Force a search to capture the refreshed event, so that the table can be refreshed
     // to show the refreshed event
@@ -1663,13 +1663,13 @@
         // If the newer companies data is still being synced, give the user a warning message
         if (![[self.primaryDataController getCompanySyncStatus] isEqualToString:@"FullSyncDone"]) {
             
-            [self sendUserMessageCreatedNotificationWithMessage:@"Fetching new tickers! Can't find one, retry later."];
+            [self sendUserMessageCreatedNotificationWithMessage:@"Fetching new tickers."];
         }
     }
     // If not, show error message,
     else {
         
-        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection. Limited functionality available."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"No Connection. Limited functionality."];
     }
     
     return YES;
@@ -1713,10 +1713,14 @@
         
         // Query all future events or future following events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureEvents];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
             [self.eventsListTable reloadData];
         }
@@ -1742,10 +1746,14 @@
         
         // Query all future earnings events or following future events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
@@ -1771,10 +1779,14 @@
         
         // Query all future economic events or following economic events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
             [self.eventsListTable reloadData];
         }
@@ -1800,10 +1812,14 @@
         
         // Query all future product events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
             [self.eventsListTable reloadData];
         }
@@ -1932,19 +1948,19 @@
     //NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");
 }
 
-// Show the error message for a temporary period and then fade it if a user message has been generated
-// TO DO: Currently set to 20 seconds. Change as you see fit.
+// Show the error message in the header
 - (void)userMessageGenerated:(NSNotification *)notification {
     
-    // Make sure the message bar is empty and visible to the user
-    self.messageBar.text = @"";
-    self.messageBar.alpha = 1.0;
+   // In case you want to animate in the error message
     
-    // Show the message that's generated for a period of 20 seconds
-    [UIView animateWithDuration:20 animations:^{
-        self.messageBar.text = [notification object];
-        self.messageBar.alpha = 0;
-    }];
+   /* CATransition *fadingAnimation = [CATransition animation];
+    fadingAnimation.duration = 3.0;
+    fadingAnimation.type = kCATransitionFade; 
+    [self.navigationController.navigationBar.layer addAnimation: fadingAnimation forKey: @"fadeText"];
+    [self.navigationController.navigationBar.topItem setTitle:[notification object]];
+    */
+    
+    [self.navigationController.navigationBar.topItem setTitle:[notification object]];
 }
 
 // Process the notification to update screen header which is the navigation bar title. Currently just set it to today's date.
@@ -1983,14 +1999,14 @@
 - (void)startBusySpinner:(NSNotification *)notification {
     
     // Set the busy spinner to spin.
-    [self.remoteFetchSpinner startAnimating];
+    [self showBusyMessage];
 }
 
 // Respond to the notification to stop the busy spinner
 - (void)stopBusySpinner:(NSNotification *)notification {
     
     // Set the busy spinner to stop spinning.
-    [self.remoteFetchSpinner stopAnimating];
+    [self removeBusyMessage];
 }
 
 #pragma mark - Connectivity Methods
@@ -2497,6 +2513,27 @@
     }
     
     return formattedStr;
+}
+
+// Show the busy message in the header.
+- (void)showBusyMessage {
+        
+    // Set navigation bar header to indicate busy
+    [self.navigationController.navigationBar.topItem setTitle:@"Fetching..."];
+}
+
+// Remove the busy message in the header to show appropriate header.
+- (void)removeBusyMessage {
+    
+    // Set navigation bar header to the correct text based on all events or following
+    // If All Events is selected.
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+        [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
+    }
+    // If following is selected
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+        [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
+    }
 }
 
 /*

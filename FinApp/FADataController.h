@@ -275,4 +275,7 @@
 // TO DO: Refactor here to add multiple types of actions.
 - (BOOL)doesReminderActionExistForEventWithTicker:(NSString *)eventCompanyTicker eventType:(NSString *)associatedEventType;
 
+// Delete all entries in the action table. Currently being used to reset state so that any user is starting with a clean slate for following.
+- (void)deleteAllEventActions;
+
 @end

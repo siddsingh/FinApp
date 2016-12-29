@@ -70,10 +70,15 @@
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
         
-        // Sync the 2017 econ events
+        // Delete all entries in the action table to reset state so that any user is starting with a clean slate for following.
         FADataController *econEventDataController = [[FADataController alloc] init];
+        [econEventDataController deleteAllEventActions];
+        
+        // Sync the 2017 econ events
         NSLog(@"About to start the background incremental sync for 2017 econ events");
         [econEventDataController getAllEconomicEventsFromLocalStorage];
+        
+        
         
         // Update the list of companies in a background task
         __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{

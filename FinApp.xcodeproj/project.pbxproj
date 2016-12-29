@@ -49,6 +49,7 @@
 		9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */; };
 		9ECE7B471CBF60BF000F8D77 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */; };
 		9ECE7B481CBF60BF000F8D77 /* FinApp.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */; };
+		9EEE52131E14AF73009DD013 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EEE52121E14AF72009DD013 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +112,7 @@
 		9EBD8EEB1BAC9EA0008A0370 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		9EBD8EEC1BAC9EA0008A0370 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = FinApp.sqlite; sourceTree = "<group>"; };
+		9EEE52121E14AF72009DD013 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EEE52131E14AF73009DD013 /* QuartzCore.framework in Frameworks */,
 				9EBD8EEA1BAC9DAB008A0370 /* SystemConfiguration.framework in Frameworks */,
 				9E2C2A4A1C8786DC00297F37 /* FBSDKCoreKit.framework in Frameworks */,
 				9E6D807B1AAFDF5800E1F2D3 /* CoreData.framework in Frameworks */,
@@ -146,6 +149,7 @@
 				9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */,
 				9E602D3319E655DF00ACDEC6 /* FinAppTests */,
 				9E602D1519E655DF00ACDEC6 /* Products */,
+				9EEE52111E14AF72009DD013 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -230,6 +234,14 @@
 				9E602D3519E655DF00ACDEC6 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9EEE52111E14AF72009DD013 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9EEE52121E14AF72009DD013 /* QuartzCore.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

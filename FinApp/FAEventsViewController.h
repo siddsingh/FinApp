@@ -42,7 +42,7 @@
 @property (weak, nonatomic) IBOutlet UITableView *eventsListTable;
 
 // Spinner to indicate a remote fetch is in progress
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *remoteFetchSpinner;
+// No longer exists. Now we use the navigation bar header text to show busy message
 
 // Label to show error and informational messages
 @property (weak, nonatomic) IBOutlet UILabel *messageBar;

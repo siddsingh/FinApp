@@ -1485,7 +1485,7 @@ bool eventsUpdated = NO;
         NSLog(@"ERROR: Could not get events data from the API Data Source. Error description: %@",error.description);
         
         // Show user an error message
-        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get events. Check Connection."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to fetch. Check Connection."];
     }
 }
 
@@ -1552,7 +1552,7 @@ bool eventsUpdated = NO;
     // If response is not correct, show the user an error message
     if (parsedDataSets == NULL)
     {
-        [self sendUserMessageCreatedNotificationWithMessage:@"Hmm! Unable to get events. Try again later."];
+        [self sendUserMessageCreatedNotificationWithMessage:@"Unable to fetch. Try again later."];
     }
     // Else process response to enter event
     else
@@ -3866,6 +3866,34 @@ bool eventsUpdated = NO;
     }
     
     return exists;
+}
+
+// Delete all entries in the action table. Currently being used to reset state so that any user is starting with a clean slate for following.
+- (void)deleteAllEventActions
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // For price change events the event type is a fuzzy match.
+    NSFetchRequest *actionsFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *actionEntity = [NSEntityDescription entityForName:@"Action" inManagedObjectContext:dataStoreContext];
+    
+    // Fetch all actions
+    [actionsFetchRequest setEntity:actionEntity];
+    NSError *error;
+    NSArray *actions = [dataStoreContext executeFetchRequest:actionsFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting all reminder actions, while trying to delete all of them, from data store failed: %@",error.description);
+    }
+    
+    // Delete all actions
+    for (NSManagedObject *action in actions) {
+        
+        [dataStoreContext deleteObject:action];
+    }
+    
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
 }
 
 #pragma mark - Notifications
