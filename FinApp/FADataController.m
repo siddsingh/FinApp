@@ -253,6 +253,10 @@ bool eventsUpdated = NO;
     if (![dataStoreContext save:&error]) {
         NSLog(@"ERROR: Saving event to data store failed: %@",error.description);
     }
+    // TO DO: Delete before shipping v2.8
+    else {
+        NSLog(@"SUCCESS: Saved the following event to the db:%@ for ticker:%@",eventType,listedCompanyTicker);
+    }
 }
 
 // Get all Events. Returns a results controller with identities of all Events recorded, but no more
@@ -3759,6 +3763,10 @@ bool eventsUpdated = NO;
         // Perform the insert
         if (![dataStoreContext save:&error]) {
             NSLog(@"ERROR: Saving action to data store failed: %@",error.description);
+        }
+        // TO DO: Delete before shipping v2.8
+        else {
+            NSLog(@"SUCCESS: Saved the following action to the db:%@ for ticker:%@",actionType,eventCompanyTicker);
         }
     }
     

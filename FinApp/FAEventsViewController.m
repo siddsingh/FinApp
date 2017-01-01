@@ -99,6 +99,9 @@
     searchClearBtn.tintColor = [UIColor blackColor];
     
     // Format the event type selector
+    // Set Background color and tint to a very light almost white gray
+    [self.eventTypeSelector setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+    [self.eventTypeSelector setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
     // Set text color of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
     [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
     // Set text color for the segment selected for the very first time which is Black for ALL events type. Also set focus bar to draw focus to the search bar to the same color.
@@ -114,12 +117,11 @@
     [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
     // Set text color for the segment selected for the very first time which is Black for ALL events type. Also set focus bar to draw focus to the search bar to the same color.
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-        [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
-        // TO DO: Nav Focus Bar Related. Use or delete later
-        /*
-        [self.focusBar setTextColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
-        [self.focusBar setBackgroundColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]];
-        [self.focusBar setTintColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f]]; */
+        NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                    [UIColor blackColor], NSForegroundColorAttributeName,
+                                    nil];
+        [self.mainNavSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
     }
 
     // Get a primary data controller that you will use later
@@ -762,7 +764,7 @@
     else {
         // Check to see if a reminder action has already been created for the event represented by the cell.
         // If yes, show a appropriately formatted status action.
-        if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
+        if ([self.primaryDataController doesReminderActionExistForEventWithTicker:[self.primaryDataController getTickerForName:cell.companyName.text] eventType:cellEventType])
         {
             // Create the "Reimder Already Set" Action and handle it being exercised.
             setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Reminder Set" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
@@ -923,6 +925,9 @@
     // Economic Event
     if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]) {
         
+        // Get the fully formatted ticker for ECON events i.e. ECON_FOMC
+        cellCompanyTicker = [appropriateDataController getTickerForName:eventCell.companyName.text];
+        
         // Create the reminder and show user the appropriate message
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
         if (success) {
@@ -1062,6 +1067,9 @@
     
     // Get the date for the event represented by the cell
     NSDate *eventDate = [reminderDataController getDateForEventOfType:eventType eventTicker:companyTicker];
+    
+    // To Do: Delete before shipping v2.8
+    NSLog(@"The event date for setting an alarm is:%@", eventDate);
     
     // Subtract a day as we want to remind the user a day prior and then set the reminder time to noon of the previous day
     // and set reminder due date to that.
@@ -1835,7 +1843,11 @@
 // When a main nav type selection has been made, change the color of the selected type and 1) show the appropriate event types in the results table 2) Set the correct search bar placeholder text 3) Clear out the search context
 - (IBAction)mainNavSelectAction:(id)sender {
     
-    [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
+    NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                    [UIColor blackColor], NSForegroundColorAttributeName,
+                                    nil];
+    [self.mainNavSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
     
     // Clear out the search context
     [self.eventsSearchBar setText:@""];
