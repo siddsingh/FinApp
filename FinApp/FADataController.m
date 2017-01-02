@@ -2592,10 +2592,10 @@ bool eventsUpdated = NO;
     NSString *formattedCompanyTicker  = [companyTicker stringByReplacingOccurrencesOfString:@"." withString:@"_"];
     endpointURL = [NSString stringWithFormat:@"%@&symbol=%@",endpointURL,formattedCompanyTicker];
     
-    // Append the formatted Start Date minus 1 day just to be safe
+    // Append the formatted Start Date minus 7 days just to be safe
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = -1;
+    differenceDayComponents.day = -7;
     NSDate *fromDateMinus1Day = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:fromDate options:0];
     NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
     [priceDateFormatter setDateFormat:@"yyyyMMdd"];
@@ -2613,6 +2613,9 @@ bool eventsUpdated = NO;
     // Process the response
     if (error == nil)
     {
+        // TO DO: Delete before shipping v2.8
+        NSLog(@"Called the HISTORY endpoint: %@",endpointURL);
+        
         // Process the response that contains the events for the company.
         [self processStockPricesResponse:responseData forTicker:companyTicker forEventType:eventType];
         
