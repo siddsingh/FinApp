@@ -618,9 +618,9 @@
                 // Show appropriate message
                 [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",self.parentTicker]];
                 
-                // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
+                // TRACKING EVENT: Unset Follow: User clicked the "Reminder Set" button, most likely to unset the reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
-                [FBSDKAppEvents logEvent:@"Unset Reminder"
+                [FBSDKAppEvents logEvent:@"Unset Follow"
                               parameters:@{ @"Ticker" : self.parentTicker,
                                             @"Event Type" : self.eventType,
                                             @"Event Certainty" : self.eventCertainty } ];
@@ -636,9 +636,9 @@
                 [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker] forState:UIControlStateNormal];
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
                 
-                // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
+                // TRACKING EVENT: Set Follow: User clicked the "Set Reminder" button to create a reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
-                [FBSDKAppEvents logEvent:@"Create Reminder"
+                [FBSDKAppEvents logEvent:@"Set Follow"
                               parameters:@{ @"Ticker" : self.parentTicker,
                                             @"Event Type" : self.eventType,
                                             @"Event Certainty" : self.eventCertainty } ];
@@ -654,9 +654,9 @@
                 // Show appropriate message
                 [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",self.parentTicker]];
                 
-                // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
+                // TRACKING EVENT: Unset Follow: User clicked the "Reminder Set" button, most likely to unset the reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
-                [FBSDKAppEvents logEvent:@"Unset Reminder"
+                [FBSDKAppEvents logEvent:@"Unset Follow"
                               parameters:@{ @"Ticker" : self.parentTicker,
                                             @"Event Type" : self.eventType,
                                             @"Event Certainty" : self.eventCertainty } ];
@@ -672,9 +672,9 @@
                 [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker] forState:UIControlStateNormal];
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
                 
-                // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
+                // TRACKING EVENT: Set Follow: User clicked the "Set Reminder" button to create a reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
-                [FBSDKAppEvents logEvent:@"Create Reminder"
+                [FBSDKAppEvents logEvent:@"Set Follow"
                               parameters:@{ @"Ticker" : self.parentTicker,
                                             @"Event Type" : self.eventType,
                                             @"Event Certainty" : self.eventCertainty } ];
@@ -940,6 +940,9 @@
     NSString *cellEventDateText = nil;
     NSString *cellEventCertainty = nil;
     
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
     // Get all events for a ticker
     NSArray *allEvents = [appropriateDataController getAllEventsForParentEventTicker:ticker];
     for (Event *fetchedEvent in allEvents) {
@@ -966,29 +969,32 @@
                 {
                 }
                 else
-                    // If not create the reminder or queue it up depending on the confirmed status
+                // If not create the reminder or queue it up depending on the confirmed status
                 {
                     // TO DO: Delete before shipping v2.0
                     NSLog(@"Creating the following reminder for event %@ for ticker %@",cellEventType,ticker);
                     
-                    // Check to see if the event is estimated or confirmed ?
-                    // If confirmed create and save to action data store
-                    if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
-                        
-                        // Create the reminder and show user the appropriate message
-                        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:ticker dateText:cellEventDateText andDataController:appropriateDataController];
-                        if (success) {
-                            // Add action to the action data store with status created
-                            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:ticker eventType:cellEventType];
-                        } else {
-                            NSLog(@"ERROR: Unable to create the following reminder for confirmed event %@ for ticker %@",cellEventType,ticker);
+                    // Check to see if the event was in the past. If not create a reminder for it
+                    if (fetchedEvent.date >= todaysDate) {
+                        // Check to see if the event is estimated or confirmed ?
+                        // If confirmed create and save to action data store
+                        if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+                            
+                            // Create the reminder and show user the appropriate message
+                            BOOL success = [self createReminderForEventOfType:cellEventType withTicker:ticker dateText:cellEventDateText andDataController:appropriateDataController];
+                            if (success) {
+                                // Add action to the action data store with status created
+                                [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:ticker eventType:cellEventType];
+                            } else {
+                                NSLog(@"ERROR: Unable to create the following reminder for confirmed event %@ for ticker %@",cellEventType,ticker);
+                            }
                         }
-                    }
-                    // If estimated add to action data store for later processing
-                    else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
-                        
-                        // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
-                        [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:ticker eventType:cellEventType];
+                        // If estimated add to action data store for later processing
+                        else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
+                            
+                            // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+                            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:ticker eventType:cellEventType];
+                        }
                     }
                 }
             }
@@ -1626,6 +1632,16 @@
     }
     
     return eventDateString;
+}
+
+// Format the given date to set the time on it to midnight last night. e.g. 03/21/2016 9:00 pm becomes 03/21/2016 12:00 am.
+- (NSDate *)setTimeToMidnightLastNightOnDate:(NSDate *)dateToFormat
+{
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *dateComponents = [aGregorianCalendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:dateToFormat];
+    NSDate *formattedDate = [aGregorianCalendar dateFromComponents:dateComponents];
+    
+    return formattedDate;
 }
 
 #pragma mark - unused code

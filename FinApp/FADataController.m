@@ -251,7 +251,7 @@ bool eventsUpdated = NO;
     
     // Perform the insert
     if (![dataStoreContext save:&error]) {
-        NSLog(@"ERROR: Saving event to data store failed: %@",error.description);
+        NSLog(@"ERROR: Saving event of type: %@ and with ticker:%@ to data store failed: %@",eventType,listedCompanyTicker,error.description);
     }
     // TO DO: Delete before shipping v2.8
     else {

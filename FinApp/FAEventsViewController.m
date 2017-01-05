@@ -551,13 +551,17 @@
                     // To Do: Delete when shipping v2.7
                     //NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
                     [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
+                    // TO DO: Delete before shipping v2.7
+                    NSLog(@"30 days ago date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
+                    NSLog(@"YTD date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeMarketStartDateOfTheYearFrom:todaysDate]]);
                 }
                 // Else update the non price related data, not including current date, on the event history from the event. We don't include the current date as current date is set only once a day which is when the user first accesses the event.
                 else
                 {
                     [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] parentEventTicker:eventTicker parentEventType:eventType];
                     // TO DO: Delete before shipping v2.7
-                    //NSLog(@"30 days ago date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
+                    NSLog(@"30 days ago date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
+                    NSLog(@"YTD date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeMarketStartDateOfTheYearFrom:todaysDate]]);
                 }
                 
                 // Call price API, in the main thread, to refresh the price history
@@ -665,6 +669,13 @@
                     
                     // Let the user know a reminder is already set for this ticker.
                     [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",cell.companyTicker.text]];
+                    
+                    // TRACKING EVENT: Unset Follow: User clicked the "Set Reminder" button to create a reminder.
+                    // TO DO: Disabling to not track development events. Enable before shipping.
+                    [FBSDKAppEvents logEvent:@"Unset Follow"
+                                  parameters:@{ @"Ticker" : cell.companyTicker.text,
+                                                @"Event Type" : cellEventType,
+                                                @"Event Certainty" : cell.eventCertainty.text } ];
                 }];
                 
                 // Format the Action UI to be the correct color and everything
@@ -693,10 +704,17 @@
                     
                     // Let the user know a reminder is already set for this ticker.
                     [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cell.companyTicker.text]];
+                    
+                    // TRACKING EVENT: Set Follow: User clicked the "Set Reminder" button to create a reminder.
+                    // TO DO: Disabling to not track development events. Enable before shipping.
+                    [FBSDKAppEvents logEvent:@"Set Follow"
+                                  parameters:@{ @"Ticker" : cell.companyTicker.text,
+                                                @"Event Type" : cellEventType,
+                                                @"Event Certainty" : cell.eventCertainty.text } ];
                 }];
                 
                 // Format the Action UI to be the correct color and everything
-                //setReminderAction.backgroundColor = [UIColor grayColor];
+                setReminderAction.backgroundColor = [UIColor blackColor];
             }
         }
         // For quarterly earnings or product events, create a reminder which indicates that this ticker is being followed
@@ -722,6 +740,13 @@
                     
                     // Let the user know a reminder is already set for this ticker.
                     [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",cell.companyTicker.text]];
+                    
+                    // TRACKING EVENT: Unset Follow: User clicked the "Set Reminder" button to create a reminder.
+                    // TO DO: Disabling to not track development events. Enable before shipping.
+                    [FBSDKAppEvents logEvent:@"Unset Follow"
+                                  parameters:@{ @"Ticker" : cell.companyTicker.text,
+                                                @"Event Type" : cellEventType,
+                                                @"Event Certainty" : cell.eventCertainty.text } ];
                 }];
                 
                 // Format the Action UI to be the correct color and everything
@@ -750,10 +775,17 @@
                     
                     // Let the user know a reminder is already set for this ticker.
                     [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",cell.companyTicker.text]];
+                    
+                    // TRACKING EVENT: Set Follow: User clicked the "Set Reminder" button to create a reminder.
+                    // TO DO: Disabling to not track development events. Enable before shipping.
+                    [FBSDKAppEvents logEvent:@"Set Follow"
+                                  parameters:@{ @"Ticker" : cell.companyTicker.text,
+                                                @"Event Type" : cellEventType,
+                                                @"Event Certainty" : cell.eventCertainty.text } ];
                 }];
                 
                 // Format the Action UI to be the correct color and everything
-                //setReminderAction.backgroundColor = [UIColor grayColor];
+                setReminderAction.backgroundColor = [UIColor blackColor];
             }
         }
     }
@@ -772,6 +804,13 @@
                 
                 // Let the user know a reminder is already set for this ticker.
                 [self sendUserMessageCreatedNotificationWithMessage:@"Reminder already set."];
+                
+                // TRACKING EVENT: Unset Reminder: User clicked the "Set Reminder" button to create a reminder.
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Unset Reminder"
+                              parameters:@{ @"Ticker" : cell.companyTicker.text,
+                                            @"Event Type" : cellEventType,
+                                            @"Event Certainty" : cell.eventCertainty.text } ];
             }];
             
             // Format the Action UI to be the correct color and everything
@@ -796,10 +835,17 @@
                 // Slide the row back over the action.
                 // TO DO: See if you can animate the slide back.
                 [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                
+                // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Create Reminder"
+                              parameters:@{ @"Ticker" : cell.companyTicker.text,
+                                            @"Event Type" : cellEventType,
+                                            @"Event Certainty" : cell.eventCertainty.text } ];
             }];
             
             // Format the Action UI to be the correct color and everything
-            setReminderAction.backgroundColor = [UIColor colorWithRed:35.0f/255.0f green:127.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            setReminderAction.backgroundColor = [UIColor blackColor];
         }
     }
     
@@ -841,13 +887,15 @@
         case EKAuthorizationStatusAuthorized: {
             // TO DO: Delete before shipping v2.8
             NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
-            [self processReminderForEventInCell:eventCell withDataController:self.primaryDataController];
+            // Create a new Data Controller so that this thread has it's own MOC
+            FADataController *accessDataController = [[FADataController alloc] init];
+            [self processReminderForEventInCell:eventCell withDataController:accessDataController];
             // Create all reminders for all followable events for this ticker. Does not do anything for econ events.
-            [self createAllRemindersForFollowedTicker:eventCell.companyTicker.text withDataController:self.primaryDataController];
+            [self createAllRemindersForFollowedTicker:eventCell.companyTicker.text withDataController:accessDataController];
             // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
             // Delete the existing daily price change events from the db to not create duplicates
-            [self.primaryDataController deleteAllDailyPriceChangeEvents];
-            [self.primaryDataController getAllPriceChangeEventsFromApiNew];
+            [accessDataController deleteAllDailyPriceChangeEvents];
+            [accessDataController getAllPriceChangeEventsFromApiNew];
             break;
         }
             
@@ -974,6 +1022,9 @@
     NSString *cellEventDateText = nil;
     NSString *cellEventCertainty = nil;
     
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
     // Get all events for a ticker
     NSArray *allEvents = [appropriateDataController getAllEventsForParentEventTicker:ticker];
     for (Event *fetchedEvent in allEvents) {
@@ -1005,24 +1056,28 @@
                     // TO DO: Delete before shipping v2.0
                     NSLog(@"Creating the following reminder for event %@ for ticker %@",cellEventType,ticker);
                     
-                    // Check to see if the event is estimated or confirmed ?
-                    // If confirmed create and save to action data store
-                    if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+                    // Check to see if the event was in the past. If not create a reminder for it
+                    if (fetchedEvent.date >= todaysDate) {
                         
-                        // Create the reminder and show user the appropriate message
-                        BOOL success = [self createReminderForEventOfType:cellEventType withTicker:ticker dateText:cellEventDateText andDataController:appropriateDataController];
-                        if (success) {
-                            // Add action to the action data store with status created
-                            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:ticker eventType:cellEventType];
-                        } else {
-                            NSLog(@"ERROR: Unable to create the following reminder for confirmed event %@ for ticker %@",cellEventType,ticker);
+                        // Check to see if the event is estimated or confirmed ?
+                        // If confirmed create and save to action data store
+                        if ([cellEventCertainty isEqualToString:@"Confirmed"]) {
+                            
+                            // Create the reminder and show user the appropriate message
+                            BOOL success = [self createReminderForEventOfType:cellEventType withTicker:ticker dateText:cellEventDateText andDataController:appropriateDataController];
+                            if (success) {
+                                // Add action to the action data store with status created
+                                [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:ticker eventType:cellEventType];
+                            } else {
+                                NSLog(@"ERROR: Unable to create the following reminder for confirmed event %@ for ticker %@",cellEventType,ticker);
+                            }
                         }
-                    }
-                    // If estimated add to action data store for later processing
-                    else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
-                        
-                        // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
-                        [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:ticker eventType:cellEventType];
+                        // If estimated add to action data store for later processing
+                        else if ([cellEventCertainty isEqualToString:@"Estimated"]) {
+                            
+                            // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
+                            [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:ticker eventType:cellEventType];
+                        }
                     }
                 }
             }
@@ -1150,7 +1205,12 @@
     
     // Get historical prices if needed
     if(fetchHistory) {
-        [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
+        // See which one is before in time, the ytd date or 30 days ago date and set from date to that.
+        if(eventForPricesFetch.previous1RelatedDate <= eventForPricesFetch.previous1Date) {
+            [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
+        } else {
+            [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1Date toDateInclusive:eventForPricesFetch.currentDate];
+        }
     }
     
     // Use this if you move this operation to a background thread
@@ -1855,6 +1915,11 @@
         [self.eventTypeSelector setEnabled:NO];
         [self.eventTypeSelector setHidden:YES];
     }
+    
+    // TRACKING EVENT: EventsNav Selected: User clicked the "Reminder Set" button, most likely to unset the reminder.
+    // TO DO: Disabling to not track development events. Enable before shipping.
+    [FBSDKAppEvents logEvent:@"MainNav Selected"
+                  parameters:@{ @"Option" :  [self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex]} ];
     
     // If All Events is selected.
   /*  if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
