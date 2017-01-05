@@ -151,9 +151,6 @@
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventDetailsTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    // TO DO: Delete before shipping v2
-    //NSLog(@"Event Type in Details is: %@ and Parent Ticker is:%@",self.eventType,self.parentTicker);
 }
 
 #pragma mark - Event Details Table
@@ -970,10 +967,7 @@
                 }
                 else
                 // If not create the reminder or queue it up depending on the confirmed status
-                {
-                    // TO DO: Delete before shipping v2.0
-                    NSLog(@"Creating the following reminder for event %@ for ticker %@",cellEventType,ticker);
-                    
+                {                    
                     // Check to see if the event was in the past. If not create a reminder for it
                     if (fetchedEvent.date >= todaysDate) {
                         // Check to see if the event is estimated or confirmed ?

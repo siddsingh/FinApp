@@ -70,12 +70,6 @@
     // Make the message bar fully transparent so that it's invisible to the user
     self.messageBar.alpha = 0.0;
     
-    // TO DO: Delete before shipping v2.5
-    // Show today's date in the navigation bar header.
-    /*NSDateFormatter *todayDateFormatter = [[NSDateFormatter alloc] init];
-    [todayDateFormatter setDateFormat:@"EEE MMMM dd"];
-    [self.navigationController.navigationBar.topItem setTitle:[[todayDateFormatter stringFromDate:[NSDate date]] uppercaseString]];*/
-    
     // Set navigation bar header to title "Upcoming Events"
     [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
     
@@ -309,9 +303,6 @@
 // Return number of rows in the events list table view
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // TO DO: Delete before shipping v2
-    //NSLog(@"EVENT: List table rows refreshed");
-    
     NSInteger numberOfRows = 0;
     
     // If a search filter has been applied return the number of events in the filtered list of events or companies,
@@ -551,17 +542,11 @@
                     // To Do: Delete when shipping v2.7
                     //NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
                     [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
-                    // TO DO: Delete before shipping v2.7
-                    NSLog(@"30 days ago date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
-                    NSLog(@"YTD date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeMarketStartDateOfTheYearFrom:todaysDate]]);
                 }
                 // Else update the non price related data, not including current date, on the event history from the event. We don't include the current date as current date is set only once a day which is when the user first accesses the event.
                 else
                 {
                     [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] parentEventTicker:eventTicker parentEventType:eventType];
-                    // TO DO: Delete before shipping v2.7
-                    NSLog(@"30 days ago date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
-                    NSLog(@"YTD date in updating price history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeMarketStartDateOfTheYearFrom:todaysDate]]);
                 }
                 
                 // Call price API, in the main thread, to refresh the price history
@@ -690,8 +675,6 @@
                     
                     // Get the cell for the row on which the action is being exercised
                     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
-                    // TO DO: Delete before shipping v2.0
-                    NSLog(@"Clicked the Follow Action with ticker %@",cell.companyTicker.text);
                     
                     // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
                     // TO DO: Decide if you want to close the slid out action, before the user has provided
@@ -761,8 +744,6 @@
                     
                     // Get the cell for the row on which the action is being exercised
                     FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
-                    // TO DO: Delete before shipping v2.0
-                    NSLog(@"Clicked the Follow Action with ticker %@",cell.companyTicker.text);
                     
                     // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
                     // TO DO: Decide if you want to close the slid out action, before the user has provided
@@ -824,8 +805,6 @@
                 
                 // Get the cell for the row on which the action is being exercised
                 FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
-                // TO DO: Delete before shipping v2.0
-                NSLog(@"Clicked the Set Reminder Action with ticker %@",cell.companyTicker.text);
                 
                 // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
                 // TO DO: Decide if you want to close the slid out action, before the user has provided
@@ -877,16 +856,13 @@
             // If the user hasn't provided access, show an appropriate error message.
         case EKAuthorizationStatusDenied:
         case EKAuthorizationStatusRestricted: {
-            // TO DO: Delete before shipping v2.8
-            NSLog(@"Authorization Status for Reminders is Denied or Restricted");
             [self sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders (Settings>Knotifi)."];
             break;
         }
             
             // If the user has already provided access, create the reminder.
         case EKAuthorizationStatusAuthorized: {
-            // TO DO: Delete before shipping v2.8
-            NSLog(@"Authorization Status for Reminders is Provided. About to create the reminder");
+            
             // Create a new Data Controller so that this thread has it's own MOC
             FADataController *accessDataController = [[FADataController alloc] init];
             [self processReminderForEventInCell:eventCell withDataController:accessDataController];
@@ -910,16 +886,13 @@
                                                 completion:^(BOOL grantedByUser, NSError *error) {
                                                     dispatch_async(dispatch_get_main_queue(), ^{
                                                         if (grantedByUser) {
-                                                            // TO DO: Delete before shipping v2.8
-                                                            NSLog(@"Authorization Status for Reminders was enabled by user. About to create the reminder");
+                                                            
                                                             // Create a new Data Controller so that this thread has it's own MOC
                                                             FADataController *afterAccessDataController = [[FADataController alloc] init];
                                                             [weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
                                                             // Create all reminders for all followable events for this ticker. Does not do anything for econ events
                                                             [weakPtrToSelf createAllRemindersForFollowedTicker:eventCell.companyTicker.text withDataController:afterAccessDataController];
                                                         } else {
-                                                            // TO DO: Delete before shipping v2.8
-                                                            NSLog(@"Authorization Status for Reminders was rejected by user.");
                                                             [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders (Settings>Knotifi)."];
                                                         }
                                                     });
@@ -937,9 +910,6 @@
     NSString *cellCompanyTicker = eventCell.companyTicker.text;
     NSString *cellEventDateText = eventCell.eventDate.text;
     NSString *cellEventCertainty = eventCell.eventCertainty.text;
-    
-    // TO DO: Delete before shipping v2.8
-    NSLog(@"Event Cell type is:%@ Ticker is:%@ DateText is:%@ and Certainty is:%@", cellEventType, cellCompanyTicker, cellEventDateText, cellEventCertainty);
     
     // Check to see if the event is of type Earnings, Product Event or Economic event.
     // Earnings
@@ -1053,9 +1023,6 @@
                 else
                 // If not create the reminder or queue it up depending on the confirmed status
                 {
-                    // TO DO: Delete before shipping v2.0
-                    NSLog(@"Creating the following reminder for event %@ for ticker %@",cellEventType,ticker);
-                    
                     // Check to see if the event was in the past. If not create a reminder for it
                     if (fetchedEvent.date >= todaysDate) {
                         
@@ -1119,9 +1086,6 @@
     
     // Get the date for the event represented by the cell
     NSDate *eventDate = [reminderDataController getDateForEventOfType:eventType eventTicker:companyTicker];
-    
-    // To Do: Delete before shipping v2.8
-    NSLog(@"The event date for setting an alarm is:%@", eventDate);
     
     // Subtract a day as we want to remind the user a day prior and then set the reminder time to noon of the previous day
     // and set reminder due date to that.
@@ -2018,8 +1982,6 @@
     }
     
     [self.eventsListTable reloadData];
-    //TO DO: Delete before shipping v2.8
-    //NSLog(@"EVENT RELOAD NOTIFICATION: In View Controller");
 }
 
 // Show the error message in the header
@@ -2133,10 +2095,6 @@
    // if ([[segue identifier] isEqualToString:@"ShowEventDetails"]) {
     if ([[segue identifier] isEqualToString:@"ShowEventDetails1"]) {
         FAEventDetailsViewController *eventDetailsViewController = [segue destinationViewController];
-        
-        // TO DO: Delete before shipping v2.5. Not needed anymore.
-        // Set the title on the destination view controller to be the same as that of the current view controller which is today's date
-        //[eventDetailsViewController.navigationItem setTitle:self.navigationController.navigationBar.topItem.title];
         
         // Get the currently selected cell and set details for the destination.
         // IMPORTANT: If the format here or in the events UI is changed, reminder creation in the details screen will break.

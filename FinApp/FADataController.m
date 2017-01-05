@@ -253,10 +253,6 @@ bool eventsUpdated = NO;
     if (![dataStoreContext save:&error]) {
         NSLog(@"ERROR: Saving event of type: %@ and with ticker:%@ to data store failed: %@",eventType,listedCompanyTicker,error.description);
     }
-    // TO DO: Delete before shipping v2.8
-    else {
-        NSLog(@"SUCCESS: Saved the following event to the db:%@ for ticker:%@",eventType,listedCompanyTicker);
-    }
 }
 
 // Get all Events. Returns a results controller with identities of all Events recorded, but no more
@@ -345,9 +341,6 @@ bool eventsUpdated = NO;
     if (![self.resultsController performFetch:&error]) {
         NSLog(@"ERROR: Getting all future following events, including price change events, from data store failed: %@",error.description);
     }
-    
-    // TO DO: Delete before shipping v2.8
-    NSLog(@"CALLED ALL FUTURE FOLLOWING EVENTS");
     
     return self.resultsController;
 }
@@ -1740,13 +1733,6 @@ bool eventsUpdated = NO;
         companyTicker = [companyTicker stringByReplacingOccurrencesOfString:@"_" withString:@"."];
 
         companyNameString = [nameStrs objectAtIndex:tickerIndex];
-        // TO DO: For testing, comment before shipping v2.8
-        //NSLog(@"Company Ticker to be entered in db is: %@ and Company Name String is: %@",companyTicker, companyNameString);
-        
-        // TO DO: Delete before shipping v2.7
-        //NSLog(@"The Full Ticker String is:%@",tickerStr);
-        // TO DO: Delete before shipping v2.7
-        //NSLog(@"The Full Name String is:%@",companyNameString);
         
         // Extract the company name from the company name string
         forString = [companyNameString rangeOfString:@"for"];
@@ -1761,10 +1747,6 @@ bool eventsUpdated = NO;
                 companyName = [companyName substringToIndex:[companyName length]-1];
             }
         }
-        
-        // TO DO: Delete before shipping v2.7
-        //NSLog(@"The Name  is:%@",companyName);
-        //NSLog(@"The Ticker is:%@",companyTicker);
         
         // Add company ticker and name into the data store
         [self insertUniqueCompanyWithTicker:companyTicker name:companyName];
@@ -2109,8 +2091,6 @@ bool eventsUpdated = NO;
         [tickersToFetch appendString:@","];
     }
     [tickersToFetch deleteCharactersInRange:NSMakeRange([tickersToFetch length]-1, 1)];
-    // TO DO: Delete before shipping v2.7
-    //NSLog(@"**************************************The tickers to be fetched are:%@",tickersToFetch);
     
     // Construct the API URL to call
     NSString *endpointURL = @"http://marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=";
@@ -2189,9 +2169,6 @@ bool eventsUpdated = NO;
             // TO DO: Use later when you want to work with times as well
             //[eventDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss-HH:mm"];
             
-            // To Do: Delete before shipping v2.7
-            //NSLog(@"****percentChangeSinceYest before parsing API response is: %@", percentChangeSinceYest);
-            
             // Iterate through price array within the parsed data set, which only contains one dictionary.
             for (NSDictionary *parsedDetailsList in parsedDataSets) {
                 
@@ -2201,8 +2178,7 @@ bool eventsUpdated = NO;
                 // Get the last trade date
                 dateComponents = [[parsedDetailsList objectForKey:@"tradeTimestamp"] componentsSeparatedByString:@"T"];
                 eventDateStr =  [NSString stringWithFormat: @"%@", dateComponents[0]];
-                // TO DO: Delete before shipping v2.8
-                NSLog(@"The date string on which the daily price change event takes place: %@",eventDateStr);
+        
                 // Convert from string to Date
                 eventDate = [eventDateFormatter dateFromString:eventDateStr];
                 NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
@@ -2213,20 +2189,7 @@ bool eventsUpdated = NO;
                 // Get a string representation for the change
                 percentChangeSinceYestStr = [NSString stringWithFormat:@"%.02f",[percentChangeSinceYest doubleValue]];
                                           
-                if([percentChangeSinceYest doubleValue] == 0.0) {
-                    
-                    // To Do: Delete before shipping v2.7
-                    //NSLog(@"****ticker is: %@", companySymbol);
-                    //NSLog(@"percentChange is 0");
-                    //NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
-                }
-                                          
-                if([percentChangeSinceYest doubleValue] >= 2.0) {
-                    
-                    // To Do: Delete before shipping v2.7
-                    //NSLog(@"****ticker is: %@", companySymbol);
-                    //NSLog(@"percentChangeSinceYest is greater than equal to 3.0");
-                    //NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
+                if([percentChangeSinceYest doubleValue] >= 4.0) {
                     
                     specificEventType = [NSString stringWithFormat:@"%@%% up today",percentChangeSinceYestStr];
                     // Insert into the events datastore
@@ -2239,12 +2202,7 @@ bool eventsUpdated = NO;
                     }
                 }
                                           
-                if([percentChangeSinceYest doubleValue] <= -2.0) {
-                    
-                    // To Do: Delete before shipping v2.7
-                    //NSLog(@"****ticker is: %@", companySymbol);
-                    //NSLog(@"percentChangeSinceYest is less than equal to -3.0");
-                    //NSLog(@"****percentChangeSinceYest after parsing API response is: %@", percentChangeSinceYest);
+                if([percentChangeSinceYest doubleValue] <= -4.0) {
                     
                     percentChangeSinceYestStr = [percentChangeSinceYestStr substringFromIndex:1];
                     specificEventType = [NSString stringWithFormat:@"%@%% down today",percentChangeSinceYestStr];
@@ -2281,8 +2239,6 @@ bool eventsUpdated = NO;
         [tickersToFetch appendString:@","];
     }
     [tickersToFetch deleteCharactersInRange:NSMakeRange([tickersToFetch length]-1, 1)];
-    // TO DO: Delete before shipping v2.7
-    //NSLog(@"**************************************The tickers to be fetched are:%@",tickersToFetch);
     
     // Construct the API URL to call
     NSString *endpointURL = @"http://104.197.243.153/ticker/prices/";
@@ -2613,9 +2569,6 @@ bool eventsUpdated = NO;
     // Process the response
     if (error == nil)
     {
-        // TO DO: Delete before shipping v2.8
-        NSLog(@"Called the HISTORY endpoint: %@",endpointURL);
-        
         // Process the response that contains the events for the company.
         [self processStockPricesResponse:responseData forTicker:companyTicker forEventType:eventType];
         
@@ -2954,10 +2907,6 @@ bool eventsUpdated = NO;
             // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
             NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
             NSNumber *currentPrice = emptyPlaceholder;
-            
-            // TO DO: Delete before shipping v2.7
-           // NSDateFormatter *priceDateFormatter = [[NSDateFormatter alloc] init];
-          //  [priceDateFormatter setDateFormat:@"yyyy-MM-dd"];
             
             // Iterate through price array within the parsed data set, which only contains one dictionary.
             for (NSDictionary *parsedDetailsList in parsedDataSets) {
@@ -3349,20 +3298,8 @@ bool eventsUpdated = NO;
                 // See if the event qualifies for the update. If it does, call the remote data source to update it.
                 if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
                     
-                    // TO DO: Delete before shipping v2.7
-                    // Start the busy spinner only the first time
-                    /* if (!eventsUpdated) {
-                     // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                     // TO DO: Delete Later
-                     //NSLog(@"About to start busy spinner");
-                     [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
-                     });
-                     } */
-                    
                     [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
-                    // TO DO: Delete before shipping v2.0
-                    //NSLog(@"DAYS BETWEEN FOR TICKER: %@ is: %ld",localEvent.listedCompany.ticker,(long)daysBetween);
+                    
                     eventsUpdated = YES;
                 }
             }
@@ -3407,7 +3344,7 @@ bool eventsUpdated = NO;
             });
         }
     }
-    // Get product events and price changes every time
+    // Get price changes every time
     else {
         // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -3418,18 +3355,16 @@ bool eventsUpdated = NO;
         
         // Check to see if product events need to be added or refreshed. If yes, do that.
         // *****NOTE*****Currently always returning true since we have not implemented update logic
-        if ([self doProductEventsNeedToBeAddedRefreshed]) {
+        /*if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // TO DO: Delete Later
             //NSLog(@"About to add product events from Knotifi Data Platform");
             [self getAllProductEventsFromApi];
-        }
+        }*/
 
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
         // Delete the existing daily price change events from the db to not create duplicates
         [self deleteAllDailyPriceChangeEvents];
-        // TO DO: Delete before shipping v2.8
-        //NSLog(@"About to fetch new daily price change event");
         [self getAllPriceChangeEventsFromApiNew];
         
         // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.
@@ -3767,10 +3702,6 @@ bool eventsUpdated = NO;
         if (![dataStoreContext save:&error]) {
             NSLog(@"ERROR: Saving action to data store failed: %@",error.description);
         }
-        // TO DO: Delete before shipping v2.8
-        else {
-            NSLog(@"SUCCESS: Saved the following action to the db:%@ for ticker:%@",actionType,eventCompanyTicker);
-        }
     }
     
     // If the event does not exist, log an error message to the console
@@ -3912,8 +3843,6 @@ bool eventsUpdated = NO;
 // Send a notification that the list of events has changed (updated)
 - (void)sendEventsChangeNotification {
     
-    // TO DO: Delete Before Shipping v2.8
-    //NSLog(@"EVENT RELOAD: From Data Controller");
     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
 }
 
