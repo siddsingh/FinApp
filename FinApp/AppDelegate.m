@@ -75,10 +75,7 @@
         [econEventDataController deleteAllEventActions];
         
         // Sync the 2017 econ events
-        NSLog(@"About to start the background incremental sync for 2017 econ events");
         [econEventDataController getAllEconomicEventsFromLocalStorage];
-        
-        
         
         // Update the list of companies in a background task
         __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{

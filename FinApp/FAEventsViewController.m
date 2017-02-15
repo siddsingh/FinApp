@@ -620,6 +620,7 @@
 }
 
 // Add the right actions to each row in the table, either following or Set Reminder.
+// Also add the Delete or Unfollow based on which main nav option is selected
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     // Get the cell for the row on which the action is being exercised
@@ -643,7 +644,7 @@
             // TO DO: Hardcoding this for now to be quarterly earnings
             if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:@"Quarterly Earnings"])
             {
-                actionName = [NSString stringWithFormat:@"Following %@",cell.companyTicker.text];
+                actionName = [NSString stringWithFormat:@"Unfollow %@",cell.companyTicker.text];
                 
                 // Create the "Reimder Already Set" Action and handle it being exercised.
                 setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
@@ -653,7 +654,7 @@
                     [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                     
                     // Let the user know a reminder is already set for this ticker.
-                    [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",cell.companyTicker.text]];
+                    [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",cell.companyTicker.text]];
                     
                     // TRACKING EVENT: Unset Follow: User clicked the "Set Reminder" button to create a reminder.
                     // TO DO: Disabling to not track development events. Enable before shipping.
@@ -664,7 +665,7 @@
                 }];
                 
                 // Format the Action UI to be the correct color and everything
-                setReminderAction.backgroundColor = [UIColor grayColor];
+                setReminderAction.backgroundColor = [UIColor redColor];
             }
             else
             // If not create the follow action
@@ -703,16 +704,11 @@
         // For quarterly earnings or product events, create a reminder which indicates that this ticker is being followed
         else {
             
-            // TO DO: Delete after shipping v2.8
-            NSLog(@"*****Entering the processing loop for following with ticker:%@ and event type:%@",cell.companyTicker.text,cellEventType);
-            NSLog(@"*****Does reminder action exist for the above event:%d",[self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType]);
-            
-            
             // Check to see if a reminder action has already been created for the event represented by the cell.
             // If yes, show a appropriately formatted status action, in this case that you are following the ticker.
             if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
             {
-                actionName = [NSString stringWithFormat:@"Following %@",cell.companyTicker.text];
+                actionName = [NSString stringWithFormat:@"Unfollow %@",cell.companyTicker.text];
                 
                 // Create the "Reimder Already Set" Action and handle it being exercised.
                 setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
@@ -722,7 +718,7 @@
                     [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                     
                     // Let the user know a reminder is already set for this ticker.
-                    [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",cell.companyTicker.text]];
+                    [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",cell.companyTicker.text]];
                     
                     // TRACKING EVENT: Unset Follow: User clicked the "Set Reminder" button to create a reminder.
                     // TO DO: Disabling to not track development events. Enable before shipping.
@@ -733,7 +729,7 @@
                 }];
                 
                 // Format the Action UI to be the correct color and everything
-                setReminderAction.backgroundColor = [UIColor grayColor];
+                setReminderAction.backgroundColor = [UIColor redColor];
             }
             else
             // If not create the follow action

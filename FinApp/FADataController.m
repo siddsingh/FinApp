@@ -2181,7 +2181,7 @@ bool eventsUpdated = NO;
         
                 // Convert from string to Date
                 eventDate = [eventDateFormatter dateFromString:eventDateStr];
-                NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
+                //NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
             
                 // Get percentage changed since yesterday
                 percentChangeSinceYest = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"percentChange"] doubleValue]];
