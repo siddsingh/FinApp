@@ -656,7 +656,7 @@
                     
                     // Slide the row back over the action.
                     // TO DO: See if you can animate the slide back.
-                    [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    //[self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                     
                     // Refresh Table
                     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
@@ -726,7 +726,7 @@
                     
                     // Slide the row back over the action.
                     // TO DO: See if you can animate the slide back.
-                    [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    //[self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                     
                     // Refresh Table
                     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];

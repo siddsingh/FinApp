@@ -69,8 +69,8 @@
             // TO DO: Hardcoding this for now to be quarterly earnings
             if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:@"Quarterly Earnings"])
             {
-                actionName = [NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker];
-                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                actionName = [NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker];
+                [self.reminderButton setBackgroundColor:[UIColor redColor]];
                 [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             }
@@ -90,8 +90,8 @@
             // Check to see if a reminder action has already been created for the event which means this ticker is already being followed
             if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
             {
-                actionName = [NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker];
-                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                actionName = [NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker];
+                [self.reminderButton setBackgroundColor:[UIColor redColor]];
                 [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             }
@@ -602,6 +602,8 @@
 // Action to take when Reminder button is pressed, which is set a reminder if reminder hasn't already been created, else display a message that reminder has aleady been set.
 - (IBAction)reminderAction:(id)sender {
     
+    FADataController *detailUnfollowDataController = [[FADataController alloc] init];
+    
     // If it's a followable event, process following of the ticker
     if ([self isEventFollowable:self.eventType]) {
         
@@ -612,8 +614,18 @@
             // TO DO: Hardcoding this for now to be quarterly earnings
             if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:@"Quarterly Earnings"])
             {
+                // Delete the following event actions for the ticker
+                [detailUnfollowDataController deleteFollowingEventActionsForTicker:self.parentTicker];
+                
+                // Change the styling to show following.
+                // Set button color based on event type
+                [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+                [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                
                 // Show appropriate message
-                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",self.parentTicker]];
+                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
+                
                 
                 // TRACKING EVENT: Unset Follow: User clicked the "Reminder Set" button, most likely to unset the reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
@@ -648,8 +660,17 @@
             // If yes, show a appropriately formatted message.
             if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
             {
+                // Delete the following event actions for the ticker
+                [detailUnfollowDataController deleteFollowingEventActionsForTicker:self.parentTicker];
+                
+                // Change the styling to show following.
+                // Set button color based on event type
+                [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+                [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                
                 // Show appropriate message
-                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Already following %@",self.parentTicker]];
+                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
                 
                 // TRACKING EVENT: Unset Follow: User clicked the "Reminder Set" button, most likely to unset the reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.

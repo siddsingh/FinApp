@@ -3702,6 +3702,10 @@ bool eventsUpdated = NO;
         if (![dataStoreContext save:&error]) {
             NSLog(@"ERROR: Saving action to data store failed: %@",error.description);
         }
+        // TO DO: Delete before shipping v2.9
+        else {
+            NSLog(@"INSERTED ACTION:%@",action.parentEvent.description);
+        }
     }
     
     // If the event does not exist, log an error message to the console
