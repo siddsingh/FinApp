@@ -278,4 +278,7 @@
 // Delete all entries in the action table. Currently being used to reset state so that any user is starting with a clean slate for following.
 - (void)deleteAllEventActions;
 
+// Delete all entries for a particular ticker in the actions store that indicate that the ticker is being followed so basically entries of the following type: "OSReminder" which means creating a reminder native to iOS. We have added another type called "PriceChange" which currently is used to indicate that a price change event is being followed.
+- (void)deleteFollowingEventActionsForTicker:(NSString *)ticker;
+
 @end

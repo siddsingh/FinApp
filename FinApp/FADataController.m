@@ -3838,6 +3838,38 @@ bool eventsUpdated = NO;
     [dataStoreContext save:&error];
 }
 
+// Delete all entries for a particular ticker in the actions store that indicate that the ticker is being followed so basically entries of the following type: "OSReminder" which means creating a reminder native to iOS. We have added another type called "PriceChange" which currently is used to indicate that a price change event is being followed. 
+- (void)deleteFollowingEventActionsForTicker:(NSString *)ticker
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // For price change events the event type is a fuzzy match.
+    NSFetchRequest *actionsFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *actionEntity = [NSEntityDescription entityForName:@"Action" inManagedObjectContext:dataStoreContext];
+    
+    // Filter based on ticker
+    
+    // Fetch all actions
+    NSPredicate *actionsPredicate = [NSPredicate predicateWithFormat:@"(type =[c] %@ OR type =[c] %@) AND parentEvent.listedCompany.ticker =[c] %@", @"OSReminder", @"PriceChange", ticker];
+    [actionsFetchRequest setEntity:actionEntity];
+    [actionsFetchRequest setPredicate:actionsPredicate];
+    NSError *error;
+    NSArray *actions = [dataStoreContext executeFetchRequest:actionsFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting all following related event actions, while trying to delete all of them, from data store failed: %@",error.description);
+    }
+    
+    // Delete all following actions
+    for (NSManagedObject *action in actions) {
+        
+        [dataStoreContext deleteObject:action];
+    }
+    
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
+}
+
 #pragma mark - Notifications
 
 // Send a notification that the list of events has changed (updated)

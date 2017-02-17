@@ -634,6 +634,8 @@
     // String to hold the action name
     NSString *actionName = nil;
     
+    FADataController *unfollowDataController = [[FADataController alloc] init];
+    
     // If the cell contains a followable event, add and process following of the ticker
     if ([self isEventFollowable:cellEventType]) {
         
@@ -649,9 +651,15 @@
                 // Create the "Reimder Already Set" Action and handle it being exercised.
                 setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
                     
+                    // Delete the actions in the action store, that indicate following, for the particular ticker.
+                    [unfollowDataController deleteFollowingEventActionsForTicker:cell.companyTicker.text];
+                    
                     // Slide the row back over the action.
                     // TO DO: See if you can animate the slide back.
                     [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    
+                    // Refresh Table
+                    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                     
                     // Let the user know a reminder is already set for this ticker.
                     [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",cell.companyTicker.text]];
@@ -713,9 +721,15 @@
                 // Create the "Reimder Already Set" Action and handle it being exercised.
                 setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
                     
+                    // Delete the actions in the action store, that indicate following, for the particular ticker.
+                    [unfollowDataController deleteFollowingEventActionsForTicker:cell.companyTicker.text];
+                    
                     // Slide the row back over the action.
                     // TO DO: See if you can animate the slide back.
                     [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    
+                    // Refresh Table
+                    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                     
                     // Let the user know a reminder is already set for this ticker.
                     [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",cell.companyTicker.text]];
