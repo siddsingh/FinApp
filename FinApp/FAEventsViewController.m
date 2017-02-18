@@ -539,8 +539,8 @@
                     // Insert history, with previous event 1 date being the market open date 30 days ago and previous event 1 related date being the market open date at the beginning of the year.
                     // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
                     NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
-                    // To Do: Delete when shipping v2.7
-                    //NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
+                    // To Do: Delete when shipping v2.9
+                    NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
                     [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
                 }
                 // Else update the non price related data, not including current date, on the event history from the event. We don't include the current date as current date is set only once a day which is when the user first accesses the event.
@@ -673,7 +673,7 @@
                 }];
                 
                 // Format the Action UI to be the correct color and everything
-                setReminderAction.backgroundColor = [UIColor redColor];
+                setReminderAction.backgroundColor = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
             }
             else
             // If not create the follow action
@@ -743,7 +743,7 @@
                 }];
                 
                 // Format the Action UI to be the correct color and everything
-                setReminderAction.backgroundColor = [UIColor redColor];
+                setReminderAction.backgroundColor = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
             }
             else
             // If not create the follow action
@@ -1179,10 +1179,20 @@
     
     // Get historical prices if needed
     if(fetchHistory) {
+        
+        // To Do: Delete before shipping v2.9
+        NSLog(@"30 days ago date is:%@ and ytd date is:%@",eventForPricesFetch.previous1Date,eventForPricesFetch.previous1RelatedDate);
+        
         // See which one is before in time, the ytd date or 30 days ago date and set from date to that.
-        if(eventForPricesFetch.previous1RelatedDate <= eventForPricesFetch.previous1Date) {
+        if ([(eventForPricesFetch.previous1Date) timeIntervalSinceDate:(eventForPricesFetch.previous1RelatedDate)] > 0) {
+            // To Do: Delete before shipping v2.9
+            NSLog(@"In the ytd date loop:%@",eventForPricesFetch.previous1RelatedDate);
+            
             [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
         } else {
+            // To Do: Delete before shipping v2.9
+            NSLog(@"In the 30 days ago date loop:%@",eventForPricesFetch.previous1Date);
+            
             [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1Date toDateInclusive:eventForPricesFetch.currentDate];
         }
     }

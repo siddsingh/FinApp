@@ -2795,8 +2795,8 @@ bool eventsUpdated = NO;
     // Get the list of data slices from the overall data set
     NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
     
-    // TO DO: Delete Later v2.7
-    //NSLog(@"The parsed data set for history is:%@",parsedDataSets.description);
+    // TO DO: Delete before shipping v2.9
+    NSLog(@"The parsed data set for history is:%@",parsedDataSets.description);
     
     // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
     // then you don't want to process the data and enter as historical prices.
@@ -2832,8 +2832,8 @@ bool eventsUpdated = NO;
             // Currently recording only previous event 1 (30 days ago) date closing stock price, previous related event 1 (start of the year).
             historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
             prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
-            // TO DO: Comment 1st line and delete second line before shipping v2.7
-            //NSLog(@"The 30 days ago date in the history parsing logic is:%@",prevEvent1Date);
+            // TO DO: Comment 1st line and delete second line before shipping v2.9
+            NSLog(@"The 30 days ago date in the history parsing logic is:%@",prevEvent1Date);
             prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
             
             // Get the prices for the various dates and write them to the history data store

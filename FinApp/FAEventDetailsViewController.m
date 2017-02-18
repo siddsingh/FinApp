@@ -70,7 +70,7 @@
             if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:@"Quarterly Earnings"])
             {
                 actionName = [NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker];
-                [self.reminderButton setBackgroundColor:[UIColor redColor]];
+                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             }
@@ -91,7 +91,7 @@
             if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
             {
                 actionName = [NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker];
-                [self.reminderButton setBackgroundColor:[UIColor redColor]];
+                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             }
@@ -617,6 +617,9 @@
                 // Delete the following event actions for the ticker
                 [detailUnfollowDataController deleteFollowingEventActionsForTicker:self.parentTicker];
                 
+                // Refresh the event list on the prior screen
+                [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
+                
                 // Change the styling to show following.
                 // Set button color based on event type
                 [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
@@ -640,9 +643,12 @@
                 // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
                 [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
                 
+                // Refresh the event list on the prior screen
+                [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
+                
                 // Style the button to post set styling
-                [self.reminderButton setBackgroundColor:[UIColor grayColor]];
-                [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker] forState:UIControlStateNormal];
+                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                [self.reminderButton setTitle:[NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
                 
                 // TRACKING EVENT: Set Follow: User clicked the "Set Reminder" button to create a reminder.
@@ -662,6 +668,9 @@
             {
                 // Delete the following event actions for the ticker
                 [detailUnfollowDataController deleteFollowingEventActionsForTicker:self.parentTicker];
+                
+                // Refresh the event list on the prior screen
+                [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                 
                 // Change the styling to show following.
                 // Set button color based on event type
@@ -685,9 +694,12 @@
                 // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
                 [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
                 
+                // Refresh the event list on the prior screen
+                [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
+                
                 // Style the button to post set styling
-                [self.reminderButton setBackgroundColor:[UIColor grayColor]];
-                [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOWING %@",self.parentTicker] forState:UIControlStateNormal];
+                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                [self.reminderButton setTitle:[NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
                 
                 // TRACKING EVENT: Set Follow: User clicked the "Set Reminder" button to create a reminder.
@@ -836,6 +848,8 @@
             // If the user has already provided access, create the reminder.
         case EKAuthorizationStatusAuthorized: {
             [self processReminderForEventType:eventType companyTicker:parentTicker eventDateText:evtDateText eventCertainty:evtCertainty withDataController:appropriateDataController];
+            // Create all reminders for all followable events for this ticker. Does not do anything for econ events
+            [self createAllRemindersInDetailsViewForFollowedTicker:parentTicker withDataController:appropriateDataController];
             // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
             // Delete the existing daily price change events from the db to not create duplicates
             [appropriateDataController deleteAllDailyPriceChangeEvents];
@@ -1153,6 +1167,10 @@
         // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
         double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+        // TO DO: Delete before shipping v2.9
+        double prev1PriceDbl = [[eventHistoryData previous1Price] doubleValue];
+        NSLog(@"The current price is:%f ytd price is:%f and 30 days ago price is:%f",currentPriceDbl,prev1RelatedPriceDbl,prev1PriceDbl);
+        
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
             numberOfPieces = 5;
         } else {
