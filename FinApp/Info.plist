@@ -65,9 +65,9 @@
 		</dict>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string>To alert you to key events for stocks you follow.</string>
+	<string>To alert you to key events that you are following.</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>To alert you to key events for stocks you follow.</string>
+	<string>To alert you to key events that you are following.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

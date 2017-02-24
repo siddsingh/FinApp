@@ -106,6 +106,9 @@
 // Get all events for the given event Company Ticker.
 - (NSArray *)getAllEventsForParentEventTicker:(NSString *)eventCompanyTicker;
 
+// Get all economic events of a given type (e.g. Jobs Report)
+- (NSArray *)getAllEconEventsOfType:(NSString *)eventType;
+
 // Check to see if a single economic event exists in the event data store and return accordingly. Typically used to
 // check if economic events types have been synced or not.
 - (BOOL)doesEconEventExist;
@@ -274,6 +277,9 @@
 // Check to see if an Action associated with an event is present, in the Action Data Store, given the Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 // TO DO: Refactor here to add multiple types of actions.
 - (BOOL)doesReminderActionExistForEventWithTicker:(NSString *)eventCompanyTicker eventType:(NSString *)associatedEventType;
+
+// Check to see if an Action associated with an event is present, in the Action Data Store, given the full event type (e.g. Feb Jobs Report).
+- (BOOL)doesReminderActionExistForSpecificEvent:(NSString *)eventType;
 
 // Delete all entries in the action table. Currently being used to reset state so that any user is starting with a clean slate for following.
 - (void)deleteAllEventActions;

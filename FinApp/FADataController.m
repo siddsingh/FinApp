@@ -773,6 +773,27 @@ bool eventsUpdated = NO;
     return events;
 }
 
+// Get all economic events of a given type (e.g. Jobs Report)
+- (NSArray *)getAllEconEventsOfType:(NSString *)eventType {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the events by doing a case insensitive query on event type.
+    NSFetchRequest *eventsFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventsPredicate = [NSPredicate predicateWithFormat:@"type contains[cd] %@",eventType];
+    [eventsFetchRequest setEntity:eventEntity];
+    [eventsFetchRequest setPredicate:eventsPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventsFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting all econ events of type: %@ from data store failed: %@",eventType,error.description);
+    }
+    
+    return events;
+}
+
 // Check to see an event of a certain type exists for a given company ticker. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
 - (BOOL)doesEventExistForParentEventTicker:(NSString *)eventCompanyTicker andEventType:(NSString *)eventType {
     
@@ -3775,6 +3796,35 @@ bool eventsUpdated = NO;
     }
     if (fetchedActions.count > 1) {
         NSLog(@"MEDIUM_WARNING: Found more than 1 action of the same type for a unique event in the Action Data Store");
+        exists = YES;
+    }
+    if (fetchedActions.count == 1) {
+        exists = YES;
+    }
+    
+    return exists;
+}
+
+// Check to see if an Action associated with an event is present, in the Action Data Store, given the full event type (e.g. Feb Jobs Report).
+- (BOOL)doesReminderActionExistForSpecificEvent:(NSString *)eventType
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    BOOL exists = NO;
+    
+    // Check to see if the action exists by doing a case insensitive query on Action Type and Event Type.
+    NSFetchRequest *actionFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *actionEntity = [NSEntityDescription entityForName:@"Action" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *actionPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type =[c] %@",@"OSReminder", eventType];
+    [actionFetchRequest setEntity:actionEntity];
+    [actionFetchRequest setPredicate:actionPredicate];
+    NSError *error;
+    NSArray *fetchedActions = [dataStoreContext executeFetchRequest:actionFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting an action from data store, to check if it exists for an associated event, failed: %@",error.description);
+    }
+    if (fetchedActions.count > 1) {
+        NSLog(@"MEDIUM_WARNING: Found more than 1 action of type %@ for a unique event in the Action Data Store. Ignore for Econ events.", eventType);
         exists = YES;
     }
     if (fetchedActions.count == 1) {
