@@ -794,7 +794,7 @@
                 [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                 
                 // Let the user know a reminder is already set for this ticker.
-                [self sendUserMessageCreatedNotificationWithMessage:@"Unfollowed event."];
+                [self sendUserMessageCreatedNotificationWithMessage:@"Unfollowed event"];
                 
                 // TRACKING EVENT: Unset Reminder: User clicked the "Set Reminder" button to create a reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1952,17 +1952,18 @@
     [self.eventTypeSelector setSelectedSegmentIndex:0];
     [self.eventTypeSelector sendActionsForControlEvents:UIControlEventValueChanged];
     
+    // TO DO: Delete before shipping v2.9
     // If All Events is selected, enable and show the event selection bar
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+    /*if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
         [self.eventTypeSelector setEnabled:YES];
         [self.eventTypeSelector setHidden:NO];
-    }
-    
+    }*/
+    // TO DO: Delete before shipping v2.9
     // If following is selected disable and hide the event selection bar
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+    /*if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
         [self.eventTypeSelector setEnabled:NO];
         [self.eventTypeSelector setHidden:YES];
-    }
+    }*/
     
     // TRACKING EVENT: EventsNav Selected: User clicked the "Reminder Set" button, most likely to unset the reminder.
     // TO DO: Disabling to not track development events. Enable before shipping.

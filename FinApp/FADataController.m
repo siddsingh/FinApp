@@ -329,7 +329,10 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (NOT (listedCompany.ticker contains %@)) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", todaysDate, @"ECONOMY_", @"OSReminder", @"PriceChange"];
+    // TO DO: Delete before shipping v2.9. Don't include econ events.
+    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (NOT (listedCompany.ticker contains %@)) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", todaysDate, @"ECONOMY_", @"OSReminder", @"PriceChange"];
+    // Include Econ events
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", todaysDate, @"OSReminder", @"PriceChange"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -448,7 +451,7 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter for date and event type
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND listedCompany.ticker contains %@ AND type =[c] %@", todaysDate, @"ECONOMY_", @"DOES_NOT_EXIST"];
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND listedCompany.ticker contains %@ AND (ANY actions.type == %@)", todaysDate, @"ECONOMY_", @"OSReminder"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -608,7 +611,10 @@ bool eventsUpdated = NO;
     // Check to see if the event type is "All". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
     if ([eventType caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT (listedCompany.ticker contains %@)) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"ECONOMY_", @"OSReminder", @"PriceChange"];
+        // TO DO: Delete before shipping v2.9. Does not contain econ events
+        //searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT (listedCompany.ticker contains %@)) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"ECONOMY_", @"OSReminder", @"PriceChange"];
+        // Econ events included
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"OSReminder", @"PriceChange"];
     }
     
     // Check to see if the event type is "Earnings". Search on "ticker" or "name" fields for the listed Company for earnings events
@@ -620,7 +626,7 @@ bool eventsUpdated = NO;
     // Check to see if the event type is "Economic". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
     if ([eventType caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker contains %@) AND (date >= %@) AND type =[c] %@", searchText, searchText, searchText, @"ECONOMY_", todaysDate, @"DOES_NOT_EXIST"];
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker contains %@) AND (date >= %@) AND (ANY actions.type == %@)", searchText, searchText, searchText, @"ECONOMY_", todaysDate, @"OSReminder"];
     }
     
     // Check to see if the event type is "Product". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events

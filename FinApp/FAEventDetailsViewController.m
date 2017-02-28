@@ -106,14 +106,14 @@
             }
         }
     }
-    ///////// Else, for a non followable event (currently econ event), show a Set Reminder or Reminder Set button
+    ///////// Else, for a non followable event (currently econ event), show a Set Reminder or Reminder Set button. Updating this to be FOLLOW/UNFOLLOW. Basically now econ events are follow/unfollowable just like any other event.
     else {
         // Check to see if a reminder action has already been created for the event represented by the cell.
         // If yes, show the Reminder set action.
         if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
         {
             [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-            [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
+            [self.reminderButton setTitle:@"UNFOLLOW" forState:UIControlStateNormal];
             [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         }
         // If not, show the set reminder action
@@ -121,7 +121,7 @@
         {
             // Set button color based on event type
             [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
-            [self.reminderButton setTitle:@"SET REMINDER" forState:UIControlStateNormal];
+            [self.reminderButton setTitle:@"FOLLOW" forState:UIControlStateNormal];
             [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         }
     }
@@ -711,17 +711,17 @@
             }
         }
     }
-    ///////// Else, for a non followable event (currently econ event), process Set Reminder/Reminder Set as usual
+    ///////// Else, for a non followable event (currently econ event), process Set Reminder/Reminder Set as usual. Updating this to enable following/unfollowing for Econ events.
     else {
         // Check to see if a reminder has already been created for the event.
         // If yes let the user know a reminder is already set for this ticker.
         if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
         {
-            [self sendUserGuidanceCreatedNotificationWithMessage:@"Day before reminder already set."];
+            [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowing Event"];
             
             // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
             // TO DO: Disabling to not track development events. Enable before shipping.
-            [FBSDKAppEvents logEvent:@"Unset Reminder"
+            [FBSDKAppEvents logEvent:@"Unset Follow"
                           parameters:@{ @"Ticker" : self.parentTicker,
                                         @"Event Type" : self.eventType,
                                         @"Event Certainty" : self.eventCertainty } ];
@@ -735,12 +735,12 @@
             
             // Style the button to post set styling
             [self.reminderButton setBackgroundColor:[UIColor grayColor]];
-            [self.reminderButton setTitle:@"REMINDER SET" forState:UIControlStateNormal];
+            [self.reminderButton setTitle:@"UNFOLLOW" forState:UIControlStateNormal];
             [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             
             // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
             // TO DO: Disabling to not track development events. Enable before shipping.
-            [FBSDKAppEvents logEvent:@"Create Reminder"
+            [FBSDKAppEvents logEvent:@"Set Follow"
                           parameters:@{ @"Ticker" : self.parentTicker,
                                         @"Event Type" : self.eventType,
                                         @"Event Certainty" : self.eventCertainty } ];
