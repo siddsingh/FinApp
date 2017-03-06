@@ -917,7 +917,7 @@
                                                             }
                                                             // If it's an econ event, create all reminders for all econ events of this type
                                                             else {
-                                                                [self createAllRemindersForEconEventType:eventCell.eventDescription.text withDataController:afterAccessDataController];
+                                                                [weakPtrToSelf createAllRemindersForEconEventType:eventCell.eventDescription.text withDataController:afterAccessDataController];
                                                             }
                                                         } else {
                                                             [weakPtrToSelf sendUserMessageCreatedNotificationWithMessage:@"Enable Reminders (Settings>Knotifi)."];

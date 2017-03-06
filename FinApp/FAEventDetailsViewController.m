@@ -13,6 +13,7 @@
 #import "EventHistory.h"
 #import "FADataController.h"
 #import "Event.h"
+#import "Company.h"
 #import "Reachability.h"
 #import "FACompanyInfoStore.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -717,7 +718,7 @@
         // If yes let the user know a reminder is already set for this ticker.
         if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
         {
-            [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowing Event"];
+            [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowed Event"];
             
             // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
             // TO DO: Disabling to not track development events. Enable before shipping.
@@ -848,12 +849,16 @@
             // If the user has already provided access, create the reminder.
         case EKAuthorizationStatusAuthorized: {
             [self processReminderForEventType:eventType companyTicker:parentTicker eventDateText:evtDateText eventCertainty:evtCertainty withDataController:appropriateDataController];
-            // Create all reminders for all followable events for this ticker. Does not do anything for econ events
-            [self createAllRemindersInDetailsViewForFollowedTicker:parentTicker withDataController:appropriateDataController];
-            // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
-            // Delete the existing daily price change events from the db to not create duplicates
-            [appropriateDataController deleteAllDailyPriceChangeEvents];
-            [appropriateDataController getAllPriceChangeEventsFromApiNew];
+            
+            if ([self isEventFollowable:eventType]) {
+                // Create all reminders for all followable events for this ticker. Does not do anything for econ events
+                [self createAllRemindersInDetailsViewForFollowedTicker:parentTicker withDataController:appropriateDataController];
+            }
+            // If it's an econ event, create all reminders for all econ events of this type
+            else {
+                [self createAllRemindersInDetailsViewForEconEventType:eventType withDataController:appropriateDataController];
+            }
+            
             break;
         }
             
@@ -870,10 +875,17 @@
                                                         if (grantedByUser) {
                                                             // Create a new Data Controller so that this thread has it's own MOC
                                                             FADataController *afterAccessDataController = [[FADataController alloc] init];
-                                                            //[weakPtrToSelf processReminderForEventInCell:eventCell withDataController:afterAccessDataController];
+                
                                                             [weakPtrToSelf processReminderForEventType:eventType companyTicker:parentTicker eventDateText:evtDateText eventCertainty:evtCertainty withDataController:afterAccessDataController];
-                                                            // Create all reminders for all followable events for this ticker. Does not do anything for econ events
-                                                            [weakPtrToSelf createAllRemindersInDetailsViewForFollowedTicker:parentTicker withDataController:afterAccessDataController];
+                                                            
+                                                            if ([weakPtrToSelf isEventFollowable:eventType]) {
+                                                                // Create all reminders for all followable events for this ticker. Does not do anything for econ events
+                                                                [weakPtrToSelf createAllRemindersInDetailsViewForFollowedTicker:parentTicker withDataController:appropriateDataController];
+                                                            }
+                                                            // If it's an econ event, create all reminders for all econ events of this type
+                                                            else {
+                                                                [weakPtrToSelf createAllRemindersInDetailsViewForEconEventType:eventType withDataController:appropriateDataController];
+                                                            }
                                                         } else {
                                                             [weakPtrToSelf sendUserGuidanceCreatedNotificationWithMessage:@"Enable Reminders under Settings>Knotifi and try again!"];
                                                         }
@@ -1025,6 +1037,52 @@
                             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:ticker eventType:cellEventType];
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+// Create reminders for all economic events of a certain type (e.g. Jobs Report) for a given ticker, if it's not already been created
+- (void)createAllRemindersInDetailsViewForEconEventType:(NSString *)type withDataController:(FADataController *)appropriateDataController {
+    
+    NSString *cellEventType = nil;
+    NSString *cellEventDateText = nil;
+    NSString *cellEventCertainty = nil;
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all events for a ticker
+    NSArray *allEvents = [appropriateDataController getAllEconEventsOfType:type];
+    for (Event *fetchedEvent in allEvents) {
+        
+        // TO DO: Delete before shipping v2.9
+        NSLog(@"ENTERED Loop to create event reminder:%@",fetchedEvent.type);
+        
+        // Get event details
+        cellEventType = fetchedEvent.type;
+        cellEventDateText = [self formatDateBasedOnEventType:fetchedEvent.type withDate:fetchedEvent.date withRelatedDetails:fetchedEvent.relatedDetails withStatus:fetchedEvent.certainty];
+        cellEventCertainty = fetchedEvent.certainty;
+        
+        // Check to see if a reminder action has already been created for this event.
+        // If yes, do nothing.
+        if ([appropriateDataController doesReminderActionExistForSpecificEvent:cellEventType])
+        {
+        }
+        // If not create the reminder or queue it up depending on the confirmed status
+        else
+        {
+            // Check to see if the event was in the past. If not create a reminder for it
+            if (fetchedEvent.date >= todaysDate) {
+                
+                // Create the reminder and show user the appropriate message
+                BOOL success = [self createReminderForEventOfType:cellEventType withTicker:fetchedEvent.listedCompany.ticker dateText:cellEventDateText andDataController:appropriateDataController];
+                if (success) {
+                    // Add action to the action data store with status created
+                    [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:fetchedEvent.listedCompany.ticker eventType:cellEventType];
+                } else {
+                    NSLog(@"ERROR: Unable to create the following reminder for confirmed event %@ for ticker %@",cellEventType,fetchedEvent.listedCompany.ticker);
                 }
             }
         }
