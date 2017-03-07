@@ -718,7 +718,19 @@
         // If yes let the user know a reminder is already set for this ticker.
         if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
         {
-            [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowed Event"];
+            // Delete the following event actions for the ticker
+            [detailUnfollowDataController deleteFollowingEventActionsForEconEvent:self.eventType];
+            
+            // Refresh the event list on the prior screen
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
+            
+            // Change the styling to show following.
+            // Set button color based on event type
+            [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+            [self.reminderButton setTitle:@"FOLLOW" forState:UIControlStateNormal];
+            [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            
+            [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowed event"];
             
             // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
             // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1053,8 +1065,23 @@
     // Get today's date formatted to midnight last night
     NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
     
-    // Get all events for a ticker
-    NSArray *allEvents = [appropriateDataController getAllEconEventsOfType:type];
+    // Get all events for an econ type
+    // Send in the generic type (e.g. Jobs Report) rather than the exact type (e.g. Jan Jobs Report)
+    // Filter based on type
+    NSArray *allEvents = nil;
+    if ([type containsString:@"Fed Meeting"]) {
+        allEvents = [appropriateDataController getAllEconEventsOfType:@"Fed Meeting"];
+    }
+    if ([type containsString:@"Jobs Report"]) {
+        allEvents = [appropriateDataController getAllEconEventsOfType:@"Jobs Report"];
+    }
+    if ([type containsString:@"Consumer Confidence"]) {
+        allEvents = [appropriateDataController getAllEconEventsOfType:@"Consumer Confidence"];
+    }
+    if ([type containsString:@"GDP Release"]) {
+        allEvents = [appropriateDataController getAllEconEventsOfType:@"GDP Release"];
+    }
+    
     for (Event *fetchedEvent in allEvents) {
         
         // TO DO: Delete before shipping v2.9

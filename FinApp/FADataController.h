@@ -287,4 +287,7 @@
 // Delete all entries for a particular ticker in the actions store that indicate that the ticker is being followed so basically entries of the following type: "OSReminder" which means creating a reminder native to iOS. We have added another type called "PriceChange" which currently is used to indicate that a price change event is being followed.
 - (void)deleteFollowingEventActionsForTicker:(NSString *)ticker;
 
+// Delete all entries for a particular econ event type in the actions store that indicate that the ticker is being followed so basically entries of the following type: "OSReminder" which means creating a reminder native to iOS.
+- (void)deleteFollowingEventActionsForEconEvent:(NSString *)type;
+
 @end

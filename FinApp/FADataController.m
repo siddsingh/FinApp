@@ -3930,6 +3930,50 @@ bool eventsUpdated = NO;
     [dataStoreContext save:&error];
 }
 
+// Delete all entries for a particular econ event type in the actions store that indicate that the ticker is being followed so basically entries of the following type: "OSReminder" which means creating a reminder native to iOS.
+- (void)deleteFollowingEventActionsForEconEvent:(NSString *)type
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // For price change events the event type is a fuzzy match.
+    NSFetchRequest *actionsFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *actionEntity = [NSEntityDescription entityForName:@"Action" inManagedObjectContext:dataStoreContext];
+    
+    NSPredicate *actionsPredicate;
+    
+    // Filter based on type
+    if ([type containsString:@"Fed Meeting"]) {
+        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"Fed Meeting"];
+    }
+    if ([type containsString:@"Jobs Report"]) {
+        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"Jobs Report"];
+    }
+    if ([type containsString:@"Consumer Confidence"]) {
+       actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"Consumer Confidence"];
+    }
+    if ([type containsString:@"GDP Release"]) {
+       actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"GDP Release"];
+    }
+
+    [actionsFetchRequest setEntity:actionEntity];
+    [actionsFetchRequest setPredicate:actionsPredicate];
+    NSError *error;
+    NSArray *actions = [dataStoreContext executeFetchRequest:actionsFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting all following related econ event actions, while trying to delete all of them, from data store failed: %@",error.description);
+    }
+    
+    // Delete all following actions
+    for (NSManagedObject *action in actions) {
+        
+        [dataStoreContext deleteObject:action];
+    }
+    
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
+}
+
 #pragma mark - Notifications
 
 // Send a notification that the list of events has changed (updated)

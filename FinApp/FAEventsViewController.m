@@ -789,9 +789,15 @@
             // Create the "Reimder Already Set" Action and handle it being exercised.
             setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Unfollow" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
                 
+                // Delete the actions in the action store, that indicate following, for that econ event type.
+                [unfollowDataController deleteFollowingEventActionsForEconEvent:cellEventType];
+                
                 // Slide the row back over the action.
                 // TO DO: See if you can animate the slide back.
-                [self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                //[self.eventsListTable reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+
+                // Refresh Table
+                [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                 
                 // Let the user know a reminder is already set for this ticker.
                 [self sendUserMessageCreatedNotificationWithMessage:@"Unfollowed event"];
@@ -1830,7 +1836,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
             [self.eventsListTable reloadData];
         }
@@ -1860,7 +1866,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
@@ -1890,7 +1896,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
             [self.eventsListTable reloadData];
         }
@@ -1920,7 +1926,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
             [self.eventsListTable reloadData];
         }
@@ -2649,7 +2655,7 @@
     }
     // If following is selected
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-        [self.navigationController.navigationBar.topItem setTitle:@"ACTIVITY FOR FOLLOWED STOCKS"];
+        [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
     }
 }
 
