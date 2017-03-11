@@ -515,9 +515,9 @@
             // Earnings -> Quarterly Earnings, Fed Meeting -> Jan Fed Meeting, Jobs Report -> Jan Jobs Report and so on.
             NSString *eventType = [self formatBackToEventType:selectedCell.eventDescription.text withAddedInfo:selectedCell.eventCertainty.text];
             
-            // If Quarterly Earnings or price change event get the historical data for display in the details
-            // We basically use the quarterly earnings event history to keep track of the stock prices for price change events since there cannot be a price change event for a ticker that we don't have the quarterly earnings for.
-            if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]) {
+            // If Quarterly Earnings or price change event or product event get the historical data for display in the details
+            // We basically use the quarterly earnings event history to keep track of the stock prices for price change events since there cannot be a price change event for a ticker that we don't have the quarterly earnings for. Same with product event
+            if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]||[eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
                 
                 // Set the busy spinner to show that details are being fetched. Do this in a background thread as the main
                 // thread is being taken up by the table view. It's a best practice.
@@ -1836,7 +1836,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
             [self.eventsListTable reloadData];
         }
@@ -1866,7 +1866,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
@@ -1896,7 +1896,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
             [self.eventsListTable reloadData];
         }
@@ -1926,7 +1926,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
             [self.eventsListTable reloadData];
         }
@@ -2655,7 +2655,7 @@
     }
     // If following is selected
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-        [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EVENTS"];
+        [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
     }
 }
 
