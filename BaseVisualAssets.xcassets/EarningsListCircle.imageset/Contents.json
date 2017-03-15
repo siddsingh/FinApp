@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "EarningsListCircle1x.png",
+      "filename" : "Quarterly1x.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "EarningsListCircle2x.png",
+      "filename" : "Quarterly2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "EarningsListCircle3x.png",
+      "filename" : "Quarterly3x.png",
       "scale" : "3x"
     }
   ],

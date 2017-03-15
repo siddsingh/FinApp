@@ -71,6 +71,11 @@
     self.messageBar.alpha = 0.0;
     
     // Set navigation bar header to title "Upcoming Events"
+    NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                    [UIColor blackColor], NSForegroundColorAttributeName,
+                                    nil];
+    [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
     [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
     
     // Change the color of the events search bar placeholder text and text entered to be a black text color.
@@ -414,6 +419,22 @@
     else {
         
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!!: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation. Also reconcile in didSelectRowAtIndexPath.
+        
+        // Add a tap geature recognizer to the event type icon
+        UITapGestureRecognizer *typeIcontap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processTypeIconTap:)];
+        typeIcontap.cancelsTouchesInView = YES;
+        typeIcontap.numberOfTapsRequired = 1;
+        typeIcontap.numberOfTouchesRequired = 1;
+        [cell.eventImage addGestureRecognizer:typeIcontap];
+        cell.eventImage.tag = indexPath.row;
+        
+        // Add a tap geature recognizer to the event ticker
+        UITapGestureRecognizer *tickerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processTypeIconTap:)];
+        tickerTap.cancelsTouchesInView = YES;
+        tickerTap.numberOfTapsRequired = 1;
+        tickerTap.numberOfTouchesRequired = 1;
+        [cell.companyTicker addGestureRecognizer:tickerTap];
+        cell.companyTicker.tag = indexPath.row;
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
@@ -1815,6 +1836,14 @@
 // When an event type selection has been made, change the color of the selected type and 1) show the appropriate event types in the results table 2) Set the correct search bar placeholder text 3) Clear out the search context
 - (IBAction)eventTypeSelectAction:(id)sender {
     
+    // Reset the navigation bar header text color to black
+    // Set navigation bar header to an attention orange color
+    NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                               [UIColor blackColor], NSForegroundColorAttributeName,
+                                               nil];
+    [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
+    
     // Change color of the selected option to indicate selection and filter the table to show the correct events of that type. Also set the color of the focus bar to the same color as the selected option.
     // All Event Types - Color Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
@@ -1942,6 +1971,14 @@
 // When a main nav type selection has been made, change the color of the selected type and 1) show the appropriate event types in the results table 2) Set the correct search bar placeholder text 3) Clear out the search context
 - (IBAction)mainNavSelectAction:(id)sender {
     
+    // Reset the navigation bar header text color to black
+    // Set navigation bar header to an attention orange color
+    NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                             [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                             [UIColor blackColor], NSForegroundColorAttributeName,
+                                             nil];
+    [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
+    
     NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                     [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
                                     [UIColor blackColor], NSForegroundColorAttributeName,
@@ -2017,6 +2054,85 @@
     } */
 }
 
+#pragma mark - Event Type Icon Action
+
+// Process clicking of event type icon
+- (void)processTypeIconTap:(UIGestureRecognizer *)gestureRecognizer
+{
+    // Get the event description corresponding to the tapped icon/ticker
+    UIImageView *eventIcon = (UIImageView *)gestureRecognizer.view;
+    NSIndexPath *tappedIndexPath = [NSIndexPath indexPathForRow:eventIcon.tag inSection:0];
+    FAEventsTableViewCell *tappedIconCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:tappedIndexPath];
+    NSString *formattedEventType = tappedIconCell.eventDescription.text;
+    NSString *ticker = tappedIconCell.companyTicker.text;
+    // Check to see if the row selected has an event cell with remote fetch status set to true
+    NSLog(@"Icon tapped for event type:%@",formattedEventType);
+    
+    // Open the corresponding News in mobile Safari
+    NSString *moreInfoURL = nil;
+    NSString *searchTerm = nil;
+    NSURL *targetURL = nil;
+    
+    // Send them to different sites with different queries based on which site has the best informtion for that event type
+    
+    // TO DO: If you want to revert to using Bing
+    // Bing News is the default we are going with for now
+    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    
+    // Google news is default for now
+    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+    searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
+    
+    // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
+    if ([formattedEventType isEqualToString:@"Earnings"]) {
+        searchTerm = [NSString stringWithFormat:@"%@ %@",ticker,@"earnings"];
+    }
+    
+    // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
+    if ([formattedEventType containsString:@"Launch"]) {
+        searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+    }
+    if ([formattedEventType containsString:@"Conference"]) {
+        searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+    }
+    
+    // For economic events, search query term is customized for each type
+    if ([formattedEventType containsString:@"GDP Release"]) {
+        searchTerm = @"us gdp growth";
+    }
+    if ([formattedEventType containsString:@"Consumer Confidence"]) {
+        searchTerm = @"us consumer confidence";
+    }
+    if ([formattedEventType containsString:@"Fed Meeting"]) {
+        searchTerm = @"fomc meeting";
+    }
+    if ([formattedEventType containsString:@"Jobs Report"]) {
+        searchTerm = @"jobs report us";
+    }
+    if ([formattedEventType containsString:@"% up"]||[formattedEventType containsString:@"% down"]) {
+        searchTerm = [NSString stringWithFormat:@"%@ %@",ticker,@"stock"];
+    }
+    
+    // Remove any spaces in the URL query string params
+    searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+    
+    targetURL = [NSURL URLWithString:moreInfoURL];
+    
+    if (targetURL) {
+        
+        // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"External Action Clicked"
+                      parameters:@{ @"Action Title" : @"See News Shortcut",
+                                    @"Action Query" : searchTerm,
+                                    @"Action URL" : [targetURL absoluteString]} ];
+        
+        [[UIApplication sharedApplication] openURL:targetURL];
+    }
+}
+
 #pragma mark - Notifications
 
 // Send a notification to the events list controller with a message that should be shown to the user
@@ -2087,6 +2203,12 @@
     [self.navigationController.navigationBar.topItem setTitle:[notification object]];
     */
     
+    // Set navigation bar header to an attention orange color
+    NSDictionary *attentionHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                               [UIColor colorWithRed:205.0f/255.0f green:151.0f/255.0f blue:61.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                               nil];
+    [self.navigationController.navigationBar setTitleTextAttributes:attentionHeaderAttributes];
     [self.navigationController.navigationBar.topItem setTitle:[notification object]];
 }
 
@@ -2510,13 +2632,13 @@
     
     // Return an appropriately formatted string
     if (difference < 0) {
-        formattedDistance = @"Past";
+        formattedDistance = @"Past >";
     } else if (difference == 0) {
-        formattedDistance = @"Today";
+        formattedDistance = @"Today >";
     } else if (difference == 1) {
-        formattedDistance = @"Tomorrow";
+        formattedDistance = @"Tomorrow >";
     } else {
-        formattedDistance = [NSString stringWithFormat:@"%@d",[@(difference) stringValue]];
+        formattedDistance = [NSString stringWithFormat:@"%@d >",[@(difference) stringValue]];
     }
     
     return formattedDistance;
@@ -2640,22 +2762,47 @@
 
 // Show the busy message in the header.
 - (void)showBusyMessage {
+    
+    // Set navigation bar header to the correct text based on all events or following, if this view is currently being displayed. If not, for instance, say details view is being displayed, do nothing as we don't want this view's headers being shown in the details view.
+    
+    // If the list view is currently being shown
+    if (self.navigationController.topViewController == self) {
         
-    // Set navigation bar header to indicate busy
-    [self.navigationController.navigationBar.topItem setTitle:@"Fetching..."];
+        // Set navigation bar header to an attention orange color
+        NSDictionary *attentionHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                   [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                                   [UIColor colorWithRed:205.0f/255.0f green:151.0f/255.0f blue:61.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                                   nil];
+        
+        // Set navigation bar header to indicate busy
+        [self.navigationController.navigationBar setTitleTextAttributes:attentionHeaderAttributes];
+        [self.navigationController.navigationBar.topItem setTitle:@"Fetching..."];
+    }
 }
 
 // Remove the busy message in the header to show appropriate header.
 - (void)removeBusyMessage {
     
-    // Set navigation bar header to the correct text based on all events or following
-    // If All Events is selected.
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-        [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
-    }
-    // If following is selected
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-        [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
+    // Set navigation bar header to the correct text based on all events or following, if this view is currently being displayed. If not, for instance, say details view is being displayed, do nothing as we don't want this view's headers being shown in the details view.
+    
+    // If the list view is currently being shown
+    if (self.navigationController.topViewController == self) {
+        
+        // Set navigation bar header to title "Upcoming Events"
+        NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                 [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                                   [UIColor blackColor], NSForegroundColorAttributeName,
+                                                   nil];
+        [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
+        
+        // If All Events is selected.
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
+        }
+        // If following is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
+        }
     }
 }
 

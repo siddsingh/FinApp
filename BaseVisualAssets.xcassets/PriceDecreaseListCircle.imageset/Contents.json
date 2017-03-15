@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "PriceDecreaseListCircle1x.png",
+      "filename" : "PercentDown1x.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "PriceDecreaseListCircle2x.png",
+      "filename" : "PercentDown2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "PriceDecreaseListCircle3x.png",
+      "filename" : "PercentDown3x.png",
       "scale" : "3x"
     }
   ],

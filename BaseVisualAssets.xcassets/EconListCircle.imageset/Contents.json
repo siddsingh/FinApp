@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "EconListCircle1x.png",
+      "filename" : "Econ1x.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "EconListCircle2x.png",
+      "filename" : "Econ2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "EconListCircle3x.png",
+      "filename" : "Econ3x.png",
       "scale" : "3x"
     }
   ],
