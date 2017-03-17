@@ -61,6 +61,7 @@
 @implementation FAEventsViewController
 
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     // Do any additional setup after loading the view.
@@ -1209,6 +1210,26 @@
     creationSuccess = [self.userEventStore saveReminder:eventReminder commit:YES error:&error];
     
     return creationSuccess;
+}
+
+// Delete reminders that contain a certain string in the title
+- (void)deleteReminderContaining:(NSString *)eventIdentifier {
+    
+    // Get the default calendar where Knotifi events have been created
+    EKCalendar *knotifiRemindersCalendar = [self.userEventStore defaultCalendarForNewReminders];
+    
+    [self.userEventStore fetchRemindersMatchingPredicate:[self.userEventStore predicateForRemindersInCalendars:[NSArray arrayWithObject:knotifiRemindersCalendar]] completion:^(NSArray *eventReminders) {
+        NSError *error = nil;
+        for (EKReminder *eventReminder in eventReminders) {
+            NSLog(@"REMINDER FETCHED WITH TEXT:%@",eventReminder.title);
+            // See if a matching Knotifi reminder is found, if so batch them up
+            if ([eventReminder.title containsString:@"Knotifi"]&&[eventReminder.title containsString:eventIdentifier]) {
+                [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
+            }
+        }
+        // Commit the changes
+        [self.userEventStore commit:&error];
+    }];
 }
 
 #pragma mark - Data Source API
