@@ -686,6 +686,9 @@
                     // Let the user know a reminder is already set for this ticker.
                     [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",cell.companyTicker.text]];
                     
+                    // Delete any reminders for the ticker
+                    [self deleteRemindersForTicker:cell.companyTicker.text];
+                    
                     // TRACKING EVENT: Unset Follow: User clicked the "Set Reminder" button to create a reminder.
                     // TO DO: Disabling to not track development events. Enable before shipping.
                     [FBSDKAppEvents logEvent:@"Unset Follow"
@@ -755,6 +758,9 @@
                     
                     // Let the user know a reminder is already set for this ticker.
                     [self sendUserMessageCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",cell.companyTicker.text]];
+                    
+                    // Delete any reminders for the ticker
+                    [self deleteRemindersForTicker:cell.companyTicker.text];
                     
                     // TRACKING EVENT: Unset Follow: User clicked the "Set Reminder" button to create a reminder.
                     // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1213,20 +1219,33 @@
 }
 
 // Delete reminders that contain a certain string in the title
-- (void)deleteReminderContaining:(NSString *)eventIdentifier {
+- (void)deleteRemindersForTicker:(NSString *)ticker {
     
     // Get the default calendar where Knotifi events have been created
     EKCalendar *knotifiRemindersCalendar = [self.userEventStore defaultCalendarForNewReminders];
     
     [self.userEventStore fetchRemindersMatchingPredicate:[self.userEventStore predicateForRemindersInCalendars:[NSArray arrayWithObject:knotifiRemindersCalendar]] completion:^(NSArray *eventReminders) {
         NSError *error = nil;
+        
+        // Get all future product events with the given ticker
+        FADataController *tickerDataController = [[FADataController alloc] init];
+        NSArray *tickerFutureProductEvents = [tickerDataController getAllFutureProductEventsForTicker:ticker];
+        
+        // Get all events
         for (EKReminder *eventReminder in eventReminders) {
-            NSLog(@"REMINDER FETCHED WITH TEXT:%@",eventReminder.title);
-            // See if a matching Knotifi reminder is found, if so batch them up
-            if ([eventReminder.title containsString:@"Knotifi"]&&[eventReminder.title containsString:eventIdentifier]) {
+            
+            // See if a matching earnings event Knotifi reminder is found, if so add to batch to be deleted
+            if ([eventReminder.title containsString:[NSString stringWithFormat:@"Knotifi ▶︎ %@",ticker]]) {
                 [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
             }
+            // See if a matching product event for that ticker is found, if so add to batch to be deleted
+            for(Event *listEvent in tickerFutureProductEvents) {
+                if([eventReminder.title containsString:listEvent.type]) {
+                    [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
+                }
+            }
         }
+        
         // Commit the changes
         [self.userEventStore commit:&error];
     }];

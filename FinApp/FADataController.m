@@ -498,6 +498,33 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
+// Get all future product events including today for a given ticker
+- (NSArray *)getAllFutureProductEventsForTicker:(NSString *)parentTicker
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the event and date filter
+    // NOTE: If there is a new type of product event like launch or conference added, add that here as well
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@)", todaysDate, @"Launch", @"Conference", parentTicker];
+    [eventFetchRequest setPredicate:datePredicate];
+    
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting all future product events for ticker:%@ from data store failed: %@",parentTicker, error.description);
+    }
+    
+    return events;
+}
+
 // Get all following future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFollowingFutureProductEvents

@@ -79,6 +79,8 @@
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents;
 
+// Get all future product events including today for a given ticker
+- (NSArray *)getAllFutureProductEventsForTicker:(NSString *)parentTicker;
 
 // Get all following future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
