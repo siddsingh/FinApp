@@ -738,6 +738,8 @@
                 // Show appropriate message
                 [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
                 
+                // Delete existing reminders for this ticker
+                [self deleteRemindersForTicker:self.parentTicker];
                 
                 // TRACKING EVENT: Unset Follow: User clicked the "Reminder Set" button, most likely to unset the reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
@@ -790,6 +792,9 @@
                 // Show appropriate message
                 [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
                 
+                // Delete existing reminders for this ticker
+                [self deleteRemindersForTicker:self.parentTicker];
+                
                 // TRACKING EVENT: Unset Follow: User clicked the "Reminder Set" button, most likely to unset the reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
                 [FBSDKAppEvents logEvent:@"Unset Follow"
@@ -839,6 +844,9 @@
             [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             
             [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowed event"];
+            
+            // Delete existing reminders for this econ event type i.e. Fed Meeting not Jan Fed Meeting. We send in Jan Fed Meeting but it automatically gets converted to Fed Meeting in the delete method.
+            [self deleteRemindersForEconEventType:self.eventType];
             
             // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
             // TO DO: Disabling to not track development events. Enable before shipping.
@@ -1282,6 +1290,78 @@
     return creationSuccess;
 }
 
+// Delete reminders that contain a certain string in the title
+- (void)deleteRemindersForTicker:(NSString *)ticker {
+    
+    // Get the default calendar where Knotifi events have been created
+    EKCalendar *knotifiRemindersCalendar = [self.userEventStore defaultCalendarForNewReminders];
+    
+    // Get all events
+    [self.userEventStore fetchRemindersMatchingPredicate:[self.userEventStore predicateForRemindersInCalendars:[NSArray arrayWithObject:knotifiRemindersCalendar]] completion:^(NSArray *eventReminders) {
+        NSError *error = nil;
+        
+        // Get all future product events with the given ticker
+        FADataController *tickerDataController = [[FADataController alloc] init];
+        NSArray *tickerFutureProductEvents = [tickerDataController getAllFutureProductEventsForTicker:ticker];
+        
+        for (EKReminder *eventReminder in eventReminders) {
+            
+            // See if a matching earnings event Knotifi reminder is found, if so add to batch to be deleted
+            if ([eventReminder.title containsString:[NSString stringWithFormat:@"Knotifi ▶︎ %@",ticker]]) {
+                [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
+            }
+            
+            // See if a matching product event for that ticker is found, if so add to batch to be deleted
+            for(Event *listEvent in tickerFutureProductEvents) {
+                if([eventReminder.title containsString:listEvent.type]) {
+                    [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
+                }
+            }
+        }
+        
+        // Commit the changes
+        [self.userEventStore commit:&error];
+    }];
+}
+
+// Delete reminders for a given econ event type e.g. Fed Meeting not Jan Fed Meeting
+- (void)deleteRemindersForEconEventType:(NSString *)eventType {
+    
+    NSString *genericEventType = nil;
+    
+    // Get the generic event type i.e. Fed Meeting as opposed to Jan Fed Meeting
+    if ([eventType containsString:@"Fed Meeting"]) {
+        genericEventType = @"Fed Meeting";
+    }
+    if ([eventType containsString:@"Jobs Report"]) {
+        genericEventType = @"Jobs Report";
+    }
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        genericEventType = @"Consumer Confidence";
+    }
+    if ([eventType containsString:@"GDP Release"]) {
+        genericEventType = @"GDP Release";
+    }
+    
+    // Get the default calendar where Knotifi events have been created
+    EKCalendar *knotifiRemindersCalendar = [self.userEventStore defaultCalendarForNewReminders];
+    
+    // Get all events
+    [self.userEventStore fetchRemindersMatchingPredicate:[self.userEventStore predicateForRemindersInCalendars:[NSArray arrayWithObject:knotifiRemindersCalendar]] completion:^(NSArray *eventReminders) {
+        NSError *error = nil;
+        
+        for (EKReminder *eventReminder in eventReminders) {
+            
+            // See if a matching earnings event Knotifi reminder is found, if so add to batch to be deleted
+            if ([eventReminder.title containsString:@"Knotifi ▶︎"]&&[eventReminder.title containsString:genericEventType]) {
+                [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
+            }
+        }
+        
+        // Commit the changes
+        [self.userEventStore commit:&error];
+    }];
+}
 
 #pragma mark - Notifications
 

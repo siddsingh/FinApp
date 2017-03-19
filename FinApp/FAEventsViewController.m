@@ -830,6 +830,9 @@
                 // Let the user know a reminder is already set for this ticker.
                 [self sendUserMessageCreatedNotificationWithMessage:@"Unfollowed event"];
                 
+                // Delete reminders for this event type e.g. containing Fed Meeting not Jan Fed Meeting
+                [self deleteRemindersForEconEventType:cell.eventDescription.text];
+                
                 // TRACKING EVENT: Unset Reminder: User clicked the "Set Reminder" button to create a reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
                 [FBSDKAppEvents logEvent:@"Unset Follow"
@@ -1224,6 +1227,7 @@
     // Get the default calendar where Knotifi events have been created
     EKCalendar *knotifiRemindersCalendar = [self.userEventStore defaultCalendarForNewReminders];
     
+     // Get all events
     [self.userEventStore fetchRemindersMatchingPredicate:[self.userEventStore predicateForRemindersInCalendars:[NSArray arrayWithObject:knotifiRemindersCalendar]] completion:^(NSArray *eventReminders) {
         NSError *error = nil;
         
@@ -1231,18 +1235,41 @@
         FADataController *tickerDataController = [[FADataController alloc] init];
         NSArray *tickerFutureProductEvents = [tickerDataController getAllFutureProductEventsForTicker:ticker];
         
-        // Get all events
         for (EKReminder *eventReminder in eventReminders) {
             
             // See if a matching earnings event Knotifi reminder is found, if so add to batch to be deleted
             if ([eventReminder.title containsString:[NSString stringWithFormat:@"Knotifi ▶︎ %@",ticker]]) {
                 [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
             }
+            
             // See if a matching product event for that ticker is found, if so add to batch to be deleted
             for(Event *listEvent in tickerFutureProductEvents) {
                 if([eventReminder.title containsString:listEvent.type]) {
                     [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
                 }
+            }
+        }
+        
+        // Commit the changes
+        [self.userEventStore commit:&error];
+    }];
+}
+
+// Delete reminders for a given econ event type e.g. Fed Meeting not Jan Fed Meeting
+- (void)deleteRemindersForEconEventType:(NSString *)eventType {
+    
+    // Get the default calendar where Knotifi events have been created
+    EKCalendar *knotifiRemindersCalendar = [self.userEventStore defaultCalendarForNewReminders];
+    
+    // Get all events
+    [self.userEventStore fetchRemindersMatchingPredicate:[self.userEventStore predicateForRemindersInCalendars:[NSArray arrayWithObject:knotifiRemindersCalendar]] completion:^(NSArray *eventReminders) {
+        NSError *error = nil;
+    
+        for (EKReminder *eventReminder in eventReminders) {
+            
+            // See if a matching earnings event Knotifi reminder is found, if so add to batch to be deleted
+            if ([eventReminder.title containsString:@"Knotifi ▶︎"]&&[eventReminder.title containsString:eventType]) {
+                [self.userEventStore removeReminder:eventReminder commit:NO error:&error];
             }
         }
         
