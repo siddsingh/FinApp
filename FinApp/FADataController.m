@@ -2057,8 +2057,8 @@ bool eventsUpdated = NO;
                 // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
                 [self insertHistoryWithPreviousEvent1Date:nil previousEvent1Status:eventAddtlInfo previousEvent1RelatedDate:nil currentDate:nil previousEvent1Price:nil previousEvent1RelatedPrice:nil currentPrice:nil parentEventTicker:parentTicker parentEventType:eventName];
                 
-                // If this product event just went from estimated to confirmed and there is a queued reminder to be created for it, fire a notification to create the reminder.
-                if ([confidenceStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:parentTicker eventType:eventName]) {
+                // If this product event just went from estimated to confirmed and there is a queued reminder to be created for it, and the event is not in the past, fire a notification to create the reminder.
+                if ([confidenceStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:parentTicker eventType:eventName]&&([self calculateDistanceFromEventDate:eventDate] <= 0)) {
                     //TO DO: For testing, delete before shipping v 2.5
                     //NSLog(@"This product event just went from estimated to confirmed:%@ %@ with status string:%@",parentTicker,eventName,confidenceStr);
                     // Create array that contains {eventType,companyTicker,eventDateText} to pass on to the notification
@@ -3315,10 +3315,11 @@ bool eventsUpdated = NO;
     NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
-    // TO DO: Delete Later before shipping v2.5
-    //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    // TO DO: Delete Later before shipping v2.9
+    NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
     // Refresh only if a day has passed since last refresh
-    if((int)daysBetween > 0) {
+    // TO DO: Make it > after debugging the HSBC issue
+    if((int)daysBetween >= 0) {
         
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];
@@ -3349,8 +3350,14 @@ bool eventsUpdated = NO;
             // See if the event is Quarterly Earnings
             if ([localEvent.type isEqualToString:@"Quarterly Earnings"]) {
                 
+                // TO DO: Delete Later before shipping v2.9
+                NSLog(@"ALL LOCAL EVENT TYPE IS: %@ FOR TICKER: %@",localEvent.type, localEvent.listedCompany.ticker);
+                
                 // See if the event qualifies for the update. If it does, call the remote data source to update it.
                 if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
+                    
+                    // TO DO: Delete Later before shipping v2.9
+                    NSLog(@"TO BE FETCHED EVENT TYPE IS: %@ FOR TICKER: %@",localEvent.type, localEvent.listedCompany.ticker);
                     
                     [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
                     
