@@ -348,6 +348,34 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
+// Check if the given ticker is being followed.
+- (BOOL)isBeingFollowed:(NSString *)tickerToCheck
+{
+    BOOL beingFollowed = NO;
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"(listedCompany.ticker =[c] %@) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", tickerToCheck, @"OSReminder", @"PriceChange"];
+    [eventFetchRequest setPredicate:datePredicate];
+    
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Checking for if a ticker is being followed, failed: %@",error.description);
+    }
+    // If any event exists that means this ticker is being followed, return true.
+    if (events.count >= 1) {
+        beingFollowed = YES;
+    }
+    
+    // else return false
+    return beingFollowed;
+}
+
 // Get all future earnings events including today. Returns a results controller with identities of all earnings Events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllFutureEarningsEvents
 {
@@ -1513,6 +1541,11 @@ bool eventsUpdated = NO;
     
     // TO DO: DELETE: Use this endpoint for testing an incorrect API response.
     // NSString *endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ";
+    
+    // For the ticker HSBC use a custom URL where you are manually updating the json, since ZEA doesn't really track HSBC
+    if ([companyTicker caseInsensitiveCompare:@"HSBC"] == NSOrderedSame) {
+        endpointURL = @"https://gist.github.com/siddsingh/714f8c3897d644a66e116b633202b73e/raw/HSBC_Earnings.json";
+    }
         
     NSError * error = nil;
     NSURLResponse *response = nil;
@@ -1525,9 +1558,9 @@ bool eventsUpdated = NO;
     // Process the response
     if (error == nil)
     {
-        // TO DO: Delete Later, for testing
-        //NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
-        //NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
+        // TO DO: Delete before shipping v2.9, for testing
+        NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
+        NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         // Process the response that contains the events for the company.
         [self processEventsResponse:responseData forTicker:companyTicker];
             
@@ -1689,7 +1722,8 @@ bool eventsUpdated = NO;
         if ([certaintyStr isEqualToString:@"3"]) {
             certaintyStr = [NSString stringWithFormat:@"Unknown"];
         }
-        //NSLog(@"The confirmation indicator for this event formatted: %@",certaintyStr);
+        // TO DO: Delete before shipping v2.9
+        NSLog(@"The event date for ticker:%@ is:%@ confirmation is: %@",ticker,eventDate,certaintyStr);
         
         // Upsert events data into the data store
         [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker estimatedEps:estEpsNumber priorEndDate:priorEndDate actualEpsPrior:actualPriorEpsNumber];
@@ -2056,6 +2090,11 @@ bool eventsUpdated = NO;
                 // TO DO: Fix when you add a new table in the data model for event characteristics.
                 // For Product Events, we overload a field in Event History called previous1Status to store a string representing Impact, Impact Description, More Info Title and More Info Url i.e. (Impact_Impact Description_MoreInfoTitle_MoreInfoUrl)
                 [self insertHistoryWithPreviousEvent1Date:nil previousEvent1Status:eventAddtlInfo previousEvent1RelatedDate:nil currentDate:nil previousEvent1Price:nil previousEvent1RelatedPrice:nil currentPrice:nil parentEventTicker:parentTicker parentEventType:eventName];
+                
+                // If the ticker is being followed and there is no queued reminder for this event, it means it's a new event. Create a queued reminder for it even if it's confirmed, since in the very next step it will create the reminder. Also this ensures that the event is added to the following list.
+                if ([self isBeingFollowed:parentTicker]&&(![self doesReminderActionExistForSpecificEvent:eventName])) {
+                    [self insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:parentTicker eventType:eventName];
+                }
                 
                 // If this product event just went from estimated to confirmed and there is a queued reminder to be created for it, and the event is not in the past, fire a notification to create the reminder.
                 if ([confidenceStr isEqualToString:@"Confirmed"]&&[self doesQueuedReminderActionExistForEventWithTicker:parentTicker eventType:eventName]&&([self calculateDistanceFromEventDate:eventDate] <= 0)) {
@@ -3318,8 +3357,8 @@ bool eventsUpdated = NO;
     // TO DO: Delete Later before shipping v2.9
     NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
     // Refresh only if a day has passed since last refresh
-    // TO DO: Make it > after debugging the HSBC issue
-    if((int)daysBetween >= 0) {
+    // TO DO: Before shipping v2.9 - Make it > after debugging the HSBC issue
+    if((int)daysBetween > 0) {
         
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];

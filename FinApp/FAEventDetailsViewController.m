@@ -76,7 +76,7 @@
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             }
             else
-            // If not create show the follow action
+                // If not create show the follow action
             {
                 actionName = [NSString stringWithFormat:@"FOLLOW %@",self.parentTicker];
                 // Set button color based on event type
@@ -97,7 +97,7 @@
                 [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             }
             else
-            // If not show the follow action
+                // If not show the follow action
             {
                 actionName = [NSString stringWithFormat:@"FOLLOW %@",self.parentTicker];
                 // Set button color based on event type
@@ -721,25 +721,23 @@
         {
             // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed
             // TO DO: Hardcoding this for now to be quarterly earnings
-            if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:@"Quarterly Earnings"])
+            if ([detailUnfollowDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:@"Quarterly Earnings"])
             {
+                // Disable the following button to indicate it's busy
+                [self.reminderButton setEnabled:NO];
+                [self.reminderButton setTitle:@"Working..." forState:UIControlStateNormal];
+                
                 // Delete the following event actions for the ticker
                 [detailUnfollowDataController deleteFollowingEventActionsForTicker:self.parentTicker];
                 
                 // Refresh the event list on the prior screen
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                 
-                // Change the styling to show following.
-                // Set button color based on event type
-                [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
-                [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
-                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                
-                // Show appropriate message
-                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
-                
                 // Delete existing reminders for this ticker
                 [self deleteRemindersForTicker:self.parentTicker];
+                
+                // Style the button to post set styling with a slight delay to give time for all reminders to finish deleting
+                [self performSelector:@selector(updateToFollowStateForTickerBasedEvent) withObject:nil afterDelay:2];
                 
                 // TRACKING EVENT: Unset Follow: User clicked the "Reminder Set" button, most likely to unset the reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
@@ -751,16 +749,18 @@
             else
             // If not trigger following
             {
+                // Disable the following button to indicate it's busy
+                [self.reminderButton setEnabled:NO];
+                [self.reminderButton setTitle:@"Working..." forState:UIControlStateNormal];
+                
                 // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
-                [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
+                [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:detailUnfollowDataController];
                 
                 // Refresh the event list on the prior screen
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                 
-                // Style the button to post set styling
-                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                [self.reminderButton setTitle:[NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
-                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                // Style the button to post set styling with a slight delay to give time for all reminders to finish creating
+                [self performSelector:@selector(updateToUnfollowStateForTickerBasedEvent) withObject:nil afterDelay:2];
                 
                 // TRACKING EVENT: Set Follow: User clicked the "Set Reminder" button to create a reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
@@ -775,25 +775,23 @@
             
             // Check to see if a reminder action has already been created for the event represented by the cell.
             // If yes, show a appropriately formatted message.
-            if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
+            if ([detailUnfollowDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
             {
+                // Disable the following button to indicate it's busy
+                [self.reminderButton setEnabled:NO];
+                [self.reminderButton setTitle:@"Working..." forState:UIControlStateNormal];
+                
                 // Delete the following event actions for the ticker
                 [detailUnfollowDataController deleteFollowingEventActionsForTicker:self.parentTicker];
                 
                 // Refresh the event list on the prior screen
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                 
-                // Change the styling to show following.
-                // Set button color based on event type
-                [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
-                [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
-                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                
-                // Show appropriate message
-                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
-                
                 // Delete existing reminders for this ticker
                 [self deleteRemindersForTicker:self.parentTicker];
+                
+                // Style the button to post set styling with a slight delay to give time for all reminders to finish deleting
+                [self performSelector:@selector(updateToFollowStateForTickerBasedEvent) withObject:nil afterDelay:2];
                 
                 // TRACKING EVENT: Unset Follow: User clicked the "Reminder Set" button, most likely to unset the reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
@@ -805,16 +803,18 @@
             else
             // If not take the follow action
             {
+                // Disable the following button to indicate it's busy
+                [self.reminderButton setEnabled:NO];
+                [self.reminderButton setTitle:@"Working..." forState:UIControlStateNormal];
+                
                 // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
-                [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
+                [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:detailUnfollowDataController];
                 
                 // Refresh the event list on the prior screen
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                 
-                // Style the button to post set styling
-                [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                [self.reminderButton setTitle:[NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
-                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                // Style the button to post set styling with a slight delay to give time for all reminders to finish creating
+                [self performSelector:@selector(updateToUnfollowStateForTickerBasedEvent) withObject:nil afterDelay:2];
                 
                 // TRACKING EVENT: Set Follow: User clicked the "Set Reminder" button to create a reminder.
                 // TO DO: Disabling to not track development events. Enable before shipping.
@@ -829,24 +829,24 @@
     else {
         // Check to see if a reminder has already been created for the event.
         // If yes let the user know a reminder is already set for this ticker.
-        if ([self.primaryDetailsDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
+        if ([detailUnfollowDataController doesReminderActionExistForEventWithTicker:self.parentTicker eventType:self.eventType])
         {
+            // Disable the following button to indicate it's busy
+            [self.reminderButton setEnabled:NO];
+            [self.reminderButton setTitle:@"Working..." forState:UIControlStateNormal];
+            
             // Delete the following event actions for the ticker
             [detailUnfollowDataController deleteFollowingEventActionsForEconEvent:self.eventType];
             
             // Refresh the event list on the prior screen
             [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
             
-            // Change the styling to show following.
-            // Set button color based on event type
-            [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
-            [self.reminderButton setTitle:@"FOLLOW" forState:UIControlStateNormal];
-            [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            
-            [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowed event"];
-            
             // Delete existing reminders for this econ event type i.e. Fed Meeting not Jan Fed Meeting. We send in Jan Fed Meeting but it automatically gets converted to Fed Meeting in the delete method.
             [self deleteRemindersForEconEventType:self.eventType];
+            
+            // Style the button to post set styling with a slight delay to give time for all reminders to finish deleting
+            // Message is "Unfollowed Event"
+            [self performSelector:@selector(updateToFollowStateForEconEvent) withObject:nil afterDelay:2];
             
             // TRACKING EVENT: Unset Reminder: User clicked the "Reminder Set" button, most likely to unset the reminder.
             // TO DO: Disabling to not track development events. Enable before shipping.
@@ -859,13 +859,15 @@
         // If not, create the reminder and style the button to post set styling
         else
         {
-            // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
-            [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:self.primaryDetailsDataController];
+            // Disable the following button to indicate it's busy
+            [self.reminderButton setEnabled:NO];
+            [self.reminderButton setTitle:@"Working..." forState:UIControlStateNormal];
             
-            // Style the button to post set styling
-            [self.reminderButton setBackgroundColor:[UIColor grayColor]];
-            [self.reminderButton setTitle:@"UNFOLLOW" forState:UIControlStateNormal];
-            [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            // Present the user with an access request to their reminders if it's not already been done. Once that is done or access is already provided, create the reminder.
+            [self requestAccessToUserEventStoreAndProcessReminderWithEventType:self.eventType companyTicker:self.parentTicker eventDateText:self.eventDateText eventCertainty:self.eventCertainty withDataController:detailUnfollowDataController];
+            
+            // Style the button to post set styling with a slight delay to give time for all reminders to finish creating
+            [self performSelector:@selector(updateToUnfollowStateForEconEvent) withObject:nil afterDelay:2];
             
             // TRACKING EVENT: Create Reminder: User clicked the "Set Reminder" button to create a reminder.
             // TO DO: Disabling to not track development events. Enable before shipping.
@@ -876,6 +878,60 @@
         }
     }
 }
+
+// Activate the action button and set text to unfollow state for a ticker based event like earnings or product events or price change events.
+-(void)updateToUnfollowStateForTickerBasedEvent
+{
+    // Show appropriate message
+    [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",self.parentTicker]];
+    
+    // Background Gray Color
+    [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+    [self.reminderButton setTitle:[NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
+    [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.reminderButton setEnabled:YES];
+}
+
+// Activate the action button and set text to unfollow state for an econ event like earnings or product events or price change events.
+-(void)updateToUnfollowStateForEconEvent
+{
+    // Show appropriate message
+    [self sendUserGuidanceCreatedNotificationWithMessage:@"Following event"];
+    
+    // Background Gray Color
+    [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+    [self.reminderButton setTitle:@"UNFOLLOW" forState:UIControlStateNormal];
+    [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.reminderButton setEnabled:YES];
+}
+
+
+// Activate the action button and set text to follow state for a ticker based event like earnings or product events or price change events.
+-(void)updateToFollowStateForTickerBasedEvent
+{
+    // Show appropriate message
+    [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
+    
+    // Color based on event type
+    [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+    [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
+    [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.reminderButton setEnabled:YES];
+}
+
+// Activate the action button and set text to follow state for an econ event like earnings or product events or price change events.
+-(void)updateToFollowStateForEconEvent
+{
+    // Show appropriate message
+    [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowed event"];
+    
+    // Color based on event type
+    [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+    [self.reminderButton setTitle:@"FOLLOW" forState:UIControlStateNormal];
+    [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.reminderButton setEnabled:YES];
+}
+
 
 #pragma mark - News related
 
@@ -1045,7 +1101,6 @@
             // Create the reminder and show user the appropriate message
             BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
             if (success) {
-                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
                 // Add action to the action data store with status created
                 [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
             } else {
@@ -1057,7 +1112,6 @@
             
             // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-            [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
         }
     }
     // Economic Event
@@ -1066,7 +1120,6 @@
         // Create the reminder and show user the appropriate message
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
         if (success) {
-            [self sendUserGuidanceCreatedNotificationWithMessage:@"All Set! You'll be reminded of this event a day before."];
             // Add action to the action data store with status created
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
         } else {
@@ -1083,7 +1136,6 @@
             // Create the reminder and show user the appropriate message
             BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
             if (success) {
-                [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
                 // Add action to the action data store with status created
                 [appropriateDataController insertActionOfType:@"OSReminder" status:@"Created" eventTicker:cellCompanyTicker eventType:cellEventType];
             } else {
@@ -1095,7 +1147,6 @@
             
             // Make an appropriate entry for this action in the action data store for later processing. The action type is: "OSReminder" and status is: "Queued" - meaning the reminder is queued to be created and will be once the actual date for the event is confirmed.
             [appropriateDataController insertActionOfType:@"OSReminder" status:@"Queued" eventTicker:cellCompanyTicker eventType:cellEventType];
-            [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"You are now following %@",cellCompanyTicker]];
         }
     }
     // Price Change event. Do nothing currently
