@@ -329,8 +329,6 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter
-    // TO DO: Delete before shipping v2.9. Don't include econ events.
-    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (NOT (listedCompany.ticker contains %@)) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", todaysDate, @"ECONOMY_", @"OSReminder", @"PriceChange"];
     // Include Econ events
     NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", todaysDate, @"OSReminder", @"PriceChange"];
     [eventFetchRequest setPredicate:datePredicate];
@@ -666,8 +664,6 @@ bool eventsUpdated = NO;
     // Check to see if the event type is "All". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
     if ([eventType caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        // TO DO: Delete before shipping v2.9. Does not contain econ events
-        //searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT (listedCompany.ticker contains %@)) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"ECONOMY_", @"OSReminder", @"PriceChange"];
         // Econ events included
         searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"OSReminder", @"PriceChange"];
     }
@@ -1558,9 +1554,6 @@ bool eventsUpdated = NO;
     // Process the response
     if (error == nil)
     {
-        // TO DO: Delete before shipping v2.9, for testing
-        NSLog(@"The endpoint being called for getting company information is:%@",endpointURL);
-        NSLog(@"The API response for getting company information is:%@",[[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding]);
         // Process the response that contains the events for the company.
         [self processEventsResponse:responseData forTicker:companyTicker];
             
@@ -1722,8 +1715,6 @@ bool eventsUpdated = NO;
         if ([certaintyStr isEqualToString:@"3"]) {
             certaintyStr = [NSString stringWithFormat:@"Unknown"];
         }
-        // TO DO: Delete before shipping v2.9
-        NSLog(@"The event date for ticker:%@ is:%@ confirmation is: %@",ticker,eventDate,certaintyStr);
         
         // Upsert events data into the data store
         [self upsertEventWithDate:eventDate relatedDetails:eventDetails relatedDate:relatedDate type:eventType certainty:certaintyStr listedCompany:ticker estimatedEps:estEpsNumber priorEndDate:priorEndDate actualEpsPrior:actualPriorEpsNumber];
@@ -1776,6 +1767,11 @@ bool eventsUpdated = NO;
 // Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
 - (void)getAllTickersAndNamesFromLocalStorage
 {
+    // First add the new tickers since 11/19/2016 manually
+    [self insertUniqueCompanyWithTicker:@"SNAP" name:@"Snap Inc"];
+    [self insertUniqueCompanyWithTicker:@"MULE" name:@"MuleSoft Inc"];
+    [self insertUniqueCompanyWithTicker:@"NTNX" name:@"Nutanix Inc"];
+    
     // Get the company ticker and names file path
     NSString *tickersFilePath = [[NSBundle mainBundle] pathForResource:@"ZEA-datasets-codes_20161119" ofType:@"csv"];
     // TO DO: Delete Later
@@ -2888,9 +2884,6 @@ bool eventsUpdated = NO;
     // Get the list of data slices from the overall data set
     NSArray *parsedDataSets = [parsedResponse objectForKey:@"results"];
     
-    // TO DO: Delete before shipping v2.9
-    NSLog(@"The parsed data set for history is:%@",parsedDataSets.description);
-    
     // Check to make sure that the correct response has come back. e.g. If you get an error message response from the API,
     // then you don't want to process the data and enter as historical prices.
     // If response is not correct, show the user an error message
@@ -2925,8 +2918,6 @@ bool eventsUpdated = NO;
             // Currently recording only previous event 1 (30 days ago) date closing stock price, previous related event 1 (start of the year).
             historyForDates = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
             prevEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1Date];
-            // TO DO: Comment 1st line and delete second line before shipping v2.9
-            NSLog(@"The 30 days ago date in the history parsing logic is:%@",prevEvent1Date);
             prevRelatedEvent1Date = [priceDateFormatter stringFromDate:historyForDates.previous1RelatedDate];
             
             // Get the prices for the various dates and write them to the history data store
@@ -3355,9 +3346,8 @@ bool eventsUpdated = NO;
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
     // TO DO: Delete Later before shipping v2.9
-    NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
     // Refresh only if a day has passed since last refresh
-    // TO DO: Before shipping v2.9 - Make it > after debugging the HSBC issue
     if((int)daysBetween > 0) {
         
         // Get all events in the local data store.
@@ -3389,14 +3379,8 @@ bool eventsUpdated = NO;
             // See if the event is Quarterly Earnings
             if ([localEvent.type isEqualToString:@"Quarterly Earnings"]) {
                 
-                // TO DO: Delete Later before shipping v2.9
-                NSLog(@"ALL LOCAL EVENT TYPE IS: %@ FOR TICKER: %@",localEvent.type, localEvent.listedCompany.ticker);
-                
                 // See if the event qualifies for the update. If it does, call the remote data source to update it.
                 if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
-                    
-                    // TO DO: Delete Later before shipping v2.9
-                    NSLog(@"TO BE FETCHED EVENT TYPE IS: %@ FOR TICKER: %@",localEvent.type, localEvent.listedCompany.ticker);
                     
                     [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
                     
@@ -3802,10 +3786,6 @@ bool eventsUpdated = NO;
         if (![dataStoreContext save:&error]) {
             NSLog(@"ERROR: Saving action to data store failed: %@",error.description);
         }
-        // TO DO: Delete before shipping v2.9
-        else {
-            NSLog(@"INSERTED ACTION:%@",action.parentEvent.description);
-        }
     }
     
     // If the event does not exist, log an error message to the console
@@ -3889,6 +3869,8 @@ bool eventsUpdated = NO;
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     BOOL exists = NO;
+    Action *action1 = nil;
+    Action *action2 = nil;
     
     // Check to see if the action exists by doing a case insensitive query on Action Type and Event Type.
     NSFetchRequest *actionFetchRequest = [[NSFetchRequest alloc] init];
@@ -3903,7 +3885,9 @@ bool eventsUpdated = NO;
         NSLog(@"ERROR: Getting an action from data store, to check if it exists for an associated event, failed: %@",error.description);
     }
     if (fetchedActions.count > 1) {
-        NSLog(@"MEDIUM_WARNING: Found more than 1 action of type %@ for a unique event in the Action Data Store. Ignore for Econ events.", eventType);
+        action1 = fetchedActions[0];
+        action2 = fetchedActions[1];
+        NSLog(@"MEDIUM_WARNING: Found more than 1 action of event type %@ action type 1 %@ action type 2 %@ ticker1 %@ ticker2 %@ for a unique event in the Action Data Store. Ignore for Econ events.", eventType, action1.type, action2.type, action1.parentEvent.listedCompany.ticker,action2.parentEvent.listedCompany.ticker);
         exists = YES;
     }
     if (fetchedActions.count == 1) {

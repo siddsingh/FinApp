@@ -1251,9 +1251,6 @@
     
     for (Event *fetchedEvent in allEvents) {
         
-        // TO DO: Delete before shipping v2.9
-        NSLog(@"ENTERED Loop to create event reminder:%@",fetchedEvent.type);
-        
         // Get event details
         cellEventType = fetchedEvent.type;
         cellEventDateText = [self formatDateBasedOnEventType:fetchedEvent.type withDate:fetchedEvent.date withRelatedDetails:fetchedEvent.relatedDetails withStatus:fetchedEvent.certainty];
@@ -1491,9 +1488,6 @@
         // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
         double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
-        // TO DO: Delete before shipping v2.9
-        double prev1PriceDbl = [[eventHistoryData previous1Price] doubleValue];
-        NSLog(@"The current price is:%f ytd price is:%f and 30 days ago price is:%f",currentPriceDbl,prev1RelatedPriceDbl,prev1PriceDbl);
         
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
             numberOfPieces = 5;

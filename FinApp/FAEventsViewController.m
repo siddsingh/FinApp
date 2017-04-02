@@ -562,7 +562,7 @@
                     // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
                     NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
                     // To Do: Delete when shipping v2.9
-                    NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
+                    //NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
                     [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
                 }
                 // Else update the non price related data, not including current date, on the event history from the event. We don't include the current date as current date is set only once a day which is when the user first accesses the event.
@@ -913,8 +913,8 @@
             // Create a new Data Controller so that this thread has it's own MOC
             FADataController *accessDataController = [[FADataController alloc] init];
             [self processReminderForEventInCell:eventCell withDataController:accessDataController];
-            // If the event is a followable event, create all reminders for all followable events for this ticker. Does not do anything for econ events.
-            if ([self isEventFollowable:eventCell.eventDescription.text]) {
+            // If the event is a followable event, create all reminders for all followable events for this ticker. Does not do anything for econ events. Make sure that you are checking for formatted name i.e. Quarterly Earnings and not display name i.e. Earnings
+            if ([self isEventFollowable:[self formatBackToEventType:eventCell.eventDescription.text withAddedInfo:eventCell.eventCertainty.text]]) {
                 [self createAllRemindersForFollowedTicker:eventCell.companyTicker.text withDataController:accessDataController];
                 // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
                 // Delete the existing daily price change events from the db to not create duplicates
@@ -1130,9 +1130,6 @@
     NSArray *allEvents = [appropriateDataController getAllEconEventsOfType:type];
     for (Event *fetchedEvent in allEvents) {
         
-        // TO DO: Delete before shipping v2.9
-        NSLog(@"ENTERED Loop to create event reminder:%@",fetchedEvent.type);
-        
         // Get event details
         cellEventType = fetchedEvent.type;
         cellEventDateText = [self formatDateBasedOnEventType:fetchedEvent.type withDate:fetchedEvent.date withRelatedDetails:fetchedEvent.relatedDetails withStatus:fetchedEvent.certainty];
@@ -1338,18 +1335,11 @@
     // Get historical prices if needed
     if(fetchHistory) {
         
-        // To Do: Delete before shipping v2.9
-        NSLog(@"30 days ago date is:%@ and ytd date is:%@",eventForPricesFetch.previous1Date,eventForPricesFetch.previous1RelatedDate);
-        
         // See which one is before in time, the ytd date or 30 days ago date and set from date to that.
         if ([(eventForPricesFetch.previous1Date) timeIntervalSinceDate:(eventForPricesFetch.previous1RelatedDate)] > 0) {
-            // To Do: Delete before shipping v2.9
-            NSLog(@"In the ytd date loop:%@",eventForPricesFetch.previous1RelatedDate);
             
             [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
         } else {
-            // To Do: Delete before shipping v2.9
-            NSLog(@"In the 30 days ago date loop:%@",eventForPricesFetch.previous1Date);
             
             [specificDataController getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1Date toDateInclusive:eventForPricesFetch.currentDate];
         }

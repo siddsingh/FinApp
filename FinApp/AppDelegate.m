@@ -64,15 +64,16 @@
                              didFinishLaunchingWithOptions:launchOptions];
 
      
-    // Check to see if application version 2_8 has been used by the user at least once. If not
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V2_8_UsedOnce"])
+    // Check to see if application version 2_9 has been used by the user at least once. If not
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V2_9_UsedOnce"])
     {
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
         
         // Delete all entries in the action table to reset state so that any user is starting with a clean slate for following.
+        // Don't need to do this reset anymore as most of the people who were going to upgrade have probably already done so and are using following which we don't want to wipeout.
         FADataController *econEventDataController = [[FADataController alloc] init];
-        [econEventDataController deleteAllEventActions];
+        //[econEventDataController deleteAllEventActions];
         
         // Sync the 2017 econ events
         [econEventDataController getAllEconomicEventsFromLocalStorage];
@@ -103,7 +104,7 @@
         });
         
         // Set that the user has used the app at least once
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V2_8_UsedOnce"];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V2_9_UsedOnce"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     // If yes

@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1212" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0h3-IF-CPY">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0h3-IF-CPY">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -116,7 +116,7 @@
                                         <rect key="frame" x="0.0" y="28" width="414" height="68"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GMC-5M-9zB" id="EdO-do-03K">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="68"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="67.666666666666671"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Company Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s1x-IM-BDA">
@@ -129,14 +129,14 @@
                                                     <color key="textColor" red="0.44326073230000002" green="0.44326073230000002" blue="0.44326073230000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10.12% down - 30 days" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r65-ua-5Pc">
-                                                    <rect key="frame" x="110" y="10" width="171" height="19"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Destiny2 Gameplay Launch" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r65-ua-5Pc">
+                                                    <rect key="frame" x="110" y="10" width="202" height="19"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="19" id="0IR-kz-x0Q"/>
-                                                        <constraint firstAttribute="width" constant="171" id="arY-V4-kX6"/>
+                                                        <constraint firstAttribute="width" constant="202" id="arY-V4-kX6"/>
                                                         <constraint firstAttribute="width" constant="487" id="jdP-jn-yXN"/>
                                                         <constraint firstAttribute="height" constant="19" id="og2-Ui-TQp"/>
-                                                        <constraint firstAttribute="width" constant="171" id="ywc-5f-vdG"/>
+                                                        <constraint firstAttribute="width" constant="202" id="ywc-5f-vdG"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="16"/>
                                                     <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -193,7 +193,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hii-le-ydl">
-                                                    <rect key="frame" x="298" y="51" width="101" height="14.666666666666671"/>
+                                                    <rect key="frame" x="620" y="51" width="101" height="14.666666666666671"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="101" id="niV-sO-whu"/>
                                                     </constraints>
@@ -369,6 +369,12 @@
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="5ff-PD-DhC"/>
+                                <exclude reference="5cx-il-ILy"/>
+                                <exclude reference="GAJ-cr-gj4"/>
+                                <exclude reference="bW3-uV-gpb"/>
+                                <exclude reference="iiw-0T-dVG"/>
+                                <exclude reference="jkd-9p-GFJ"/>
+                                <exclude reference="t5v-Db-Sqo"/>
                                 <exclude reference="7UA-yu-WEj"/>
                                 <exclude reference="I39-eR-HUe"/>
                                 <exclude reference="QJJ-ft-4SW"/>
@@ -383,22 +389,16 @@
                                 <exclude reference="mgn-w1-GJi"/>
                                 <exclude reference="s0K-VK-9ey"/>
                                 <exclude reference="zf7-V9-haM"/>
-                                <exclude reference="5cx-il-ILy"/>
-                                <exclude reference="GAJ-cr-gj4"/>
-                                <exclude reference="bW3-uV-gpb"/>
-                                <exclude reference="iiw-0T-dVG"/>
-                                <exclude reference="jkd-9p-GFJ"/>
-                                <exclude reference="t5v-Db-Sqo"/>
                                 <exclude reference="hAn-1M-pGq"/>
                                 <exclude reference="v5Y-Tw-fQx"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
                             <mask key="constraints">
-                                <exclude reference="cPx-KL-hKR"/>
-                                <exclude reference="mgn-w1-GJi"/>
                                 <exclude reference="bW3-uV-gpb"/>
                                 <exclude reference="iiw-0T-dVG"/>
+                                <exclude reference="cPx-KL-hKR"/>
+                                <exclude reference="mgn-w1-GJi"/>
                             </mask>
                         </variation>
                     </view>
@@ -418,7 +418,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1ub-g1-2Pv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1140.5797101449277" y="549.45652173913049"/>
+            <point key="canvasLocation" x="1139.84375" y="549.0234375"/>
         </scene>
         <!--Event Details View Controller-->
         <scene sceneID="FTZ-Sk-bv7">
@@ -632,7 +632,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DRe-pW-ZhJ">
-                                                    <rect key="frame" x="52.666666666666657" y="10" width="289" height="36"/>
+                                                    <rect key="frame" x="213.66666666666663" y="10" width="289" height="36"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
@@ -644,7 +644,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" indicatorStyle="white" delaysContentTouches="NO" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PEv-AN-HGr">
-                                                    <rect key="frame" x="52.666666666666657" y="46" width="289" height="52"/>
+                                                    <rect key="frame" x="213.66666666666663" y="46" width="289" height="52"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="0.1137254902" green="0.46666666670000001" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <gestureRecognizers/>
@@ -668,7 +668,7 @@
                                                     </connections>
                                                 </textView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="epa-cv-1rn">
-                                                    <rect key="frame" x="0.0" y="107" width="394" height="10"/>
+                                                    <rect key="frame" x="0.0" y="107" width="716" height="10"/>
                                                     <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
