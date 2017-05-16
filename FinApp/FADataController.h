@@ -44,6 +44,9 @@
 // Get company ticker using company name. Assumption is that there is only one record per company name and ticker.
 - (NSString *)getTickerForName:(NSString *)companyName;
 
+// Delete a company given a ticker
+- (void)deleteCompanyWithTicker:(NSString *)companyTicker;
+
 #pragma mark - Events Data Related
 
 // Upsert an Event along with a parent company to the Event Data Store i.e. If the specified event type for that particular company exists, update it. If not insert it.

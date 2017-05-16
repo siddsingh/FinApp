@@ -21,6 +21,9 @@
 // Image representing the type of event
 @property (weak, nonatomic) IBOutlet UIImageView *eventImage;
 
+// Button to show news
+@property (weak, nonatomic) IBOutlet UIButton *newsButon;
+
 // Label that represents the event description
 @property (weak, nonatomic) IBOutlet UILabel *eventDescription;
 

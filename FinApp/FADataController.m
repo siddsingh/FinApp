@@ -156,6 +156,39 @@ bool eventsUpdated = NO;
     return existingCompany.ticker;
 }
 
+// Delete a company given a ticker
+- (void)deleteCompanyWithTicker:(NSString *)companyTicker
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Check to see if the Company exists by doing a case insensitive query on companyTicker
+    NSFetchRequest *companyFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *companyEntity = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:dataStoreContext];
+    NSPredicate *companyPredicate = [NSPredicate predicateWithFormat:@"ticker =[c] %@",companyTicker];
+    [companyFetchRequest setEntity:companyEntity];
+    [companyFetchRequest setPredicate:companyPredicate];
+    NSError *error;
+    NSArray *fetchedCompanies = [dataStoreContext executeFetchRequest:companyFetchRequest error:&error];
+    
+    if (fetchedCompanies.count > 1) {
+        NSLog(@"SEVERE_WARNING: Found %ld(more than 1) duplicate tickers for %@ when trying to delete the company from the datastore",(long)fetchedCompanies.count,companyTicker);
+    }
+    if (fetchedCompanies.count == 0) {
+        NSLog(@"WARNING: Did not find company for ticker %@ when trying to delete the company from the datastore",companyTicker);
+    }
+    if (error) {
+        NSLog(@"ERROR: Fetching a company, with ticker %@ to delete from data store, failed: %@",companyTicker,error.description);
+    }
+    
+    // Delete all following actions
+    for (NSManagedObject *company in fetchedCompanies) {
+        
+        [dataStoreContext deleteObject:company];
+    }
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
+}
+
 #pragma mark - Events Data Related
 
 // Upsert an Event along with a parent company to the Event Data Store i.e. If the specified event type for that particular company exists, update it. If not insert it.
@@ -1767,6 +1800,7 @@ bool eventsUpdated = NO;
 // Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
 - (void)getAllTickersAndNamesFromLocalStorage
 {
+    
     // First add the new tickers since 11/19/2016 manually
     [self insertUniqueCompanyWithTicker:@"SNAP" name:@"Snap Inc"];
     [self insertUniqueCompanyWithTicker:@"MULE" name:@"MuleSoft Inc"];
@@ -1837,6 +1871,10 @@ bool eventsUpdated = NO;
         
         ++tickerIndex;
     }
+    
+    // Some cleanup
+    // There are two tickers with the same company name T.BB and BBRY -> Blackberry Ltd This is messing up the app, so setting T.BB to say Blackberry Ltd Old
+    [self deleteCompanyWithTicker:@"T.BB"];
     
 }
 

@@ -2122,8 +2122,6 @@
     FAEventsTableViewCell *tappedIconCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:tappedIndexPath];
     NSString *formattedEventType = tappedIconCell.eventDescription.text;
     NSString *ticker = tappedIconCell.companyTicker.text;
-    // Check to see if the row selected has an event cell with remote fetch status set to true
-    NSLog(@"Icon tapped for event type:%@",formattedEventType);
     
     // Open the corresponding News in mobile Safari
     NSString *moreInfoURL = nil;
