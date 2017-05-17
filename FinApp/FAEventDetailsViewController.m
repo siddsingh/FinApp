@@ -1869,7 +1869,7 @@
     return returnVal;
 }
 
-// Return the appropriate color for event distance based on how far it is from today.
+// Return the appropriate color for event based on type.
 - (UIColor *)getColorForEventType:(NSString *)eventType
 {
     // Set returned color to black text to start with

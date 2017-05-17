@@ -389,8 +389,9 @@
         [[cell  companyName] setText:companyAtIndex.name];
         // Show the company Name as this information is needed to be displayed to the user when searching
         [[cell companyName] setHidden:NO];
-        // Hide the image representing the event as this information is not needed when the user searches
-        [[cell eventImage] setHidden:YES];
+        // Disable and hide the news button representing the event as this information is not needed when the user searches
+        [[cell newsButon] setEnabled:NO];
+        [[cell newsButon] setHidden:YES];
         
         // Check to see if the Events Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -421,15 +422,7 @@
         
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!!: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation. Also reconcile in didSelectRowAtIndexPath.
         
-        // Add a tap geature recognizer to the event type icon
-        UITapGestureRecognizer *typeIcontap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processTypeIconTap:)];
-        typeIcontap.cancelsTouchesInView = YES;
-        typeIcontap.numberOfTapsRequired = 1;
-        typeIcontap.numberOfTouchesRequired = 1;
-        [cell.eventImage addGestureRecognizer:typeIcontap];
-        cell.eventImage.tag = indexPath.row;
-        
-        // Add a tap geature recognizer to the event ticker
+        // Add a tap gesture recognizer to the event ticker
         UITapGestureRecognizer *tickerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processTypeIconTap:)];
         tickerTap.cancelsTouchesInView = YES;
         tickerTap.numberOfTapsRequired = 1;
@@ -437,13 +430,20 @@
         [cell.companyTicker addGestureRecognizer:tickerTap];
         cell.companyTicker.tag = indexPath.row;
         
+        // Enable, Show and Set News Button text color
+        [[cell newsButon] setTitleColor:[self getColorForEventType:eventAtIndex.type] forState:UIControlStateNormal];
+        [[cell newsButon] setHidden:YES];
+        [[cell newsButon] setEnabled:YES];
+        [[cell newsButon] setHidden:NO];
+        cell.newsButon.tag = indexPath.row;
+        // Also add the button press action
+        [cell.newsButon addTarget:self action:@selector(newsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
         
         // Hide the company Name as this information is not needed to be displayed to the user.
         [[cell companyName] setHidden:YES];
-        // Show the image representing the event as this information is needed when user isn't searching
-        [[cell eventImage] setHidden:NO];
         // Set the company name associated with the event as this is needed in places like getting the earnings.
         [[cell  companyName] setText:eventAtIndex.listedCompany.name];
         
@@ -458,9 +458,6 @@
         
         // Show the event date
         [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails withStatus:eventAtIndex.certainty]];
-        
-        // Show the appropriate event Image
-        [[cell eventImage] setImage:[self getImageBasedOnEventType:eventAtIndex.type]];
         
         // Show the event distance
         [[cell eventDistance] setText:[self calculateDistanceFromEventDate:eventAtIndex.date]];
@@ -2113,6 +2110,7 @@
 
 #pragma mark - Event Type Icon Action
 
+// TO DO: Delete once the news button is active
 // Process clicking of event type icon
 - (void)processTypeIconTap:(UIGestureRecognizer *)gestureRecognizer
 {
@@ -2148,7 +2146,82 @@
     if ([formattedEventType containsString:@"Launch"]) {
         searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
     }
-    if ([formattedEventType containsString:@"Conference"]) {
+    // For conference you want to use the raw event type as it contains the word conference and formatted does not
+    if ([[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] containsString:@"Conference"]) {
+        searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+    }
+    // For economic events, search query term is customized for each type
+    if ([formattedEventType containsString:@"GDP Release"]) {
+        searchTerm = @"us gdp growth";
+    }
+    if ([formattedEventType containsString:@"Consumer Confidence"]) {
+        searchTerm = @"us consumer confidence";
+    }
+    if ([formattedEventType containsString:@"Fed Meeting"]) {
+        searchTerm = @"fomc meeting";
+    }
+    if ([formattedEventType containsString:@"Jobs Report"]) {
+        searchTerm = @"jobs report us";
+    }
+    if ([formattedEventType containsString:@"% up"]||[formattedEventType containsString:@"% down"]) {
+        searchTerm = [NSString stringWithFormat:@"%@ %@",ticker,@"stock"];
+    }
+    
+    // Remove any spaces in the URL query string params
+    searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+    
+    targetURL = [NSURL URLWithString:moreInfoURL];
+    
+    if (targetURL) {
+        
+        // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"External Action Clicked"
+                      parameters:@{ @"Action Title" : @"See News Shortcut",
+                                    @"Action Query" : searchTerm,
+                                    @"Action URL" : [targetURL absoluteString]} ];
+        
+        [[UIApplication sharedApplication] openURL:targetURL];
+    }
+}
+
+// News Button on cell press
+- (void)newsButtonPressed:(UIButton *)sender
+{
+    // Get the event description corresponding to the pressed button
+    NSIndexPath *tappedIndexPath = [NSIndexPath indexPathForRow:sender.tag inSection:0];
+    FAEventsTableViewCell *tappedButtonCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:tappedIndexPath];
+    NSString *formattedEventType = tappedButtonCell.eventDescription.text;
+    NSString *ticker = tappedButtonCell.companyTicker.text;
+    
+    // Open the corresponding News in mobile Safari
+    NSString *moreInfoURL = nil;
+    NSString *searchTerm = nil;
+    NSURL *targetURL = nil;
+    
+    // Send them to different sites with different queries based on which site has the best informtion for that event type
+    
+    // TO DO: If you want to revert to using Bing
+    // Bing News is the default we are going with for now
+    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    
+    // Google news is default for now
+    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+    searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
+    
+    // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
+    if ([formattedEventType isEqualToString:@"Earnings"]) {
+        searchTerm = [NSString stringWithFormat:@"%@ %@",ticker,@"earnings"];
+    }
+    
+    // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
+    if ([formattedEventType containsString:@"Launch"]) {
+        searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+    }
+    // For conference you want to use the raw event type as it contains the word conference and formatted does not
+    if ([[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] containsString:@"Conference"]) {
         searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
     }
     
@@ -2687,13 +2760,13 @@
     
     // Return an appropriately formatted string
     if (difference < 0) {
-        formattedDistance = @"Past >";
+        formattedDistance = @"Past ▸";
     } else if (difference == 0) {
-        formattedDistance = @"Today >";
+        formattedDistance = @"Today ▸";
     } else if (difference == 1) {
-        formattedDistance = @"Tomorrow >";
+        formattedDistance = @"Tomorrow ▸";
     } else {
-        formattedDistance = [NSString stringWithFormat:@"%@d >",[@(difference) stringValue]];
+        formattedDistance = [NSString stringWithFormat:@"%@d ▸",[@(difference) stringValue]];
     }
     
     return formattedDistance;
@@ -2782,6 +2855,50 @@
     }
     
     return eventImage;
+}
+
+// Return the appropriate color for event based on type.
+- (UIColor *)getColorForEventType:(NSString *)eventType
+{
+    // Set returned color to dark gray text to start with
+    UIColor *colorToReturn = [UIColor darkGrayColor];
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        // Knotifi green
+        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Jobs Report"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"GDP Release"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        // Product Brown
+        colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"% up"])
+    {
+        // Kinda Green
+        colorToReturn = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"% down"])
+    {
+        // Kinda Red
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:63.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+    }
+    
+    return colorToReturn;
 }
 
 // Format the given date to set the time on it to midnight last night. e.g. 03/21/2016 9:00 pm becomes 03/21/2016 12:00 am.

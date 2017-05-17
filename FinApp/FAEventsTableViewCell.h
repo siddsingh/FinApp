@@ -18,9 +18,6 @@
 // Label that represents the company name whose event we are showing.
 @property (weak, nonatomic) IBOutlet UILabel *companyName;
 
-// Image representing the type of event
-@property (weak, nonatomic) IBOutlet UIImageView *eventImage;
-
 // Button to show news
 @property (weak, nonatomic) IBOutlet UIButton *newsButon;
 
