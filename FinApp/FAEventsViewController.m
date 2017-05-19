@@ -1929,9 +1929,9 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"All" } ];
     }
-    // Earnings - Color Knotifi Green
+    // Earnings - Color Knotifi Green with more pop
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:86.0f/255.0f green:165.0f/255.0f blue:41.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -1989,9 +1989,9 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Economic" } ];
     }
-    // Product - Product Brown
+    // Product - Purple
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:72.0f/255.0f green:70.0f/255.0f blue:176.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -2790,18 +2790,30 @@
         // Older orangish red
         //colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
         // Newer pinkish deep red
-        colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+        // Original Product Brown
+        //colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
+        // High Impact Indicator Red
+        colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
         
     } else if (difference == 1) {
         // Older slightly less orangish red
         //colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:81.0f/255.0f blue:62.0f/255.0f alpha:1.0f];
         // Newer pinkish deep red
-        colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+        // Original Product Brown
+        //colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
+        // High Impact Indicator Red
+        colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
     } else if ((difference > 1)&&(difference < 8)){
         // Older More orange, less red
         //colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
         // Newer pinkish deep red
-        colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+        // Original Product Brown
+        //colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
+        // High Impact Indicator Red
+        colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;
@@ -2864,8 +2876,8 @@
     UIColor *colorToReturn = [UIColor darkGrayColor];
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        // Knotifi green
-        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+        // Knotifi Green with more pop
+        colorToReturn = [UIColor colorWithRed:86.0f/255.0f green:165.0f/255.0f blue:41.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Fed Meeting"]) {
         // Econ Blue
@@ -2884,8 +2896,10 @@
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
-        // Product Brown
-        colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
+        // Sea Blue
+        //colorToReturn = [UIColor colorWithRed:51.0f/255.0f green:164.0f/255.0f blue:173.0f/255.0f alpha:1.0f];
+        // Purple
+        colorToReturn = [UIColor colorWithRed:72.0f/255.0f green:70.0f/255.0f blue:176.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"% up"])
     {
