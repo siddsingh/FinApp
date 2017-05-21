@@ -19,6 +19,7 @@
 #import "FAEventDetailsViewController.h"
 #import "EventHistory.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import "FASnapShot.h"
 @import EventKit;
 
 @interface FAEventsViewController ()
@@ -249,6 +250,9 @@
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
     self.eventsListTable.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    // Create (now but get later, once it's created right at the start) the data Snapshot to use later.
+    self.dataSnapShot = [[FASnapShot alloc] init];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -350,6 +354,9 @@
     
     // Reset color for Event Date to dark text, in case it's been set to blue for a "Get Events" display.
     cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    
+    // Hide the event impact label
+    cell.eventImpact.hidden = YES;
     
     // Get event or company  to display
     Event *eventAtIndex;
@@ -464,6 +471,11 @@
         
         // Set event distance to the appropriate color using a reddish scheme.
         [[cell eventDistance] setTextColor:[self getColorForDistanceFromEventDate:eventAtIndex.date]];
+        
+        // Show event impact label if the impact is high
+        if ([self.dataSnapShot isEventHighImpact:eventAtIndex.type eventParent:eventAtIndex.listedCompany.ticker]) {
+            [[cell eventImpact] setHidden:NO];
+        }
         
         // Hide the event certainty as this information is not needed to be displayed to the user.
         [[cell eventCertainty] setHidden:YES];
@@ -1929,9 +1941,9 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"All" } ];
     }
-    // Earnings - Color Knotifi Green with more pop
+    // Earnings - Punchy Knotifi Green
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:86.0f/255.0f green:165.0f/255.0f blue:41.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -1989,9 +2001,9 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Economic" } ];
     }
-    // Product - Purple
+    // Product - Dark Yellow
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:72.0f/255.0f green:70.0f/255.0f blue:176.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -2876,8 +2888,8 @@
     UIColor *colorToReturn = [UIColor darkGrayColor];
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        // Knotifi Green with more pop
-        colorToReturn = [UIColor colorWithRed:86.0f/255.0f green:165.0f/255.0f blue:41.0f/255.0f alpha:1.0f];
+        // Punchy Knotifi Green
+        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Fed Meeting"]) {
         // Econ Blue
@@ -2899,7 +2911,9 @@
         // Sea Blue
         //colorToReturn = [UIColor colorWithRed:51.0f/255.0f green:164.0f/255.0f blue:173.0f/255.0f alpha:1.0f];
         // Purple
-        colorToReturn = [UIColor colorWithRed:72.0f/255.0f green:70.0f/255.0f blue:176.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:72.0f/255.0f green:70.0f/255.0f blue:176.0f/255.0f alpha:1.0f];
+        // Dark Yellow
+        colorToReturn = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"% up"])
     {

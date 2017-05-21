@@ -30,6 +30,7 @@
 		9E6D80761A9EB49700E1F2D3 /* FADataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80751A9EB49700E1F2D3 /* FADataStore.m */; };
 		9E6D80791AA4E07100E1F2D3 /* FADataController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6D80781AA4E07100E1F2D3 /* FADataController.m */; };
 		9E6D807B1AAFDF5800E1F2D3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		9E6F0B951ED1FA4F007BACD7 /* FASnapShot.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E6F0B941ED1FA4F007BACD7 /* FASnapShot.m */; };
 		9E7586461AF44679009DD7B2 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E7586451AF44679009DD7B2 /* User.m */; };
 		9E79C9241BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
 		9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
@@ -94,6 +95,8 @@
 		9E6D80771AA4E07100E1F2D3 /* FADataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FADataController.h; sourceTree = "<group>"; };
 		9E6D80781AA4E07100E1F2D3 /* FADataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FADataController.m; sourceTree = "<group>"; };
 		9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		9E6F0B931ED1FA4F007BACD7 /* FASnapShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FASnapShot.h; sourceTree = "<group>"; };
+		9E6F0B941ED1FA4F007BACD7 /* FASnapShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FASnapShot.m; sourceTree = "<group>"; };
 		9E7586441AF44679009DD7B2 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		9E7586451AF44679009DD7B2 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		9E79C9221BCDE3B9007E17B6 /* EventHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventHistory.h; sourceTree = "<group>"; };
@@ -176,13 +179,15 @@
 				9E79C9291BD85C46007E17B6 /* FAEventDetailsViewController.h */,
 				9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */,
 				9E79C9351BDAC78F007E17B6 /* FAEventDetailsTableViewCell.h */,
+				9E6D80751A9EB49700E1F2D3 /* FADataStore.m */,
 				9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */,
 				9E6D80771AA4E07100E1F2D3 /* FADataController.h */,
 				9E6D80781AA4E07100E1F2D3 /* FADataController.m */,
 				9E6D80741A9EB49700E1F2D3 /* FADataStore.h */,
-				9E6D80751A9EB49700E1F2D3 /* FADataStore.m */,
 				9E0AC7B61C6EB9CA0078EAA5 /* FACompanyInfoStore.h */,
 				9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */,
+				9E6F0B931ED1FA4F007BACD7 /* FASnapShot.h */,
+				9E6F0B941ED1FA4F007BACD7 /* FASnapShot.m */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */,
@@ -361,6 +366,7 @@
 				9E681D4D1A43B08F00FC5E5D /* FAEventsViewController.m in Sources */,
 				9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */,
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
+				9E6F0B951ED1FA4F007BACD7 /* FASnapShot.m in Sources */,
 				9E0AC7B81C6EB9CA0078EAA5 /* FACompanyInfoStore.m in Sources */,
 				9E79C9371BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */,
 				9E44C29B1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */,

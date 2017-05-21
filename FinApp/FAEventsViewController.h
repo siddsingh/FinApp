@@ -11,6 +11,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 @class FADataController;
+@class FASnapShot;
 
 @interface FAEventsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
@@ -61,5 +62,8 @@
 
 // Underline bar to draw focus to a certain area
 @property (weak, nonatomic) IBOutlet UILabel *focusBar;
+
+// Access to the one data snapshot.
+@property (strong,nonatomic) FASnapShot *dataSnapShot;
 
 @end

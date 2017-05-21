@@ -1876,8 +1876,8 @@
     UIColor *colorToReturn = [UIColor blackColor];
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        // Knotifi green with more pop
-        colorToReturn = [UIColor colorWithRed:86.0f/255.0f green:165.0f/255.0f blue:41.0f/255.0f alpha:1.0f];
+        // Punchy Knotifi Green
+        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Fed Meeting"]) {
         // Econ Blue
@@ -1896,8 +1896,8 @@
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
-        // Purple
-        colorToReturn = [UIColor colorWithRed:72.0f/255.0f green:70.0f/255.0f blue:176.0f/255.0f alpha:1.0f];
+        // Dark Yellow
+        colorToReturn = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
     }
     if ([self.eventType containsString:@"% up"])
     {

@@ -36,5 +36,7 @@
 // Flag to show if the event needs to be fetched from the remote data source
 @property BOOL eventRemoteFetch;
 
+// Label representing the event impact.
+@property (weak, nonatomic) IBOutlet UILabel *eventImpact;
 
 @end
