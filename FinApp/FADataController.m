@@ -49,7 +49,7 @@ bool eventsUpdated = NO;
     self.appDataStore = [FADataStore sharedStore];
     
     if ([self.appDataStore persistentStoreCoordinator] != nil) {
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:0];
         [_managedObjectContext setPersistentStoreCoordinator:[self.appDataStore persistentStoreCoordinator]];
     }
     
@@ -1353,9 +1353,11 @@ bool eventsUpdated = NO;
         
         // Make the call synchronously
         NSMutableURLRequest *companiesRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-        NSData *responseData = [NSURLConnection sendSynchronousRequest:companiesRequest returningResponse:&response
-                                                                 error:&error];
-        
+        // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
+       // NSData *responseData = [NSURLConnection sendSynchronousRequest:companiesRequest returningResponse:&response
+       //                                                          error:&error];
+        NSData *responseData = [self sendSynchronousRequest:companiesRequest returningResponse:&response error:&error];
+
         // TO DO: For testing, comment before shipping
         //NSLog(@"******************************************Made request to get company data with page number:%@**************",endpointURL);
         
@@ -1581,9 +1583,10 @@ bool eventsUpdated = NO;
         
     // Make the call synchronously
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-                                                                 error:&error];
-        
+    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
+   // NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+   //                                                              error:&error];
+    NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     // Process the response
     if (error == nil)
     {
@@ -2023,8 +2026,10 @@ bool eventsUpdated = NO;
     
     // Make the call synchronously
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-                                                             error:&error];
+    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
+    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+    //                                                         error:&error];
+    NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     // Process the response
     if (error == nil)
@@ -2227,8 +2232,11 @@ bool eventsUpdated = NO;
     // Make the call synchronously
     NSError *error;
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-                                                             error:&error];
+    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
+    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+    //                                                         error:&error];
+    NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
+    
     // This is the API response
     /* {
      "status":{
@@ -2375,8 +2383,10 @@ bool eventsUpdated = NO;
     // Make the call synchronously
     NSError *error;
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-                                                             error:&error];
+    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
+    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+    //                                                         error:&error];
+    NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     /* This is the current JSON structure of the response
      "responseData" : -{
@@ -2690,8 +2700,10 @@ bool eventsUpdated = NO;
     
     // Make the call synchronously
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-                                                             error:&error];
+    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
+    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+    //                                                         error:&error];
+    NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     // Process the response
     if (error == nil)
@@ -2995,8 +3007,10 @@ bool eventsUpdated = NO;
     
     // Make the call synchronously
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-                                                             error:&error];
+    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
+    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
+    //                                                         error:&error];
+    NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     // Process the response
     if (error == nil)
@@ -4111,6 +4125,31 @@ bool eventsUpdated = NO;
     NSInteger difference = [diffDateComponents day];
     
     return difference;
+}
+
+// Simulating a Synchronous Request using NSURLSession that doesn't support synchronous requests. Need this since NSURLRequest has been deprecated.
+- (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error
+{
+    
+    NSError __block *err = NULL;
+    NSData __block *data;
+    BOOL __block reqProcessed = false;
+    NSURLResponse __block *resp;
+    
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable _data, NSURLResponse * _Nullable _response, NSError * _Nullable _error) {
+        resp = _response;
+        err = _error;
+        data = _data;
+        reqProcessed = true;
+    }] resume];
+    
+    while (!reqProcessed) {
+        [NSThread sleepForTimeInterval:0];
+    }
+    
+    *response = resp;
+    *error = err;
+    return data;
 }
 
 @end

@@ -52,7 +52,7 @@
     // Set the status bar text color to white. This is done in conjunction with setting View controller-based status bar appearance property to NO in Info.plist. To revert delete that property and remove this line.
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     // With a light app theme, setting the status bar style to default dark theme. 
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     
     // Remove the 1 pixel bottom border line from navigation Controller top bar.
     [[UINavigationBar appearance] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
