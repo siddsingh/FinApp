@@ -20,9 +20,10 @@
 #import "EventHistory.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import "FASnapShot.h"
+#import <SafariServices/SafariServices.h>
 @import EventKit;
 
-@interface FAEventsViewController ()
+@interface FAEventsViewController () <SFSafariViewControllerDelegate>
 
 // Get all companies from API. Typically called in a background thread
 - (void)getAllCompaniesFromApiInBackground;
@@ -2194,7 +2195,12 @@
                                     @"Action Query" : searchTerm,
                                     @"Action URL" : [targetURL absoluteString]} ];
         
-        [[UIApplication sharedApplication] openURL:targetURL];
+        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
+        //[[UIApplication sharedApplication] openURL:targetURL];
+        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+        externalInfoVC.delegate = self;
+        externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text]];
+        [self presentViewController:externalInfoVC animated:YES completion:nil];
     }
 }
 
@@ -2269,7 +2275,12 @@
                                     @"Action Query" : searchTerm,
                                     @"Action URL" : [targetURL absoluteString]} ];
         
-        [[UIApplication sharedApplication] openURL:targetURL];
+        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
+        //[[UIApplication sharedApplication] openURL:targetURL];
+        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+        externalInfoVC.delegate = self;
+        externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text]];
+        [self presentViewController:externalInfoVC animated:YES completion:nil];
     }
 }
 

@@ -1003,6 +1003,7 @@
         //[[UIApplication sharedApplication] openURL:targetURL];
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
+        externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     } 
 }
