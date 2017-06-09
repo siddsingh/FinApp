@@ -58,10 +58,22 @@
 // Action to take when Reminder button is pressed
 - (IBAction)reminderAction:(id)sender;
 
-// Button to see the news
+// Button to see the news (Google for now)
 @property (weak, nonatomic) IBOutlet UIButton *newsButton;
 
 // Action to take when the news button is clicked
 - (IBAction)seeNewsAction:(id)sender;
+
+// Button to see the second news source (Seeking Alpha for now)
+@property (weak, nonatomic) IBOutlet UIButton *newsButton2;
+
+// Corresponding Action
+@property (weak, nonatomic) IBOutlet UIButton *seeNewsAction2;
+
+// Button to see the third news source (Yahoo Finance for now)
+@property (weak, nonatomic) IBOutlet UIButton *newsButton3;
+
+// Corresponding Action
+@property (weak, nonatomic) IBOutlet UIButton *seeNewsAction3;
 
 @end

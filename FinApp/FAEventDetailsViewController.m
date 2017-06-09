@@ -128,8 +128,10 @@
         }
     }
 
-    // Set color of "See News" button based on event type
+    // Set color of "See News" buttons based on event type
     [self.newsButton setBackgroundColor:[self getColorForEventType:self.eventType]];
+    [self.newsButton2 setBackgroundColor:[self getColorForEventType:self.eventType]];
+    [self.newsButton3 setBackgroundColor:[self getColorForEventType:self.eventType]];
     
     // Set color of back navigation item based on event type
     self.navigationController.navigationBar.tintColor = [self getColorForEventType:self.eventType];
