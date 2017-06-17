@@ -429,6 +429,7 @@
                     // If not available, display an appropriately formatted NA
                     else
                     {
+                        [[cell titleLabel] setTextColor:[UIColor blackColor]];
                         [[cell titleLabel] setText:@"NA"];
                     }
                 }
@@ -500,6 +501,7 @@
                 // If not available, display an appropriately formatted NA
                 else
                 {
+                    [[cell titleLabel] setTextColor:[UIColor blackColor]];
                     [[cell titleLabel] setText:@"NA"];
                 }
             }
@@ -526,7 +528,7 @@
                     double prev1PriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
                     double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
                     // TO DO: Comment 1st line and delete second line before shipping v2.7
-                    //NSLog(@"The first day of the yr price was:%f and current price is:%f",prev1PriceDbl,currentPriceDbl);
+                    //NSLog(@"The first day of the yr price was:%f and current price is:%f and NA is:%f",prev1PriceDbl,currentPriceDbl, notAvailable);
                     if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
                     {
                         double priceDiff = currentPriceDbl - prev1PriceDbl;
@@ -556,6 +558,7 @@
                     // If not available, display an appropriately formatted NA
                     else
                     {
+                        [[cell titleLabel] setTextColor:[UIColor blackColor]];
                         [[cell titleLabel] setText:@"NA"];
                     }
                 }
@@ -634,6 +637,7 @@
                 // If not available, display an appropriately formatted NA
                 else
                 {
+                    [[cell titleLabel] setTextColor:[UIColor blackColor]];
                     [[cell titleLabel] setText:@"NA"];
                 }
             }
@@ -938,7 +942,7 @@
 
 #pragma mark - News related
 
-// Send the user to the appropriate news site when they click the news button
+// Send the user to the appropriate news site when they click the news button 1. Currently Google.
 - (IBAction)seeNewsAction:(id)sender {
     
     NSString *moreInfoURL = nil;
@@ -1009,6 +1013,159 @@
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     } 
 }
+
+// Send the user to the appropriate news site when they click the news button 2. Currently Seeking Alpha News.
+- (IBAction)seeNewsAction2:(id)sender {
+    
+    NSString *moreInfoURL = nil;
+    NSString *searchTerm = nil;
+    NSURL *targetURL = nil;
+    
+    // Send them to different sites with different queries based on which site has the best informtion for that event type
+    
+    // TO DO: If you want to revert to using Bing
+    // Bing News is the default we are going with for now
+    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    
+    // Seeking Alpha home is default
+    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://seekingalpha.com"];
+    searchTerm = [NSString stringWithFormat:@"%@",@""];
+    
+    // For Quarterly Earnings, the URL extension is the ticker /symbol/NVDA
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@",@"/symbol/",self.parentTicker];
+    }
+    
+    // For Product events, the URL extension is the ticker /symbol/NVDA
+    if ([self.eventType containsString:@"Launch"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@",@"/symbol/",self.parentTicker];
+    }
+    if ([self.eventType containsString:@"Conference"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@",@"/symbol/",self.parentTicker];
+    }
+    
+    // For economic events, just take them to the SA home page, so no URL extension
+    if ([self.eventType containsString:@"GDP Release"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Fed Meeting"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        searchTerm = @"";
+    }
+    // For Price events, just take them to the SA home page, so no URL extension
+    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+        searchTerm = @"";
+    }
+    
+    // Remove any spaces in the URL query string params
+    searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+    
+    // TO DO before shipping v3.0: Delete
+    NSLog(@"The SA URL is:%@",moreInfoURL);
+    
+    targetURL = [NSURL URLWithString:moreInfoURL];
+    
+    if (targetURL) {
+        
+        // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"External Action Clicked"
+                      parameters:@{ @"Action Title" : @"See News",
+                                    @"Action Query" : searchTerm,
+                                    @"Action URL" : [targetURL absoluteString]} ];
+        
+        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
+        //[[UIApplication sharedApplication] openURL:targetURL];
+        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+        externalInfoVC.delegate = self;
+        externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
+        [self presentViewController:externalInfoVC animated:YES completion:nil];
+    } 
+}
+
+// Send the user to the appropriate news site when they click the news button 3. Currently Yahoo Finance.
+- (IBAction)seeNewsAction3:(id)sender {
+    
+    NSString *moreInfoURL = nil;
+    NSString *searchTerm = nil;
+    NSURL *targetURL = nil;
+    
+    // Send them to different sites with different queries based on which site has the best informtion for that event type
+    
+    // TO DO: If you want to revert to using Bing
+    // Bing News is the default we are going with for now
+    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    
+    // Yahoo finance is default
+    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://finance.yahoo.com"];
+    searchTerm = [NSString stringWithFormat:@"%@",@""];
+    
+    // For Quarterly Earnings, the URL extension is the ticker /quote/NVDA?ql
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@%@",@"/quote/",self.parentTicker,@"?ql"];
+    }
+    
+    // For Product events, the URL extension is the ticker /quote/NVDA?ql
+    if ([self.eventType containsString:@"Launch"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@%@",@"/quote/",self.parentTicker,@"?ql"];
+    }
+    if ([self.eventType containsString:@"Conference"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@%@",@"/quote/",self.parentTicker,@"?ql"];
+    }
+    
+    // For economic events, just take them to the home page, so no URL extension
+    if ([self.eventType containsString:@"GDP Release"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Fed Meeting"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        searchTerm = @"";
+    }
+    // For Price events, just take them to the home page, so no URL extension
+    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+        searchTerm = @"";
+    }
+    
+    // Remove any spaces in the URL query string params
+    searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+    
+    // TO DO before shipping v3.0: Delete
+    NSLog(@"The YF URL is:%@",moreInfoURL);
+    
+    targetURL = [NSURL URLWithString:moreInfoURL];
+    
+    if (targetURL) {
+        
+        // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"External Action Clicked"
+                      parameters:@{ @"Action Title" : @"See News",
+                                    @"Action Query" : searchTerm,
+                                    @"Action URL" : [targetURL absoluteString]} ];
+        
+        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
+        //[[UIApplication sharedApplication] openURL:targetURL];
+        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+        externalInfoVC.delegate = self;
+        externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
+        [self presentViewController:externalInfoVC animated:YES completion:nil];
+    } 
+}
+
 
 // Delegate mthod to dismiss the Safari View Controller when a user is done with it.
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
@@ -1563,7 +1720,7 @@
     // Based on event type and what's available, return the no of pieces of information.
     if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
         
-        numberOfPieces = 4;
+        numberOfPieces = 5;
         // Get the event history.
         eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
         
@@ -1571,11 +1728,13 @@
         double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
         
+        // Always return 5 pieces
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
             numberOfPieces = 5;
         } else {
-            numberOfPieces = 1;
+            numberOfPieces = 5;
         }
+        
     }
     
     if ([self.eventType containsString:@"Fed Meeting"]) {
@@ -1596,34 +1755,36 @@
     
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         
-        numberOfPieces = 1;
+        numberOfPieces = 4;
         // Get the event history.
         eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
         
         // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
         double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+        // Always return 4 pieces
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
             numberOfPieces = 4;
         } else {
-            numberOfPieces = 1;
+            numberOfPieces = 4;
         }
     }
     
     // Price change events we want to show the current stock price and 30 day and ytd change.
     if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
         
-        numberOfPieces = 1;
+        numberOfPieces = 3;
         // Get the event history.
         eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
         
         // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
         double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
         double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+        // Always return 3
         if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
             numberOfPieces = 3;
         } else {
-            numberOfPieces = 1;
+            numberOfPieces = 3;
         }
     }
         

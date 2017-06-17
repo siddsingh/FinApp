@@ -68,12 +68,12 @@
 @property (weak, nonatomic) IBOutlet UIButton *newsButton2;
 
 // Corresponding Action
-@property (weak, nonatomic) IBOutlet UIButton *seeNewsAction2;
+- (IBAction)seeNewsAction2:(id)sender;
 
 // Button to see the third news source (Yahoo Finance for now)
 @property (weak, nonatomic) IBOutlet UIButton *newsButton3;
 
 // Corresponding Action
-@property (weak, nonatomic) IBOutlet UIButton *seeNewsAction3;
+- (IBAction)seeNewsAction3:(id)sender;
 
 @end

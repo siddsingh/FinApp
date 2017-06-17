@@ -600,6 +600,9 @@
                                 <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="12"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="SA NEWS ▶︎"/>
+                                <connections>
+                                    <action selector="seeNewsAction2:" destination="4jH-eb-uDY" eventType="touchUpInside" id="u8r-aN-cuT"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LcC-xx-npG">
                                 <rect key="frame" x="216.5" y="75" width="93.5" height="37"/>
@@ -610,6 +613,9 @@
                                 <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="12"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="YF NEWS ▶︎"/>
+                                <connections>
+                                    <action selector="seeNewsAction3:" destination="4jH-eb-uDY" eventType="touchUpInside" id="o25-Ac-vnM"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="92d-w5-paa">
                                 <rect key="frame" x="10" y="75" width="93.5" height="37"/>
@@ -836,8 +842,6 @@
                         <outlet property="newsButton2" destination="GLd-0H-0lu" id="qEe-sO-RSq"/>
                         <outlet property="newsButton3" destination="LcC-xx-npG" id="Si6-wS-qxz"/>
                         <outlet property="reminderButton" destination="GSC-fM-PEJ" id="DXu-xN-LRz"/>
-                        <outlet property="seeNewsAction2" destination="GLd-0H-0lu" id="t4v-ZX-jl5"/>
-                        <outlet property="seeNewsAction3" destination="LcC-xx-npG" id="fQN-K5-0kH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PpK-dv-Xnd" userLabel="First Responder" sceneMemberID="firstResponder"/>
