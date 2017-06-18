@@ -66,4 +66,10 @@
 // Access to the one data snapshot.
 @property (strong,nonatomic) FASnapShot *dataSnapShot;
 
+// Button to contact Knotifi Support
+@property (weak, nonatomic) IBOutlet UIButton *supportButton;
+
+// Initiate support experience when button is clicked
+- (IBAction)initiateSupport:(id)sender;
+
 @end

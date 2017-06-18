@@ -2284,6 +2284,19 @@
     }
 }
 
+#pragma mark - Support Related
+
+// Initiate support experience when button is clicked. Currently open http://www.knotifi.com/p/contact.html
+- (IBAction)initiateSupport:(id)sender {
+    
+    // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
+    //[[UIApplication sharedApplication] openURL:targetURL];
+    SFSafariViewController *supportVC = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"http://www.knotifi.com/p/contact.html"]];
+    supportVC.delegate = self;
+    supportVC.preferredControlTintColor = [UIColor blackColor];
+    [self presentViewController:supportVC animated:YES completion:nil];
+}
+
 #pragma mark - Notifications
 
 // Send a notification to the events list controller with a message that should be shown to the user
