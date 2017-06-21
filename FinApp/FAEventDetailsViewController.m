@@ -969,6 +969,10 @@
     if ([self.eventType containsString:@"Launch"]) {
         searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
     }
+    // E.g. Naples Epyc Sales Launch becomes Naples Epyc
+    if ([self.eventType containsString:@"Sales Launch"]) {
+        searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Sales Launch" withString:@""];
+    }
     if ([self.eventType containsString:@"Conference"]) {
         searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
     }

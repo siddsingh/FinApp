@@ -2159,6 +2159,10 @@
     if ([formattedEventType containsString:@"Launch"]) {
         searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
     }
+    // E.g. Naples Epyc Sales Launch becomes Naples Epyc
+    if ([formattedEventType containsString:@"Sales Launch"]) {
+        searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Sales Launch" withString:@""];
+    }
     // For conference you want to use the raw event type as it contains the word conference and formatted does not
     if ([[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] containsString:@"Conference"]) {
         searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
@@ -2237,6 +2241,10 @@
     // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
     if ([formattedEventType containsString:@"Launch"]) {
         searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+    }
+    // E.g. Naples Epyc Sales Launch becomes Naples Epyc
+    if ([formattedEventType containsString:@"Sales Launch"]) {
+        searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Sales Launch" withString:@""];
     }
     // For conference you want to use the raw event type as it contains the word conference and formatted does not
     if ([[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] containsString:@"Conference"]) {
@@ -2812,7 +2820,9 @@
 - (UIColor *)getColorForDistanceFromEventDate:(NSDate *)eventDate
 {
     // Set returned color to light gray text to start with
-    UIColor *colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
+    //UIColor *colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
+    //Very lightish gray
+    UIColor *colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
     
     // Calculate the number of days between event date and today's date
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -2830,7 +2840,9 @@
         // Original Product Brown
         //colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
         // High Impact Indicator Red
-        colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+        // Return almost black
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         
     } else if (difference == 1) {
         // Older slightly less orangish red
@@ -2840,7 +2852,9 @@
         // Original Product Brown
         //colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
         // High Impact Indicator Red
-        colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+        // Return almost black
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     } else if ((difference > 1)&&(difference < 8)){
         // Older More orange, less red
         //colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
@@ -2849,7 +2863,9 @@
         // Original Product Brown
         //colorToReturn = [UIColor colorWithRed:113.0f/255.0f green:34.0f/255.0f blue:32.0f/255.0f alpha:1.0f];
         // High Impact Indicator Red
-        colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+        // Return almost black
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;

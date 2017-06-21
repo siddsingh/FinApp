@@ -3454,12 +3454,14 @@ bool eventsUpdated = NO;
         if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // TO DO: Delete Later
-            //NSLog(@"About to add product events from Knotifi Data Platform");
+            NSLog(@"About to add product events from Knotifi Data Platform");
             [self getAllProductEventsFromApi];
         }
     
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
         [self getAllPriceChangeEventsFromApiNew];
+        
+        NSLog(@"Finished adding product events and price change events");
     
         // Setting events updated to true as new price events and new product events might be added. Later make sure
         // it's only getting set to true if truly new events have been added.

@@ -189,7 +189,7 @@
                                                         <constraint firstAttribute="width" constant="65" id="uq2-Yn-yHE"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
-                                                    <color key="textColor" red="0.44326073230000002" green="0.44326073230000002" blue="0.44326073230000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="textColor" red="0.58823529411764708" green="0.58823529411764708" blue="0.58823529411764708" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -241,8 +241,8 @@
                                 <color key="backgroundColor" red="0.94509803921568625" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                                 <color key="tintColor" red="0.94509803920000002" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="Support &gt;">
-                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="SUPPORT">
+                                    <color key="titleColor" red="0.44326073230000002" green="0.44326073230000002" blue="0.44326073230000002" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="initiateSupport:" destination="WNQ-2i-B77" eventType="touchUpInside" id="Dgt-qj-3hl"/>
