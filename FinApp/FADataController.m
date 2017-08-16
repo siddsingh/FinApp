@@ -589,7 +589,7 @@ bool eventsUpdated = NO;
 }
 
 // Get all product events for a given ticker since a given date
-- (NSArray *)getAllProductEventsForTicker:(NSString *)parentTicker since:(NSDate *)startingDate
+- (NSFetchedResultsController *)getAllProductEventsForTicker:(NSString *)parentTicker since:(NSDate *)startingDate
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
@@ -604,15 +604,18 @@ bool eventsUpdated = NO;
     // NOTE: If there is a new type of product event like launch or conference added, add that here as well
     NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@)", sinceDate, @"Launch", @"Conference", parentTicker];
     [eventFetchRequest setPredicate:datePredicate];
-    
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
     NSError *error;
-    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
-    
-    if (error) {
-        NSLog(@"ERROR: Getting all product events, since a date, for ticker:%@ from data store failed: %@",parentTicker, error.description);
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all product events, since a particular date, for ticker:%@ from data store failed: %@",parentTicker, error.description);
     }
     
-    return events;
+    return self.resultsController;
 }
 
 // Get all future product events including today for a given ticker

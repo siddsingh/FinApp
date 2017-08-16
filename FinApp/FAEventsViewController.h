@@ -72,4 +72,7 @@
 // Initiate support experience when button is clicked
 - (IBAction)initiateSupport:(id)sender;
 
+// Store name for Product Main Nav Option.
+@property (strong,nonatomic) NSString *mainNavProductOption;
+
 @end

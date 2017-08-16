@@ -90,7 +90,7 @@
 - (NSFetchedResultsController *)getAllTrendingEvents;
 
 // Get all product events for a given ticker since the last n days
-- (NSArray *)getAllProductEventsForTicker:(NSString *)parentTicker since:(NSDate *)startingDate;
+- (NSFetchedResultsController *)getAllProductEventsForTicker:(NSString *)parentTicker since:(NSDate *)startingDate;
 
 // Get all future product events including today for a given ticker
 - (NSArray *)getAllFutureProductEventsForTicker:(NSString *)parentTicker;

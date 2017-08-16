@@ -214,6 +214,9 @@
     // Set Current Stock Price & Change String to "NA" which is the default value.
     self.currPriceAndChange = [NSString stringWithFormat:@"NA"];
     
+    // Store name for Product Main Nav Option. Currently Scape. Just change name here and in the UI element if one doesn't work out.
+    self.mainNavProductOption = [NSString stringWithFormat:@"SCAPE"];
+    
     // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown. Also factor in if the following nav is selected or not.
     // If All Events is selected.
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -248,10 +251,10 @@
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
         }
     }
-    // If Scape is selected in which case show the product timeline
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Scape"] == NSOrderedSame) {
-        // Show the product timeline
-        self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+    // If the main nav Product Option is selected in which case show the product timeline
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+        // Show the product timeline. Currently showing the trending events as it returns empty.
+        self.eventResultsController = [self.primaryDataController getAllTrendingEvents];
     }
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
@@ -1941,6 +1944,13 @@
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
             [self.eventsListTable reloadData];
         }
+        // If Product Main Option is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"SCAPE"];
+            self.eventResultsController = [self.primaryDataController getAllProductEventsForTicker:@"AMD" since:[self computeDate4MosAgoFrom:[NSDate date]]];
+            [self.eventsListTable reloadData];
+        }
         
         // TRACKING EVENT: Event Type Selected: User selected All event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
@@ -2044,7 +2054,6 @@
 - (IBAction)mainNavSelectAction:(id)sender {
     
     // Reset the navigation bar header text color to black
-    // Set navigation bar header to an attention orange color
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                              [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
                                              [UIColor blackColor], NSForegroundColorAttributeName,
@@ -2064,8 +2073,15 @@
     // Set correct search bar placeholder text
     self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
     // Set events selector to All Events
+    // ****SUPER IMPORTANT NOTE: This essentially triggers all the logic for what should happen when a main nav option is selected.
     [self.eventTypeSelector setSelectedSegmentIndex:0];
     [self.eventTypeSelector sendActionsForControlEvents:UIControlEventValueChanged];
+    
+    // If Product option is selected disable and hide the event selection bar
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+     [self.eventTypeSelector setEnabled:NO];
+     [self.eventTypeSelector setHidden:YES];
+     }
     
     // TO DO: Delete before shipping v2.9
     // If All Events is selected, enable and show the event selection bar
@@ -2574,6 +2590,18 @@
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
     differenceDayComponents.day = -30;
+    NSDate *returnDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:startingDate options:0];
+    
+    return returnDate;
+}
+
+// Compute the unscrubbed date 4 mos ago from today. Unscrubbed means it could be a weekend or a holiday.
+- (NSDate *)computeDate4MosAgoFrom:(NSDate *)startingDate
+{
+    // Subtract 124 days from start date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -124;
     NSDate *returnDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:startingDate options:0];
     
     return returnDate;
