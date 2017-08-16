@@ -1004,19 +1004,18 @@
         
         // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"External Action Clicked"
-         parameters:@{ @"Action Title" : @"See News",
+        [FBSDKAppEvents logEvent:@"See External News"
+         parameters:@{ @"News Source" : @"Google",
          @"Action Query" : searchTerm,
          @"Action URL" : [targetURL absoluteString]} ];
         
-        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
-        //[[UIApplication sharedApplication] openURL:targetURL];
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
         externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
-    } 
+    }
 }
+
 
 // Send the user to the appropriate news site when they click the news button 2. Currently Seeking Alpha News.
 - (IBAction)seeNewsAction2:(id)sender {
@@ -1062,17 +1061,14 @@
     if ([self.eventType containsString:@"Jobs Report"]) {
         searchTerm = @"";
     }
-    // For Price events, just take them to the SA home page, so no URL extension
+    // For Price events, the URL extension is the ticker /symbol/NVDA
     if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-        searchTerm = @"";
+        searchTerm =[NSString stringWithFormat:@"%@%@",@"/symbol/",self.parentTicker];
     }
     
     // Remove any spaces in the URL query string params
     searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
     moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
-    
-    // TO DO before shipping v3.0: Delete
-    NSLog(@"The SA URL is:%@",moreInfoURL);
     
     targetURL = [NSURL URLWithString:moreInfoURL];
     
@@ -1080,13 +1076,11 @@
         
         // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"External Action Clicked"
-                      parameters:@{ @"Action Title" : @"See News",
+        [FBSDKAppEvents logEvent:@"See External News"
+                      parameters:@{ @"News Source" : @"Seeking Alpha",
                                     @"Action Query" : searchTerm,
                                     @"Action URL" : [targetURL absoluteString]} ];
         
-        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
-        //[[UIApplication sharedApplication] openURL:targetURL];
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
         externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
@@ -1138,17 +1132,14 @@
     if ([self.eventType containsString:@"Jobs Report"]) {
         searchTerm = @"";
     }
-    // For Price events, just take them to the home page, so no URL extension
+    // For Price events, the URL extension is the ticker /quote/NVDA?ql
     if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-        searchTerm = @"";
+        searchTerm = [NSString stringWithFormat:@"%@%@%@",@"/quote/",self.parentTicker,@"?ql"];
     }
     
     // Remove any spaces in the URL query string params
     searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
     moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
-    
-    // TO DO before shipping v3.0: Delete
-    NSLog(@"The YF URL is:%@",moreInfoURL);
     
     targetURL = [NSURL URLWithString:moreInfoURL];
     
@@ -1156,13 +1147,11 @@
         
         // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"External Action Clicked"
-                      parameters:@{ @"Action Title" : @"See News",
+        [FBSDKAppEvents logEvent:@"See External News"
+                      parameters:@{ @"News Source" : @"Yahoo Finance",
                                     @"Action Query" : searchTerm,
                                     @"Action URL" : [targetURL absoluteString]} ];
         
-        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
-        //[[UIApplication sharedApplication] openURL:targetURL];
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
         externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
@@ -1173,7 +1162,8 @@
 
 // Delegate mthod to dismiss the Safari View Controller when a user is done with it.
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-    [self dismissViewControllerAnimated:true completion:nil];
+    
+    //[self dismissViewControllerAnimated:true completion:nil];
 }
 
 // Load the appropriate news site in a web view in the app, when the user clicks the See News button

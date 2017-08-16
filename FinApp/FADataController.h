@@ -85,6 +85,13 @@
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents;
 
+// Get all trending events
+// NOTE: Currently this returns empty i.e. no events
+- (NSFetchedResultsController *)getAllTrendingEvents;
+
+// Get all product events for a given ticker since the last n days
+- (NSArray *)getAllProductEventsForTicker:(NSString *)parentTicker since:(NSDate *)startingDate;
+
 // Get all future product events including today for a given ticker
 - (NSArray *)getAllFutureProductEventsForTicker:(NSString *)parentTicker;
 
@@ -126,6 +133,9 @@
 
 // Check to see if more than the 5 seed synced events of type quarterly earnings exist in the data store and return accordingly. Typically used to check if trending ticker events have been synced or not.
 - (BOOL)doTrendingTickerEventsExist;
+
+// Delete all events that contain "FIFA 18" as these have somehow gotten into a bad state in the DB. This is a one time thing.
+- (void)deleteAllFIFA18Events;
 
 #pragma mark - Event History related Methods
 

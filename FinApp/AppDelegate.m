@@ -36,7 +36,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     // Override point for customization after application launch.
-    
+
     // TO DO: UNCOMMENT FOR PRE SEEDING DB:
     // Making sure that the core data store is instantiated in the main thread
     // Create a new FADataController so that this thread has its own MOC
@@ -64,8 +64,8 @@
                              didFinishLaunchingWithOptions:launchOptions];
 
      
-    // Check to see if application version 2_9 has been used by the user at least once. If not
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V2_9_UsedOnce"])
+    // Check to see if application version 3_0 has been used by the user at least once. If not
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V3_0_UsedOnce"])
     {
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
@@ -77,6 +77,9 @@
         
         // Sync the 2017 econ events
         [econEventDataController getAllEconomicEventsFromLocalStorage];
+        
+        // Delete the FIFA 18 events as there are duplicates that have somehow got in.
+        [econEventDataController deleteAllFIFA18Events];
         
         // Update the list of companies in a background task
         __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
@@ -104,8 +107,9 @@
         });
         
         // Set that the user has used the app at least once
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V2_9_UsedOnce"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        // *****************IMPORTANT*********************************************************************** This is now being done in the tutorialDonePressed button on FATutorialViewController as that makes more sense.
+        //[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V3_0_UsedOnce"];
+        //[[NSUserDefaults standardUserDefaults] synchronize];
     }
     // If yes
     else {
@@ -135,9 +139,6 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    
-    // TO DO: Testing. Delete later before shipping v2.7
-    //NSLog(@"Application did become active");
     
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {

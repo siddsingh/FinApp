@@ -557,6 +557,64 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
+// Get all trending events
+// NOTE: Currently this returns empty i.e. no events
+- (NSFetchedResultsController *)getAllTrendingEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the event and date filter
+    // NOTE: If there is a new type of product event like launch or conference added, add that here as well
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@)", todaysDate, @"EventTypeNotDefined", @"EventTypeNotDefined"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all trending events from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
+// Get all product events for a given ticker since a given date
+- (NSArray *)getAllProductEventsForTicker:(NSString *)parentTicker since:(NSDate *)startingDate
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *sinceDate = [self setTimeToMidnightLastNightOnDate:startingDate];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the event and date filter
+    // NOTE: If there is a new type of product event like launch or conference added, add that here as well
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@)", sinceDate, @"Launch", @"Conference", parentTicker];
+    [eventFetchRequest setPredicate:datePredicate];
+    
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    
+    if (error) {
+        NSLog(@"ERROR: Getting all product events, since a date, for ticker:%@ from data store failed: %@",parentTicker, error.description);
+    }
+    
+    return events;
+}
+
 // Get all future product events including today for a given ticker
 - (NSArray *)getAllFutureProductEventsForTicker:(NSString *)parentTicker
 {
@@ -970,6 +1028,39 @@ bool eventsUpdated = NO;
     return exists;
 }
 
+// Delete all events that contain "FIFA 18" as these have somehow gotten into a bad state in the DB. This is a one time thing.
+- (void)deleteAllFIFA18Events
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // For price change events the event type is a fuzzy match.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    
+    // Filter for daily events
+    NSPredicate *eventPredicate = nil;
+    eventPredicate = [NSPredicate predicateWithFormat:@"type contains %@",@"FIFA 18"];
+    
+    // Fetch all the specific events
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting the FIFA 18 events, while trying to delete all of them, from data store failed: %@",error.description);
+    }
+    
+    // Delete all the FIFA events
+    for (NSManagedObject *fifaEvent in events) {
+        
+        [dataStoreContext deleteObject:fifaEvent];
+    }
+    
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
+}
+
 #pragma mark - Event History related Methods
 
 // Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
@@ -1353,9 +1444,6 @@ bool eventsUpdated = NO;
         
         // Make the call synchronously
         NSMutableURLRequest *companiesRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-        // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
-       // NSData *responseData = [NSURLConnection sendSynchronousRequest:companiesRequest returningResponse:&response
-       //                                                          error:&error];
         NSData *responseData = [self sendSynchronousRequest:companiesRequest returningResponse:&response error:&error];
 
         // TO DO: For testing, comment before shipping
@@ -1583,9 +1671,6 @@ bool eventsUpdated = NO;
         
     // Make the call synchronously
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
-   // NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-   //                                                              error:&error];
     NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     // Process the response
     if (error == nil)
@@ -1808,6 +1893,14 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"SNAP" name:@"Snap Inc"];
     [self insertUniqueCompanyWithTicker:@"MULE" name:@"MuleSoft Inc"];
     [self insertUniqueCompanyWithTicker:@"NTNX" name:@"Nutanix Inc"];
+    [self insertUniqueCompanyWithTicker:@"GOOS" name:@"Canada Goose Holdings"];
+    [self insertUniqueCompanyWithTicker:@"JILL" name:@"J.Jill"];
+    [self insertUniqueCompanyWithTicker:@"AYX" name:@"Alteryx"];
+    [self insertUniqueCompanyWithTicker:@"OKTA" name:@"Okta"];
+    [self insertUniqueCompanyWithTicker:@"YEXT" name:@"Yext"];
+    [self insertUniqueCompanyWithTicker:@"CLDR" name:@"Cloudera"];
+    [self insertUniqueCompanyWithTicker:@"APRN" name:@"Blue Apron Holdings"];
+    
     
     // Get the company ticker and names file path
     NSString *tickersFilePath = [[NSBundle mainBundle] pathForResource:@"ZEA-datasets-codes_20161119" ofType:@"csv"];
@@ -2026,9 +2119,6 @@ bool eventsUpdated = NO;
     
     // Make the call synchronously
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
-    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-    //                                                         error:&error];
     NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     // Process the response
@@ -2232,9 +2322,6 @@ bool eventsUpdated = NO;
     // Make the call synchronously
     NSError *error;
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
-    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-    //                                                         error:&error];
     NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     // This is the API response
@@ -2383,9 +2470,6 @@ bool eventsUpdated = NO;
     // Make the call synchronously
     NSError *error;
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
-    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-    //                                                         error:&error];
     NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     /* This is the current JSON structure of the response
@@ -2700,9 +2784,6 @@ bool eventsUpdated = NO;
     
     // Make the call synchronously
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
-    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-    //                                                         error:&error];
     NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     // Process the response
@@ -3007,9 +3088,6 @@ bool eventsUpdated = NO;
     
     // Make the call synchronously
     NSMutableURLRequest *eventsRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpointURL]];
-    // TO DO before shipping v3.0: Delete old way if new way to send synchronous requests works
-    //NSData *responseData = [NSURLConnection sendSynchronousRequest:eventsRequest returningResponse:&response
-    //                                                         error:&error];
     NSData *responseData = [self sendSynchronousRequest:eventsRequest returningResponse:&response error:&error];
     
     // Process the response
@@ -3454,14 +3532,15 @@ bool eventsUpdated = NO;
         if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // TO DO: Delete Later
-            NSLog(@"About to add product events from Knotifi Data Platform");
+            //NSLog(@"About to add product events from Knotifi Data Platform");
             [self getAllProductEventsFromApi];
         }
     
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
         [self getAllPriceChangeEventsFromApiNew];
         
-        NSLog(@"Finished adding product events and price change events");
+        // TO DO: Delete Later
+        //NSLog(@"Finished adding product events and price change events");
     
         // Setting events updated to true as new price events and new product events might be added. Later make sure
         // it's only getting set to true if truly new events have been added.

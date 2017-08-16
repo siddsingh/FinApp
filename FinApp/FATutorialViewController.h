@@ -12,4 +12,7 @@
 
 @interface FATutorialViewController : UIViewController
 
+// User presses the Done with the Tutorial button
+- (IBAction)tutorialDonePressed:(id)sender;
+
 @end

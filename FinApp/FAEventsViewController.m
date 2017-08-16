@@ -79,7 +79,7 @@
                                     [UIColor blackColor], NSForegroundColorAttributeName,
                                     nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
-    [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
+    [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
     
     // Change the color of the events search bar placeholder text and text entered to be a black text color.
     [self.eventsSearchBar setBackgroundImage:[UIImage new]];
@@ -247,6 +247,11 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
         }
+    }
+    // If Scape is selected in which case show the product timeline
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Scape"] == NSOrderedSame) {
+        // Show the product timeline
+        self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
     }
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
@@ -704,7 +709,7 @@
                     [FBSDKAppEvents logEvent:@"Unset Follow"
                                   parameters:@{ @"Ticker" : cell.companyTicker.text,
                                                 @"Event Type" : cellEventType,
-                                                @"Event Certainty" : cell.eventCertainty.text } ];
+                                                @"Event Certainty" : @"Confirmed" } ];
                 }];
                 
                 // Format the Action UI to be the correct color and everything
@@ -737,7 +742,7 @@
                     [FBSDKAppEvents logEvent:@"Set Follow"
                                   parameters:@{ @"Ticker" : cell.companyTicker.text,
                                                 @"Event Type" : cellEventType,
-                                                @"Event Certainty" : cell.eventCertainty.text } ];
+                                                @"Event Certainty" : @"Confirmed" } ];
                 }];
                 
                 // Format the Action UI to be the correct color and everything
@@ -1926,7 +1931,7 @@
         // Query all future events or future following events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureEvents];
             [self.eventsListTable reloadData];
         }
@@ -1956,7 +1961,7 @@
         // Query all future earnings events or following future events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
@@ -1986,7 +1991,7 @@
         // Query all future economic events or following economic events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
             [self.eventsListTable reloadData];
         }
@@ -2016,7 +2021,7 @@
         // Query all future product events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
             [self.eventsListTable reloadData];
         }
@@ -2123,7 +2128,6 @@
 
 #pragma mark - Event Type Icon Action
 
-// TO DO: Delete once the news button is active
 // Process clicking of event type icon
 - (void)processTypeIconTap:(UIGestureRecognizer *)gestureRecognizer
 {
@@ -2194,13 +2198,11 @@
         
         // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"External Action Clicked"
-                      parameters:@{ @"Action Title" : @"See News Shortcut",
+        [FBSDKAppEvents logEvent:@"See External News Shortcut"
+                      parameters:@{ @"News Source" : @"Google",
                                     @"Action Query" : searchTerm,
                                     @"Action URL" : [targetURL absoluteString]} ];
         
-        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
-        //[[UIApplication sharedApplication] openURL:targetURL];
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
         externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text]];
@@ -2278,13 +2280,11 @@
         
         // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"External Action Clicked"
-                      parameters:@{ @"Action Title" : @"See News Shortcut",
+        [FBSDKAppEvents logEvent:@"See External News Shortcut"
+                      parameters:@{ @"News Source" : @"Google",
                                     @"Action Query" : searchTerm,
                                     @"Action URL" : [targetURL absoluteString]} ];
         
-        // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
-        //[[UIApplication sharedApplication] openURL:targetURL];
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
         externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text]];
@@ -2297,8 +2297,6 @@
 // Initiate support experience when button is clicked. Currently open http://www.knotifi.com/p/contact.html
 - (IBAction)initiateSupport:(id)sender {
     
-    // TO DO before shipping v3.0, make sure you have updated the app to iOS9.0 and higher since that is the min version for the SafariViewController to work.
-    //[[UIApplication sharedApplication] openURL:targetURL];
     SFSafariViewController *supportVC = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"http://www.knotifi.com/p/contact.html"]];
     supportVC.delegate = self;
     supportVC.preferredControlTintColor = [UIColor blackColor];
@@ -2842,7 +2840,9 @@
         // High Impact Indicator Red
         //colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
         // Return almost black
-        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        // Return black
+        colorToReturn = [UIColor blackColor];
         
     } else if (difference == 1) {
         // Older slightly less orangish red
@@ -2854,7 +2854,9 @@
         // High Impact Indicator Red
         //colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
         // Return almost black
-        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        // Return black
+        colorToReturn = [UIColor blackColor];
     } else if ((difference > 1)&&(difference < 8)){
         // Older More orange, less red
         //colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
@@ -2865,7 +2867,9 @@
         // High Impact Indicator Red
         //colorToReturn = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
         // Return almost black
-        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        // Return black
+        colorToReturn = [UIColor blackColor];
     }
     
     return colorToReturn;
@@ -3037,7 +3041,7 @@
         
         // If All Events is selected.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-            [self.navigationController.navigationBar.topItem setTitle:@"KEY MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
         }
         // If following is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
