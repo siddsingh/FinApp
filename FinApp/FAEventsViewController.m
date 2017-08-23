@@ -214,8 +214,8 @@
     // Set Current Stock Price & Change String to "NA" which is the default value.
     self.currPriceAndChange = [NSString stringWithFormat:@"NA"];
     
-    // Store name for Product Main Nav Option. Currently Scape. Just change name here and in the UI element if one doesn't work out.
-    self.mainNavProductOption = [NSString stringWithFormat:@"SCAPE"];
+    // Store name for Product Main Nav Option. Currently Products. Just change name here and in the UI element if one doesn't work out.
+    self.mainNavProductOption = [NSString stringWithFormat:@"TIMELINE"];
     
     // Query all future events depending on the type selected in the selector, including today, as that is the default view first shown. Also factor in if the following nav is selected or not.
     // If All Events is selected.
@@ -253,8 +253,8 @@
     }
     // If the main nav Product Option is selected in which case show the product timeline
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
-        // Show the product timeline. Currently showing the trending events as it returns empty.
-        self.eventResultsController = [self.primaryDataController getAllTrendingEvents];
+        // Show the product timeline. Currently showing no events.
+        self.eventResultsController = [self.primaryDataController getNoEvents];
     }
     
     // This will remove extra separators from the bottom of the tableview which doesn't have any cells
@@ -341,6 +341,12 @@
             id filteredCompaniesSection = [[self.filteredResultsController sections] objectAtIndex:section];
             numberOfRows = [filteredCompaniesSection numberOfObjects];
         }
+        
+        // If the filter type is Match_Companies_ForTimeline, meaning a filter of matching companies for getting their product timeline is specified
+        if ([self.filterType isEqualToString:@"Match_Companies_ForTimeline"]) {
+            id filteredCompaniesSection = [[self.filteredResultsController sections] objectAtIndex:section];
+            numberOfRows = [filteredCompaniesSection numberOfObjects];
+        }
     }
     
     // If not, show all events or following events based on navigation filter
@@ -371,6 +377,9 @@
     Event *eventAtIndex;
     Company *companyAtIndex;
     
+    // TO DO: Delete before shipping Knotifi v5
+    NSLog(@"TRYING TO RELOAD TABLE WITH FILETER: %@",self.filterType);
+    
     // If a search filter has been applied, GET the matching companies with events or companies with the fetch events message
     // depending on the type of filter applied
     if (self.filterSpecified) {
@@ -388,6 +397,14 @@
             // Use filtered companies results set
             companyAtIndex = [self.filteredResultsController objectAtIndexPath:indexPath];
         }
+        
+        // If the filter type is Match_Companies_ForTimeline, meaning a filter of matching companies for getting their product timeline is specified
+        if ([self.filterType isEqualToString:@"Match_Companies_ForTimeline"]) {
+            // Use filtered companies results set
+            companyAtIndex = [self.filteredResultsController objectAtIndexPath:indexPath];
+            // TO DO: Delete before shipping Knotifi v5
+            NSLog(@"COMPANY AT INDEX IS:%@",companyAtIndex.description);
+        }
     }
     // If no search filter
     else {
@@ -396,7 +413,7 @@
     
     // Depending the type of search filter that has been applied, Show the matching companies with events or companies
     // with the fetch events message.
-    if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]) {
+    if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]||[self.filterType isEqualToString:@"Match_Companies_ForTimeline"]) {
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:companyAtIndex.ticker];
@@ -422,6 +439,13 @@
             [[cell eventDescription] setText:@"NOT FOLLOWING"];
             // Set color to a link blue to provide a visual cue to click
             cell.eventDescription.textColor = [UIColor colorWithRed:205.0f/255.0f green:151.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+        }
+        // Check to see if the Product Main Nav is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+            // Show the "Show Timeline" text in the event display area.
+            [[cell eventDescription] setText:@"SHOW PRODUCT TIMELINE"];
+            // Set color to a link blue to provide a visual cue to click
+            cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
         }
         
         // Set the fetch state of the event cell to true which means either Get Events if Events main nav option is selected or Follow if the Following main nav is selected.
@@ -535,6 +559,18 @@
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             
             // TO DO: In the future: trigger the follow action from here.
+        }
+        // Check to see if the Product Main Nav is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+            
+            self.filteredResultsController = [self.primaryDataController getAllProductEventsForTicker:(cell.companyTicker).text since:[self computeDate4MosAgoFrom:[NSDate date]]];
+            self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            // Reload messages table
+            [self.eventsListTable reloadData];
+            // Remove the search context that removes the keyboard
+            [self.eventsSearchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
         }
     }
     // If not then, fetch event details, if the event is of type quarterly earnings before segueing to the details view
@@ -1417,6 +1453,14 @@
                     self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
                 }
             }
+            // Check to see if Product Main Option is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+                // Basically find Companies so that user can select one to show the product timeline
+                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                // Set the filter type to Match_Companies_ForTimeline, meaning a filter matching companies with no existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_ForTimeline"];
+            }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
             self.filterSpecified = YES;
@@ -1587,6 +1631,14 @@
                     self.filterType = [NSString stringWithFormat:@"Match_Companies_NoEvents"];
                 }
             }
+            // Check to see if Product Main Option is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+                // Basically find Companies so that user can select one to show the product timeline
+                self.filteredResultsController = [self.primaryDataController searchCompaniesFor:searchBar.text];
+                // Set the filter type to Match_Companies_ForTimeline, meaning a filter matching companies with no existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_ForTimeline"];
+            }
             
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
             self.filterSpecified = YES;
@@ -1717,6 +1769,17 @@
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
                 // Query all future events, including today, as that is the default view
                 self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
+            // Check to see if Product Main Option is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+                // Query no events, as that is the default view
+                self.eventResultsController = [self.primaryDataController getNoEvents];
                 
                 // Set the Filter Specified flag to false, indicating that no search filter has been specified
                 self.filterSpecified = NO;
@@ -1947,8 +2010,11 @@
         // If Product Main Option is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"SCAPE"];
-            self.eventResultsController = [self.primaryDataController getAllProductEventsForTicker:@"AMD" since:[self computeDate4MosAgoFrom:[NSDate date]]];
+            [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT TIMELINE"];
+            // Set correct search bar placeholder text
+            self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
+            // Get No Events as the default view for the product main option is empty
+            self.eventResultsController = [self.primaryDataController getNoEvents];
             [self.eventsListTable reloadData];
         }
         
@@ -2070,76 +2136,31 @@
     [self.eventsSearchBar setText:@""];
     [self searchBar:self.eventsSearchBar textDidChange:@""];
     
-    // Set correct search bar placeholder text
-    self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
+    // If Product option is selected, set the correct search bar placeholder text disable and hide the event selection bar
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+        [self.eventTypeSelector setEnabled:NO];
+        [self.eventTypeSelector setHidden:YES];
+        // Set correct search bar placeholder text
+        self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
+    }
+    // If Events or Following is selected, set the correct search bar placeholder text enable and show the event selection bar
+    else if (([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame)||([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame)) {
+        [self.eventTypeSelector setEnabled:YES];
+        [self.eventTypeSelector setHidden:NO];
+        // Set correct search bar placeholder text
+        self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
+    }
+    
+    
     // Set events selector to All Events
     // ****SUPER IMPORTANT NOTE: This essentially triggers all the logic for what should happen when a main nav option is selected.
     [self.eventTypeSelector setSelectedSegmentIndex:0];
     [self.eventTypeSelector sendActionsForControlEvents:UIControlEventValueChanged];
     
-    // If Product option is selected disable and hide the event selection bar
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
-     [self.eventTypeSelector setEnabled:NO];
-     [self.eventTypeSelector setHidden:YES];
-     }
-    
-    // TO DO: Delete before shipping v2.9
-    // If All Events is selected, enable and show the event selection bar
-    /*if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-        [self.eventTypeSelector setEnabled:YES];
-        [self.eventTypeSelector setHidden:NO];
-    }*/
-    // TO DO: Delete before shipping v2.9
-    // If following is selected disable and hide the event selection bar
-    /*if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-        [self.eventTypeSelector setEnabled:NO];
-        [self.eventTypeSelector setHidden:YES];
-    }*/
-    
     // TRACKING EVENT: EventsNav Selected: User clicked the "Reminder Set" button, most likely to unset the reminder.
     // TO DO: Disabling to not track development events. Enable before shipping.
     [FBSDKAppEvents logEvent:@"MainNav Selected"
                   parameters:@{ @"Option" :  [self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex]} ];
-    
-    // If All Events is selected.
-  /*  if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-        
-        // Get the right future events depending on event type
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFutureEvents];
-        }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
-        }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
-        }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
-        }
-        
-        // TRACKING EVENT: Main Nav Type Selected: User selected events nav type
-        // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Nav Type Selected"
-                      parameters:@{ @"Nav Type" : @"Events" } ];
-    }
-    // If following is selected in which case show the right following events
-    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-        
-        // Show all following events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
-        }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
-        }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
-        }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
-        }
-    } */
 }
 
 #pragma mark - Event Type Icon Action

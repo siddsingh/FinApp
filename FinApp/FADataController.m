@@ -557,9 +557,8 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
-// Get all trending events
-// NOTE: Currently this returns empty i.e. no events
-- (NSFetchedResultsController *)getAllTrendingEvents
+// Get no events. Currently this returns empty i.e. no events
+- (NSFetchedResultsController *)getNoEvents
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     

@@ -85,9 +85,8 @@
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents;
 
-// Get all trending events
-// NOTE: Currently this returns empty i.e. no events
-- (NSFetchedResultsController *)getAllTrendingEvents;
+// Get no events. Currently this returns empty i.e. no events
+- (NSFetchedResultsController *)getNoEvents;
 
 // Get all product events for a given ticker since the last n days
 - (NSFetchedResultsController *)getAllProductEventsForTicker:(NSString *)parentTicker since:(NSDate *)startingDate;
