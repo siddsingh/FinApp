@@ -443,7 +443,7 @@
         // Check to see if the Product Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
             // Show the "Show Timeline" text in the event display area.
-            [[cell eventDescription] setText:@"SHOW PRODUCT TIMELINE"];
+            [[cell eventDescription] setText:@"SHOW TIMELINE"];
             // Set color to a link blue to provide a visual cue to click
             cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
         }
@@ -567,6 +567,8 @@
             self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
             self.filterSpecified = YES;
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT TIMELINE"];
             // Reload messages table
             [self.eventsListTable reloadData];
             // Remove the search context that removes the keyboard
@@ -1786,6 +1788,9 @@
                 
                 // Set the filter type to None_Specified i.e. no filter is specified
                 self.filterType = [NSString stringWithFormat:@"None_Specified"];
+                
+                // Set correct header text
+                [self.navigationController.navigationBar.topItem setTitle:@"See a company's product launch timeline"];
             }
             
             // Reload messages table
@@ -2010,7 +2015,7 @@
         // If Product Main Option is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT TIMELINE"];
+            [self.navigationController.navigationBar.topItem setTitle:@"See a company's product launch timeline"];
             // Set correct search bar placeholder text
             self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
             // Get No Events as the default view for the product main option is empty
