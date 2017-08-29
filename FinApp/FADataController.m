@@ -600,8 +600,10 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the event and date filter
-    // NOTE: If there is a new type of product event like launch or conference added, add that here as well
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@)", sinceDate, @"Launch", @"Conference", parentTicker];
+    // NOTE: This includes conferences If there is a new type of product event like launch or conference added, add that here as well
+    // NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@)", sinceDate, @"Launch", @"Conference", parentTicker];
+    // NOTE: This does not include conferences. If there is a new type of product event like launch or conference added, add that here as well
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@) AND (listedCompany.ticker =[c] %@)", sinceDate, @"Launch", parentTicker];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
