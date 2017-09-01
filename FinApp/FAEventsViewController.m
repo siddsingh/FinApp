@@ -373,6 +373,15 @@
     // Hide the event impact label
     cell.eventImpact.hidden = YES;
     
+    // Unhide the company ticker in case it was hidden during a product timeline view
+    [[cell  companyTicker] setHidden:NO];
+    
+    // Hide the timeline label in case it was shown in the timeline view
+    cell.timelineLbl.hidden = YES;
+    
+    // Reset color for timeline label, in case it's been set to dark color for current events.
+    cell.timelineLbl.backgroundColor = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+    
     // Get event or company  to display
     Event *eventAtIndex;
     Company *companyAtIndex;
@@ -486,6 +495,16 @@
         [[cell companyName] setHidden:YES];
         // Set the company name associated with the event as this is needed in places like getting the earnings.
         [[cell  companyName] setText:eventAtIndex.listedCompany.name];
+        
+        // If the product timeline view is selected, hide the company ticker as it is repetitive. show timeline label
+        // Check to see if the Product Main Nav is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+            [[cell  companyTicker] setHidden:YES];
+            // Hide the timeline label in case it was shown in the timeline view
+            cell.timelineLbl.hidden = NO;
+            // Set appropriate color for timeline label
+            cell.timelineLbl.backgroundColor = [self getColorForDistanceFromEventDate:eventAtIndex.date];
+        }
         
         // Set the fetch state of the event cell to false
         // TO DO: Should you really be holding logic state at the cell level or should there
@@ -3081,7 +3100,7 @@
 // Remove the busy message in the header to show appropriate header.
 - (void)removeBusyMessage {
     
-    // Set navigation bar header to the correct text based on all events or following, if this view is currently being displayed. If not, for instance, say details view is being displayed, do nothing as we don't want this view's headers being shown in the details view.
+    // Set navigation bar header to the correct text based on all events or following or product timeline, if this view is currently being displayed. If not, for instance, say details view is being displayed, do nothing as we don't want this view's headers being shown in the details view.
     
     // If the list view is currently being shown
     if (self.navigationController.topViewController == self) {
@@ -3100,6 +3119,15 @@
         // If following is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
+        }
+        // Check to see if the Product Main Nav is selected
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
+            // If no product timeline is displayed
+            if ([self.filterType isEqualToString:@"None_Specified"]) {
+                [self.navigationController.navigationBar.topItem setTitle:@"See a company's product launch timeline"];
+            } else {
+                [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT TIMELINE"];
+            }
         }
     }
 }

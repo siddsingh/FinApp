@@ -39,4 +39,7 @@
 // Label representing the event impact.
 @property (weak, nonatomic) IBOutlet UILabel *eventImpact;
 
+// Timeline Label
+@property (weak, nonatomic) IBOutlet UILabel *timelineLbl;
+
 @end
