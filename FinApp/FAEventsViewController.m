@@ -502,8 +502,8 @@
             [[cell  companyTicker] setHidden:YES];
             // Hide the timeline label in case it was shown in the timeline view
             cell.timelineLbl.hidden = NO;
-            // Set appropriate color for timeline label
-            cell.timelineLbl.backgroundColor = [self getColorForDistanceFromEventDate:eventAtIndex.date];
+            // Set color for timeline label
+            cell.timelineLbl.backgroundColor = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
         }
         
         // Set the fetch state of the event cell to false
@@ -2077,9 +2077,12 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Earnings" } ];
     }
-    // Economic - Color Econ Blue
+    // Economic - Color Econ Blue, replaced by light purple
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        // Econ Blue
+        //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        // Light purple
+        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         // Clear out the search context
         [self.eventsSearchBar setText:@""];
@@ -2915,7 +2918,9 @@
         // Return almost black
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
-        colorToReturn = [UIColor blackColor];
+        //colorToReturn = [UIColor blackColor];
+        // Return the blue that was used for Econ events
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
         
     } else if (difference == 1) {
         // Older slightly less orangish red
@@ -2929,7 +2934,9 @@
         // Return almost black
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
-        colorToReturn = [UIColor blackColor];
+        //colorToReturn = [UIColor blackColor];
+        // Return the blue that was used for Econ events
+        colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
     } else if ((difference > 1)&&(difference < 8)){
         // Older More orange, less red
         //colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
@@ -2942,7 +2949,13 @@
         // Return almost black
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
-        colorToReturn = [UIColor blackColor];
+        //colorToReturn = [UIColor blackColor];
+        // Return the blue that was used for Econ events
+        //colorToReturn = [UIColor colorWithRed:35.0f/255.0f green:29.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor blueColor];
+    } else if ((difference > 7)&&(difference < 31)){
+        // Return almost black
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;
@@ -3010,19 +3023,27 @@
     }
     if ([eventType containsString:@"Fed Meeting"]) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Jobs Report"]) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Consumer Confidence"]) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"GDP Release"]) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         // Sea Blue

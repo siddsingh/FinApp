@@ -293,7 +293,9 @@
                 //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
                 
                 // Econ Blue
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                //cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                // Light purple
+                cell.titleLabel.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"?"];
             }
             if ([self.eventType containsString:@"Jobs Report"]) {
@@ -303,7 +305,9 @@
                 //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
                 
                 // Econ Blue
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                //cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                // Light purple
+                cell.titleLabel.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"?"];
             }
             if ([self.eventType containsString:@"Consumer Confidence"]) {
@@ -313,7 +317,9 @@
                 //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
                 
                 // Econ Blue
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                //cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                // Light purple
+                cell.titleLabel.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"?"];
             }
             if ([self.eventType containsString:@"GDP Release"]) {
@@ -323,7 +329,9 @@
                 //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
                 
                 // Econ Blue
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                //cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                // Light purple
+                cell.titleLabel.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
                 [[cell titleLabel] setText:@"?"];
             }
             if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
@@ -656,7 +664,6 @@
                     // Display Label
                     // EPS
                     if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                        // Econ Blue Color
                         cell.titleLabel.textColor = [UIColor blackColor];
                         [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
                     }
@@ -699,7 +706,6 @@
             // Description
             [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
             
-            // Econ Blue Color
             cell.titleLabel.textColor = [UIColor blackColor];
             [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
         }
@@ -2118,19 +2124,27 @@
     }
     if ([eventType containsString:@"Fed Meeting"]) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Jobs Report"]) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Consumer Confidence"]) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"GDP Release"]) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         // Dark Yellow
