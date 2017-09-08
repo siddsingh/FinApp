@@ -347,6 +347,36 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
+// Get all future events including today. The included product events will only be the ones that have very high impact
+- (NSFetchedResultsController *)getAllFutureEventsWithProductEventsOfVeryHighImpact
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type =[c] %@ OR listedCompany.ticker contains %@ OR type contains[cd] %@ OR type contains[cd] %@) AND ((NOT ((relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@))) OR (relatedEventHistory.previous1Status contains[cd] %@))", todaysDate, @"Quarterly Earnings", @"ECONOMY_", @"Launch", @"Conference", @"High_", @"Medium_", @"Low_", @"Very High_"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all future events, except price change events, from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
+
 // Get all future following events including today. Returns a results controller with identities of all Events recorded, but no more
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: This gets the price change events as well since they are available as following events.
@@ -557,6 +587,41 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
+- (NSFetchedResultsController *)getPastProductEventsIncludingNext7Days
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Add 7 days
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = 7;
+    NSDate *weekDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:todaysDate options:0];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the event and date filter
+    // NOTE: If there is a new type of product event like launch or conference added, add that here as well
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date <= %@ AND (type contains[cd] %@ OR type contains[cd] %@)", weekDate, @"Launch", @"Conference"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all product events including today tomorrow from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
 // Get no events. Currently this returns empty i.e. no events
 - (NSFetchedResultsController *)getNoEvents
 {
@@ -686,10 +751,21 @@ bool eventsUpdated = NO;
     // Get today's date formatted to midnight last night
     NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
     
+    // Add 7 days
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = 7;
+    NSDate *weekDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:todaysDate options:0];
+    
     NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
     
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
+    
+    // Sort descriptor
+    NSSortDescriptor *sortField;
+    
+    [eventFetchRequest setFetchBatchSize:15];
     
     // Setup the filtering based on the event type
     NSPredicate *searchPredicate = nil;
@@ -699,33 +775,39 @@ bool eventsUpdated = NO;
         // Case and Diacractic Insensitive Filtering
         searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT ((type contains[cd] %@) OR (type contains[cd] %@)))", searchText, searchText, searchText, todaysDate, @"% up", @"% down"];
         //searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@)", searchText, searchText, searchText, todaysDate];
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    }
+    
+    // Check to see if the event display type is "Home". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events, Exclude product events with impact other than Very High.
+    if ([eventType caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
+        // Case and Diacractic Insensitive Filtering
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT ((type contains[cd] %@) OR (type contains[cd] %@))) AND ((NOT ((relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@))) OR (relatedEventHistory.previous1Status contains[cd] %@))", searchText, searchText, searchText, todaysDate, @"% up", @"% down", @"High_", @"Medium_", @"Low_", @"Very High_"];
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
     // Check to see if the event type is "Earnings". Search on "ticker" or "name" fields for the listed Company for earnings events
     if ([eventType caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
         searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@) AND (type =[c] %@) AND (date >= %@)", searchText, searchText, @"Quarterly Earnings", todaysDate];
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
     // Check to see if the event type is "Economic". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
     if ([eventType caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
         searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker contains %@) AND (date >= %@)", searchText, searchText, searchText, @"ECONOMY_", todaysDate];
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
     // Check to see if the event type is "Product". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
     if ([eventType caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (type contains[cd] %@ OR type contains[cd] %@) AND (date >= %@)", searchText, searchText, searchText, @"Launch", @"Conference", todaysDate];
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (type contains[cd] %@ OR type contains[cd] %@) AND (date <= %@)", searchText, searchText, searchText, @"Launch", @"Conference", weekDate];
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
     }
     
     [eventFetchRequest setPredicate:searchPredicate];
-    
-    // Sort with the closest event first
-    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
-    
-    [eventFetchRequest setFetchBatchSize:15];
     
     self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
                                                                  managedObjectContext:dataStoreContext sectionNameKeyPath:nil

@@ -60,6 +60,9 @@
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllFutureEvents;
 
+// Get all future events including today. The included product events will only be the ones that have very high impact
+- (NSFetchedResultsController *)getAllFutureEventsWithProductEventsOfVeryHighImpact;
+
 // Get all future following events including today. Returns a results controller with identities of all Events recorded, but no more
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: This gets the price change events as well since they are available as following events.
@@ -84,6 +87,8 @@
 // Get all future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents;
+
+- (NSFetchedResultsController *)getPastProductEventsIncludingNext7Days;
 
 // Get no events. Currently this returns empty i.e. no events
 - (NSFetchedResultsController *)getNoEvents;

@@ -120,7 +120,7 @@ static FASnapShot *sharedInstance;
         NSArray *impactComponents = [eventHistoryForImpact.previous1Status componentsSeparatedByString:@"_"];
         NSString *description = [NSString stringWithFormat:@"%@ Impact.%@",impactComponents[0],impactComponents[1]];
         
-        if ([description containsString:@"Very High Impact"]||[description containsString:@"High Impact"]) {
+        if ([description containsString:@"Very High Impact"]) {
             // This is the event description
             //description = @"Very High Impact.Outcome determines key interest rates.";
             highImpact = YES;

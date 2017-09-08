@@ -107,7 +107,7 @@
     // Set text color of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
     [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
     // Set text color for the segment selected for the very first time which is Black for ALL events type. Also set focus bar to draw focus to the search bar to the same color.
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
     }
     
@@ -222,8 +222,8 @@
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
         
         // Get the right future events depending on event type
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureEventsWithProductEventsOfVeryHighImpact];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
@@ -231,14 +231,14 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
         }
     }
     // If following is selected in which case show the right following events
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
         // Show all following events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
@@ -247,7 +247,7 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
         }
     }
@@ -452,9 +452,15 @@
         // Check to see if the Product Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
             // Show the "Show Timeline" text in the event display area.
-            [[cell eventDescription] setText:@"SHOW TIMELINE"];
-            // Set color to a link blue to provide a visual cue to click
-            cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            if ([self doesTimelineExistForTicker:companyAtIndex.ticker]) {
+                [[cell eventDescription] setText:@"SHOW TIMELINE"];
+                // Set color to a link blue to provide a visual cue to click
+                cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            } else {
+                [[cell eventDescription] setText:@"TIMELINE NOT AVAILABLE"];
+                // Set color to a light gray to provide a visual cue to click
+                cell.eventDescription.textColor = [UIColor lightGrayColor];
+            }
         }
         
         // Set the fetch state of the event cell to true which means either Get Events if Events main nav option is selected or Follow if the Following main nav is selected.
@@ -496,14 +502,14 @@
         // Set the company name associated with the event as this is needed in places like getting the earnings.
         [[cell  companyName] setText:eventAtIndex.listedCompany.name];
         
-        // If the product timeline view is selected, hide the company ticker as it is repetitive. show timeline label
+        // If the product timeline view is selected, show timeline label
         // Check to see if the Product Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
             [[cell  companyTicker] setHidden:YES];
             // Hide the timeline label in case it was shown in the timeline view
             cell.timelineLbl.hidden = NO;
-            // Set color for timeline label
-            cell.timelineLbl.backgroundColor = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+            // Set color for timeline label based on event distance
+            cell.timelineLbl.backgroundColor = [self getColorForDistanceFromEventDate:eventAtIndex.date];
         }
         
         // Set the fetch state of the event cell to false
@@ -1436,12 +1442,12 @@
     if ([self searchTextValid:searchBar.text]) {
         
         // Check to see if "All" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
                 // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"All"];
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Home"];
                 // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
@@ -1565,7 +1571,7 @@
         }
         
         // Check to see if "Product" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -1614,12 +1620,12 @@
     if ([self searchTextValid:searchBar.text]) {
         
         // Check to see if "All" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
                 // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"All"];
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Home"];
                 // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
@@ -1743,7 +1749,7 @@
         }
 
         // Check to see if "Product" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -1773,12 +1779,12 @@
     else {
         
         // Check to see if "All" events types are selected. In this case query all events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
                 // Query all future events, including today, as that is the default view
-                self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+                self.eventResultsController = [self.primaryDataController getAllFutureEventsWithProductEventsOfVeryHighImpact];
                 
                 // Set the Filter Specified flag to false, indicating that no search filter has been specified
                 self.filterSpecified = NO;
@@ -1886,12 +1892,12 @@
         }
         
         // Check to see if "Product" events types are selected. In this case query all product events.
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
                 // Query all future events, including today, as that is the default view
-                self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+                self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
                 
                 // Set the Filter Specified flag to false, indicating that no search filter has been specified
                 self.filterSpecified = NO;
@@ -2008,7 +2014,7 @@
     
     // Change color of the selected option to indicate selection and filter the table to show the correct events of that type. Also set the color of the focus bar to the same color as the selected option.
     // All Event Types - Color Black
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
         
         // Clear out the search context
@@ -2022,7 +2028,7 @@
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
             [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
-            self.eventResultsController = [self.primaryDataController getAllFutureEvents];
+            self.eventResultsController = [self.primaryDataController getAllFutureEventsWithProductEventsOfVeryHighImpact];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
@@ -2111,7 +2117,7 @@
                       parameters:@{ @"Event Type" : @"Economic" } ];
     }
     // Product - Dark Yellow
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         // Clear out the search context
@@ -2125,7 +2131,7 @@
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
             [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
-            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
+            self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
@@ -2392,8 +2398,8 @@
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
         
         // Get the right future events depending on event type
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
-            self.eventResultsController = [secondaryDataController getAllFutureEvents];
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFutureEventsWithProductEventsOfVeryHighImpact];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFutureEarningsEvents];
@@ -2401,14 +2407,14 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFutureEconEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
-            self.eventResultsController = [secondaryDataController getAllFutureProductEvents];
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getPastProductEventsIncludingNext7Days];
         }
     }
     // If following is selected in which case show the right following events
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
         // Show all following events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"All"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFollowingFutureEvents];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
@@ -2417,7 +2423,7 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFollowingFutureEconEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFollowingFutureProductEvents];
         }
     }
@@ -2781,6 +2787,19 @@
     return returnVal;
 }
 
+- (BOOL)doesTimelineExistForTicker:(NSString *)ticker {
+    
+    BOOL returnVal = NO;
+    
+    NSFetchedResultsController *result = [self.primaryDataController getAllProductEventsForTicker:ticker since:[self computeDate4MosAgoFrom:[NSDate date]]];
+    
+    if (result.fetchedObjects.count > 0) {
+        returnVal = YES;
+    }
+    
+    return returnVal;
+}
+
 // Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
 - (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails withStatus:(NSString *)eventStatus
 {
@@ -2868,7 +2887,7 @@
 // Calculate how far the event is from today. Typical values are Past,Today, Tomorrow, 2d, 3d and so on.
 - (NSString *)calculateDistanceFromEventDate:(NSDate *)eventDate
 {
-    NSString *formattedDistance = @"Upcoming";
+    NSString *formattedDistance = @"Details ▸";
     
     // Calculate the number of days between event date and today's date
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -2877,12 +2896,44 @@
     NSInteger difference = [diffDateComponents day];
     
     // Return an appropriately formatted string
-    if (difference < 0) {
-        formattedDistance = @"Past ▸";
+    if ((difference < 0)&&(difference > -8)) {
+        formattedDistance = @"Past week ▸";
+    } else if ((difference <= -8)&&(difference > -31)) {
+        formattedDistance = @"Past month ▸";
+    } else if ((difference <= -31)&&(difference > -92)) {
+        formattedDistance = @"Past 3 mos ▸";
+    } else if ((difference <= -92)&&(difference > -184)) {
+        formattedDistance = @"Past 6 mos ▸";
+    } else if ((difference <= -184)&&(difference > -366)) {
+        formattedDistance = @"Past year ▸";
+    } else if (difference <= -366) {
+        formattedDistance = [NSString stringWithFormat:@"%@d ago ▸",[@(difference) stringValue]];
     } else if (difference == 0) {
         formattedDistance = @"Today ▸";
     } else if (difference == 1) {
         formattedDistance = @"Tomorrow ▸";
+    } else if ((difference > 1)&&(difference < 8)) {
+        formattedDistance = [NSString stringWithFormat:@"In %@d ▸",[@(difference) stringValue]];
+    } else if ((difference >= 8)&&(difference < 15)) {
+        formattedDistance = @"In 1 wk ▸";
+    } else if ((difference >= 15)&&(difference < 31)) {
+        formattedDistance = @"In 2 wks ▸";
+    } else if ((difference >= 31)&&(difference < 62)) {
+        formattedDistance = @"In 1 mo ▸";
+    } else if ((difference >= 62)&&(difference < 92)) {
+        formattedDistance = @"In 2 mos ▸";
+    } else if ((difference >= 92)&&(difference < 123)) {
+        formattedDistance = @"In 3 mos ▸";
+    } else if ((difference >= 123)&&(difference < 153)) {
+        formattedDistance = @"In 4 mos ▸";
+    } else if ((difference >= 153)&&(difference < 184)) {
+        formattedDistance = @"In 5 mos ▸";
+    } else if ((difference >= 184)&&(difference < 214)) {
+        formattedDistance = @"In 6 mos ▸";
+    } else if ((difference >= 214)&&(difference < 366)) {
+        formattedDistance = @"Beyond 6 mos ▸";
+    } else if (difference >= 366) {
+        formattedDistance = @"Beyond 1 yr ▸";
     } else {
         formattedDistance = [NSString stringWithFormat:@"%@d ▸",[@(difference) stringValue]];
     }
@@ -2919,8 +2970,8 @@
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
         //colorToReturn = [UIColor blackColor];
-        // Return the blue that was used for Econ events
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Return normal blue
+        colorToReturn = [UIColor blueColor];
         
     } else if (difference == 1) {
         // Older slightly less orangish red
@@ -2936,8 +2987,8 @@
         // Return black
         //colorToReturn = [UIColor blackColor];
         // Return the blue that was used for Econ events
-        colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-    } else if ((difference > 1)&&(difference < 8)){
+        colorToReturn = [UIColor blueColor];
+    } else if ((difference > -8)&&(difference < 8)){
         // Older More orange, less red
         //colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
         // Newer pinkish deep red
@@ -2950,10 +3001,9 @@
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
         //colorToReturn = [UIColor blackColor];
-        // Return the blue that was used for Econ events
-        //colorToReturn = [UIColor colorWithRed:35.0f/255.0f green:29.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Return normal blue
         colorToReturn = [UIColor blueColor];
-    } else if ((difference > 7)&&(difference < 31)){
+    } else if (((difference > 7)&&(difference < 31))||((difference > -31)&&(difference < -7))){
         // Return almost black
         colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     }
