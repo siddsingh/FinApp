@@ -2067,7 +2067,7 @@
         // Query all future earnings events or following future events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING EARNINGS"];
             self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
@@ -2100,7 +2100,7 @@
         // Query all future economic events or following economic events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING ECON EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
             [self.eventsListTable reloadData];
         }
@@ -2130,7 +2130,7 @@
         // Query all future product events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT NEWS"];
             self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
             [self.eventsListTable reloadData];
         }
@@ -2896,8 +2896,12 @@
     NSInteger difference = [diffDateComponents day];
     
     // Return an appropriately formatted string
-    if ((difference < 0)&&(difference > -8)) {
-        formattedDistance = @"Past week ▸";
+    if ((difference < 0)&&(difference > -2)) {
+        formattedDistance = @"Yesterday ▸";
+    } else if ((difference <= -2)&&(difference > -4)) {
+        formattedDistance = @"Day Before ▸";
+    } else if ((difference <= -4)&&(difference > -8)) {
+        formattedDistance = [NSString stringWithFormat:@"%@d ago ▸",[@(ABS(difference)) stringValue]];
     } else if ((difference <= -8)&&(difference > -31)) {
         formattedDistance = @"Past month ▸";
     } else if ((difference <= -31)&&(difference > -92)) {
@@ -2988,7 +2992,7 @@
         //colorToReturn = [UIColor blackColor];
         // Return the blue that was used for Econ events
         colorToReturn = [UIColor blueColor];
-    } else if ((difference > -8)&&(difference < 8)){
+    } else if ((difference > 1)&&(difference < 8)){
         // Older More orange, less red
         //colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
         // Newer pinkish deep red
@@ -3001,11 +3005,18 @@
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
         //colorToReturn = [UIColor blackColor];
-        // Return normal blue
+        // Return blue
         colorToReturn = [UIColor blueColor];
+    } else if ((difference < 0)&&(difference > -8)){
+        // Return almost black
+        // colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        // Return total black
+        colorToReturn = [UIColor blackColor];
     } else if (((difference > 7)&&(difference < 31))||((difference > -31)&&(difference < -7))){
         // Return almost black
-        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        // colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+        // Return total black
+        colorToReturn = [UIColor blackColor];
     }
     
     return colorToReturn;
@@ -3185,7 +3196,26 @@
         
         // If All Events is selected.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-            [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
+            
+            // If Home is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"MARKET EVENTS"];
+            }
+            
+            // If Earnings is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING EARNINGS"];
+            }
+            
+            // If Econ events is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING ECON EVENTS"];
+            }
+            
+            // If News is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT NEWS"];
+            }
         }
         // If following is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
