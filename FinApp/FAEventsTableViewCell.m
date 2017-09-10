@@ -9,13 +9,14 @@
 //
 
 #import "FAEventsTableViewCell.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation FAEventsTableViewCell
 
 - (void)awakeFromNib {
     // Initialization code
     [super awakeFromNib];
-
+    
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

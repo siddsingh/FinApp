@@ -367,7 +367,13 @@
     // Get a custom cell to display
     FAEventsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventCell" forIndexPath:indexPath];
     
-    // Reset color for Event Date to dark text, in case it's been set to blue for a "Get Events" display.
+    // Reset backgrnd and text colors for Ticker and news button to white and dark blackish respectively, in case it's been altered for News.
+    cell.companyTicker.backgroundColor = [UIColor whiteColor];
+    cell.companyTicker.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    cell.newsButon.backgroundColor = [UIColor whiteColor];
+    [cell.newsButon setTitleColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    
+    // Reset color for Event description to dark text, in case it's been set to blue for a "Get Events" display.
     cell.eventDescription.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     
     // Hide the event impact label
@@ -487,7 +493,6 @@
         
         // Enable, Show and Set News Button text color
         [[cell newsButon] setTitleColor:[self getColorForEventType:eventAtIndex.type] forState:UIControlStateNormal];
-        [[cell newsButon] setHidden:YES];
         [[cell newsButon] setEnabled:YES];
         [[cell newsButon] setHidden:NO];
         cell.newsButon.tag = indexPath.row;
@@ -496,6 +501,14 @@
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
+        
+        // If user is seeing the news, format the ticker and news buttons to show the brand colors
+        if (([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame)&& ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame)) {
+            cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
+            cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
+            cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
+            [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
+        }
         
         // Hide the company Name as this information is not needed to be displayed to the user.
         [[cell companyName] setHidden:YES];

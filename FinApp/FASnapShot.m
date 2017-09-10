@@ -2,7 +2,7 @@
 //  FASnapShot.m
 //  FinApp
 //
-//  Class to store changing data like High Impact Eevents, Trending Events, News Sources and others. Implement this class as a Singleton to create a single data store accessible from anywhere in the app.
+//  Class to store changing data like High Impact Events, Trending Events, News Sources and others. Also stores things like a company's brand colors. Implement this class as a Singleton to create a single data store accessible from anywhere in the app.
 //
 //  Created by Sidd Singh on 5/21/17.
 //  Copyright © 2017 Sidd Singh. All rights reserved.
@@ -11,6 +11,7 @@
 #import "FASnapShot.h"
 #import "FADataController.h"
 #import "EventHistory.h"
+#import <UIKit/UIKit.h>
 
 @implementation FASnapShot
 
@@ -128,6 +129,74 @@ static FASnapShot *sharedInstance;
     }
     
     return highImpact;
+}
+
+// Get the brand background color for given ticker
+- (UIColor *)getBrandBkgrndColorForCompany:(NSString *)ticker {
+    
+    //Default Very lightish gray almost white
+    UIColor *colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+    
+    if ([ticker containsString:@"SNE"]) {
+        // black
+        colorToReturn = [UIColor blackColor];
+    }
+    
+    if ([ticker containsString:@"NVDA"]) {
+        // Greenish
+        colorToReturn = [UIColor colorWithRed:118.0f/255.0f green:185.0f/255.0f blue:7.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker containsString:@"NFLX"]) {
+        // black
+        colorToReturn = [UIColor blackColor];
+    }
+    
+    if ([ticker containsString:@"AAPL"]) {
+        // black
+        colorToReturn = [UIColor blackColor];
+    }
+    
+    if ([ticker containsString:@"AMD"]) {
+        // ALmost white gray
+        colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+    }
+    
+    return colorToReturn;
+}
+
+// Get the brand text color for given ticker
+- (UIColor *)getBrandTextColorForCompany:(NSString *)ticker {
+    
+    //Default black color
+    UIColor *colorToReturn = [UIColor whiteColor];
+    
+    if ([ticker containsString:@"SNE"]) {
+        // white
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker containsString:@"NVDA"]) {
+        // white
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker containsString:@"NFLX"]) {
+        // red
+        colorToReturn = [UIColor redColor];
+    }
+    
+    if ([ticker containsString:@"AAPL"]) {
+        // white
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker containsString:@"AMD"]) {
+        // Black
+        colorToReturn = [UIColor blackColor];
+    }
+    
+    return colorToReturn;
 }
 
 
