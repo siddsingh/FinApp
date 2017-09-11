@@ -2924,7 +2924,7 @@
     } else if ((difference <= -184)&&(difference > -366)) {
         formattedDistance = @"Past year ▸";
     } else if (difference <= -366) {
-        formattedDistance = [NSString stringWithFormat:@"%@d ago ▸",[@(difference) stringValue]];
+        formattedDistance = [NSString stringWithFormat:@"%@d ago ▸",[@(ABS(difference)) stringValue]];
     } else if (difference == 0) {
         formattedDistance = @"Today ▸";
     } else if (difference == 1) {

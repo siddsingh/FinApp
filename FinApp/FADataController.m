@@ -587,6 +587,7 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
+// This is actually the next 2 days
 - (NSFetchedResultsController *)getPastProductEventsIncludingNext7Days
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -597,7 +598,7 @@ bool eventsUpdated = NO;
     // Add 7 days
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = 7;
+    differenceDayComponents.day = 2;
     NSDate *weekDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:todaysDate options:0];
     
     // Get all future events with the upcoming ones first

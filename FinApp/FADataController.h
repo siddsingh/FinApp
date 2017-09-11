@@ -88,6 +88,7 @@
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents;
 
+// This is actually the next 2 days
 - (NSFetchedResultsController *)getPastProductEventsIncludingNext7Days;
 
 // Get no events. Currently this returns empty i.e. no events
