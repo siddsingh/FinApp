@@ -134,8 +134,8 @@ static FASnapShot *sharedInstance;
 // Get the brand background color for given ticker
 - (UIColor *)getBrandBkgrndColorForCompany:(NSString *)ticker {
     
-    //Default Very lightish gray almost white
-    UIColor *colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+    //Default Darkish whitish gray
+    UIColor *colorToReturn = [UIColor colorWithRed:177.0f/255.0f green:177.0f/255.0f blue:177.0f/255.0f alpha:1.0f];
     
     if ([ticker caseInsensitiveCompare:@"SNE"] == NSOrderedSame) {
         // black
@@ -158,13 +158,13 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"AMD"] == NSOrderedSame) {
-        // ALmost white gray
-        colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+        // Darkish Blackish Gray
+        colorToReturn = [UIColor colorWithRed:71.0f/255.0f green:71.0f/255.0f blue:71.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"VIA"] == NSOrderedSame) {
-        // ALmost white gray
-        colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+        // Cloudy Blue
+        colorToReturn = [UIColor colorWithRed:76.0f/255.0f green:181.0f/255.0f blue:233.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"NTDOY"] == NSOrderedSame) {
@@ -178,8 +178,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"TWX"] == NSOrderedSame) {
-        // ALmost white gray
-        colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+        // Slightly dark whitish gray
+        colorToReturn = [UIColor colorWithRed:177.0f/255.0f green:177.0f/255.0f blue:177.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"NOK"] == NSOrderedSame) {
@@ -188,18 +188,18 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"ATVI"] == NSOrderedSame) {
-        // Yellowish for Call of duty
-        colorToReturn = [UIColor colorWithRed:209.0f/255.0f green:152.0f/255.0f blue:80.0f/255.0f alpha:1.0f];
+        // Dark Gray for the old activision blizzard logo
+        colorToReturn = [UIColor colorWithRed:57.0f/255.0f green:57.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"EA"] == NSOrderedSame) {
-        // ALmost white gray
-        colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+        // Slightly dark whitish gray
+        colorToReturn = [UIColor colorWithRed:177.0f/255.0f green:177.0f/255.0f blue:177.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"FIT"] == NSOrderedSame) {
-        // ALmost white gray
-        colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+        // Tealish blue
+        colorToReturn = [UIColor colorWithRed:81.0f/255.0f green:177.0f/255.0f blue:185.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"MSFT"] == NSOrderedSame) {
@@ -213,8 +213,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"VZ"] == NSOrderedSame) {
-        // ALmost white gray
-        colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+        // Slightly dark whitish gray
+        colorToReturn = [UIColor colorWithRed:177.0f/255.0f green:177.0f/255.0f blue:177.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"T"] == NSOrderedSame) {
@@ -223,8 +223,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"GOOGL"] == NSOrderedSame) {
-        // ALmost white gray
-        colorToReturn = [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f];
+        // Slightly dark whitish gray
+        colorToReturn = [UIColor colorWithRed:177.0f/255.0f green:177.0f/255.0f blue:177.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;
@@ -258,12 +258,12 @@ static FASnapShot *sharedInstance;
     
     if ([ticker caseInsensitiveCompare:@"AMD"] == NSOrderedSame) {
         // Black
-        colorToReturn = [UIColor blackColor];
+        colorToReturn = [UIColor colorWithRed:199.0f/255.0f green:89.0f/255.0f blue:73.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"VIA"] == NSOrderedSame) {
-        // Cloud blue
-        colorToReturn = [UIColor colorWithRed:73.0f/255.0f green:173.0f/255.0f blue:217.0f/255.0f alpha:1.0f];
+        // White color
+        colorToReturn = [UIColor whiteColor];
     }
     
     if ([ticker caseInsensitiveCompare:@"NTDOY"] == NSOrderedSame) {
@@ -287,8 +287,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"ATVI"] == NSOrderedSame) {
-        // White
-        colorToReturn = [UIColor whiteColor];
+        // Cloud blue for the old activision blizzard logo
+        colorToReturn = [UIColor colorWithRed:39.0f/255.0f green:143.0f/255.0f blue:251.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"EA"] == NSOrderedSame) {
@@ -297,8 +297,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"FIT"] == NSOrderedSame) {
-        // Tealish blue
-        colorToReturn = [UIColor colorWithRed:81.0f/255.0f green:177.0f/255.0f blue:185.0f/255.0f alpha:1.0f];
+        // White
+        colorToReturn = [UIColor whiteColor];
     }
     
     if ([ticker caseInsensitiveCompare:@"MSFT"] == NSOrderedSame) {
@@ -322,8 +322,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"GOOGL"] == NSOrderedSame) {
-        // Yellow
-        colorToReturn = [UIColor colorWithRed:246.0f/255.0f green:187.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+        // Green
+        colorToReturn = [UIColor colorWithRed:69.0f/255.0f green:136.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;
