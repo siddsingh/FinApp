@@ -2052,7 +2052,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
+            [self.navigationController.navigationBar.topItem setTitle:@"ALL FOLLOWED EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
             [self.eventsListTable reloadData];
         }
@@ -2092,7 +2092,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EARNINGS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
@@ -2125,7 +2125,7 @@
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ECON EVENTS"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
             [self.eventsListTable reloadData];
         }
@@ -2135,7 +2135,7 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Economic" } ];
     }
-    // Product - Dark Yellow
+    // NEWS - Dark Yellow
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
@@ -2153,17 +2153,30 @@
             self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
             [self.eventsListTable reloadData];
         }
-        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-            // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
-            self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
-            [self.eventsListTable reloadData];
-        }
         
         // TRACKING EVENT: Event Type Selected: User selected Product event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
         [FBSDKAppEvents logEvent:@"Event Type Selected"
-                      parameters:@{ @"Event Type" : @"Product" } ];
+                      parameters:@{ @"Event Type" : @"News" } ];
+    }
+    
+    // PRICE - DARK YELLOW FOR NOW
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
+        [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
+        
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED PRICE CHANGES"];
+            // Set correct search bar placeholder text
+            self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
+            [self.eventsListTable reloadData];
+        }
+        
+        // TRACKING EVENT: Event Type Selected: User selected Price event type explicitly in the events type selector
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"Event Type Selected"
+                      parameters:@{ @"Event Type" : @"Price" } ];
     }
 }
 
@@ -2203,6 +2216,13 @@
         self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
     }
     
+    // Go with either NEWS or PRICE option based on Events or Following
+    if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+        [self.eventTypeSelector setTitle:@"NEWS" forSegmentAtIndex:3];
+    }
+    else if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+        [self.eventTypeSelector setTitle:@"PRICE" forSegmentAtIndex:3];
+    }
     
     // Set events selector to All Events
     // ****SUPER IMPORTANT NOTE: This essentially triggers all the logic for what should happen when a main nav option is selected.
@@ -3238,7 +3258,7 @@
         }
         // If following is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ACTIVITY"];
+            [self.navigationController.navigationBar.topItem setTitle:@"ALL FOLLOWED EVENTS"];
         }
         // Check to see if the Product Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {

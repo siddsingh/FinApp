@@ -392,8 +392,10 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter
-    // Include Econ events
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", todaysDate, @"OSReminder", @"PriceChange"];
+    // Including price change events
+    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", todaysDate, @"OSReminder", @"PriceChange"];
+    // Excluding price change events
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (ANY actions.type == %@)", todaysDate, @"OSReminder"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -842,8 +844,10 @@ bool eventsUpdated = NO;
     // Check to see if the event type is "All". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
     if ([eventType caseInsensitiveCompare:@"All"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        // Econ events included
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"OSReminder", @"PriceChange"];
+        // Price change events included
+        //searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"OSReminder", @"PriceChange"];
+        // Price change events excluded
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (ANY actions.type == %@)", searchText, searchText, searchText, todaysDate, @"OSReminder"];
     }
     
     // Check to see if the event type is "Earnings". Search on "ticker" or "name" fields for the listed Company for earnings events
