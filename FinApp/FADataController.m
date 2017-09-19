@@ -227,6 +227,10 @@ bool eventsUpdated = NO;
     else if ([eventType containsString:@"% up ytd"]) {
         eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"% up ytd"];
     }
+    // For 52 week High event
+    else if ([eventType containsString:@"52 Week High"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"52 Wk Hi"];
+    }
     // If not a price change event, it's an exact match to the type string
     else {
        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type =[c] %@",listedCompanyTicker,eventType];
@@ -405,7 +409,7 @@ bool eventsUpdated = NO;
                                                                             cacheName:nil];
     NSError *error;
     if (![self.resultsController performFetch:&error]) {
-        NSLog(@"ERROR: Getting all future following events, including price change events, from data store failed: %@",error.description);
+        NSLog(@"ERROR: Getting all future following events, not including price change events, from data store failed: %@",error.description);
     }
     
     return self.resultsController;
@@ -1151,6 +1155,39 @@ bool eventsUpdated = NO;
     // Save managed object context to persist the delete.
     [dataStoreContext save:&error];
 }
+
+// Get all price change events. Returns a results controller with identities of all Events recorded, but no more
+// than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllPriceChangeEventsForFollowedStocks
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    //NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter. Get price change events with date clause
+    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (ANY actions.type == %@)", todaysDate, @"PriceChange"];
+    // Set the filter. Get price change events with no date clause
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"(ANY actions.type == %@)", @"PriceChange"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"type" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all price change events from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
 
 #pragma mark - Event History related Methods
 
@@ -2407,7 +2444,8 @@ bool eventsUpdated = NO;
     
     // Construct the API URL to call
     NSString *endpointURL = @"http://marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=";
-    endpointURL = [NSString stringWithFormat:@"%@%@",endpointURL,tickersToFetch];
+    NSString *addtlFields = @"&fields=fiftyTwoWkHigh,fiftyTwoWkHighDate,fiftyTwoWkLow,fiftyTwoWkLowDate";
+    endpointURL = [NSString stringWithFormat:@"%@%@%@",endpointURL,tickersToFetch,addtlFields];
     NSURLResponse *response = nil;
     
     // Make the call synchronously
@@ -2485,13 +2523,15 @@ bool eventsUpdated = NO;
             // Iterate through price array within the parsed data set, which only contains one dictionary.
             for (NSDictionary *parsedDetailsList in parsedDataSets) {
                 
+                ////// Get daily price change
+                
                 // Get the company ticker
                 companySymbol = [parsedDetailsList objectForKey:@"symbol"];
                 
                 // Get the last trade date
                 dateComponents = [[parsedDetailsList objectForKey:@"tradeTimestamp"] componentsSeparatedByString:@"T"];
                 eventDateStr =  [NSString stringWithFormat: @"%@", dateComponents[0]];
-        
+                
                 // Convert from string to Date
                 eventDate = [eventDateFormatter dateFromString:eventDateStr];
                 //NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
@@ -2501,32 +2541,51 @@ bool eventsUpdated = NO;
                 
                 // Get a string representation for the change
                 percentChangeSinceYestStr = [NSString stringWithFormat:@"%.02f",[percentChangeSinceYest doubleValue]];
-                                          
-                if([percentChangeSinceYest doubleValue] >= 4.0) {
+                
+                // Get whatever the daily price change is
+                if([percentChangeSinceYest doubleValue] >= 0.0) {
                     
-                    specificEventType = [NSString stringWithFormat:@"%@%% up today",percentChangeSinceYestStr];
+                    specificEventType = [NSString stringWithFormat:@"+%@%% up today",percentChangeSinceYestStr];
                     // Insert into the events datastore
                     // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
-                    [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                    // TO DO: Uncomment both these if you'd like to enter daily price change events.
+                    //[self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                     // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
                     // TO DO: Hardcoding this for now to be quarterly earnings
-                    if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
+                    /*if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
                         [self insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:companySymbol eventType:specificEventType];
-                    }
+                    }*/
                 }
-                                          
-                if([percentChangeSinceYest doubleValue] <= -4.0) {
+                if([percentChangeSinceYest doubleValue] < 0.0) {
                     
                     percentChangeSinceYestStr = [percentChangeSinceYestStr substringFromIndex:1];
-                    specificEventType = [NSString stringWithFormat:@"%@%% down today",percentChangeSinceYestStr];
+                    specificEventType = [NSString stringWithFormat:@"-%@%% down today",percentChangeSinceYestStr];
                     // Insert into the events datastore
                     // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
-                    [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                    // TO DO: Uncomment both these if you'd like to enter daily price change events.
+                    //[self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                     // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
                     // TO DO: Hardcoding this for now to be quarterly earnings
-                    if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
+                    /*if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
                         [self insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:companySymbol eventType:specificEventType];
-                    }
+                    }*/
+                }
+                
+                ////// Get 52 week highs
+                NSString *hiLoEventStr = nil;
+                NSNumber *hiLoPrice = [[NSNumber alloc] initWithFloat:0.0];
+                
+                eventDateStr = [parsedDetailsList objectForKey:@"fiftyTwoWkHighDate"];
+                eventDate = [eventDateFormatter dateFromString:eventDateStr];
+                hiLoPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"fiftyTwoWkHigh"] doubleValue]];
+                hiLoEventStr = [NSString stringWithFormat:@"%.02f",[hiLoPrice doubleValue]];
+                
+                specificEventType = [NSString stringWithFormat:@"52 Week High $%@",hiLoEventStr];
+                [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
+                // TO DO: Hardcoding this for now to be quarterly earnings
+                if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
+                    [self insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:companySymbol eventType:specificEventType];
                 }
             }
         }
@@ -2818,6 +2877,40 @@ bool eventsUpdated = NO;
     // Save managed object context to persist the delete.
     [dataStoreContext save:&error];
 }
+
+// Delete all 52 wk events from the db
+- (void)deleteAll52WkEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // For price change events the event type is a fuzzy match.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    
+    // Filter for daily events
+    NSPredicate *eventPredicate = nil;
+    eventPredicate = [NSPredicate predicateWithFormat:@"(type contains %@) OR (type contains %@)",@"52 Week High",@"52 Week Low"];
+    
+    // Fetch all the daily events
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting a daily price change event, while trying to delete all of them, from data store failed: %@",error.description);
+    }
+    
+    // Delete all the daily events
+    for (NSManagedObject *dailyEvent in events) {
+        
+        [dataStoreContext deleteObject:dailyEvent];
+    }
+    
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
+}
+
 
 #pragma mark - Methods to call Company Stock Data Source APIs
 
@@ -3628,7 +3721,9 @@ bool eventsUpdated = NO;
         }
     
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
-        [self getAllPriceChangeEventsFromApiNew];
+        // Delete the existing daily price change events from the db to not create duplicates
+        //[self deleteAllDailyPriceChangeEvents];
+        //[self getAllPriceChangeEventsFromApiNew];
         
         // TO DO: Delete Later
         //NSLog(@"Finished adding product events and price change events");
@@ -3653,7 +3748,7 @@ bool eventsUpdated = NO;
         }
     }
     // Get price changes every time
-    else {
+    /*else {
         // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
         dispatch_async(dispatch_get_main_queue(), ^{
             // TO DO: Delete Later
@@ -3663,17 +3758,17 @@ bool eventsUpdated = NO;
         
         // Check to see if product events need to be added or refreshed. If yes, do that.
         // *****NOTE*****Currently always returning true since we have not implemented update logic
-        /*if ([self doProductEventsNeedToBeAddedRefreshed]) {
+        //if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // TO DO: Delete Later
             //NSLog(@"About to add product events from Knotifi Data Platform");
-            [self getAllProductEventsFromApi];
-        }*/
+            //[self getAllProductEventsFromApi];
+        //}
 
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
         // Delete the existing daily price change events from the db to not create duplicates
-        [self deleteAllDailyPriceChangeEvents];
-        [self getAllPriceChangeEventsFromApiNew];
+        //[self deleteAllDailyPriceChangeEvents];
+        //[self getAllPriceChangeEventsFromApiNew];
         
         // Fire events change notification if any event was updated. Plus Stop the busy spinner on the UI to indicate that the fetch is complete.
         // Any async UI element update has to happen in the main thread.
@@ -3683,7 +3778,29 @@ bool eventsUpdated = NO;
             //NSLog(@"About to stop busy spinner");
             [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
         });
-    }
+    } */
+}
+
+// Wrapper method to get price change events from the API for all followed stocks
+- (void)getPriceChangeEventsForFollowingStocksWrapper {
+    
+    // Show busy
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete Later
+        //NSLog(@"About to start busy spinner");
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+    });
+    
+    // Get latest snapshot of price change events
+    [self getAllPriceChangeEventsFromApiNew];
+    
+    // Stop Busy
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete Later.
+        //NSLog(@"About to stop busy spinner");
+        [self sendEventsChangeNotification];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+    });
 }
 
 #pragma mark - User State Related

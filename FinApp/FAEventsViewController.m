@@ -2137,6 +2137,7 @@
     }
     // NEWS - Dark Yellow
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+        
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         // Clear out the search context
@@ -2162,15 +2163,31 @@
     
     // PRICE - DARK YELLOW FOR NOW
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
+        
         [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            
             // Set correct header text
             [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED PRICE CHANGES"];
             // Set correct search bar placeholder text
             self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
-            self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
+            
+            // Delete existing price events. Don't need this since we are not showing daily price events
+            [self.primaryDataController deleteAllDailyPriceChangeEvents];
+            // Delete 52 weeks events
+            [self.primaryDataController deleteAll52WkEvents];
+            
+            self.eventResultsController = [self.primaryDataController getAllPriceChangeEventsForFollowedStocks];
             [self.eventsListTable reloadData];
+            
+            // Get all price change events for followed stocks asynchronously
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
+                // Create a new FADataController so that this thread has its own MOC
+                FADataController *priceDataController = [[FADataController alloc] init];
+                
+                [priceDataController getPriceChangeEventsForFollowingStocksWrapper];
+            });
         }
         
         // TRACKING EVENT: Event Type Selected: User selected Price event type explicitly in the events type selector
@@ -2462,8 +2479,8 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFollowingFutureEconEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-            self.eventResultsController = [secondaryDataController getAllFollowingFutureProductEvents];
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllPriceChangeEventsForFollowedStocks];
         }
     }
     
