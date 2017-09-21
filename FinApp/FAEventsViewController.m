@@ -43,6 +43,12 @@
 // Return the appropriate color for event distance based on how far it is from today.
 - (UIColor *)getColorForDistanceFromEventDate:(NSDate *)eventDate;
 
+// Return the appropriate color for event distance based on type of event and how far it is from today.
+- (UIColor *)getColorForDistanceFromEventDate:(NSDate *)eventDate withEventType:(NSString *)rawEventType;
+
+// Return the appropriate color for event labels based on type of event.
+- (UIColor *)getColorForCellLabelsBasedOnEventType:(NSString *)rawEventType;
+
 // Compute the likely date for the previous event based on current event type (currently only Quarterly), previous event related date (e.g. quarter end related to the quarterly earnings), current event date and current event related date.
 - (NSDate *)computePreviousEventDateWithCurrentEventType:(NSString *)currentType currentEventDate:(NSDate *)currentDate currentEventRelatedDate:(NSDate *)currentRelatedDate previousEventRelatedDate:(NSDate *)previousRelatedDate;
 
@@ -504,6 +510,7 @@
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
+        [cell.companyTicker setTextColor:[self getColorForCellLabelsBasedOnEventType:eventAtIndex.type]];
         
         // If user is seeing the news, format the ticker and news buttons to show the brand colors. Also hide the news date
         if (([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame)&& ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame)) {
@@ -513,7 +520,6 @@
             [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
             // Hide the event date
             cell.eventDate.hidden = YES;
-
         }
         
         // Hide the company Name as this information is not needed to be displayed to the user.
@@ -539,6 +545,7 @@
         // Show the event type. Format it for display. Currently map "Quarterly Earnings" to "Earnings", "Jan Fed Meeting" to "Fed Meeting", "Jan Jobs Report" to "Jobs Report" and so on.
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!! If you are making a change here, reconcile with prepareForSegue in addition to the methods mentioned above.
         [[cell  eventDescription] setText:[self formatEventType:eventAtIndex.type]];
+        [cell.eventDescription setTextColor:[self getColorForCellLabelsBasedOnEventType:eventAtIndex.type]];
         
         // Show the event date
         [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails withStatus:eventAtIndex.certainty]];
@@ -547,7 +554,7 @@
         [[cell eventDistance] setText:[self calculateDistanceFromEventDate:eventAtIndex.date]];
         
         // Set event distance to the appropriate color using a reddish scheme.
-        [[cell eventDistance] setTextColor:[self getColorForDistanceFromEventDate:eventAtIndex.date]];
+        [[cell eventDistance] setTextColor:[self getColorForDistanceFromEventDate:eventAtIndex.date withEventType:eventAtIndex.type]];
         
         // Show event impact label if the impact is high
         if ([self.dataSnapShot isEventHighImpact:eventAtIndex.type eventParent:eventAtIndex.listedCompany.ticker]) {
@@ -2952,7 +2959,7 @@
     NSInteger difference = [diffDateComponents day];
     
     // Return an appropriately formatted string
-    if ((difference < 0)&&(difference > -2)) {
+   /* if ((difference < 0)&&(difference > -2)) {
         formattedDistance = @"Yesterday ▸";
     } else if ((difference <= -2)&&(difference > -4)) {
         formattedDistance = @"Day Before ▸";
@@ -2996,9 +3003,93 @@
         formattedDistance = @"Beyond 1 yr ▸";
     } else {
         formattedDistance = [NSString stringWithFormat:@"%@d ▸",[@(difference) stringValue]];
+    }*/
+    
+    
+    // Return an appropriately formatted string. Show the ▸ when it's not a price event, else don't show that for price event as there is going to be no detail view for that.
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
+        if ((difference < 0)&&(difference > -2)) {
+            formattedDistance = @"Yesterday";
+        } else if ((difference <= -2)&&(difference > -4)) {
+            formattedDistance = @"Day Before";
+        } else if ((difference <= -4)&&(difference > -31)) {
+            formattedDistance = [NSString stringWithFormat:@"%@d ago",[@(ABS(difference)) stringValue]];
+        } else if ((difference <= -31)&&(difference > -366)) {
+            formattedDistance = [NSString stringWithFormat:@"%@mos ago",[@(ABS(difference/30)) stringValue]];
+        } else if (difference <= -366) {
+            formattedDistance = @"Over 1yr ago";
+        } else if (difference == 0) {
+            formattedDistance = @"Today";
+        } else if (difference == 1) {
+            formattedDistance = @"Tomorrow";
+        } else if ((difference > 1)&&(difference < 31)) {
+            formattedDistance = [NSString stringWithFormat:@"In %@d",[@(difference) stringValue]];
+        } else if ((difference >= 31)&&(difference < 366)) {
+            formattedDistance = [NSString stringWithFormat:@"In %@mos",[@(difference/30) stringValue]];
+        } else if (difference >= 366) {
+            formattedDistance = @"Beyond 1yr ▸";
+        } else {
+            formattedDistance = [NSString stringWithFormat:@"%@d",[@(difference) stringValue]];
+        }
+    } else {
+        if ((difference < 0)&&(difference > -2)) {
+            formattedDistance = @"Yesterday ▸";
+        } else if ((difference <= -2)&&(difference > -4)) {
+            formattedDistance = @"Day Before ▸";
+        } else if ((difference <= -4)&&(difference > -31)) {
+            formattedDistance = [NSString stringWithFormat:@"%@d ago ▸",[@(ABS(difference)) stringValue]];
+        } else if ((difference <= -31)&&(difference > -366)) {
+            formattedDistance = [NSString stringWithFormat:@"%@mos ago ▸",[@(ABS(difference/30)) stringValue]];
+        } else if (difference <= -366) {
+            formattedDistance = @"Over 1yr ago ▸";
+        } else if (difference == 0) {
+            formattedDistance = @"Today ▸";
+        } else if (difference == 1) {
+            formattedDistance = @"Tomorrow ▸";
+        } else if ((difference > 1)&&(difference < 31)) {
+            formattedDistance = [NSString stringWithFormat:@"In %@d ▸",[@(difference) stringValue]];
+        } else if ((difference >= 31)&&(difference < 366)) {
+            formattedDistance = [NSString stringWithFormat:@"In %@mos ▸",[@(difference/30) stringValue]];
+        } else if (difference >= 366) {
+            formattedDistance = @"Beyond 1yr ▸";
+        } else {
+            formattedDistance = [NSString stringWithFormat:@"%@d ▸",[@(difference) stringValue]];
+        }
     }
     
     return formattedDistance;
+}
+
+// Return the appropriate color for event distance based on type of event and how far it is from today.
+- (UIColor *)getColorForDistanceFromEventDate:(NSDate *)eventDate withEventType:(NSString *)rawEventType {
+    
+    //Very lightish gray
+    UIColor *colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+    
+    // For % up and down events, go with the color green or red. For all others include the
+    if ([rawEventType containsString:@"% up"])
+    {
+        // Kinda Green
+        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    } else if ([rawEventType containsString:@"% down"])
+    {
+        // Kinda Red
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:63.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+    } else if ([rawEventType containsString:@"52 Week High"])
+    {
+        // Very lightish gray
+        colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+    } else if ([rawEventType containsString:@"52 Week Low"])
+    {
+        // Very lightish gray
+        colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+    } else {
+        
+        // Return the standard color pattern
+        colorToReturn = [self getColorForDistanceFromEventDate:eventDate];
+    }
+
+    return colorToReturn;
 }
 
 // Return the appropriate color for event distance based on how far it is from today.
@@ -3073,6 +3164,38 @@
         // colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return total black
         colorToReturn = [UIColor blackColor];
+    }
+    
+    return colorToReturn;
+}
+
+// Return the appropriate color for event labels based on type of event.
+- (UIColor *)getColorForCellLabelsBasedOnEventType:(NSString *)rawEventType {
+    
+    //Default very dark gray
+    UIColor *colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    
+    // For % up and down events, go with the color green or red. For all others include the
+    if ([rawEventType containsString:@"% up"])
+    {
+        // Kinda Green
+        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    } else if ([rawEventType containsString:@"% down"])
+    {
+        // Kinda Red
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:63.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+    } else if ([rawEventType containsString:@"52 Week High"])
+    {
+        // Very lightish gray
+        colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+    } else if ([rawEventType containsString:@"52 Week Low"])
+    {
+        // Very lightish gray
+        colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+    } else {
+        
+        //Default very dark gray
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;
@@ -3173,12 +3296,22 @@
     if ([eventType containsString:@"% up"])
     {
         // Kinda Green
-        colorToReturn = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"% down"])
     {
         // Kinda Red
         colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:63.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"52 Week High"])
+    {
+        // Very lightish gray
+        colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"52 Week Low"])
+    {
+        // Very lightish gray
+        colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;

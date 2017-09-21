@@ -204,7 +204,7 @@
                                                     <color key="textColor" red="0.89803921568627454" green="0.21568627450980393" blue="0.20784313725490194" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Beyond 6 mos &gt;" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hii-le-ydl">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Over 1yr ago ▸" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hii-le-ydl">
                                                     <rect key="frame" x="224" y="50" width="92" height="14"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="92" id="uq2-Yn-yHE"/>
@@ -360,13 +360,13 @@
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
-                                <exclude reference="5ff-PD-DhC"/>
                                 <exclude reference="5cx-il-ILy"/>
                                 <exclude reference="GAJ-cr-gj4"/>
                                 <exclude reference="bW3-uV-gpb"/>
                                 <exclude reference="iiw-0T-dVG"/>
                                 <exclude reference="jkd-9p-GFJ"/>
                                 <exclude reference="t5v-Db-Sqo"/>
+                                <exclude reference="5ff-PD-DhC"/>
                                 <exclude reference="7UA-yu-WEj"/>
                                 <exclude reference="I39-eR-HUe"/>
                                 <exclude reference="QJJ-ft-4SW"/>
@@ -573,7 +573,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DRe-pW-ZhJ">
-                                                    <rect key="frame" x="52.5" y="10" width="289" height="36"/>
+                                                    <rect key="frame" x="5.5" y="10" width="289" height="36"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
@@ -585,7 +585,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" indicatorStyle="white" delaysContentTouches="NO" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PEv-AN-HGr">
-                                                    <rect key="frame" x="52.5" y="46" width="289" height="52"/>
+                                                    <rect key="frame" x="5.5" y="46" width="289" height="52"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="0.1137254902" green="0.46666666670000001" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <gestureRecognizers/>
@@ -609,7 +609,7 @@
                                                     </connections>
                                                 </textView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="epa-cv-1rn">
-                                                    <rect key="frame" x="0.0" y="107" width="394" height="10"/>
+                                                    <rect key="frame" x="0.0" y="107" width="300" height="10"/>
                                                     <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>

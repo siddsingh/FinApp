@@ -229,7 +229,11 @@ bool eventsUpdated = NO;
     }
     // For 52 week High event
     else if ([eventType containsString:@"52 Week High"]) {
-        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"52 Wk Hi"];
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"52 Week High"];
+    }
+    // For 52 week Low event
+    else if ([eventType containsString:@"52 Week Low"]) {
+        eventPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@ AND type contains %@",listedCompanyTicker,@"52 Week Low"];
     }
     // If not a price change event, it's an exact match to the type string
     else {
@@ -593,7 +597,7 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
-// This is actually the next 2 days
+// This is actually the next 7 days
 - (NSFetchedResultsController *)getPastProductEventsIncludingNext7Days
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -604,7 +608,7 @@ bool eventsUpdated = NO;
     // Add 7 days
     NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = 2;
+    differenceDayComponents.day = 7;
     NSDate *weekDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:todaysDate options:0];
     
     // Get all future events with the upcoming ones first
@@ -1174,7 +1178,7 @@ bool eventsUpdated = NO;
     // Set the filter. Get price change events with no date clause
     NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"(ANY actions.type == %@)", @"PriceChange"];
     [eventFetchRequest setPredicate:datePredicate];
-    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"type" ascending:YES];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"listedCompany.ticker" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
     [eventFetchRequest setFetchBatchSize:15];
     self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
@@ -2508,6 +2512,8 @@ bool eventsUpdated = NO;
         else
         {
             NSNumber *percentChangeSinceYest = [[NSNumber alloc] initWithFloat:0.0];
+            NSNumber *currPrice = [[NSNumber alloc] initWithFloat:0.0];
+            NSString *currPriceStr = nil;
             NSString *specificEventType = nil;
             NSString *companySymbol = nil;
             NSString *percentChangeSinceYestStr = nil;
@@ -2531,44 +2537,45 @@ bool eventsUpdated = NO;
                 // Get the last trade date
                 dateComponents = [[parsedDetailsList objectForKey:@"tradeTimestamp"] componentsSeparatedByString:@"T"];
                 eventDateStr =  [NSString stringWithFormat: @"%@", dateComponents[0]];
-                
                 // Convert from string to Date
                 eventDate = [eventDateFormatter dateFromString:eventDateStr];
                 //NSLog(@"The date on which the event takes place formatted as a Date: %@",eventDate);
             
                 // Get percentage changed since yesterday
                 percentChangeSinceYest = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"percentChange"] doubleValue]];
-                
                 // Get a string representation for the change
                 percentChangeSinceYestStr = [NSString stringWithFormat:@"%.02f",[percentChangeSinceYest doubleValue]];
+                
+                // Get current price
+                currPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"lastPrice"] doubleValue]];
+                // Format the current price string
+                currPriceStr = [NSString stringWithFormat:@"%.02f",[currPrice doubleValue]];
                 
                 // Get whatever the daily price change is
                 if([percentChangeSinceYest doubleValue] >= 0.0) {
                     
-                    specificEventType = [NSString stringWithFormat:@"+%@%% up today",percentChangeSinceYestStr];
+                    specificEventType = [NSString stringWithFormat:@"+%@%% up today $%@",percentChangeSinceYestStr,currPriceStr];
                     // Insert into the events datastore
                     // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
-                    // TO DO: Uncomment both these if you'd like to enter daily price change events.
-                    //[self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                    [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                     // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
                     // TO DO: Hardcoding this for now to be quarterly earnings
-                    /*if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
+                    if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
                         [self insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:companySymbol eventType:specificEventType];
-                    }*/
+                    }
                 }
                 if([percentChangeSinceYest doubleValue] < 0.0) {
                     
                     percentChangeSinceYestStr = [percentChangeSinceYestStr substringFromIndex:1];
-                    specificEventType = [NSString stringWithFormat:@"-%@%% down today",percentChangeSinceYestStr];
+                    specificEventType = [NSString stringWithFormat:@"-%@%% down today $%@",percentChangeSinceYestStr,currPriceStr];
                     // Insert into the events datastore
                     // Note the upsert logic takes care of matching the generic piece of the event type to uniquely identify this event ensuring there's only one instance of this.
-                    // TO DO: Uncomment both these if you'd like to enter daily price change events.
-                    //[self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                    [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                     // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
                     // TO DO: Hardcoding this for now to be quarterly earnings
-                    /*if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
+                    if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
                         [self insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:companySymbol eventType:specificEventType];
-                    }*/
+                    }
                 }
                 
                 ////// Get 52 week highs
@@ -2581,6 +2588,21 @@ bool eventsUpdated = NO;
                 hiLoEventStr = [NSString stringWithFormat:@"%.02f",[hiLoPrice doubleValue]];
                 
                 specificEventType = [NSString stringWithFormat:@"52 Week High $%@",hiLoEventStr];
+                [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
+                // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
+                // TO DO: Hardcoding this for now to be quarterly earnings
+                if ([self doesReminderActionExistForEventWithTicker:companySymbol eventType:@"Quarterly Earnings"]){
+                    [self insertActionOfType:@"PriceChange" status:@"Queued" eventTicker:companySymbol eventType:specificEventType];
+                }
+                
+                ////// Get 52 week lows
+                
+                eventDateStr = [parsedDetailsList objectForKey:@"fiftyTwoWkLowDate"];
+                eventDate = [eventDateFormatter dateFromString:eventDateStr];
+                hiLoPrice = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"fiftyTwoWkLow"] doubleValue]];
+                hiLoEventStr = [NSString stringWithFormat:@"%.02f",[hiLoPrice doubleValue]];
+                
+                specificEventType = [NSString stringWithFormat:@"52 Week Low $%@",hiLoEventStr];
                 [self upsertEventWithDate:eventDate relatedDetails:nil relatedDate:nil type:specificEventType certainty:nil listedCompany:companySymbol estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                 // Check to see if a reminder action has already been created for the quarterly earnings event for this ticker, which means this ticker is already being followed. In which case add a "PriceChange" action type to indicate this is a followed event.
                 // TO DO: Hardcoding this for now to be quarterly earnings
