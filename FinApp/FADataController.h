@@ -142,10 +142,6 @@
 // Delete all events that contain "FIFA 18" as these have somehow gotten into a bad state in the DB. This is a one time thing.
 - (void)deleteAllFIFA18Events;
 
-// Get all price change events. Returns a results controller with identities of all Events recorded, but no more
-// than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
-- (NSFetchedResultsController *)getAllPriceChangeEventsForFollowedStocks;
-
 #pragma mark - Event History related Methods
 
 // Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
@@ -220,6 +216,13 @@
 
 // Delete all 52 wk events from the db
 - (void)deleteAll52WkEvents;
+
+// Get all price change events. Returns a results controller with identities of all Events recorded, but no more
+// than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllPriceChangeEventsForFollowedStocks;
+
+// Get the date on which the events were last synced
+- (NSDate *)getDailyPriceEventSyncDate;
 
 #pragma mark - Methods to call Company Stock Data Source APIs
 

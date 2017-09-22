@@ -1160,38 +1160,6 @@ bool eventsUpdated = NO;
     [dataStoreContext save:&error];
 }
 
-// Get all price change events. Returns a results controller with identities of all Events recorded, but no more
-// than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
-- (NSFetchedResultsController *)getAllPriceChangeEventsForFollowedStocks
-{
-    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
-    
-    // Get today's date formatted to midnight last night
-    //NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
-    
-    // Get all future events with the upcoming ones first
-    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
-    [eventFetchRequest setEntity:eventEntity];
-    // Set the filter. Get price change events with date clause
-    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (ANY actions.type == %@)", todaysDate, @"PriceChange"];
-    // Set the filter. Get price change events with no date clause
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"(ANY actions.type == %@)", @"PriceChange"];
-    [eventFetchRequest setPredicate:datePredicate];
-    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"listedCompany.ticker" ascending:YES];
-    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
-    [eventFetchRequest setFetchBatchSize:15];
-    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
-                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
-                                                                            cacheName:nil];
-    NSError *error;
-    if (![self.resultsController performFetch:&error]) {
-        NSLog(@"ERROR: Getting all price change events from data store failed: %@",error.description);
-    }
-    
-    return self.resultsController;
-}
-
 
 #pragma mark - Event History related Methods
 
@@ -2933,6 +2901,79 @@ bool eventsUpdated = NO;
     [dataStoreContext save:&error];
 }
 
+// Get all price change events. Returns a results controller with identities of all Events recorded, but no more
+// than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllPriceChangeEventsForFollowedStocks
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    //NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter. Get price change events with date clause
+    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (ANY actions.type == %@)", todaysDate, @"PriceChange"];
+    // Set the filter. Get price change events with no date clause
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"(ANY actions.type == %@)", @"PriceChange"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"listedCompany.ticker" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all price change events from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
+
+// Get the date on which the events were last synced
+- (NSDate *)getDailyPriceEventSyncDate {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [NSDate date];
+    
+    // Subtract 7 days
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -7;
+    NSDate *weekAgoDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:todaysDate options:0];
+    
+    // Get the event by doing a case insensitive query on parent company Ticker and event type.
+    // For price change events the event type is a fuzzy match.
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    
+    // Filter for daily events
+    NSPredicate *eventPredicate = nil;
+    eventPredicate = [NSPredicate predicateWithFormat:@"type contains %@ AND type contains %@",@"%",@"today"];
+    
+    // Fetch all the daily events
+    [eventFetchRequest setEntity:eventEntity];
+    [eventFetchRequest setPredicate:eventPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting daily price change events, while trying to get their sync date, from data store failed: %@",error.description);
+    }
+    
+    if (events.count == 0) {
+        return weekAgoDate;
+        
+    } else {
+        Event *fetchedEvent = [events lastObject];
+        return fetchedEvent.date;
+    }
+}
 
 #pragma mark - Methods to call Company Stock Data Source APIs
 
@@ -3959,6 +4000,7 @@ bool eventsUpdated = NO;
     User *fetchedUser = [fetchedUsers lastObject];
     return fetchedUser.eventSyncDate;
 }
+
 
 // Get the date on which the Company info was last completely synced
 - (NSDate *)getCompanySyncDate {

@@ -2180,21 +2180,75 @@
             // Set correct search bar placeholder text
             self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
             
-            // Delete existing price events. Don't need this since we are not showing daily price events
-            [self.primaryDataController deleteAllDailyPriceChangeEvents];
-            // Delete 52 weeks events
-            [self.primaryDataController deleteAll52WkEvents];
+            // Check to make sure we are syncing daily price data only once a day, after the market has opened.
             
-            self.eventResultsController = [self.primaryDataController getAllPriceChangeEventsForFollowedStocks];
-            [self.eventsListTable reloadData];
-            
-            // Get all price change events for followed stocks asynchronously
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
-                // Create a new FADataController so that this thread has its own MOC
-                FADataController *priceDataController = [[FADataController alloc] init];
+            // Get time in GMT, US markets open at 9:30 am ET which is 1:30 pm GMT
+            NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+            NSDate *todaysDate1 = [NSDate date];
+            NSTimeInterval tzOffset = [[NSTimeZone systemTimeZone] secondsFromGMT];
+            NSTimeInterval gmtTimeIt = [todaysDate1 timeIntervalSinceReferenceDate] - tzOffset;
+            NSDate *todaysDateInGmt = [NSDate dateWithTimeIntervalSinceReferenceDate:gmtTimeIt];
+            NSLog(@"TODAYS DATE AND TIME IN GMT IS:%@",todaysDateInGmt);
+            NSDateComponents *components1 = [gregorianCalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:todaysDateInGmt];
+            NSInteger gmtHour = [components1 hour];
+            NSInteger gmtMinute = [components1 minute];
+            NSLog(@"TODAYS HOUR IN GMT IS:%ld",(long)gmtHour);
+            NSLog(@"TODAYS MINUTES IN GMT IS:%ld",(long)gmtMinute);
+            NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+            // Get the event sync date
+            NSDate *lastSyncDate = [self setTimeToMidnightLastNightOnDate:[self.primaryDataController getDailyPriceEventSyncDate]];
+            NSLog(@"MIDNIGHT ADJUSTED LAST EVENT SYNCED DATE AND TIME IS:%@",lastSyncDate);
+            NSLog(@"MIDNIGHT ADJUSTED TODAYS DATE AND TIME IS:%@",lastSyncDate);
+            // Get the number of days between the 2 dates
+            NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
+            NSInteger daysBetween = [components day];
+            NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+            // Refresh only if a day has passed since last refresh and if the market has opened.
+            // Make sure in the new version string in app delegate you delete all daily price events. That brings you to a clean state
+            // If it's been more than one day since sync. For clean slate the sync date method returns 7 days ago
+            if ((int)daysBetween > 0) {
                 
-                [priceDataController getPriceChangeEventsForFollowingStocksWrapper];
-            });
+                // If time is past the market open time, refresh
+                if(((gmtHour * 60) + gmtMinute) > 810) {
+                    
+                    // Delete existing price events.
+                    [self.primaryDataController deleteAllDailyPriceChangeEvents];
+                    // Delete 52 weeks events
+                    [self.primaryDataController deleteAll52WkEvents];
+                    
+                    self.eventResultsController = [self.primaryDataController getAllPriceChangeEventsForFollowedStocks];
+                    [self.eventsListTable reloadData];
+                    
+                    // Get all price change events for followed stocks asynchronously
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
+                        // Create a new FADataController so that this thread has its own MOC
+                        FADataController *priceDataController = [[FADataController alloc] init];
+                        
+                        [priceDataController getPriceChangeEventsForFollowingStocksWrapper];
+                    });
+                }
+                // Show existing price events along with a refresh message
+                else {
+                    
+                    self.eventResultsController = [self.primaryDataController getAllPriceChangeEventsForFollowedStocks];
+                    [self.eventsListTable reloadData];
+                    
+                    // Set navigation bar header to an attention orange color
+                    NSDictionary *attentionHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                               [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                                               [UIColor colorWithRed:205.0f/255.0f green:151.0f/255.0f blue:61.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                                               nil];
+                    
+                    // Set navigation bar header to indicate busy
+                    [self.navigationController.navigationBar setTitleTextAttributes:attentionHeaderAttributes];
+                    [self.navigationController.navigationBar.topItem setTitle:@"Will refresh when markets open!"];
+                }
+            }
+            // If not attempting a sync show current price change events.
+            else {
+                self.eventResultsController = [self.primaryDataController getAllPriceChangeEventsForFollowedStocks];
+                [self.eventsListTable reloadData];
+            }
         }
         
         // TRACKING EVENT: Event Type Selected: User selected Price event type explicitly in the events type selector
@@ -3408,7 +3462,26 @@
         }
         // If following is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-            [self.navigationController.navigationBar.topItem setTitle:@"ALL FOLLOWED EVENTS"];
+            
+            // If Home is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"ALL FOLLOWED EVENTS"];
+            }
+            
+            // If Earnings is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EARNINGS"];
+            }
+            
+            // If Econ events is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ECON EVENTS"];
+            }
+            
+            // If Price is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED PRICE CHANGES"];
+            }
         }
         // Check to see if the Product Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
