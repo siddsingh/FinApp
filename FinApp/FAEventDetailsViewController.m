@@ -2153,7 +2153,7 @@
     if ([self.eventType containsString:@"% up"])
     {
         // Kinda Green
-        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:71.0f/255.0f green:183.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
     }
     if ([self.eventType containsString:@"% down"])
     {

@@ -397,6 +397,13 @@
     // Reset color for timeline label, in case it's been set to dark color for current events.
     cell.timelineLbl.backgroundColor = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
     
+    // Set cell to unclickable if Following->Price has been selected.
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
+        cell.userInteractionEnabled = NO;
+    } else {
+        cell.userInteractionEnabled = YES;
+    }
+    
     // Get event or company  to display
     Event *eventAtIndex;
     Company *companyAtIndex;
@@ -3124,7 +3131,7 @@
     if ([rawEventType containsString:@"% up"])
     {
         // Kinda Green
-        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:71.0f/255.0f green:183.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
     } else if ([rawEventType containsString:@"% down"])
     {
         // Kinda Red
@@ -3233,7 +3240,7 @@
     if ([rawEventType containsString:@"% up"])
     {
         // Kinda Green
-        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:71.0f/255.0f green:183.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
     } else if ([rawEventType containsString:@"% down"])
     {
         // Kinda Red
@@ -3350,7 +3357,7 @@
     if ([eventType containsString:@"% up"])
     {
         // Kinda Green
-        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:71.0f/255.0f green:183.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"% down"])
     {
