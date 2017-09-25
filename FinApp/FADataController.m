@@ -837,6 +837,8 @@ bool eventsUpdated = NO;
 - (NSFetchedResultsController *)searchFollowingEventsFor:(NSString *)searchText eventDisplayType:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    // Sort with the closest event first
+    NSSortDescriptor *sortField = nil;
     
     // Get today's date formatted to midnight last night
     NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
@@ -856,30 +858,37 @@ bool eventsUpdated = NO;
         //searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND ((ANY actions.type == %@) OR (ANY actions.type == %@))", searchText, searchText, searchText, todaysDate, @"OSReminder", @"PriceChange"];
         // Price change events excluded
         searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (ANY actions.type == %@)", searchText, searchText, searchText, todaysDate, @"OSReminder"];
+        // Sort with the closest event first
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
     // Check to see if the event type is "Earnings". Search on "ticker" or "name" fields for the listed Company for earnings events
     if ([eventType caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
         searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@) AND (type =[c] %@) AND (date >= %@) AND (ANY actions.type == %@)", searchText, searchText, @"Quarterly Earnings", todaysDate, @"OSReminder"];
+        // Sort with the closest event first
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
     // Check to see if the event type is "Economic". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
     if ([eventType caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
         searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker contains %@) AND (date >= %@) AND (ANY actions.type == %@)", searchText, searchText, searchText, @"ECONOMY_", todaysDate, @"OSReminder"];
+        // Sort with the closest event first
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
-    // Check to see if the event type is "Product". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
-    if ([eventType caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+    // Check to see if the event type is "Price". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events
+    if ([eventType caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (type contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (ANY actions.type == %@)", searchText, searchText, searchText, @"Launch", @"Conference", todaysDate, @"OSReminder"];
+        // Price change events including 52 week
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (ANY actions.type == %@)", searchText, searchText, searchText, @"PriceChange"];
+        // Sort with the closest event first
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"listedCompany.ticker" ascending:YES];
     }
     
     [eventFetchRequest setPredicate:searchPredicate];
     
-    // Sort with the closest event first
-    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
     
     [eventFetchRequest setFetchBatchSize:15];

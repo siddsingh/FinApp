@@ -49,6 +49,9 @@
 // Return the appropriate color for event labels based on type of event.
 - (UIColor *)getColorForCellLabelsBasedOnEventType:(NSString *)rawEventType;
 
+// Return the appropriate color for event based on type.
+- (UIColor *)getColorForEventTickerLbl:(NSString *)eventType;
+
 // Compute the likely date for the previous event based on current event type (currently only Quarterly), previous event related date (e.g. quarter end related to the quarterly earnings), current event date and current event related date.
 - (NSDate *)computePreviousEventDateWithCurrentEventType:(NSString *)currentType currentEventDate:(NSDate *)currentDate currentEventRelatedDate:(NSDate *)currentRelatedDate previousEventRelatedDate:(NSDate *)previousRelatedDate;
 
@@ -397,13 +400,6 @@
     // Reset color for timeline label, in case it's been set to dark color for current events.
     cell.timelineLbl.backgroundColor = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
     
-    // Set cell to unclickable if Following->Price has been selected.
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
-        cell.userInteractionEnabled = NO;
-    } else {
-        cell.userInteractionEnabled = YES;
-    }
-    
     // Get event or company  to display
     Event *eventAtIndex;
     Company *companyAtIndex;
@@ -499,6 +495,12 @@
         
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!!: Any change to the formatting here could affect reminder creation (processReminderForEventInCell:,editActionsForRowAtIndexPath) since the reminder values are taken from the cell. Additionally changes here need to be reconciled with changes in the getEvents for ticker's queued reminder creation. Also reconcile in didSelectRowAtIndexPath.
         
+        // Make the cell inactive if it's of type 52 Week.
+        if ([eventAtIndex.type containsString:@"52 Week High"]||[eventAtIndex.type containsString:@"52 Week Low"]) {
+            cell.userInteractionEnabled = NO;
+        } else {
+            cell.userInteractionEnabled = YES;
+        }
         // Add a tap gesture recognizer to the event ticker
         UITapGestureRecognizer *tickerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processTypeIconTap:)];
         tickerTap.cancelsTouchesInView = YES;
@@ -517,7 +519,7 @@
         
         // Show the company ticker associated with the event
         [[cell  companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
-        [cell.companyTicker setTextColor:[self getColorForCellLabelsBasedOnEventType:eventAtIndex.type]];
+        [cell.companyTicker setTextColor:[self getColorForEventTickerLbl:eventAtIndex.type]];
         
         // If user is seeing the news, format the ticker and news buttons to show the brand colors. Also hide the news date
         if (([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame)&& ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame)) {
@@ -558,7 +560,7 @@
         [[cell eventDate] setText:[self formatDateBasedOnEventType:eventAtIndex.type withDate:eventAtIndex.date withRelatedDetails:eventAtIndex.relatedDetails withStatus:eventAtIndex.certainty]];
         
         // Show the event distance
-        [[cell eventDistance] setText:[self calculateDistanceFromEventDate:eventAtIndex.date]];
+        [[cell eventDistance] setText:[self calculateDistanceFromEventDate:eventAtIndex.date withEventType:eventAtIndex.type]];
         
         // Set event distance to the appropriate color using a reddish scheme.
         [[cell eventDistance] setTextColor:[self getColorForDistanceFromEventDate:eventAtIndex.date withEventType:eventAtIndex.type]];
@@ -1614,10 +1616,21 @@
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
             }
-            // Check to see if the Following Main Nav is selected
+                
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+        }
+        
+        // Check to see if "Price" events type is selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all price events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
+            
+            // Double check to see if the Following Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
                 // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Product"];
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Price"];
                 // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
@@ -1792,10 +1805,21 @@
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
             }
-            // Check to see if the Following Main Nav is selected
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+        }
+        
+        // Check to see if "Price" events type is selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all price events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
+            
+            // Double check to see if the Following Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
                 // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
-                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Product"];
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Price"];
                 // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
@@ -3009,7 +3033,7 @@
 }
 
 // Calculate how far the event is from today. Typical values are Past,Today, Tomorrow, 2d, 3d and so on.
-- (NSString *)calculateDistanceFromEventDate:(NSDate *)eventDate
+- (NSString *)calculateDistanceFromEventDate:(NSDate *)eventDate withEventType:(NSString *)rawEventType
 {
     NSString *formattedDistance = @"Details ▸";
     
@@ -3092,6 +3116,9 @@
         } else {
             formattedDistance = [NSString stringWithFormat:@"%@d",[@(difference) stringValue]];
         }
+        if ([rawEventType containsString:@"% up"]||[rawEventType containsString:@"% down"]) {
+            formattedDistance = [NSString stringWithFormat:@"%@ ▸",formattedDistance];
+        }
     } else {
         if ((difference < 0)&&(difference > -2)) {
             formattedDistance = @"Yesterday ▸";
@@ -3131,7 +3158,8 @@
     if ([rawEventType containsString:@"% up"])
     {
         // Kinda Green
-        colorToReturn = [UIColor colorWithRed:71.0f/255.0f green:183.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:56.0f/255.0f green:197.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:52.0f/255.0f green:181.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
     } else if ([rawEventType containsString:@"% down"])
     {
         // Kinda Red
@@ -3240,7 +3268,8 @@
     if ([rawEventType containsString:@"% up"])
     {
         // Kinda Green
-        colorToReturn = [UIColor colorWithRed:71.0f/255.0f green:183.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:56.0f/255.0f green:197.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:52.0f/255.0f green:181.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
     } else if ([rawEventType containsString:@"% down"])
     {
         // Kinda Red
@@ -3357,7 +3386,9 @@
     if ([eventType containsString:@"% up"])
     {
         // Kinda Green
-        colorToReturn = [UIColor colorWithRed:71.0f/255.0f green:183.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:56.0f/255.0f green:197.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:52.0f/255.0f green:181.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
+        
     }
     if ([eventType containsString:@"% down"])
     {
@@ -3367,16 +3398,49 @@
     if ([eventType containsString:@"52 Week High"])
     {
         // Very lightish gray
-        colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor whiteColor];
     }
     if ([eventType containsString:@"52 Week Low"])
     {
         // Very lightish gray
-        colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor whiteColor];
     }
     
     return colorToReturn;
 }
+
+// Return the appropriate color for event based on type.
+- (UIColor *)getColorForEventTickerLbl:(NSString *)eventType
+{
+    // Set returned color to the default almost black dark gray
+    UIColor *colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    
+    // For % up and down events, go with the color green or red. For all others include the
+    if ([eventType containsString:@"% up"])
+    {
+        // Kinda Green
+        //colorToReturn = [UIColor colorWithRed:56.0f/255.0f green:197.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:52.0f/255.0f green:181.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
+    } else if ([eventType containsString:@"% down"])
+    {
+        // Kinda Red
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:63.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+    } else if ([eventType containsString:@"52 Week High"])
+    {
+        colorToReturn = [UIColor whiteColor];
+    } else if ([eventType containsString:@"52 Week Low"])
+    {
+        colorToReturn = [UIColor whiteColor];
+    } else {
+        //Default almost black very dark gray
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
+    }
+    
+    return colorToReturn;
+}
+
 
 // Format the given date to set the time on it to midnight last night. e.g. 03/21/2016 9:00 pm becomes 03/21/2016 12:00 am.
 - (NSDate *)setTimeToMidnightLastNightOnDate:(NSDate *)dateToFormat
