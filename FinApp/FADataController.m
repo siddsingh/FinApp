@@ -17,6 +17,7 @@
 #import "User.h"
 #import "Action.h"
 #import "EventHistory.h"
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 @interface FADataController ()
 
@@ -792,7 +793,7 @@ bool eventsUpdated = NO;
     // Check to see if the event display type is "Home". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events, Exclude product events with impact other than Very High.
     if ([eventType caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT ((type contains[cd] %@) OR (type contains[cd] %@))) AND ((NOT ((relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@))) OR (relatedEventHistory.previous1Status contains[cd] %@))", searchText, searchText, searchText, todaysDate, @"% up", @"% down", @"High_", @"Medium_", @"Low_", @"Very High_"];
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT ((type contains[cd] %@) OR (type contains[cd] %@) OR (type contains[cd] %@))) AND ((NOT ((relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@))) OR (relatedEventHistory.previous1Status contains[cd] %@))", searchText, searchText, searchText, todaysDate, @"% up", @"% down", @"52 Week", @"High_", @"Medium_", @"Low_", @"Very High_"];
         sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
@@ -2010,6 +2011,11 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"CLDR" name:@"Cloudera"];
     [self insertUniqueCompanyWithTicker:@"APRN" name:@"Blue Apron Holdings"];
     
+    // Added these on 10/06/2017
+    [self insertUniqueCompanyWithTicker:@"SWCH" name:@"Switch"];
+    [self insertUniqueCompanyWithTicker:@"DCPH" name:@"Deciphera Pharmaceuticals"];
+    [self insertUniqueCompanyWithTicker:@"RDFN" name:@"Redfin"];
+    [self insertUniqueCompanyWithTicker:@"ROKU" name:@"Roku"];
     
     // Get the company ticker and names file path
     NSString *tickersFilePath = [[NSBundle mainBundle] pathForResource:@"ZEA-datasets-codes_20161119" ofType:@"csv"];
@@ -2404,6 +2410,28 @@ bool eventsUpdated = NO;
     return YES;
 }
 
+// Wrapper method to get product events from the API. Currently fetches all product events.
+- (void)syncProductEventsWrapper {
+    
+    // Show busy
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete Later
+        //NSLog(@"About to start busy spinner");
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+    });
+    
+    [self getAllProductEventsFromApi];
+    
+    // Stop Busy
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete Later.
+        //NSLog(@"About to stop busy spinner");
+        [self sendEventsChangeNotification];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+    });
+}
+
+
 #pragma mark - Methods for Price Change Data
 
 // Get all the price change events and details from the data source APIs. This is the new version that uses the same data source as used for getting prices elsewhere.
@@ -2427,6 +2455,7 @@ bool eventsUpdated = NO;
     NSString *endpointURL = @"http://marketdata.websol.barchart.com/getQuote.json?key=9d040a74abe6d5df65a38df9b4253809&symbols=";
     NSString *addtlFields = @"&fields=fiftyTwoWkHigh,fiftyTwoWkHighDate,fiftyTwoWkLow,fiftyTwoWkLowDate";
     endpointURL = [NSString stringWithFormat:@"%@%@%@",endpointURL,tickersToFetch,addtlFields];
+    
     NSURLResponse *response = nil;
     
     // Make the call synchronously
@@ -2506,6 +2535,12 @@ bool eventsUpdated = NO;
             // Iterate through price array within the parsed data set, which only contains one dictionary.
             for (NSDictionary *parsedDetailsList in parsedDataSets) {
                 
+                // Check if that ticker price is not null. If it is continue without processing it.The commented line might be a better way but couldn't test it hence going with the old way.
+                // if ([parsedDetailsList objectForKey:@"netChange"] == (id)[NSNull null])
+                if ([[NSString stringWithFormat:@"%@",[parsedDetailsList objectForKey:@"mode"]] containsString:@"null"])
+                {
+                    continue;
+                }
                 ////// Get daily price change
                 
                 // Get the company ticker
@@ -2520,6 +2555,7 @@ bool eventsUpdated = NO;
             
                 // Get percentage changed since yesterday
                 percentChangeSinceYest = [NSNumber numberWithDouble:[[parsedDetailsList objectForKey:@"percentChange"] doubleValue]];
+                
                 // Get a string representation for the change
                 percentChangeSinceYestStr = [NSString stringWithFormat:@"%.02f",[percentChangeSinceYest doubleValue]];
                 
@@ -2982,6 +3018,154 @@ bool eventsUpdated = NO;
         Event *fetchedEvent = [events lastObject];
         return fetchedEvent.date;
     }
+}
+
+// Wrapper method to get price change events from the API for all followed stocks
+- (void)getPriceChangeEventsForFollowingStocksWrapper {
+    
+    // Show busy
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete Later
+        //NSLog(@"About to start busy spinner");
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+    });
+    
+    // Get latest snapshot of price change events
+    [self getAllPriceChangeEventsFromApiNew];
+    
+    // Stop Busy
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete Later.
+        //NSLog(@"About to stop busy spinner");
+        [self sendEventsChangeNotification];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+    });
+    
+    // TRACKING EVENT: Explicitly track Price fetch events
+    // TO DO: Disabling to not track development events. Enable before shipping.
+    [FBSDKAppEvents logEvent:@"Price Fetched"
+                  parameters:@{ @"Event Type" : @"Daily Price" } ];
+}
+
+// Wrapper method to get price details for an event
+- (NSString *)getPriceDetailsForEventOfType:(NSString *)cellEventType withTicker:(NSString *)cellCompanyTicker {
+    
+    // Show busy
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete Later
+        //NSLog(@"About to start busy spinner");
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
+    });
+    
+    // Get and Set all the price details.
+    // Get the database level (not display level) event type based on the display type.
+    // Earnings -> Quarterly Earnings, Fed Meeting -> Jan Fed Meeting, Jobs Report -> Jan Jobs Report and so on.
+    NSString *currPriceAndChangeStr = @"NA";
+    NSString *eventType = cellEventType;
+    
+    // If Quarterly Earnings or price change event or product event get the historical data for display in the details
+    // We basically use the quarterly earnings event history to keep track of the stock prices for price change events since there cannot be a price change event for a ticker that we don't have the quarterly earnings for. Same with product event
+    if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]||[eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        
+        // Get the ticker for the Quarterly Earnings
+        NSString *eventTicker = cellCompanyTicker;
+        
+        // Since we  use the quarterly earnings event history to keep track of the stock prices for price change events, use the Quarterly Earnings as the event type, even for price change events
+        eventType = @"Quarterly Earnings";
+        
+        // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
+        // Get today's date
+        NSDate *todaysDate = [NSDate date];
+        
+        // If Event history doesn't exist insert it
+        if (![self doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
+        {
+            // Insert history, with previous event 1 date being the market open date 30 days ago and previous event 1 related date being the market open date at the beginning of the year.
+            // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
+            NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
+            // To Do: Delete when shipping v2.9
+            //NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
+            [self insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
+        }
+        // Else update the non price related data, not including current date, on the event history from the event. We don't include the current date as current date is set only once a day which is when the user first accesses the event.
+        else
+        {
+            [self updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] parentEventTicker:eventTicker parentEventType:eventType];
+        }
+        
+        // Call price API, in the main thread, to refresh the price history
+        // Check to see if the current date on which the price history was fetched is today or not in addition to if it was fetched at all. If today, fetch only current price. If not, then fetch both historical and current price
+        EventHistory *selectedEventHistory = [self getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
+        // Set a value indicating that a value is not available. Currently a Not Available value
+        // is represented by 999999.9
+        double notAvailable = 999999.9f;
+        double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
+        double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
+        double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
+        NSDateFormatter *checkDateFormatter = [[NSDateFormatter alloc] init];
+        [checkDateFormatter setDateFormat:@"yyyy-MM-dd"];
+        // Format historical and now current dates to local time zone comparison
+        NSString *currentDateInHistory = [checkDateFormatter stringFromDate:selectedEventHistory.currentDate];
+        NSString *currentDateNow = [checkDateFormatter stringFromDate:todaysDate];
+        if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||([currentDateInHistory caseInsensitiveCompare:currentDateNow] != NSOrderedSame))
+        {
+            currPriceAndChangeStr = [self getPricesWithCompanyTicker:eventTicker eventType:eventType historyFetch:YES];
+            // Current date is set only once a day which is when the user first accesses the event.
+            [self updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
+        } else {
+            currPriceAndChangeStr = [self getPricesWithCompanyTicker:eventTicker eventType:eventType historyFetch:NO];
+        }
+    }
+    
+    // Stop Busy
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete Later.
+        //NSLog(@"About to stop busy spinner");
+        [self sendEventsChangeNotification];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+    });
+    
+    return currPriceAndChangeStr;
+}
+
+// Get stock prices for company given a ticker and event type (event info). Executes in the main thread.
+- (NSString *)getPricesWithCompanyTicker:(NSString *)ticker eventType:(NSString *)type historyFetch:(BOOL)fetchHistory;
+{
+    EventHistory *eventForPricesFetch = [self getEventHistoryForParentEventTicker:ticker parentEventType:type];
+    NSString *currPriceAndChange = @"NA";
+    
+    // Get current price and set the global current price and change string to the value returned.
+    currPriceAndChange = [self getCurrentStockPriceFromApiForTicker:ticker companyEventType:type];
+    
+    // TRACKING EVENT: Explicitly track Price fetch events
+    // TO DO: Disabling to not track development events. Enable before shipping.
+    [FBSDKAppEvents logEvent:@"Price Fetched"
+                  parameters:@{ @"Event Type" : @"Daily Price" } ];
+    
+    // Get historical prices if needed
+    if(fetchHistory) {
+        
+        // See which one is before in time, the ytd date or 30 days ago date and set from date to that.
+        if ([(eventForPricesFetch.previous1Date) timeIntervalSinceDate:(eventForPricesFetch.previous1RelatedDate)] > 0) {
+            
+            [self getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1RelatedDate toDateInclusive:eventForPricesFetch.currentDate];
+            
+            // TRACKING EVENT: Explicitly track Price fetch events
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            [FBSDKAppEvents logEvent:@"Price Fetched"
+                          parameters:@{ @"Event Type" : @"Price History" } ];
+        } else {
+            
+            [self getStockPricesFromApiForTicker:ticker companyEventType:type fromDateInclusive:eventForPricesFetch.previous1Date toDateInclusive:eventForPricesFetch.currentDate];
+            
+            // TRACKING EVENT: Explicitly track Price fetch events
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            [FBSDKAppEvents logEvent:@"Price Fetched"
+                          parameters:@{ @"Event Type" : @"Price History" } ];
+        }
+    }
+
+    return currPriceAndChange;
 }
 
 #pragma mark - Methods to call Company Stock Data Source APIs
@@ -3734,8 +3918,10 @@ bool eventsUpdated = NO;
     // TO DO: Delete Later before shipping v2.9
     //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
     // Refresh only if a day has passed since last refresh
+    // Now that product events are being synced only on news, consider syncing earnings events everytime
+    //if(YES) {
     if((int)daysBetween > 0) {
-        
+
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];
         
@@ -3785,11 +3971,13 @@ bool eventsUpdated = NO;
         
         // Check to see if product events need to be added or refreshed. If yes, do that.
         // *****NOTE*****Currently always returning true since we have not implemented update logic
+        // Currently not syncing product events at the start as they are synced everytime one accesses the news.
         if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // TO DO: Delete Later
             //NSLog(@"About to add product events from Knotifi Data Platform");
-            [self getAllProductEventsFromApi];
+            // This is now done when the news tab is clicked
+            //[self getAllProductEventsFromApi];
         }
     
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
@@ -3818,6 +4006,16 @@ bool eventsUpdated = NO;
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
             });
         }
+    }
+    // Make sure you are always refreshing the first view to not show yesterday's events.
+    else {
+        // Any async UI element update has to happen in the main thread.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sendEventsChangeNotification];
+            // TO DO: Delete Later.
+            //NSLog(@"About to stop busy spinner");
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
+        });
     }
     // Get price changes every time
     /*else {
@@ -3851,28 +4049,6 @@ bool eventsUpdated = NO;
             [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
         });
     } */
-}
-
-// Wrapper method to get price change events from the API for all followed stocks
-- (void)getPriceChangeEventsForFollowingStocksWrapper {
-    
-    // Show busy
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // TO DO: Delete Later
-        //NSLog(@"About to start busy spinner");
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
-    });
-    
-    // Get latest snapshot of price change events
-    [self getAllPriceChangeEventsFromApiNew];
-    
-    // Stop Busy
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // TO DO: Delete Later.
-        //NSLog(@"About to stop busy spinner");
-        [self sendEventsChangeNotification];
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
-    });
 }
 
 #pragma mark - User State Related
@@ -4512,6 +4688,64 @@ bool eventsUpdated = NO;
     *response = resp;
     *error = err;
     return data;
+}
+
+// Compute the unscrubbed date 30 days ago from today. Unscrubbed means it could be a weekend or a holiday.
+- (NSDate *)computeDate30DaysAgoFrom:(NSDate *)startingDate
+{
+    // Subtract 30 days from start date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = -30;
+    NSDate *returnDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:startingDate options:0];
+    
+    return returnDate;
+}
+
+// Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Friday for Saturday and following Monday for Sunday. TO DO LATER: Factor in holidays here.
+- (NSDate *)scrubDateToNotBeWeekendOrHoliday:(NSDate *)dateToScrub
+{
+    // Make sure the date doesn't fall on a Friday, Saturday, Sunday. In these cases move it to the previous Friday for Saturday and following Monday for Sunday. TO DO LATER: Factor in holidays here.
+    // Convert from string to Date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateFormatter *dayFormatter = [[NSDateFormatter alloc] init];
+    [dayFormatter setDateFormat:@"EEE"];
+    // Set the formatter to be GMT since dates are always GMT and formatters are defaulted to local timezone
+    [dayFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    NSDate *scrubbedDate = dateToScrub;
+    NSString *dayString = [dayFormatter stringFromDate:dateToScrub];
+    
+    if ([dayString isEqualToString:@"Sat"]) {
+        differenceDayComponents.day = -1;
+        scrubbedDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:dateToScrub options:0];
+    }
+    
+    if ([dayString isEqualToString:@"Sun"]) {
+        differenceDayComponents.day = 1;
+        scrubbedDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:dateToScrub options:0];
+    }
+    
+    return scrubbedDate;
+}
+
+// Compute the scrubbed first market day of the year for the given date. Currently it works only for 2016.
+// TO DO: Change this for 2017 and so on and so forth
+- (NSDate *)computeMarketStartDateOfTheYearFrom:(NSDate *)givenDate
+{
+    // Compute the first date of the year from the given date
+    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents * aCalComponents = [aGregorianCalendar components: NSCalendarUnitYear fromDate:givenDate];
+    [aCalComponents setYear:[aCalComponents year]];
+    NSDate *returnDate = [aGregorianCalendar dateFromComponents:aCalComponents];
+    
+    // For 2016, the first market open day was 3 days after, Jan 1 putting it at Jan 4.
+    // TO DO: For 2017, the first market day will be 2 days later on Jan 3. So add 2 instead of 3 here. That's it. www.timeanddate.com/calendar/?year=2017&country=1
+    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    differenceDayComponents.day = 2;
+    returnDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:returnDate options:0];
+    
+    return returnDate;
 }
 
 @end

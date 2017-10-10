@@ -234,6 +234,16 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:193.0f/255.0f green:244.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
     }
     
+    if ([ticker caseInsensitiveCompare:@"SNAP"] == NSOrderedSame) {
+        // Snapchat Yellow
+        colorToReturn = [UIColor colorWithRed:254.0f/255.0f green:247.0f/255.0f blue:49.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"FB"] == NSOrderedSame) {
+        // Facebook Blue
+        colorToReturn = [UIColor colorWithRed:59.0f/255.0f green:89.0f/255.0f blue:152.0f/255.0f alpha:1.0f];
+    }
+    
     return colorToReturn;
 }
 
@@ -336,6 +346,16 @@ static FASnapShot *sharedInstance;
     if ([ticker caseInsensitiveCompare:@"NKE"] == NSOrderedSame) {
         // Black
         colorToReturn = [UIColor blackColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"SNAP"] == NSOrderedSame) {
+        // Black
+        colorToReturn = [UIColor blackColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"FB"] == NSOrderedSame) {
+        // White
+        colorToReturn = [UIColor whiteColor];
     }
     
     return colorToReturn;

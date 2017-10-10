@@ -16,6 +16,7 @@
 #import "Company.h"
 #import "Reachability.h"
 #import "FACompanyInfoStore.h"
+#import "FASnapShot.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <SafariServices/SafariServices.h>
 @import EventKit;
@@ -48,6 +49,9 @@
     
     // Get a primary data controller that you will use later
     self.primaryDetailsDataController = [[FADataController alloc] init];
+    
+    // Get the one data snapshot
+    self.dataSnapShot2 = [[FASnapShot alloc] init];
 
     // Show the company name in the navigation bar header.
     self.navigationItem.title = [self.eventTitleStr uppercaseString];
@@ -83,7 +87,7 @@
                 // Set button color based on event type
                 [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
                 [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
-                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
             }
         }
         // For quarterly earnings or product events
@@ -104,7 +108,7 @@
                 // Set button color based on event type
                 [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
                 [self.reminderButton setTitle:actionName forState:UIControlStateNormal];
-                [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
             }
         }
     }
@@ -124,7 +128,7 @@
             // Set button color based on event type
             [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
             [self.reminderButton setTitle:@"FOLLOW" forState:UIControlStateNormal];
-            [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
         }
     }
 
@@ -132,9 +136,13 @@
     [self.newsButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.newsButton2 setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.newsButton3 setBackgroundColor:[self getColorForEventType:self.eventType]];
+    [self.newsButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
+    [self.newsButton2 setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
+    [self.newsButton3 setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
+    
     
     // Set color of back navigation item based on event type
-    self.navigationController.navigationBar.tintColor = [self getColorForEventType:self.eventType];
+    self.navigationController.navigationBar.tintColor = [self getColorForEventTypeForBackNav:self.eventType];
     
     // Register a listener for guidance messages to be shown to the user in the messages bar
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -928,7 +936,7 @@
     // Color based on event type
     [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
-    [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
     [self.reminderButton setEnabled:YES];
 }
 
@@ -941,7 +949,7 @@
     // Color based on event type
     [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.reminderButton setTitle:@"FOLLOW" forState:UIControlStateNormal];
-    [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
     [self.reminderButton setEnabled:YES];
 }
 
@@ -1017,7 +1025,7 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
+        externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     }
 }
@@ -1089,7 +1097,7 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
+        externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     } 
 }
@@ -1160,7 +1168,7 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [self getColorForEventType:self.eventType];
+        externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     } 
 }
@@ -2148,6 +2156,76 @@
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         // Dark Yellow
+        //colorToReturn = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+        // Return the brand color
+        colorToReturn = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
+    }
+    if ([self.eventType containsString:@"% up"])
+    {
+        // Kinda Green
+        //colorToReturn = [UIColor colorWithRed:56.0f/255.0f green:197.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:52.0f/255.0f green:181.0f/255.0f blue:4.0f/255.0f alpha:1.0f];
+    }
+    if ([self.eventType containsString:@"% down"])
+    {
+        // Kinda Red
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:63.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
+    }
+    
+    return colorToReturn;
+}
+
+// Return the appropriate color for event based on type.
+- (UIColor *)getTextColorForEventType:(NSString *)eventType
+{
+    // Set returned color to white color since all events other than product events have white text.
+    UIColor *colorToReturn = [UIColor whiteColor];
+    
+    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        
+        // Return the brand text color
+        colorToReturn = [self.dataSnapShot2 getBrandTextColorForCompany:self.parentTicker];
+    }
+    
+    return colorToReturn;
+}
+
+// Return the appropriate color for event based on type.
+- (UIColor *)getColorForEventTypeForBackNav:(NSString *)eventType
+{
+    // Set returned color to black text to start with
+    UIColor *colorToReturn = [UIColor blackColor];
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        // Punchy Knotifi Green
+        colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        // Econ Blue
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Jobs Report"]) {
+        // Econ Blue
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        // Econ Blue
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"GDP Release"]) {
+        // Econ Blue
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // Light purple
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+        // Dark Yellow
         colorToReturn = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
     }
     if ([self.eventType containsString:@"% up"])
@@ -2164,6 +2242,7 @@
     
     return colorToReturn;
 }
+
 
 // Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
 - (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails withStatus:(NSString *)eventStatus

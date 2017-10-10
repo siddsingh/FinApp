@@ -64,8 +64,9 @@
                              didFinishLaunchingWithOptions:launchOptions];
 
      
-    // Check to see if application version 3_0 has been used by the user at least once. If not
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V3_0_UsedOnce"])
+    // Check to see if application version 4.1 has been used by the user at least once. If not show tutorial and do the data updates. The format for key represents app store version 4_1 and the final internal build being shipped. Lagging build number by 1.
+    // *****************IMPORTANT*********************************************************************** If you are changing this, also change tutorialDonePressed button on FATutorialViewController as that makes more sense.
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_1_3_UsedOnce"])
     {
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];

@@ -200,6 +200,9 @@
 // NOTE: If there is a new type of product event like launch or conference is added, add that here as well
 - (BOOL)doProductEventsNeedToBeAddedRefreshed;
 
+// Wrapper method to get product events from the API. Currently fetches all product events.
+- (void)syncProductEventsWrapper;
+
 #pragma mark - Methods for Price Change Data
 
 // Get all the price change events and details from the data source APIs. This is the new version that uses the same data source as used for getting prices elsewhere.
@@ -223,6 +226,12 @@
 
 // Get the date on which the events were last synced
 - (NSDate *)getDailyPriceEventSyncDate;
+
+// Wrapper method to get price change events from the API for all followed stocks
+- (void)getPriceChangeEventsForFollowingStocksWrapper;
+
+// Wrapper method to get price details for an event
+- (NSString *)getPriceDetailsForEventOfType:(NSString *)cellEventType withTicker:(NSString *)cellCompanyTicker;
 
 #pragma mark - Methods to call Company Stock Data Source APIs
 
@@ -251,9 +260,6 @@
 // in the remote source. The likely event also needs to have a certainty of either "Estimated" or "Unknown" to qualify for the update.
 // 2. If the confirmed date of the event is in the past.
 - (void)updateEventsFromRemoteIfNeeded;
-
-// Wrapper method to get price change events from the API for all followed stocks
-- (void)getPriceChangeEventsForFollowingStocksWrapper;
 
 #pragma mark - User State Related
 

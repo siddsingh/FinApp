@@ -10,6 +10,7 @@
 
 #import <UIKit/UIKit.h>
 @class FADataController;
+@class FASnapShot;
 
 @interface FAEventDetailsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
@@ -51,6 +52,9 @@
 
 // Primary Data Controller to add/access data in the data store
 @property (strong, nonatomic) FADataController *primaryDetailsDataController;
+
+// Access to the one data snapshot.
+@property (strong,nonatomic) FASnapShot *dataSnapShot2;
 
 // Button for setting the Reminder
 @property (weak, nonatomic) IBOutlet UIButton *reminderButton;
