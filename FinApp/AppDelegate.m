@@ -64,9 +64,9 @@
                              didFinishLaunchingWithOptions:launchOptions];
 
      
-    // Check to see if application version 4.1 has been used by the user at least once. If not show tutorial and do the data updates. The format for key represents app store version 4_1 and the final internal build being shipped. Lagging build number by 1.
+    // Check to see if application version 4.2 has been used by the user at least once. If not show tutorial and do the data updates. The format for key represents app store version 4_1 and the final internal build being shipped. Lagging build number by 1.
     // *****************IMPORTANT*********************************************************************** If you are changing this, also change tutorialDonePressed button on FATutorialViewController as that makes more sense.
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_1_3_UsedOnce"])
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_2_1_UsedOnce"])
     {
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
@@ -94,14 +94,18 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
             // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
-            // Delete before shipping v2.7
-            //NSLog(@"About to start the background get incremental companies from local file");
+            // Delete before shipping v4.3
+            NSLog(@"About to start the background get incremental companies from local file");
             
             // Create a new FADataController so that this thread has its own MOC
             FADataController *tickerBkgrndDataController = [[FADataController alloc] init];
             
             // Sync all the tickers to make sure you get the latest ones.
             [tickerBkgrndDataController getAllTickersAndNamesFromLocalStorage];
+            
+            // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
+            // Delete before shipping v4.3
+            NSLog(@"Ended the background get incremental companies from local file");
             
             [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
             backgroundFetchTask = UIBackgroundTaskInvalid;

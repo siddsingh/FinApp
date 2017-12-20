@@ -139,7 +139,7 @@ static FASnapShot *sharedInstance;
     
     if ([ticker caseInsensitiveCompare:@"SNE"] == NSOrderedSame) {
         // black
-        colorToReturn = [UIColor colorWithRed:23.0f/255.0f green:110.0f/255.0f blue:201.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor blackColor];
     }
     
     if ([ticker caseInsensitiveCompare:@"NVDA"] == NSOrderedSame) {
@@ -188,8 +188,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"ATVI"] == NSOrderedSame) {
-        // Dark Gray for the old activision blizzard logo
-        colorToReturn = [UIColor colorWithRed:57.0f/255.0f green:57.0f/255.0f blue:57.0f/255.0f alpha:1.0f];
+        // Black bkgrnd for COD WW 2
+        colorToReturn = [UIColor blackColor];
     }
     
     if ([ticker caseInsensitiveCompare:@"EA"] == NSOrderedSame) {
@@ -204,7 +204,7 @@ static FASnapShot *sharedInstance;
     
     if ([ticker caseInsensitiveCompare:@"MSFT"] == NSOrderedSame) {
         // Cloud Blue
-        colorToReturn = [UIColor colorWithRed:62.0f/255.0f green:165.0f/255.0f blue:240.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:34.0f/255.0f green:125.0f/255.0f blue:251.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"AMZN"] == NSOrderedSame) {
@@ -244,6 +244,31 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:59.0f/255.0f green:89.0f/255.0f blue:152.0f/255.0f alpha:1.0f];
     }
     
+    if ([ticker caseInsensitiveCompare:@"BTC"] == NSOrderedSame) {
+        // Copper Penny
+        colorToReturn = [UIColor colorWithRed:192.0f/255.0f green:134.0f/255.0f blue:114.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame) {
+        // Brownish Yellow
+        colorToReturn = [UIColor colorWithRed:200.0f/255.0f green:157.0f/255.0f blue:102.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"DIS"] == NSOrderedSame) {
+        // Dark Puplish Blue
+        colorToReturn = [UIColor colorWithRed:3.0f/255.0f green:40.0f/255.0f blue:148.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"INTC"] == NSOrderedSame) {
+        // Grayish
+        colorToReturn = [UIColor colorWithRed:82.0f/255.0f green:82.0f/255.0f blue:82.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"QCOM"] == NSOrderedSame) {
+        // Red for SnapDragon
+        colorToReturn = [UIColor colorWithRed:216.0f/255.0f green:58.0f/255.0f blue:52.0f/255.0f alpha:1.0f];
+    }
+    
     return colorToReturn;
 }
 
@@ -254,8 +279,8 @@ static FASnapShot *sharedInstance;
     UIColor *colorToReturn = [UIColor blackColor];
     
     if ([ticker caseInsensitiveCompare:@"SNE"] == NSOrderedSame) {
-        // white
-        colorToReturn = [UIColor whiteColor];
+        // Bluish light for PS4 controller light
+        colorToReturn = [UIColor colorWithRed:17.0f/255.0f green:104.0f/255.0f blue:232.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"NVDA"] == NSOrderedSame) {
@@ -304,8 +329,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"ATVI"] == NSOrderedSame) {
-        // Cloud blue for the old activision blizzard logo
-        colorToReturn = [UIColor colorWithRed:39.0f/255.0f green:143.0f/255.0f blue:251.0f/255.0f alpha:1.0f];
+        // Gold Yellow for COD WW2
+        colorToReturn = [UIColor colorWithRed:155.0f/255.0f green:141.0f/255.0f blue:41.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"EA"] == NSOrderedSame) {
@@ -356,6 +381,31 @@ static FASnapShot *sharedInstance;
     if ([ticker caseInsensitiveCompare:@"FB"] == NSOrderedSame) {
         // White
         colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"BTC"] == NSOrderedSame) {
+        // Dark Brown for Copper Penny bkgrnd
+        colorToReturn = [UIColor colorWithRed:88.0f/255.0f green:47.0f/255.0f blue:26.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame) {
+         // White for brownish Yellow Bkgrnd
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"DIS"] == NSOrderedSame) {
+        // Whitw
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"INTC"] == NSOrderedSame) {
+        // Neonish Blue for Nervana Processor
+        colorToReturn = [UIColor colorWithRed:101.0f/255.0f green:217.0f/255.0f blue:217.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"QCOM"] == NSOrderedSame) {
+        // Black for SnapDragon
+        colorToReturn = [UIColor blackColor];
     }
     
     return colorToReturn;

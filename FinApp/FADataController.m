@@ -1999,8 +1999,20 @@ bool eventsUpdated = NO;
 - (void)getAllTickersAndNamesFromLocalStorage
 {
     
-    // First add the new tickers since 11/19/2016 manually
+    // FOR BTC: First add all the tickers for cryptocurrencies just to be sure these are in the db.
+    [self insertUniqueCompanyWithTicker:@"BTC" name:@"Bitcoin"];
+    [self insertUniqueCompanyWithTicker:@"ETHR" name:@"Ethereum"];
+    
+    // Also add newer ones with product events first
+    [self insertUniqueCompanyWithTicker:@"BBRY" name:@"Blackberry"];
+    [self insertUniqueCompanyWithTicker:@"FIT" name:@"Fitbit"];
+    [self insertUniqueCompanyWithTicker:@"GOOGL" name:@"Google"];
+    [self insertUniqueCompanyWithTicker:@"GPRO" name:@"Go Pro"];
+    [self insertUniqueCompanyWithTicker:@"NTDOY" name:@"Nintendo"];
     [self insertUniqueCompanyWithTicker:@"SNAP" name:@"Snap Inc"];
+    [self insertUniqueCompanyWithTicker:@"ROKU" name:@"Roku"];
+
+    // First add the new tickers since 11/19/2016 manually
     [self insertUniqueCompanyWithTicker:@"MULE" name:@"MuleSoft Inc"];
     [self insertUniqueCompanyWithTicker:@"NTNX" name:@"Nutanix Inc"];
     [self insertUniqueCompanyWithTicker:@"GOOS" name:@"Canada Goose Holdings"];
@@ -2015,7 +2027,11 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"SWCH" name:@"Switch"];
     [self insertUniqueCompanyWithTicker:@"DCPH" name:@"Deciphera Pharmaceuticals"];
     [self insertUniqueCompanyWithTicker:@"RDFN" name:@"Redfin"];
-    [self insertUniqueCompanyWithTicker:@"ROKU" name:@"Roku"];
+    
+    
+    // Added these starting 11/09
+    [self insertUniqueCompanyWithTicker:@"SNCR" name:@"Synchronoss Technologies"];
+    [self insertUniqueCompanyWithTicker:@"SFIX" name:@"Stitch Fix"];
     
     // Get the company ticker and names file path
     NSString *tickersFilePath = [[NSBundle mainBundle] pathForResource:@"ZEA-datasets-codes_20161119" ofType:@"csv"];
@@ -2317,17 +2333,20 @@ bool eventsUpdated = NO;
             // Check if this event is approved or not. Only if approved it will be added to local data store.
             // Before updating, check if the earnings event for that company exists. If not, sync it.
             BOOL approved = [[event objectForKey:@"approved"] boolValue];
-            if(approved) {
-                // TO DO: Delete Later
-                //NSLog(@"This entry is APPROVED");
+            // FOR BTC & ETHR event addition, add the condition that is the event is BTC or ETHR, sync it even if it is not approved. This is to ensure that only folks that have upgraded to this version get the events, older ones don't since the events in the db are not approved. It's probably safe to mark the events of these types as approved in the DB after about 2 mos after the release of this version. Follow this process for any new product event types.
+            // Old way where we only respect approved.
+            //if(approved) {
+            if((approved)||([parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame))  {
                 
                 // Check if earnings event exists for this ticker. If not fetch it, since we don't want a company that has only a product event and no earnings event.
-                if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
-                    // TO DO: Delete Later
-                    //NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
-                    [self getAllEventsFromApiWithTicker:parentTicker];
+                // FOR BTC or ETHR, Check if BTC or ETHR and don't fetch quarterly earnings,if so.
+                if (!(([parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame))) {
+                    if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
+                        // TO DO: Delete Later
+                        //NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
+                        [self getAllEventsFromApiWithTicker:parentTicker];
+                    }
                 }
-                
                 // Insert each instance into the events datastore
                 [self upsertEventWithDate:eventDate relatedDetails:timeLabel relatedDate:updatedOnDate type:eventName certainty:confidenceStr listedCompany:parentTicker estimatedEps:nil priorEndDate:nil actualEpsPrior:nil];
                 
@@ -3865,29 +3884,29 @@ bool eventsUpdated = NO;
 // Add tickers and events for trending stocks.
 - (void)performTrendingEventSyncRemotely {
     
-    // Add 10 trending company tickers and name to the company database.
-    [self insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla Motors,Inc"];
-    [self insertUniqueCompanyWithTicker:@"GPRO" name:@"Go Pro"];
+    // Add 5 trending company tickers and name to the company database.
+    [self insertUniqueCompanyWithTicker:@"TSLA" name:@"Tesla Motors"];
+    //[self insertUniqueCompanyWithTicker:@"GPRO" name:@"Go Pro"];
     [self insertUniqueCompanyWithTicker:@"BABA" name:@"Alibaba"];
-    [self insertUniqueCompanyWithTicker:@"ANET" name:@"Arista Networks"];
-    [self insertUniqueCompanyWithTicker:@"LULU" name:@"Lululemon Athletica,Inc"];
-    [self insertUniqueCompanyWithTicker:@"BOX" name:@"Box,Inc"];
-    [self insertUniqueCompanyWithTicker:@"SQ" name:@"Square,Inc"];
-    [self insertUniqueCompanyWithTicker:@"ORCL" name:@"Oracle"];
-    [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike,Inc"];
-    [self insertUniqueCompanyWithTicker:@"UA" name:@"Under Armour Inc"];
+    //[self insertUniqueCompanyWithTicker:@"ANET" name:@"Arista Networks"];
+    [self insertUniqueCompanyWithTicker:@"LULU" name:@"Lululemon Athletica"];
+    //[self insertUniqueCompanyWithTicker:@"BOX" name:@"Box,Inc"];
+    [self insertUniqueCompanyWithTicker:@"SQ" name:@"Square"];
+    //[self insertUniqueCompanyWithTicker:@"ORCL" name:@"Oracle"];
+    [self insertUniqueCompanyWithTicker:@"NKE" name:@"Nike"];
+    //[self insertUniqueCompanyWithTicker:@"UA" name:@"Under Armour Inc"];
     
     // Get events for these trending companies from the remote data source
     [self getAllEventsFromApiWithTicker:@"TSLA"];
-    [self getAllEventsFromApiWithTicker:@"GPRO"];
+    //[self getAllEventsFromApiWithTicker:@"GPRO"];
     [self getAllEventsFromApiWithTicker:@"BABA"];
-    [self getAllEventsFromApiWithTicker:@"ANET"];
+    //[self getAllEventsFromApiWithTicker:@"ANET"];
     [self getAllEventsFromApiWithTicker:@"LULU"];
-    [self getAllEventsFromApiWithTicker:@"BOX"];
+    //[self getAllEventsFromApiWithTicker:@"BOX"];
     [self getAllEventsFromApiWithTicker:@"SQ"];
-    [self getAllEventsFromApiWithTicker:@"ORCL"];
+    //[self getAllEventsFromApiWithTicker:@"ORCL"];
     [self getAllEventsFromApiWithTicker:@"NKE"];
-    [self getAllEventsFromApiWithTicker:@"UA"];
+    //[self getAllEventsFromApiWithTicker:@"UA"];
     
     eventsUpdated = YES;
 }
@@ -3915,13 +3934,19 @@ bool eventsUpdated = NO;
     NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
-    // TO DO: Delete Later before shipping v2.9
-    //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    // Get the number of hours between the 2 dates
+    NSDateComponents *hourComponents = [gregorianCalendar components:NSCalendarUnitHour fromDate:lastSyncDate toDate:todaysDate options:0];
+    NSInteger hoursBetween = [hourComponents hour];
+    // TO DO: Delete Later before shipping v4.3
+    NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    NSLog(@"Hours between LAST EVENT SYNC AND TODAY are: %d",(int)hoursBetween);
     // Refresh only if a day has passed since last refresh
     // Now that product events are being synced only on news, consider syncing earnings events everytime
     //if(YES) {
-    if((int)daysBetween > 0) {
-
+    // Uncomment this if you want it to sync only after 24 hours.
+    //if((int)daysBetween > 0) {
+    // Sync every 6 hours
+    if((int)hoursBetween >= 6) {
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];
         
@@ -3970,14 +3995,13 @@ bool eventsUpdated = NO;
         }
         
         // Check to see if product events need to be added or refreshed. If yes, do that.
-        // *****NOTE*****Currently always returning true since we have not implemented update logic
-        // Currently not syncing product events at the start as they are synced everytime one accesses the news.
+        // *****NOTE*****Currently always returning true since we have not implemented update logic.
         if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // TO DO: Delete Later
             //NSLog(@"About to add product events from Knotifi Data Platform");
             // This is now done when the news tab is clicked
-            //[self getAllProductEventsFromApi];
+            [self getAllProductEventsFromApi];
         }
     
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.

@@ -126,8 +126,6 @@
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
-        // old way is just set color
-        //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]} forState:UIControlStateSelected];
     }
     
     // Format the main nav type selector
@@ -469,6 +467,12 @@
             [[cell eventDescription] setText:@"GET EVENTS"];
             // Set color to a link blue to provide a visual cue to click
             cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+            // FOR BTC or ETHR, in case the user ever gets into this situation, set to NOT AVAILABLE.
+            if (([cell.companyTicker.text caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)) {
+                [[cell eventDescription] setText:@"NOT AVAILABLE"];
+                // Set color to a light gray.
+                cell.eventDescription.textColor = [UIColor lightGrayColor];
+            }
         }
         // Check to see if the Following Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
@@ -609,27 +613,31 @@
         
         // Check to see if the Events Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-            // Check for connectivity. If yes, process the fetch
-            if ([self checkForInternetConnectivity]) {
-                
-                // Set the remote fetch spinner to animating to show a fetch is in progress
-                [self showBusyMessage];
-                
-                // Fetch the event for the related parent company in the background
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self getAllEventsFromApiInBackgroundWithTicker:(cell.companyTicker).text];
-                });
-                
-                // TRACKING EVENT: Get Earnings: User clicked the get earnings link for a company/ticker.
-                // TO DO: Disabling to not track development events. Enable before shipping.
-                [FBSDKAppEvents logEvent:@"Get Earnings"
-                              parameters:@{ @"Ticker" : (cell.companyTicker).text,
-                                            @"Name" : (cell.companyName).text } ];
-            }
-            // If not, show error message
-            else {
-                
-                [self sendUserMessageCreatedNotificationWithMessage:@"Unable to get data. Check Connection."];
+            
+            // FOR BTC or ETHR, don't fetch event from API as that's not needed
+            if (!(([cell.companyTicker.text caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"ETHR"] == NSOrderedSame))) {
+                // Check for connectivity. If yes, process the fetch
+                if ([self checkForInternetConnectivity]) {
+                    
+                    // Set the remote fetch spinner to animating to show a fetch is in progress
+                    [self showBusyMessage];
+                    
+                    // Fetch the event for the related parent company in the background
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self getAllEventsFromApiInBackgroundWithTicker:(cell.companyTicker).text];
+                    });
+                    
+                    // TRACKING EVENT: Get Earnings: User clicked the get earnings link for a company/ticker.
+                    // TO DO: Disabling to not track development events. Enable before shipping.
+                    [FBSDKAppEvents logEvent:@"Get Earnings"
+                                  parameters:@{ @"Ticker" : (cell.companyTicker).text,
+                                                @"Name" : (cell.companyName).text } ];
+                }
+                // If not, show error message
+                else {
+                    
+                    [self sendUserMessageCreatedNotificationWithMessage:@"Unable to get data. Check Connection."];
+                }
             }
         }
         // Check to see if the Following Main Nav is selected
@@ -666,17 +674,20 @@
         
         // Pass off to async processing of the price details fetch
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
-        
-            // Check for connectivity. If yes, process the fetch
-            if ([self checkForInternetConnectivity]) {
-                // Create a new FADataController so that this thread has its own MOC
-                FADataController *priceDetailsDataController = [[FADataController alloc] init];
-                self.currPriceAndChange = [priceDetailsDataController getPriceDetailsForEventOfType:eventType withTicker:eventTicker];
-            }
-            // If not, show error message
-            else {
-                
-                //  Currently for simplicity, we are handling this in the event details controller as that's where the user is transitioning to on click.
+            
+            // FOR BTC or ETHR, don't fetch price details yet as this is not supported.
+            if (!(([eventTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([eventTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame))) {
+                // Check for connectivity. If yes, process the fetch
+                if ([self checkForInternetConnectivity]) {
+                    // Create a new FADataController so that this thread has its own MOC
+                    FADataController *priceDetailsDataController = [[FADataController alloc] init];
+                    self.currPriceAndChange = [priceDetailsDataController getPriceDetailsForEventOfType:eventType withTicker:eventTicker];
+                }
+                // If not, show error message
+                else {
+                    
+                    //  Currently for simplicity, we are handling this in the event details controller as that's where the user is transitioning to on click.
+                }
             }
             
             // Perform segue to the event detail view from the main thread as you can't do this in a background thread.
@@ -684,102 +695,6 @@
                 [self performSegueWithIdentifier:@"ShowEventDetails1" sender:selectedCell];
             });
         });
-
-        
-        
-        
-        
-        
-        
-        
-        // Check for connectivity. If yes, process the fetch
-   /*     if ([self checkForInternetConnectivity]) {
-            
-            // Read whatever history details are available from event to get ready to segue to the event detail view
-            // The prices for the ticker will be fetched in the detail view. 
-            FADataController *historyDataController1 = [[FADataController alloc] init];
-            
-            // Get the currently selected cell and details
-            NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
-            FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
-            
-            // Get the database level (not display level) event type based on the display type.
-            // Earnings -> Quarterly Earnings, Fed Meeting -> Jan Fed Meeting, Jobs Report -> Jan Jobs Report and so on.
-            NSString *eventType = [self formatBackToEventType:selectedCell.eventDescription.text withAddedInfo:selectedCell.eventCertainty.text];
-            
-            // If Quarterly Earnings or price change event or product event get the historical data for display in the details
-            // We basically use the quarterly earnings event history to keep track of the stock prices for price change events since there cannot be a price change event for a ticker that we don't have the quarterly earnings for. Same with product event
-            if ([eventType isEqualToString:@"Quarterly Earnings"]||[eventType containsString:@"% up"]||[eventType containsString:@"% down"]||[eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
-                
-                // Set the busy spinner to show that details are being fetched. Do this in a background thread as the main
-                // thread is being taken up by the table view. It's a best practice.
-                //[self performSelectorInBackground:@selector(showBusyMessage) withObject:self];
-                //[[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
-                // [self showBusyMessage];
-                
-                // Get the ticker for the Quarterly Earnings
-                NSString *eventTicker = selectedCell.companyTicker.text;
-                
-                // Since we  use the quarterly earnings event history to keep track of the stock prices for price change events, use the Quarterly Earnings as the event type, even for price change events
-                eventType = @"Quarterly Earnings";
-                
-                // Add whatever history related data you have in the event data store to the event history data store, if it's not already been added before
-                // Get today's date
-                NSDate *todaysDate = [NSDate date];
-                
-                // If Event history doesn't exist insert it
-                if (![historyDataController1 doesEventHistoryExistForParentEventTicker:eventTicker parentEventType:eventType])
-                {
-                    // Insert history, with previous event 1 date being the market open date 30 days ago and previous event 1 related date being the market open date at the beginning of the year.
-                    // NOTE: 999999.9 is a placeholder for empty prices, meaning we don't have the value.
-                    NSNumber *emptyPlaceholder = [[NSNumber alloc] initWithFloat:999999.9];
-                    // To Do: Delete when shipping v2.9
-                    //NSLog(@"The 30 days ago date when inserting history is:%@",[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]]);
-                    [historyDataController1 insertHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] currentDate:todaysDate previousEvent1Price:emptyPlaceholder previousEvent1RelatedPrice:emptyPlaceholder currentPrice:emptyPlaceholder parentEventTicker:eventTicker parentEventType:eventType];
-                }
-                // Else update the non price related data, not including current date, on the event history from the event. We don't include the current date as current date is set only once a day which is when the user first accesses the event.
-                else
-                {
-                    [historyDataController1 updateEventHistoryWithPreviousEvent1Date:[self scrubDateToNotBeWeekendOrHoliday:[self computeDate30DaysAgoFrom:todaysDate]] previousEvent1Status:@"Estimated" previousEvent1RelatedDate:[self computeMarketStartDateOfTheYearFrom:todaysDate] parentEventTicker:eventTicker parentEventType:eventType];
-                }
-                
-                // Call price API, in the main thread, to refresh the price history
-                // Check to see if the current date on which the price history was fetched is today or not in addition to if it was fetched at all. If today, fetch only current price. If not, then fetch both historical and current price
-                EventHistory *selectedEventHistory = [historyDataController1 getEventHistoryForParentEventTicker:eventTicker parentEventType:eventType];
-                // Set a value indicating that a value is not available. Currently a Not Available value
-                // is represented by 999999.9
-                double notAvailable = 999999.9f;
-                double prev1PriceDbl = [[selectedEventHistory previous1Price] doubleValue];
-                double prev1RelatedPriceDbl = [[selectedEventHistory previous1RelatedPrice] doubleValue];
-                double currentPriceDbl = [[selectedEventHistory currentPrice] doubleValue];
-                NSDateFormatter *checkDateFormatter = [[NSDateFormatter alloc] init];
-                [checkDateFormatter setDateFormat:@"yyyy-MM-dd"];
-                // Format historical and now current dates to local time zone comparison
-                NSString *currentDateInHistory = [checkDateFormatter stringFromDate:selectedEventHistory.currentDate];
-                NSString *currentDateNow = [checkDateFormatter stringFromDate:todaysDate];
-                if ((prev1PriceDbl == notAvailable)||(prev1RelatedPriceDbl == notAvailable)||(currentPriceDbl == notAvailable)||([currentDateInHistory caseInsensitiveCompare:currentDateNow] != NSOrderedSame))
-                {
-                    [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1 historyFetch:YES];
-                    // Current date is set only once a day which is when the user first accesses the event.
-                    [historyDataController1 updateEventHistoryWithCurrentDate:todaysDate parentEventTicker:eventTicker parentEventType:eventType];
-                } else {
-                    [self getPricesWithCompanyTicker:eventTicker eventType:eventType dataController:historyDataController1 historyFetch:NO];
-                }
-            }
-        }
-        // If not, show error message
-        else {
-            
-            //  Currently for simplicity, we are handling this in the event details controller as that's where the user is transitioning to on click.
-        }
-        
-        // Stop the remote fetch spinner animation to indicate fetch is complete. Do this in a background thread as the main
-        // thread is being taken up by the table view. It's a best practice.
-        //[self performSelectorInBackground:@selector(removeBusyMessage) withObject:self];
-        [self removeBusyMessage];
-        
-        // Perform segue to the event detail view
-        [self performSegueWithIdentifier:@"ShowEventDetails1" sender:self]; */
     }
     
     // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
@@ -1962,7 +1877,7 @@
                 self.filterType = [NSString stringWithFormat:@"None_Specified"];
                 
                 // Set correct header text
-                [self.navigationController.navigationBar.topItem setTitle:@"See a company's product launch timeline"];
+                [self.navigationController.navigationBar.topItem setTitle:@"See Product Timeline"];
             }
             
             // Reload messages table
@@ -2188,7 +2103,7 @@
         [self searchBar:self.eventsSearchBar textDidChange:@""];
         
         // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
+        self.eventsSearchBar.placeholder = @"COMPANY/TICKER/EVENT";
         
         // Query all future events or future following events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -2206,9 +2121,9 @@
         // If Product Main Option is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"See a company's product launch timeline"];
+            [self.navigationController.navigationBar.topItem setTitle:@"See Product Timeline"];
             // Set correct search bar placeholder text
-            self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
+            self.eventsSearchBar.placeholder = @"Company/Ticker/Cryptocurrency";
             // Get No Events as the default view for the product main option is empty
             self.eventResultsController = [self.primaryDataController getNoEvents];
             [self.eventsListTable reloadData];
@@ -2235,7 +2150,7 @@
         [self searchBar:self.eventsSearchBar textDidChange:@""];
         
         // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
+        self.eventsSearchBar.placeholder = @"COMPANY/TICKER";
         
         // Query all future earnings events or following future events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -2295,16 +2210,21 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Economic" } ];
     }
-    // NEWS - Dark Yellow
+    // NEWS - Bold Yellow
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
         
+        // This is the old bold yellow
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                         [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
                                         [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
                                         nil];
+        // If needed change to attention red
+        /*NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
+                                        [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                        nil]; */
+        
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
-        // Old way is just set color
-        //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         
         // Query all future product events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -2315,17 +2235,18 @@
             [self.eventsSearchBar setText:@""];
             [self searchBar:self.eventsSearchBar textDidChange:@""];
             // Set correct search bar placeholder text
-            self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
+            self.eventsSearchBar.placeholder = @"COMPANY/TICKER/EVENT";
             
             self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
             [self.eventsListTable reloadData];
             
             // Refresh all product events asynchronously
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
+            // Don't need to do this anymore as we are syncing on startup every 6 hours.
+            /*dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
                 // Create a new FADataController so that this thread has its own MOC
                 FADataController *newsDataController = [[FADataController alloc] init];
                 [newsDataController syncProductEventsWrapper];
-            });
+            });*/
             
         }
         
@@ -2351,7 +2272,7 @@
             // Set correct header text
             [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED PRICE CHANGES"];
             // Set correct search bar placeholder text
-            self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
+            self.eventsSearchBar.placeholder = @"COMPANY/TICKER";
             
             // TURNED THIS OFF CURRENTLY  as it was not consistently working. Check to make sure we are syncing daily price data only once a day, after the market has opened.
             // Get time in GMT, US markets open at 9:30 am ET which is 1:30 pm GMT
@@ -2451,14 +2372,14 @@
         [self.eventTypeSelector setEnabled:NO];
         [self.eventTypeSelector setHidden:YES];
         // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"COMPANY or TICKER";
+        self.eventsSearchBar.placeholder = @"Company/Ticker/Cryptocurrency";
     }
     // If Events or Following is selected, set the correct search bar placeholder text enable and show the event selection bar
     else if (([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame)||([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame)) {
         [self.eventTypeSelector setEnabled:YES];
         [self.eventTypeSelector setHidden:NO];
         // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"COMPANY or TICKER or EVENT";
+        self.eventsSearchBar.placeholder = @"COMPANY/TICKER/EVENT";
     }
     
     // Go with either NEWS or PRICE option based on Events or Following
@@ -3697,7 +3618,7 @@
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
             // If no product timeline is displayed
             if ([self.filterType isEqualToString:@"None_Specified"]) {
-                [self.navigationController.navigationBar.topItem setTitle:@"See a company's product launch timeline"];
+                [self.navigationController.navigationBar.topItem setTitle:@"See Product Timeline"];
             } else {
                 [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT TIMELINE"];
             }

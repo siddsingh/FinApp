@@ -380,7 +380,7 @@
             
             // For product event show the current price
             if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-                [[cell descriptionArea] setText:@"Current stock price"];
+                [[cell descriptionArea] setText:@"Current price"];
                 if ([self.currentPriceAndChange containsString:@"-"]) {
                     // Set color to Red
                     cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
@@ -1764,17 +1764,24 @@
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         
         numberOfPieces = 4;
-        // Get the event history.
-        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
         
-        // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
-        double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
-        double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
-        // Always return 4 pieces
-        if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
-            numberOfPieces = 4;
-        } else {
-            numberOfPieces = 4;
+        // FOR BTC or ETHR, only show one cell right now. Later make this 4 to show price data.
+        if (([self.parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)) {
+            numberOfPieces = 1;
+        }
+        else {
+            // Get the event history.
+            eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
+            
+            // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
+            double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+            double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+            // Always return 4 pieces
+            if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
+                numberOfPieces = 4;
+            } else {
+                numberOfPieces = 4;
+            }
         }
     }
     
