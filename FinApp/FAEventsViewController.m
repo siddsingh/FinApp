@@ -245,8 +245,11 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureCryptoEvents];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
@@ -261,8 +264,11 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureCryptoEvents];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
@@ -526,7 +532,7 @@
         cell.companyTicker.tag = indexPath.row;
         
         // Enable, Show and Set News Button text color
-        [[cell newsButon] setTitleColor:[self getColorForEventType:eventAtIndex.type] forState:UIControlStateNormal];
+        [[cell newsButon] setTitleColor:[self getColorForEventType:eventAtIndex.type withCompanyTicker:cell.companyTicker.text] forState:UIControlStateNormal];
         [[cell newsButon] setEnabled:YES];
         [[cell newsButon] setHidden:NO];
         cell.newsButon.tag = indexPath.row;
@@ -534,7 +540,7 @@
         [cell.newsButon addTarget:self action:@selector(newsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         
         // Show the company ticker associated with the event
-        [[cell  companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
+        [[cell companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
         [cell.companyTicker setTextColor:[self getColorForEventTickerLbl:eventAtIndex.type]];
         
         // If user is seeing the news, format the ticker and news buttons to show the brand colors. Also hide the news date
@@ -1562,7 +1568,7 @@
         }
         
         // Check to see if "Economic" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -1576,6 +1582,33 @@
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
                 // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
                 self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Economic"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+        }
+        
+        // Check to see if "Crypto" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+    
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Crypto"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Crypto"];
                 // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
@@ -1751,7 +1784,7 @@
         }
         
         // Check to see if "Economic" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -1765,6 +1798,45 @@
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
                 // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
                 self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Economic"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+                
+                // If no events are found, set the appropriate header message.
+                if ([self.filteredResultsController fetchedObjects].count == 0) {
+                    
+                    // Set navigation bar header to an attention orange color
+                    NSDictionary *attentionHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                               [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                                               [UIColor colorWithRed:205.0f/255.0f green:151.0f/255.0f blue:61.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                                               nil];
+                    [self.navigationController.navigationBar setTitleTextAttributes:attentionHeaderAttributes];
+                    [self.navigationController.navigationBar.topItem setTitle:@"No matching events being followed"];
+                }
+            }
+            
+            // Set the Filter Specified flag to true, indicating that a search filter has been specified
+            self.filterSpecified = YES;
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+        }
+        
+        // Check to see if "Crypto" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+            
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchEventsFor:searchBar.text eventDisplayType:@"Crypto"];
+                // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
+                // has been specified.
+                self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Search the ticker and name fields on the company related to the events and the type of event in the data store, for the search text entered
+                self.filteredResultsController = [self.primaryDataController searchFollowingEventsFor:searchBar.text eventDisplayType:@"Crypto"];
                 // Set the filter type to Match_Companies_Events, meaning a filter matching companies with existing events
                 // has been specified.
                 self.filterType = [NSString stringWithFormat:@"Match_Companies_Events"];
@@ -1921,7 +1993,7 @@
         }
         
         // Check to see if "Economic" events types are selected. In this case query all economic events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -1938,6 +2010,41 @@
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
                 // Query all future events, including today, as that is the default view
                 self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
+            
+            [self removeBusyMessage];
+            
+            // Reload messages table
+            [self.eventsListTable reloadData];
+            
+            // TO DO: In case you want to clear the search context
+            [searchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
+        }
+        
+        // Check to see if "Crypto" events types are selected. In this case query all crypto events
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+            
+            // Check to see if the Events Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFutureCryptoEvents];
+                
+                // Set the Filter Specified flag to false, indicating that no search filter has been specified
+                self.filterSpecified = NO;
+                
+                // Set the filter type to None_Specified i.e. no filter is specified
+                self.filterType = [NSString stringWithFormat:@"None_Specified"];
+            }
+            // Check to see if the Following Main Nav is selected
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Query all future events, including today, as that is the default view
+                self.eventResultsController = [self.primaryDataController getAllFollowingFutureCryptoEvents];
                 
                 // Set the Filter Specified flag to false, indicating that no search filter has been specified
                 self.filterSpecified = NO;
@@ -2172,7 +2279,7 @@
                       parameters:@{ @"Event Type" : @"Earnings" } ];
     }
     // Economic - Color Econ Blue, replaced by light purple
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
         // Econ Blue
         //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -2210,6 +2317,42 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Economic" } ];
     }
+    // Crypto - Color Copper Penny Background
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+        
+        NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
+                                        [UIColor colorWithRed:192.0f/255.0f green:134.0f/255.0f blue:114.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                        nil];
+        [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
+        
+        // Clear out the search context
+        [self.eventsSearchBar setText:@""];
+        [self searchBar:self.eventsSearchBar textDidChange:@""];
+        
+        // Set correct search bar placeholder text
+        self.eventsSearchBar.placeholder = @"TICKER/NAME/EVENT";
+        
+        // Query all future economic events or following economic events, including today.
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING CRYPTO EVENTS"];
+            self.eventResultsController = [self.primaryDataController getAllFutureCryptoEvents];
+            [self.eventsListTable reloadData];
+        }
+        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+            // Set correct header text
+            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED CRYPTO EVENTS"];
+            self.eventResultsController = [self.primaryDataController getAllFollowingFutureCryptoEvents];
+            [self.eventsListTable reloadData];
+        }
+        
+        // TRACKING EVENT: Event Type Selected: User selected Crypto event type explicitly in the events type selector
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"Event Type Selected"
+                      parameters:@{ @"Event Type" : @"Crypto" } ];
+    }
+    
     // NEWS - Bold Yellow
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
         
@@ -2384,7 +2527,7 @@
     
     // Go with either NEWS or PRICE option based on Events or Following
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitle:@"NEWS" forSegmentAtIndex:3];
+        [self.eventTypeSelector setTitle:@"News" forSegmentAtIndex:3];
     }
     else if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
         [self.eventTypeSelector setTitle:@"PRICE" forSegmentAtIndex:3];
@@ -2480,7 +2623,7 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text]];
+        externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] withCompanyTicker:ticker];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     }
 }
@@ -2562,7 +2705,7 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text]];
+        externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     }
 }
@@ -2609,8 +2752,11 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFutureEarningsEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFutureCryptoEvents];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getPastProductEventsIncludingNext7Days];
@@ -2625,8 +2771,11 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFollowingFutureEarningsEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFollowingFutureEconEvents];
+        }
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFollowingFutureCryptoEvents];
         }
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllPriceChangeEventsForFollowedStocks];
@@ -3404,7 +3553,7 @@
 }
 
 // Return the appropriate color for event based on type.
-- (UIColor *)getColorForEventType:(NSString *)eventType
+- (UIColor *)getColorForEventType:(NSString *)eventType withCompanyTicker:(NSString *)ticker
 {
     // Set returned color to dark gray text to start with
     UIColor *colorToReturn = [UIColor darkGrayColor];
@@ -3438,12 +3587,14 @@
         colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
-        // Sea Blue
-        //colorToReturn = [UIColor colorWithRed:51.0f/255.0f green:164.0f/255.0f blue:173.0f/255.0f alpha:1.0f];
-        // Purple
-        //colorToReturn = [UIColor colorWithRed:72.0f/255.0f green:70.0f/255.0f blue:176.0f/255.0f alpha:1.0f];
-        // Dark Yellow
-        colorToReturn = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+        // FOR BTC: Add any new cryptocurrencies here. Return copper penny color
+        if (([ticker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)) {
+            colorToReturn = [UIColor colorWithRed:192.0f/255.0f green:134.0f/255.0f blue:114.0f/255.0f alpha:1.0f];
+        }
+        // Else return product yellow.
+        else {
+            colorToReturn = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+        }
     }
     if ([eventType containsString:@"% up"])
     {
@@ -3582,8 +3733,13 @@
             }
             
             // If Econ events is selected
-            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
                 [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING ECON EVENTS"];
+            }
+            
+            // If Crypto events is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING CRYPTO EVENTS"];
             }
             
             // If News is selected
@@ -3605,8 +3761,13 @@
             }
             
             // If Econ events is selected
-            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
                 [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ECON EVENTS"];
+            }
+            
+            // If Crypto events is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED CRYPTO EVENTS"];
             }
             
             // If Price is selected

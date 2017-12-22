@@ -537,6 +537,36 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
+// Get all future cryptocurrency events including today. Returns a results controller with identities of all crypto events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllFutureCryptoEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter for date and event type
+    // FOR BTC - Add any new crypto currency here to make it show up in the Crypto section
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@)", todaysDate, @"BTC", @"ETHR"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all future events from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
 // Get all following future economic events including today. Returns a results controller with identities of all economic events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // Currently this is empty as we haven't figured out how to follow Econ Events
 - (NSFetchedResultsController *)getAllFollowingFutureEconEvents
@@ -552,6 +582,37 @@ bool eventsUpdated = NO;
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter for date and event type
     NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND listedCompany.ticker contains %@ AND (ANY actions.type == %@)", todaysDate, @"ECONOMY_", @"OSReminder"];
+    [eventFetchRequest setPredicate:datePredicate];
+    NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
+    [eventFetchRequest setFetchBatchSize:15];
+    self.resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:eventFetchRequest
+                                                                 managedObjectContext:dataStoreContext sectionNameKeyPath:nil
+                                                                            cacheName:nil];
+    NSError *error;
+    if (![self.resultsController performFetch:&error]) {
+        NSLog(@"ERROR: Getting all future events from data store failed: %@",error.description);
+    }
+    
+    return self.resultsController;
+}
+
+// Get all following future crypto events including today. Returns a results controller with identities of all crypto events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// Currently this is empty as we haven't figured out how to follow Econ Events
+- (NSFetchedResultsController *)getAllFollowingFutureCryptoEvents
+{
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get today's date formatted to midnight last night
+    NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
+    
+    // Get all future events with the upcoming ones first
+    NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    [eventFetchRequest setEntity:eventEntity];
+    // Set the filter for date and event type
+    // FOR BTC: Add any new cryptocurrencies here.
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@) AND (ANY actions.type == %@)", todaysDate, @"BTC", @"ETHR", @"OSReminder"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -754,7 +815,7 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
-// Search and return all future events that match the search text dpending on the display event type. Note this is different from the type field on the event data object: 0. All (all eventTypes) 1. "Earnings" (Quarterly Earnings) 2. "Economic" (Economic Event) 3. "Product" (Product Event).NOTE: If there is a new type of product event like launch or conference added, add that here as well.
+// Search and return all future events that match the search text dpending on the display event type. Note this is different from the type field on the event data object: 0. All (all eventTypes) 1. "Earnings" (Quarterly Earnings) 2. "Economic" (Economic Event) 3. "Product" (Product Event).NOTE: If there is a new type of product event like launch or conference added, add that here as well. 4. "Crypto" (Crypto Currency event)
 // Returns a results controller with identities of all events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the data store at a time.
 - (NSFetchedResultsController *)searchEventsFor:(NSString *)searchText eventDisplayType:(NSString *)eventType
 {
@@ -808,6 +869,14 @@ bool eventsUpdated = NO;
     if ([eventType caseInsensitiveCompare:@"Economic"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
         searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker contains %@) AND (date >= %@)", searchText, searchText, searchText, @"ECONOMY_", todaysDate];
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
+    }
+    
+    // Check to see if the event type is "Crypto". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
+    if ([eventType caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
+        // Case and Diacractic Insensitive Filtering
+        // FOR BTC: Add any new cryptocurrencies here as well.
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@) AND (date >= %@)", searchText, searchText, searchText, @"BTC", @"ETHR", todaysDate];
         sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
@@ -1999,6 +2068,7 @@ bool eventsUpdated = NO;
 - (void)getAllTickersAndNamesFromLocalStorage
 {
     
+    // Please make sure to add any new cryptocurrencies or newer tickers with product events to FADataController->updateEventsFromRemoteIfNeeded as well to make sure they are always present before prod events are synced.
     // FOR BTC: First add all the tickers for cryptocurrencies just to be sure these are in the db.
     [self insertUniqueCompanyWithTicker:@"BTC" name:@"Bitcoin"];
     [self insertUniqueCompanyWithTicker:@"ETHR" name:@"Ethereum"];
@@ -2011,6 +2081,10 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"NTDOY" name:@"Nintendo"];
     [self insertUniqueCompanyWithTicker:@"SNAP" name:@"Snap Inc"];
     [self insertUniqueCompanyWithTicker:@"ROKU" name:@"Roku"];
+    
+    // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
+    // Delete before shipping v4.3
+    NSLog(@"Ended the background get incremental companies for prod events from local file");
 
     // First add the new tickers since 11/19/2016 manually
     [self insertUniqueCompanyWithTicker:@"MULE" name:@"MuleSoft Inc"];
@@ -3979,6 +4053,9 @@ bool eventsUpdated = NO;
                 // See if the event qualifies for the update. If it does, call the remote data source to update it.
                 if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
                     
+                    // TO DO: Delete Later before shipping v4.3
+                    NSLog(@"original in db earnings ticker is: %@",localEvent.listedCompany.ticker);
+                    
                     [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
                     
                     eventsUpdated = YES;
@@ -3987,12 +4064,13 @@ bool eventsUpdated = NO;
         }
         
         // Check to see if trending ticker events exist already. If not add those
-        if (![self doTrendingTickerEventsExist]) {
+        // No longer needed as 15 earnings events, covering all of these, are already in the db.
+        /*if (![self doTrendingTickerEventsExist]) {
             
-            // TO DO: Delete Later
-            //NSLog(@"About to add trending ticker events from remote");
+            // TO DO: Delete Later before shipping v4.3
+            NSLog(@"About to add trending ticker events from remote");
             [self performTrendingEventSyncRemotely];
-        }
+        }*/
         
         // Check to see if product events need to be added or refreshed. If yes, do that.
         // *****NOTE*****Currently always returning true since we have not implemented update logic.
@@ -4000,7 +4078,21 @@ bool eventsUpdated = NO;
             
             // TO DO: Delete Later
             //NSLog(@"About to add product events from Knotifi Data Platform");
-            // This is now done when the news tab is clicked
+            
+            // Do this once you have made the sync of product events faster. Add the newer tickers that have product events and might not be in original database just to be doubly sure.
+            // FOR BTC: First add all the tickers for cryptocurrencies just to be sure these are in the db.
+            [self insertUniqueCompanyWithTicker:@"BTC" name:@"Bitcoin"];
+            [self insertUniqueCompanyWithTicker:@"ETHR" name:@"Ethereum"];
+            
+            // Also add newer ones with product events first
+            [self insertUniqueCompanyWithTicker:@"BBRY" name:@"Blackberry"];
+            [self insertUniqueCompanyWithTicker:@"FIT" name:@"Fitbit"];
+            [self insertUniqueCompanyWithTicker:@"GOOGL" name:@"Google"];
+            [self insertUniqueCompanyWithTicker:@"GPRO" name:@"Go Pro"];
+            [self insertUniqueCompanyWithTicker:@"NTDOY" name:@"Nintendo"];
+            [self insertUniqueCompanyWithTicker:@"SNAP" name:@"Snap Inc"];
+            [self insertUniqueCompanyWithTicker:@"ROKU" name:@"Roku"];
+            
             [self getAllProductEventsFromApi];
         }
     

@@ -174,8 +174,8 @@
        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{     
             // Create a new FADataController so that this thread has its own MOC
             FADataController *eventDataController = [[FADataController alloc] init];
-            
-            [self refreshEventsIfNeededFromApiInBackgroundWithDataController:eventDataController];
+           
+           [self refreshEventsIfNeededFromApiInBackgroundWithDataController:eventDataController];
         });
         
         // TO DO: Delete Later, Testing only

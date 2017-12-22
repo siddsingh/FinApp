@@ -80,9 +80,16 @@
 // Get all future economic events including today. Returns a results controller with identities of all economic events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllFutureEconEvents;
 
+// Get all future cryptocurrency events including today. Returns a results controller with identities of all crypto events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+- (NSFetchedResultsController *)getAllFutureCryptoEvents;
+
 // Get all following future economic events including today. Returns a results controller with identities of all economic events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // Currently this is empty as we haven't figured out how to follow Econ Events
 - (NSFetchedResultsController *)getAllFollowingFutureEconEvents;
+
+// Get all following future crypto events including today. Returns a results controller with identities of all crypto events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// Currently this is empty as we haven't figured out how to follow Econ Events
+- (NSFetchedResultsController *)getAllFollowingFutureCryptoEvents;
 
 // Get all future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
