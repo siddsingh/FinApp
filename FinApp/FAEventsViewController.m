@@ -393,11 +393,11 @@
     // Make the cell user interaction enabled in case it's been turned off for 52 week events.
     cell.userInteractionEnabled = YES;
     
-    // Reset backgrnd and text colors for Ticker and news button to white and dark blackish respectively, in case it's been altered for News.
-    cell.companyTicker.backgroundColor = [UIColor whiteColor];
-    cell.companyTicker.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
-    cell.newsButon.backgroundColor = [UIColor whiteColor];
-    [cell.newsButon setTitleColor:[UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f] forState:UIControlStateNormal];
+    // Reset backgrnd and text colors for Ticker and news button to white and dark blackish respectively, in case it's been altered.
+    cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
+    cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
+    cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
+    [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
     
     // Show the event date in case it's been hidden for news.
     cell.eventDate.hidden = NO;
@@ -458,6 +458,10 @@
         [[cell  companyTicker] setText:companyAtIndex.ticker];
         // Left align the ticker for visual consistency with this view
         [[cell  companyTicker] setTextAlignment:NSTextAlignmentLeft];
+        
+        // Set ticker colors to default black and white
+        cell.companyTicker.backgroundColor = [UIColor whiteColor];
+        cell.companyTicker.textColor = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         
         // Set the company name associated with the event
         [[cell  companyName] setText:companyAtIndex.name];
@@ -523,7 +527,8 @@
         } else {
             cell.userInteractionEnabled = YES;
         }
-        // Add a tap gesture recognizer to the event ticker
+        // Set the company ticker text and Add a tap gesture recognizer to the event ticker
+        [[cell companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
         UITapGestureRecognizer *tickerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processTypeIconTap:)];
         tickerTap.cancelsTouchesInView = YES;
         tickerTap.numberOfTapsRequired = 1;
@@ -532,26 +537,17 @@
         cell.companyTicker.tag = indexPath.row;
         
         // Enable, Show and Set News Button text color
-        [[cell newsButon] setTitleColor:[self getColorForEventType:eventAtIndex.type withCompanyTicker:cell.companyTicker.text] forState:UIControlStateNormal];
-        [[cell newsButon] setEnabled:YES];
         [[cell newsButon] setHidden:NO];
+        cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
+        [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
+        [[cell newsButon] setEnabled:YES];
         cell.newsButon.tag = indexPath.row;
         // Also add the button press action
         [cell.newsButon addTarget:self action:@selector(newsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         
-        // Show the company ticker associated with the event
-        [[cell companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
-        [cell.companyTicker setTextColor:[self getColorForEventTickerLbl:eventAtIndex.type]];
-        
-        // If user is seeing the news, format the ticker and news buttons to show the brand colors. Also hide the news date
-        if (([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame)&& ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame)) {
-            cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
-            cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
-            cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
-            [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
-            // Hide the event date
-            cell.eventDate.hidden = YES;
-        }
+        // Format the company ticker just like above
+        cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
+        cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
         
         // Hide the company Name as this information is not needed to be displayed to the user.
         [[cell companyName] setHidden:YES];
@@ -2198,7 +2194,7 @@
     // All Event Types - Color Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
+                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2241,12 +2237,13 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"All" } ];
     }
-    // Earnings - Punchy Knotifi Green
+    // Earnings - Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
         
+        // Making size smaller to fit iphone SE
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                         [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
-                                        [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                        [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
         // Old way is just set color
@@ -2278,13 +2275,13 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Earnings" } ];
     }
-    // Economic - Color Econ Blue, replaced by light purple
+    // Economic - Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
-        // Econ Blue
+        // Black
         //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
-                                        [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
         // Old way is just set color
@@ -2317,12 +2314,12 @@
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Economic" } ];
     }
-    // Crypto - Color Copper Penny Background
+    // Crypto - Black 
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
         
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
-                                        [UIColor colorWithRed:192.0f/255.0f green:134.0f/255.0f blue:114.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
         
@@ -2353,19 +2350,14 @@
                       parameters:@{ @"Event Type" : @"Crypto" } ];
     }
     
-    // NEWS - Bold Yellow
+    // NEWS - Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
         
-        // This is the old bold yellow
+        // Black
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
-                                        [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
-        // If needed change to attention red
-        /*NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
-                                        [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
-                                        nil]; */
         
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
         
@@ -2399,12 +2391,12 @@
                       parameters:@{ @"Event Type" : @"News" } ];
     }
     
-    // PRICE - DARK YELLOW FOR NOW
+    // PRICE - BLACK
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
         
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
-                                        [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
         // Old way is just set color
@@ -2527,10 +2519,10 @@
     
     // Go with either NEWS or PRICE option based on Events or Following
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitle:@"News" forSegmentAtIndex:3];
+        [self.eventTypeSelector setTitle:@"NEWS" forSegmentAtIndex:4];
     }
     else if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitle:@"PRICE" forSegmentAtIndex:3];
+        [self.eventTypeSelector setTitle:@"PRICE" forSegmentAtIndex:4];
     }
     
     // Set events selector to All Events
