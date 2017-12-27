@@ -66,7 +66,7 @@
      
     // Check to see if application version 4.2 has been used by the user at least once. If not show tutorial and do the data updates. The format for key represents app store version 4_1 and the final internal build being shipped. Lagging build number by 1.
     // *****************IMPORTANT*********************************************************************** If you are changing this, also change tutorialDonePressed button on FATutorialViewController as that makes more sense.
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_2_1_UsedOnce"])
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_3_1_UsedOnce"])
     {
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
@@ -76,7 +76,7 @@
         FADataController *econEventDataController = [[FADataController alloc] init];
         //[econEventDataController deleteAllEventActions];
         
-        // Sync the 2017 econ events
+        // Sync the 2018 econ events
         [econEventDataController getAllEconomicEventsFromLocalStorage];
         
         // Delete the FIFA 18 events as there are duplicates that have somehow got in.

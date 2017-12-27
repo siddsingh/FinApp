@@ -477,8 +477,8 @@
             [[cell eventDescription] setText:@"GET EVENTS"];
             // Set color to a link blue to provide a visual cue to click
             cell.eventDescription.textColor = [UIColor colorWithRed:0.0f/255.0f green:0.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
-            // FOR BTC or ETHR, in case the user ever gets into this situation, set to NOT AVAILABLE.
-            if (([cell.companyTicker.text caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)) {
+            // FOR BTC or ETHR or BCH$ or XRP, in case the user ever gets into this situation, set to NOT AVAILABLE.
+            if (([cell.companyTicker.text caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"XRP"] == NSOrderedSame)) {
                 [[cell eventDescription] setText:@"NOT AVAILABLE"];
                 // Set color to a light gray.
                 cell.eventDescription.textColor = [UIColor lightGrayColor];
@@ -616,8 +616,8 @@
         // Check to see if the Events Main Nav is selected
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             
-            // FOR BTC or ETHR, don't fetch event from API as that's not needed
-            if (!(([cell.companyTicker.text caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"ETHR"] == NSOrderedSame))) {
+            // FOR BTC or ETHR or BCH$ or XRP, don't fetch event from API as that's not needed
+            if (!(([cell.companyTicker.text caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([cell.companyTicker.text caseInsensitiveCompare:@"XRP"] == NSOrderedSame))) {
                 // Check for connectivity. If yes, process the fetch
                 if ([self checkForInternetConnectivity]) {
                     
@@ -677,8 +677,8 @@
         // Pass off to async processing of the price details fetch
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
             
-            // FOR BTC or ETHR, don't fetch price details yet as this is not supported.
-            if (!(([eventTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([eventTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame))) {
+            // FOR BTC or ETHR or BCH$ or XRP, don't fetch price details yet as this is not supported.
+            if (!(([eventTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([eventTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([eventTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([eventTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame))) {
                 // Check for connectivity. If yes, process the fetch
                 if ([self checkForInternetConnectivity]) {
                     // Create a new FADataController so that this thread has its own MOC
@@ -2615,7 +2615,8 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] withCompanyTicker:ticker];
+        // Just use whatever is the default color for the Safari View Controller
+        //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] withCompanyTicker:ticker];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     }
 }
@@ -2697,7 +2698,8 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
+        // Just use whatever is the default color for the Safari View Controller
+        //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     }
 }
@@ -3019,9 +3021,10 @@
     NSDate *returnDate = [aGregorianCalendar dateFromComponents:aCalComponents];
     
     // For 2016, the first market open day was 3 days after, Jan 1 putting it at Jan 4.
-    // TO DO: For 2017, the first market day will be 2 days later on Jan 3. So add 2 instead of 3 here. That's it. www.timeanddate.com/calendar/?year=2017&country=1
+    // TO DO Change for beginning of the year 2019: For 2017, the first market day will be 2 days later on Jan 3. So add 2 instead of 3 here. That's it. www.timeanddate.com/calendar/?year=2017&country=1
+    // FOR 2018: the first day the market is open is Tue Jan 2nd. So add 1 instead of 2.
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = 2;
+    differenceDayComponents.day = 1;
     returnDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:returnDate options:0];
     
     return returnDate;
@@ -3579,7 +3582,7 @@
         colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
-        // FOR BTC: Add any new cryptocurrencies here. Return copper penny color
+        // FOR BTC: Add any new cryptocurrencies here. Return copper penny color. Don't need this anymore.
         if (([ticker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)) {
             colorToReturn = [UIColor colorWithRed:192.0f/255.0f green:134.0f/255.0f blue:114.0f/255.0f alpha:1.0f];
         }

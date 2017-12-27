@@ -1025,7 +1025,8 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+        // Just use whatever is the default color for the Safari View Controller
+        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     }
 }
@@ -1097,7 +1098,8 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+        // Just use whatever is the default color for the Safari View Controller
+        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     } 
 }
@@ -1168,7 +1170,8 @@
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
-        externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+        // Just use whatever is the default color for the Safari View Controller
+        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
     } 
 }
@@ -1765,8 +1768,8 @@
         
         numberOfPieces = 4;
         
-        // FOR BTC or ETHR, only show one cell right now. Later make this 4 to show price data.
-        if (([self.parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)) {
+        // FOR BTC or ETHR or BCH$ or XRP, only show one cell right now. Later make this 4 to show price data.
+        if (([self.parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame)) {
             numberOfPieces = 1;
         }
         else {
@@ -2133,7 +2136,10 @@
     // Set returned color to black text to start with
     UIColor *colorToReturn = [UIColor blackColor];
     
-    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+    // Always return the brand colors (including for Econ as that's taken care of in the brand colors).
+    colorToReturn = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
+    
+   /* if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         // Punchy Knotifi Green
         colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
     }
@@ -2177,7 +2183,7 @@
     {
         // Kinda Red
         colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:63.0f/255.0f blue:61.0f/255.0f alpha:1.0f];
-    }
+    } */
     
     return colorToReturn;
 }
@@ -2188,11 +2194,15 @@
     // Set returned color to white color since all events other than product events have white text.
     UIColor *colorToReturn = [UIColor whiteColor];
     
-    if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
+    // Always return the brand colors (including for Econ as that's taken care of in the brand colors).
+    // Return the brand text color
+    colorToReturn = [self.dataSnapShot2 getBrandTextColorForCompany:self.parentTicker];
+    
+   /* if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         
         // Return the brand text color
         colorToReturn = [self.dataSnapShot2 getBrandTextColorForCompany:self.parentTicker];
-    }
+    } */
     
     return colorToReturn;
 }

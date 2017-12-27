@@ -551,7 +551,7 @@ bool eventsUpdated = NO;
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter for date and event type
     // FOR BTC - Add any new crypto currency here to make it show up in the Crypto section
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@)", todaysDate, @"BTC", @"ETHR"];
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@)", todaysDate, @"BTC", @"ETHR", @"BCH$", @"XRP"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -612,7 +612,7 @@ bool eventsUpdated = NO;
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter for date and event type
     // FOR BTC: Add any new cryptocurrencies here.
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@) AND (ANY actions.type == %@)", todaysDate, @"BTC", @"ETHR", @"OSReminder"];
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@) AND (ANY actions.type == %@)", todaysDate, @"BTC", @"ETHR", @"BCH$", @"XRP", @"OSReminder"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -876,7 +876,7 @@ bool eventsUpdated = NO;
     if ([eventType caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
         // FOR BTC: Add any new cryptocurrencies here as well.
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@) AND (date >= %@)", searchText, searchText, searchText, @"BTC", @"ETHR", todaysDate];
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@) AND (date >= %@)", searchText, searchText, searchText, @"BTC", @"ETHR", @"BCH$", @"XRP", todaysDate];
         sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
@@ -2072,6 +2072,8 @@ bool eventsUpdated = NO;
     // FOR BTC: First add all the tickers for cryptocurrencies just to be sure these are in the db.
     [self insertUniqueCompanyWithTicker:@"BTC" name:@"Bitcoin"];
     [self insertUniqueCompanyWithTicker:@"ETHR" name:@"Ethereum"];
+    [self insertUniqueCompanyWithTicker:@"BCH$" name:@"Bitcoin Cash"];
+    [self insertUniqueCompanyWithTicker:@"XRP" name:@"Ripple"];
     
     // Also add newer ones with product events first
     [self insertUniqueCompanyWithTicker:@"BBRY" name:@"Blackberry"];
@@ -2185,7 +2187,7 @@ bool eventsUpdated = NO;
 - (void)getAllEconomicEventsFromLocalStorage
 {
     // Get the economic events file path
-    NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"EconomicEvents_2017" ofType:@"json"];
+    NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"EconomicEvents_2018" ofType:@"json"];
     // TO DO: Delete Later
     //NSLog(@"Found the json file at: %@",eventsFilePath);
     
@@ -2407,14 +2409,14 @@ bool eventsUpdated = NO;
             // Check if this event is approved or not. Only if approved it will be added to local data store.
             // Before updating, check if the earnings event for that company exists. If not, sync it.
             BOOL approved = [[event objectForKey:@"approved"] boolValue];
-            // FOR BTC & ETHR event addition, add the condition that is the event is BTC or ETHR, sync it even if it is not approved. This is to ensure that only folks that have upgraded to this version get the events, older ones don't since the events in the db are not approved. It's probably safe to mark the events of these types as approved in the DB after about 2 mos after the release of this version. Follow this process for any new product event types.
+            // FOR BTC & ETHR & BCH$ & XRP event addition, add the condition that is the event is BTC or ETHR, sync it even if it is not approved. This is to ensure that only folks that have upgraded to this version get the events, older ones don't since the events in the db are not approved. It's probably safe to mark the events of these types as approved in the DB after about 2 mos after the release of this version. Follow this process for any new product event types.
             // Old way where we only respect approved.
             //if(approved) {
-            if((approved)||([parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame))  {
+            if((approved)||([parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame))  {
                 
                 // Check if earnings event exists for this ticker. If not fetch it, since we don't want a company that has only a product event and no earnings event.
-                // FOR BTC or ETHR, Check if BTC or ETHR and don't fetch quarterly earnings,if so.
-                if (!(([parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame))) {
+                // FOR BTC or ETHR or BCH$ or XRP, Check if BTC or ETHR and don't fetch quarterly earnings,if so.
+                if (!(([parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame))) {
                     if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
                         // TO DO: Delete Later
                         //NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
@@ -4083,6 +4085,8 @@ bool eventsUpdated = NO;
             // FOR BTC: First add all the tickers for cryptocurrencies just to be sure these are in the db.
             [self insertUniqueCompanyWithTicker:@"BTC" name:@"Bitcoin"];
             [self insertUniqueCompanyWithTicker:@"ETHR" name:@"Ethereum"];
+            [self insertUniqueCompanyWithTicker:@"BCH$" name:@"Bitcoin Cash"];
+            [self insertUniqueCompanyWithTicker:@"XRP" name:@"Ripple"];
             
             // Also add newer ones with product events first
             [self insertUniqueCompanyWithTicker:@"BBRY" name:@"Blackberry"];
@@ -4847,6 +4851,8 @@ bool eventsUpdated = NO;
 
 // Compute the scrubbed first market day of the year for the given date. Currently it works only for 2016.
 // TO DO: Change this for 2017 and so on and so forth
+// TO DO Change for beginning of the year 2019: For 2017, the first market day will be 2 days later on Jan 3. So add 2 instead of 3 here. That's it. www.timeanddate.com/calendar/?year=2017&country=1
+// FOR 2018: the first day the market is open is Tue Jan 2nd. So add 1 instead of 2.
 - (NSDate *)computeMarketStartDateOfTheYearFrom:(NSDate *)givenDate
 {
     // Compute the first date of the year from the given date
@@ -4857,8 +4863,9 @@ bool eventsUpdated = NO;
     
     // For 2016, the first market open day was 3 days after, Jan 1 putting it at Jan 4.
     // TO DO: For 2017, the first market day will be 2 days later on Jan 3. So add 2 instead of 3 here. That's it. www.timeanddate.com/calendar/?year=2017&country=1
+    // FOR 2018: the first day the market is open is Tue Jan 2nd. So add 1 instead of 2.
     NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = 2;
+    differenceDayComponents.day = 1;
     returnDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:returnDate options:0];
     
     return returnDate;
