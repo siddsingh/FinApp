@@ -149,6 +149,12 @@
 // Delete all events that contain "FIFA 18" as these have somehow gotten into a bad state in the DB. This is a one time thing.
 - (void)deleteAllFIFA18Events;
 
+// Delete all BBRY events since ticker has changed from BBRY to BB. This is a one time thing
+- (void)deleteAllBBRYEvents;
+
+// Delete all events where parent event ticker is empty. Need this to clear out some BBRY events since ticker has changed from BBRY to BB
+- (void)deleteAllEmptyTickerEvents;
+
 #pragma mark - Event History related Methods
 
 // Add history associated with an event to the EventHistory Data Store given the previous event 1 date, status, related date, current date, previous event 1 date stock price, previous event 1 related date stock price, current (right now yesterday's) stock price, Event Company Ticker and Event Type. Note: Currently, the listed company ticker and event type, together represent the event uniquely.
@@ -192,6 +198,10 @@
 
 // Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
 - (void)getAllTickersAndNamesFromLocalStorage;
+
+// Get all company tickers and names from local code, which currently is hard coded here and write them to the data store. This is the one place you need add new tickers, including product ones.
+// NOTE!!!!!!!!Add a any new tickers here as we won't be syncing from file anymore.
+- (void)getAllTickersAndNamesFromLocalCode;
 
 #pragma mark - Methods to call Economic Events Data Sources
 

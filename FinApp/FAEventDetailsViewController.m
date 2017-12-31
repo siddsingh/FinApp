@@ -63,10 +63,10 @@
     // Set status of button to Follow or Following (for all events except econ events) and to Set Reminder or Reminder Set (for econ events)
     
     // String to hold the action name
-    NSString *actionName = nil;
+    //NSString *actionName = nil;
     
     // If the cell contains a followable event, set status to Follow or Following
-    if ([self isEventFollowable:self.eventType]) {
+    /* if ([self isEventFollowable:self.eventType]) {
         
         // For a price change event
         if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"])
@@ -130,9 +130,9 @@
             [self.reminderButton setTitle:@"FOLLOW" forState:UIControlStateNormal];
             [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
         }
-    }
+    } */
 
-    // Set color of "See News" buttons based on event type
+    // Set color of "See News" buttons based on event type. Currently not using News Buttons 2 and 3.
     [self.newsButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.newsButton2 setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.newsButton3 setBackgroundColor:[self getColorForEventType:self.eventType]];
@@ -732,7 +732,7 @@
 // Action to take when Reminder button is pressed, which is set a reminder if reminder hasn't already been created, else display a message that reminder has aleady been set.
 - (IBAction)reminderAction:(id)sender {
     
-    FADataController *detailUnfollowDataController = [[FADataController alloc] init];
+   /* FADataController *detailUnfollowDataController = [[FADataController alloc] init];
     
     // If it's a followable event, process following of the ticker
     if ([self isEventFollowable:self.eventType]) {
@@ -897,33 +897,33 @@
                                         @"Event Type" : self.eventType,
                                         @"Event Certainty" : self.eventCertainty } ];
         }
-    }
+    } */
 }
 
 // Activate the action button and set text to unfollow state for a ticker based event like earnings or product events or price change events.
 -(void)updateToUnfollowStateForTickerBasedEvent
 {
     // Show appropriate message
-    [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",self.parentTicker]];
+  /*  [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Following %@",self.parentTicker]];
     
     // Background Gray Color
     [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
     [self.reminderButton setTitle:[NSString stringWithFormat:@"UNFOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
     [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self.reminderButton setEnabled:YES];
+    [self.reminderButton setEnabled:YES]; */
 }
 
 // Activate the action button and set text to unfollow state for an econ event like earnings or product events or price change events.
 -(void)updateToUnfollowStateForEconEvent
 {
     // Show appropriate message
-    [self sendUserGuidanceCreatedNotificationWithMessage:@"Following event"];
+  /*  [self sendUserGuidanceCreatedNotificationWithMessage:@"Following event"];
     
     // Background Gray Color
     [self.reminderButton setBackgroundColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
     [self.reminderButton setTitle:@"UNFOLLOW" forState:UIControlStateNormal];
     [self.reminderButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self.reminderButton setEnabled:YES];
+    [self.reminderButton setEnabled:YES]; */
 }
 
 
@@ -931,26 +931,26 @@
 -(void)updateToFollowStateForTickerBasedEvent
 {
     // Show appropriate message
-    [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
+   /* [self sendUserGuidanceCreatedNotificationWithMessage:[NSString stringWithFormat:@"Unfollowed %@",self.parentTicker]];
     
     // Color based on event type
     [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.reminderButton setTitle:[NSString stringWithFormat:@"FOLLOW %@",self.parentTicker] forState:UIControlStateNormal];
     [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
-    [self.reminderButton setEnabled:YES];
+    [self.reminderButton setEnabled:YES];*/
 }
 
 // Activate the action button and set text to follow state for an econ event like earnings or product events or price change events.
 -(void)updateToFollowStateForEconEvent
 {
     // Show appropriate message
-    [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowed event"];
+   /* [self sendUserGuidanceCreatedNotificationWithMessage:@"Unfollowed event"];
     
     // Color based on event type
     [self.reminderButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.reminderButton setTitle:@"FOLLOW" forState:UIControlStateNormal];
     [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
-    [self.reminderButton setEnabled:YES];
+    [self.reminderButton setEnabled:YES];*/
 }
 
 
@@ -2137,6 +2137,8 @@
     UIColor *colorToReturn = [UIColor blackColor];
     
     // Always return the brand colors (including for Econ as that's taken care of in the brand colors).
+    // TO DO: Delete before shipping v4.3
+    NSLog(@"TICKER FOR EEVENT IS:%@",self.parentTicker);
     colorToReturn = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
     
    /* if ([eventType isEqualToString:@"Quarterly Earnings"]) {

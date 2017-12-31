@@ -175,7 +175,7 @@ bool eventsUpdated = NO;
         NSLog(@"SEVERE_WARNING: Found %ld(more than 1) duplicate tickers for %@ when trying to delete the company from the datastore",(long)fetchedCompanies.count,companyTicker);
     }
     if (fetchedCompanies.count == 0) {
-        NSLog(@"WARNING: Did not find company for ticker %@ when trying to delete the company from the datastore",companyTicker);
+        NSLog(@"INFO ONLY: Did not find company for ticker %@ when trying to delete the company from the datastore",companyTicker);
     }
     if (error) {
         NSLog(@"ERROR: Fetching a company, with ticker %@ to delete from data store, failed: %@",companyTicker,error.description);
@@ -188,6 +188,9 @@ bool eventsUpdated = NO;
     }
     // Save managed object context to persist the delete.
     [dataStoreContext save:&error];
+    
+    // Delete before shipping v4.3
+    NSLog(@"DONE COMITTING DELETE OF BBRY TICKER COMPANY");
 }
 
 #pragma mark - Events Data Related
@@ -1239,6 +1242,75 @@ bool eventsUpdated = NO;
     [dataStoreContext save:&error];
 }
 
+// Delete all BBRY events since ticker has changed from BBRY to BB
+- (void)deleteAllBBRYEvents {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the events by doing a case insensitive query on parent company Ticker.
+    NSFetchRequest *eventsFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventsPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker =[c] %@",@"BBRY"];
+    [eventsFetchRequest setEntity:eventEntity];
+    [eventsFetchRequest setPredicate:eventsPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventsFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting all BBRY events for deletion from data store failed: %@",error.description);
+    }
+    
+    // Delete all the FIFA events
+    for (NSManagedObject *bbryEvent in events) {
+        
+        [dataStoreContext deleteObject:bbryEvent];
+    }
+    
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
+    
+    // Delete before shipping v4.3
+    NSLog(@"DONE COMITTING DELETE OF BBRY EVENTS");
+}
+
+// Delete all events where parent event ticker is empty. Need this to clear out some BBRY events since ticker has changed from BBRY to BB
+- (void)deleteAllEmptyTickerEvents {
+    
+    NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    
+    // Get the events by doing a case insensitive query on parent company Ticker.
+    NSFetchRequest *eventsFetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
+    // Case and Diacractic Insensitive Filtering
+    NSPredicate *eventsPredicate = [NSPredicate predicateWithFormat:@"listedCompany.ticker == NULL"];
+    [eventsFetchRequest setEntity:eventEntity];
+    [eventsFetchRequest setPredicate:eventsPredicate];
+    NSError *error;
+    NSArray *events = [dataStoreContext executeFetchRequest:eventsFetchRequest error:&error];
+    if (error) {
+        NSLog(@"ERROR: Getting all events with empty ticker for deletion from data store failed: %@",error.description);
+    }
+    
+    // Delete all the FIFA events
+    for (NSManagedObject *noTickerEvent in events) {
+        // Delete before shipping v4.3
+        NSLog(@"KILLING A NO TICKER EVENT:%@",noTickerEvent.description);
+        [dataStoreContext deleteObject:noTickerEvent];
+    }
+    
+    // Delete before shipping v4.3
+    Event *event1 = events.firstObject;
+    Event *event2 = events.lastObject;
+    NSLog(@"TICKER EVENT 1 BEING KILLED:%@",event1.type);
+    NSLog(@"TICKER EVENT 2 BEING KILLED:%@",event2.type);
+    
+    // Save managed object context to persist the delete.
+    [dataStoreContext save:&error];
+    
+    // Delete before shipping v4.3
+    NSLog(@"DONE COMITTING DELETE OF NULL EVENTS");
+}
+
 
 #pragma mark - Event History related Methods
 
@@ -2064,9 +2136,9 @@ bool eventsUpdated = NO;
 
 #pragma mark - Methods to call Company names and tickers from local files
 
-// Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
-- (void)getAllTickersAndNamesFromLocalStorage
-{
+// Get all company tickers and names from local code, which currently is hard coded here and write them to the data store. This is the one place you need add new tickers, including product ones.
+// NOTE!!!!!!!!Add a any new tickers here as we won't be syncing from file anymore.
+- (void)getAllTickersAndNamesFromLocalCode {
     
     // Please make sure to add any new cryptocurrencies or newer tickers with product events to FADataController->updateEventsFromRemoteIfNeeded as well to make sure they are always present before prod events are synced.
     // FOR BTC: First add all the tickers for cryptocurrencies just to be sure these are in the db.
@@ -2076,7 +2148,7 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"XRP" name:@"Ripple"];
     
     // Also add newer ones with product events first
-    [self insertUniqueCompanyWithTicker:@"BBRY" name:@"Blackberry"];
+    [self insertUniqueCompanyWithTicker:@"BB" name:@"Blackberry"];
     [self insertUniqueCompanyWithTicker:@"FIT" name:@"Fitbit"];
     [self insertUniqueCompanyWithTicker:@"GOOGL" name:@"Google"];
     [self insertUniqueCompanyWithTicker:@"GPRO" name:@"Go Pro"];
@@ -2084,10 +2156,6 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"SNAP" name:@"Snap Inc"];
     [self insertUniqueCompanyWithTicker:@"ROKU" name:@"Roku"];
     
-    // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
-    // Delete before shipping v4.3
-    NSLog(@"Ended the background get incremental companies for prod events from local file");
-
     // First add the new tickers since 11/19/2016 manually
     [self insertUniqueCompanyWithTicker:@"MULE" name:@"MuleSoft Inc"];
     [self insertUniqueCompanyWithTicker:@"NTNX" name:@"Nutanix Inc"];
@@ -2109,6 +2177,14 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"SNCR" name:@"Synchronoss Technologies"];
     [self insertUniqueCompanyWithTicker:@"SFIX" name:@"Stitch Fix"];
     
+    // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
+    // Delete before shipping v4.3
+    NSLog(@"Ended the background get incremental companies from local HARD CODE");
+}
+
+// Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
+- (void)getAllTickersAndNamesFromLocalStorage
+{
     // Get the company ticker and names file path
     NSString *tickersFilePath = [[NSBundle mainBundle] pathForResource:@"ZEA-datasets-codes_20161119" ofType:@"csv"];
     // TO DO: Delete Later
@@ -2418,8 +2494,8 @@ bool eventsUpdated = NO;
                 // FOR BTC or ETHR or BCH$ or XRP, Check if BTC or ETHR and don't fetch quarterly earnings,if so.
                 if (!(([parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame))) {
                     if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
-                        // TO DO: Delete Later
-                        //NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
+                        // TO DO: Delete before shipping v4.3
+                        NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
                         [self getAllEventsFromApiWithTicker:parentTicker];
                     }
                 }
@@ -4016,13 +4092,11 @@ bool eventsUpdated = NO;
     // TO DO: Delete Later before shipping v4.3
     NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
     NSLog(@"Hours between LAST EVENT SYNC AND TODAY are: %d",(int)hoursBetween);
-    // Refresh only if a day has passed since last refresh
-    // Now that product events are being synced only on news, consider syncing earnings events everytime
-    //if(YES) {
+
     // Uncomment this if you want it to sync only after 24 hours.
     //if((int)daysBetween > 0) {
-    // Sync every 6 hours
-    if((int)hoursBetween >= 6) {
+    // TO DO: Make this 4 before shipping v4.3 Sync every 4 hours.
+    if((int)hoursBetween >= 4) {
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];
         
@@ -4039,15 +4113,15 @@ bool eventsUpdated = NO;
             components = [gregorianCalendar components:NSCalendarUnitDay fromDate:todaysDate toDate:eventDate options:0];
             daysBetween = [components day];
             
-            // Start the busy spinner only the first time
-            if (!eventsUpdated) {
+            // Start the busy spinner at every iteration as we don't know which when will register.
+            //if (!eventsUpdated) {
              // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
              dispatch_async(dispatch_get_main_queue(), ^{
-             // TO DO: Delete Later
-             //NSLog(@"About to start busy spinner");
+             // TO DO: Delete before shipping v4.3
+             NSLog(@"About to start busy spinner");
              [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
              });
-             }
+             //}
             
             // See if the event is Quarterly Earnings
             if ([localEvent.type isEqualToString:@"Quarterly Earnings"]) {
@@ -4055,14 +4129,16 @@ bool eventsUpdated = NO;
                 // See if the event qualifies for the update. If it does, call the remote data source to update it.
                 if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
                     
-                    // TO DO: Delete Later before shipping v4.3
-                    NSLog(@"original in db earnings ticker is: %@",localEvent.listedCompany.ticker);
+                    // TO DO: Delete before shipping v4.3
+                    NSLog(@"About to fetch earnings from initial non product sync for ticker:%@",localEvent.listedCompany.ticker);
                     
                     [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
                     
-                    eventsUpdated = YES;
+                    //eventsUpdated = YES;
                 }
             }
+            
+            eventsUpdated = YES;
         }
         
         // Check to see if trending ticker events exist already. If not add those
@@ -4078,26 +4154,10 @@ bool eventsUpdated = NO;
         // *****NOTE*****Currently always returning true since we have not implemented update logic.
         if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
-            // TO DO: Delete Later
-            //NSLog(@"About to add product events from Knotifi Data Platform");
-            
-            // Do this once you have made the sync of product events faster. Add the newer tickers that have product events and might not be in original database just to be doubly sure.
-            // FOR BTC: First add all the tickers for cryptocurrencies just to be sure these are in the db.
-            [self insertUniqueCompanyWithTicker:@"BTC" name:@"Bitcoin"];
-            [self insertUniqueCompanyWithTicker:@"ETHR" name:@"Ethereum"];
-            [self insertUniqueCompanyWithTicker:@"BCH$" name:@"Bitcoin Cash"];
-            [self insertUniqueCompanyWithTicker:@"XRP" name:@"Ripple"];
-            
-            // Also add newer ones with product events first
-            [self insertUniqueCompanyWithTicker:@"BBRY" name:@"Blackberry"];
-            [self insertUniqueCompanyWithTicker:@"FIT" name:@"Fitbit"];
-            [self insertUniqueCompanyWithTicker:@"GOOGL" name:@"Google"];
-            [self insertUniqueCompanyWithTicker:@"GPRO" name:@"Go Pro"];
-            [self insertUniqueCompanyWithTicker:@"NTDOY" name:@"Nintendo"];
-            [self insertUniqueCompanyWithTicker:@"SNAP" name:@"Snap Inc"];
-            [self insertUniqueCompanyWithTicker:@"ROKU" name:@"Roku"];
-            
-            [self getAllProductEventsFromApi];
+            // Use the wrapper as it sets off a start busy spinner as well.
+            // NOTE:!!!!!!!! the wrapper also stops the busy spinner so if we need to do additional stuff here like price change fetch modify accordingly.
+            //[self getAllProductEventsFromApi];
+            [self syncProductEventsWrapper];
         }
     
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
@@ -4121,8 +4181,8 @@ bool eventsUpdated = NO;
             // Any async UI element update has to happen in the main thread.
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self sendEventsChangeNotification];
-                // TO DO: Delete Later.
-                //NSLog(@"About to stop busy spinner");
+                // TO DO: Delete before shipping v4.3
+                NSLog(@"About to stop busy spinner");
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
             });
         }
@@ -4752,7 +4812,12 @@ bool eventsUpdated = NO;
 // Send a notification to the events list controller with a message that should be shown to the user
 - (void)sendUserMessageCreatedNotificationWithMessage:(NSString *)msgContents {
     
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
+    // Any async UI element update (navBar title gets updated) hs to happen in the main thread.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // TO DO: Delete before shipping v4.3
+        NSLog(@"About to error message: %@ to the nav bar title",msgContents);
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
+    });
 }
 
 // Send a notification that a queued reminder associated with an event should be created, since the event date has been confirmed. Send an array of information {eventType,companyTicker,eventDateText} that will be needed by receiver to complete this action.

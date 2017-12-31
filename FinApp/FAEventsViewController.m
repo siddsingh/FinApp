@@ -2478,6 +2478,11 @@
                 [self.eventsListTable reloadData];
             } */
         }
+        
+        // TRACKING EVENT: Event Type Selected: User selected Product event type explicitly in the events type selector
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"Event Type Selected"
+                      parameters:@{ @"Event Type" : @"Price" } ];
     }
 }
 
@@ -2938,10 +2943,10 @@
         
         // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        /*[FBSDKAppEvents logEvent:@"Go To Details"
+        [FBSDKAppEvents logEvent:@"Go To Details"
                       parameters:@{ @"Ticker" : [segueDataController getTickerForName:selectedCell.companyName.text],
                                     @"Event Type" : eventType,
-                                    @"Name" : (selectedCell.companyName).text } ];*/
+                                    @"Name" : (selectedCell.companyName).text } ];
     }
 }
 

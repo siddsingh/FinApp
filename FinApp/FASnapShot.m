@@ -285,6 +285,12 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:39.0f/255.0f blue:72.0f/255.0f alpha:1.0f];
     }
     
+    // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
+    if (([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame)) {
+        // Dark purple for econ
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:39.0f/255.0f blue:72.0f/255.0f alpha:1.0f];
+    }
+    
     if ([ticker caseInsensitiveCompare:@"JPM"] == NSOrderedSame) {
         // Dark Ink Blue for Chase card
         colorToReturn = [UIColor colorWithRed:7.0f/255.0f green:25.0f/255.0f blue:48.0f/255.0f alpha:1.0f];
@@ -460,6 +466,11 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:48.0f/255.0f green:136.0f/255.0f blue:203.0f/255.0f alpha:1.0f];
     }
     
+    if ([ticker caseInsensitiveCompare:@"BB"] == NSOrderedSame) {
+        //
+        colorToReturn = [UIColor colorWithRed:12.0f/255.0f green:16.0f/255.0f blue:75.0f/255.0f alpha:1.0f];
+    }
+    
     return colorToReturn;
 }
 
@@ -613,6 +624,12 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"ECON"] == NSOrderedSame) {
+        // White for Econ
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
+    if (([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame)) {
         // White for Econ
         colorToReturn = [UIColor whiteColor];
     }
@@ -790,6 +807,11 @@ static FASnapShot *sharedInstance;
     if ([ticker caseInsensitiveCompare:@"AXP"] == NSOrderedSame) {
         
         colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"BB"] == NSOrderedSame) {
+        //
+        colorToReturn = [UIColor colorWithRed:132.0f/255.0f green:166.0f/255.0f blue:220.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;

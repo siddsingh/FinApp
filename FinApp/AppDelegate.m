@@ -36,23 +36,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     // Override point for customization after application launch.
-
-    // TO DO: UNCOMMENT FOR PRE SEEDING DB:
-    // Making sure that the core data store is instantiated in the main thread
-    // Create a new FADataController so that this thread has its own MOC
-    /*FADataController *econEventDataController = [[FADataController alloc] init];
-    
-    // Adding the new economic events only if it's not been added before.
-    if (![econEventDataController doesEconEventExist]) {
-        // TO DO: Delete Later before shipping v2.1
-        NSLog(@"About to add econ events to the db the first time");
-        [econEventDataController getAllEconomicEventsFromLocalStorage];
-    }*/
-    
-    // Set the status bar text color to white. This is done in conjunction with setting View controller-based status bar appearance property to NO in Info.plist. To revert delete that property and remove this line.
-    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    // With a light app theme, setting the status bar style to default dark theme. 
-    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     
     // Remove the 1 pixel bottom border line from navigation Controller top bar.
     [[UINavigationBar appearance] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
@@ -65,31 +48,59 @@
 
      
     // Check to see if application version 4.2 has been used by the user at least once. If not show tutorial and do the data updates. The format for key represents app store version 4_1 and the final internal build being shipped. Lagging build number by 1.
-    // *****************IMPORTANT*********************************************************************** If you are changing this, also change tutorialDonePressed button on FATutorialViewController as that makes more sense.
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_3_1_UsedOnce"])
+    // *****************IMPORTANT*********************************************************************** If you are changing this, also change applicationbecameactive and tutorialDonePressed button on FATutorialViewController as that makes more sense.
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_3_2_UsedOnce"])
     {
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
         
-        // Delete all entries in the action table to reset state so that any user is starting with a clean slate for following.
-        // Don't need to do this reset anymore as most of the people who were going to upgrade have probably already done so and are using following which we don't want to wipeout.
         FADataController *econEventDataController = [[FADataController alloc] init];
+        
+        // Delete all entries in the action table to reset state so that any user is starting with a clean slate for following.Don't need to do this reset anymore as most of the people who were going to upgrade have probably already done so and are using following which we don't want to wipeout.
         //[econEventDataController deleteAllEventActions];
         
         // Sync the 2018 econ events
         [econEventDataController getAllEconomicEventsFromLocalStorage];
         
-        // Delete the FIFA 18 events as there are duplicates that have somehow got in.
-        [econEventDataController deleteAllFIFA18Events];
+        // Delete the FIFA 18 events as there are duplicates that have somehow got in. No longer need to do this as people are likely to have upgraded killing these anyway.
+        //[econEventDataController deleteAllFIFA18Events];
         
-        // Update the list of companies in a background task
-        __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
+        // Delete all events from a past version that currently don't have any Ticker as the BBRY change to BB might have created some of these.
+        [econEventDataController deleteAllEmptyTickerEvents];
+        
+        // Delete all BBRY events as ticker has changed from BBRY to BB.
+        [econEventDataController deleteAllBBRYEvents];
+        
+        // Delete the BBRY ticker
+        [econEventDataController deleteCompanyWithTicker:@"BBRY"];
+        
+        // Add newer company tickers from hard code. This gets all the newer added prod event tickers as well.
+        [econEventDataController getAllTickersAndNamesFromLocalCode];
+        
+            // Add new tickers + Refresh existing events and get product events
+            // Async processing of non ui tasks should not be done on the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
+                
+                // Create a new FADataController so that this thread has its own MOC
+                FADataController *eventDataController = [[FADataController alloc] init];
+                
+                // Add newer company tickers from hard code. This gets all the newer added prod event tickers as well.
+                [eventDataController getAllTickersAndNamesFromLocalCode];
+                
+                if ([self checkForInternetConnectivity]) {
+                    // TO DO: Testing. Delete before shipping v4.3
+                    NSLog(@"Kicking off refresh of events");
+                [self refreshEventsIfNeededFromApiInBackgroundWithDataController:eventDataController];
+                }
+            });
+        
+        // Update the list of companies in a background task. Don't need to do this anymore as we are getting most of the tickers in the updatefromlocalcode. See in the future if you want to bring this back.
+       /* __block UIBackgroundTaskIdentifier backgroundFetchTask = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundIncrementalCompaniesFetch" expirationHandler:^{
             
             // Stopped or ending the task outright.
             [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
             backgroundFetchTask = UIBackgroundTaskInvalid;
         }];
-        
         // Start the long-running task and return immediately.
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
@@ -109,20 +120,15 @@
             
             [[UIApplication sharedApplication] endBackgroundTask:backgroundFetchTask];
             backgroundFetchTask = UIBackgroundTaskInvalid;
-        });
-        
-        // Set that the user has used the app at least once
-        // *****************IMPORTANT*********************************************************************** This is now being done in the tutorialDonePressed button on FATutorialViewController as that makes more sense.
-        //[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V3_0_UsedOnce"];
-        //[[NSUserDefaults standardUserDefaults] synchronize];
+        }); */
     }
     // If yes
     else {
         [self configViewControllerWithName:@"FAEventsNavController"];
     }
     
-    // TO DO: Testing. Delete later before shipping v2.7
-    //NSLog(@"Did finish launching with options");
+    // TO DO: Testing. Delete before shipping v4.3
+    NSLog(@"Did finish launching with options");
     
     return YES;
 }
@@ -148,35 +154,22 @@
     // Check for connectivity. If yes, sync data from remote data source
     if ([self checkForInternetConnectivity]) {
         
-        // TO DO: OPTIONAL UNCOMMENT FOR PRE SEEDING DB: Commenting out since we don't want to do a company/event sync due to preseeded data.
-        /*
-        // If this hasn't already been done, seed the events data, the very first time, to get the user started.
-        FADataController *eventSeedSyncController = [[FADataController alloc] init];
-        if ([[eventSeedSyncController getEventSyncStatus] isEqualToString:@"NoSyncPerformed"]) {
-            [eventSeedSyncController performEventSeedSyncRemotely];
-            [self sendEventsChangeNotification];
+        // Refresh events, sync product events after upgrade is done
+        // Async processing of non ui tasks should not be done on the main thread.
+        // *****************IMPORTANT*********************************************************************** If you are changing this, also change applicationfinishedlaunching and tutorialDonePressed button on FATutorialViewController.
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"V4_3_2_UsedOnce"])
+        {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
+                
+                // TO DO: Testing. Delete before shipping v4.3
+                NSLog(@"Kicking of refresh of events");
+                
+                // Create a new FADataController so that this thread has its own MOC
+                FADataController *eventDataController = [[FADataController alloc] init];
+                
+                [self refreshEventsIfNeededFromApiInBackgroundWithDataController:eventDataController];
+            });
         }
-        // If seed sync has already been done, check and refresh any events from the API that are likely to have updated information
-        else {
-            [self performSelectorInBackground:@selector(refreshEventsIfNeededFromApiInBackground) withObject:nil];
-        }
-        
-        // If the full sync of company data has failed, retry it
-        [self refreshCompanyInfoIfNeededFromApiInBackground]; */
-        
-        // TO DO: COMMENT FOR PRE SEEDING DB: This does an incremental update of newer companies since the last time the data was synced. This data should already be captured in the preseeding, so not needed for preseeding.
-        // Not needed any longer, instead sync from local file earlier in this method.
-        //[self doCompanyUpdateInBackground];
-        
-        
-        // TO DO: COMMENT FOR PRE SEEDING DB: Commenting out since we don't need this when we are creating preseeding data.
-       // Async processing of non ui tasks should not be done on the main thread.
-       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{     
-            // Create a new FADataController so that this thread has its own MOC
-            FADataController *eventDataController = [[FADataController alloc] init];
-           
-           [self refreshEventsIfNeededFromApiInBackgroundWithDataController:eventDataController];
-        });
         
         // TO DO: Delete Later, Testing only
         //NSLog(@"Application did become active called");
