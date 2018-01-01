@@ -231,6 +231,66 @@
 // Return a cell configured to display the event details based on the cell number and event type. Currently upto 6 types of information pieces are available.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
+    FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
+    
+    // Assign a row no to the type of event detail row. Currently upto 5 types of related info pieces are available.
+    #define infoRow1  0
+    
+    // Get Row no
+    int rowNo = (int)indexPath.row;
+    
+    // Default
+    [[cell titleLabel] setText:@"?"];
+    [[cell descriptionArea] setText:@"Details not available."];
+    
+    // Display the appropriate details based on the row no
+    // TO DO: SOLIDIFY LATER: Currently we use the event data to get the previous related date in expectedEps, priorEps, changeSincePrevQuarter. The scrubbed version of the previous related date (updated if it was on a weekend) is stored in the event history so that the stock price can be fetched. This is working fine for now but might want to rethink this.
+    switch (rowNo) {
+        
+            // Common impact and description cell
+        case infoRow1:
+        {
+            // Get Impact String
+            NSString *impact_str = [self getImpactDescriptionForEventType:self.eventType eventParent:self.parentTicker];
+            
+            // Set the impact icon
+            // Very High Impact
+            if ([impact_str caseInsensitiveCompare:@"Very High Impact"] == NSOrderedSame) {
+                [[cell titleLabel] setText:@"🔥"];
+            }
+            // High Impact
+            if ([impact_str caseInsensitiveCompare:@"High Impact"] == NSOrderedSame) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"♨︎"];
+            }
+            // Medium Impact
+            if ([impact_str caseInsensitiveCompare:@"Medium Impact"] == NSOrderedSame) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"♨︎"];
+            }
+            // Low Impact
+            if ([impact_str caseInsensitiveCompare:@"Low Impact"] == NSOrderedSame) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"♨︎"];
+            }
+            
+            // Set the rationale
+            [[cell descriptionArea] setText:[NSString stringWithFormat:@"%@.%@",[self getImpactDescriptionForEventType:self.eventType eventParent:self.parentTicker],[self getEventDescriptionForEventType:self.eventType eventParent:self.parentTicker]]];
+        }
+            break;
+            
+        default:
+            
+            break;
+    }
+    
+    return cell;
+}
+
+// OLD ONE, REPLACED BY A SIMPLER DETAIL VIEW:Return a cell configured to display the event details based on the cell number and event type. Currently upto 6 types of information pieces are available.
+/*- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     EventHistory *eventHistoryData;
     
     // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
@@ -725,7 +785,7 @@
     }
     
     return cell;
-}
+} */
 
 #pragma mark - Reminder Related
 
@@ -1719,12 +1779,12 @@
 
 #pragma mark - Event Info Related
 
-// Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted.
+//CURRENTLY: Just retunr one row for all types. Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted.
 - (NSInteger)getNoOfInfoPiecesForEventType
 {
-    NSInteger numberOfPieces = 0;
+    NSInteger numberOfPieces = 1;
     
-    // Set a value indicating that a value is not available. Currently a Not Available value is represented by
+/*    // Set a value indicating that a value is not available. Currently a Not Available value is represented by
     double notAvailable = 999999.9f;
     EventHistory *eventHistoryData;
     
@@ -1804,7 +1864,7 @@
         } else {
             numberOfPieces = 3;
         }
-    }
+    } */
         
     return numberOfPieces;
 }
@@ -1881,6 +1941,36 @@
     return eventImage;
 }
 
+// Get the display text for Prior EPS or Sectors Affected depending on the event type.
+// FUTURE TO DO: Get the sectors affected values into the database model.
+- (NSString *)getEpsOrSectorsTextForEventType:(NSString *)eventType
+{
+    NSString *description = @"Data Not Available";
+    
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        // More detailed formatting if needed in the future
+        //description = @"Prior reported quarter EPS";
+        description = @"Prior EPS";
+    }
+    if ([eventType containsString:@"Fed Meeting"]) {
+        description = @"Financial stocks are impacted most by this.";
+    }
+    
+    if ([eventType containsString:@"Jobs Report"]) {
+        description = @"All types of stocks are impacted by this.";
+    }
+    
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        description = @"Retail stocks are impacted most by this.";
+    }
+    
+    if ([eventType containsString:@"GDP Release"]) {
+        description = @"All types of stocks are impacted by this.";
+    }
+    
+    return description;
+}
+
 // Get the display text for Expected EPS or Impact depending on the event type.
 // FUTURE TO DO: Get the impact values into the database model.
 - (NSString *)getEpsOrImpactTextForEventType:(NSString *)eventType eventParent:(NSString *)parentTicker
@@ -1924,31 +2014,92 @@
     return description;
 }
 
-// Get the display text for Prior EPS or Sectors Affected depending on the event type.
-// FUTURE TO DO: Get the sectors affected values into the database model.
-- (NSString *)getEpsOrSectorsTextForEventType:(NSString *)eventType
+// Get the impact description text given event type and ticker
+- (NSString *)getImpactDescriptionForEventType:(NSString *)eventType eventParent:(NSString *)parentTicker
 {
-    NSString *description = @"Data Not Available";
+    NSString *description = @"Unknown Impact";
     
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
-        // More detailed formatting if needed in the future
-        //description = @"Prior reported quarter EPS";
-        description = @"Prior EPS";
+        
+        if ([self.dataSnapShot2 isEventHighImpact:eventType eventParent:parentTicker]) {
+            description = @"Very High Impact";
+        } else {
+             description = @"Medium Impact";
+        }
     }
+    
     if ([eventType containsString:@"Fed Meeting"]) {
-        description = @"Financial stocks are impacted most by this.";
+        description = @"Very High Impact";
     }
     
     if ([eventType containsString:@"Jobs Report"]) {
-        description = @"All types of stocks are impacted by this.";
+        description = @"Very High Impact";
     }
     
     if ([eventType containsString:@"Consumer Confidence"]) {
-        description = @"Retail stocks are impacted most by this.";
+        description = @"Medium Impact";
     }
     
     if ([eventType containsString:@"GDP Release"]) {
-        description = @"All types of stocks are impacted by this.";
+        description = @"Medium Impact";
+    }
+    
+    // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
+    // If new product event types are added, add them here as well.
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+        
+        // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_MoreInfoTitle_MoreInfoUrl
+        EventHistory *eventHistoryData1 = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
+        
+        // Parse out to construct the Impact Text.
+        NSArray *impactComponents = [eventHistoryData1.previous1Status componentsSeparatedByString:@"_"];
+        description = [NSString stringWithFormat:@"%@ Impact",impactComponents[0]];
+    }
+    
+    return description;
+}
+
+// Get the event description text given event type and ticker
+- (NSString *)getEventDescriptionForEventType:(NSString *)eventType eventParent:(NSString *)parentTicker
+{
+    NSString *description = @"Unknown Description";
+    
+    // Big name companies earnings like FANG or Apple whose earnings can impact overall market.
+    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        if ([self.dataSnapShot2 isEventHighImpact:eventType eventParent:parentTicker]) {
+            description = @"Past quarter report card for a highly watched company.";
+        } else {
+            description = @"Past quarter report card for this company.";
+        }
+    }
+    
+    if ([eventType containsString:@"Fed Meeting"]) {
+        description = @"Outcome determines key interest rates.";
+    }
+    
+    if ([eventType containsString:@"Jobs Report"]) {
+        description = @"Reflects the health of the job market.";
+    }
+    
+    if ([eventType containsString:@"Consumer Confidence"]) {
+        description = @"Indicator of future personal spending.";
+    }
+    
+    if ([eventType containsString:@"GDP Release"]) {
+        description = @"Scorecard of the country's economic health.";
+    }
+    
+    // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
+    // If new product event types are added, add them here as well.
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+        
+        // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_MoreInfoTitle_MoreInfoUrl
+        EventHistory *eventHistoryData1 = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
+        
+        // Parse out to construct the Impact Text.
+        NSArray *impactComponents = [eventHistoryData1.previous1Status componentsSeparatedByString:@"_"];
+        description = [NSString stringWithFormat:@"%@",impactComponents[1]];
     }
     
     return description;
