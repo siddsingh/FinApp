@@ -132,6 +132,21 @@
         }
     } */
 
+    // For Crypto events, disable + hide the newsbuttons 2 & 3 for others enable + show them.
+    // FOR BTC or ETHR or BCH$ or XRP.
+    if (([self.parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame)) {
+        [self.newsButton2 setEnabled:NO];
+        [self.newsButton2 setHidden:YES];
+        [self.newsButton3 setEnabled:NO];
+        [self.newsButton3 setHidden:YES];
+    }
+    else {
+        [self.newsButton2 setEnabled:YES];
+        [self.newsButton2 setHidden:NO];
+        [self.newsButton3 setEnabled:YES];
+        [self.newsButton3 setHidden:NO];
+    }
+    
     // Set color of "See News" buttons based on event type. Currently not using News Buttons 2 and 3.
     [self.newsButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.newsButton2 setBackgroundColor:[self getColorForEventType:self.eventType]];
@@ -139,6 +154,7 @@
     [self.newsButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
     [self.newsButton2 setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
     [self.newsButton3 setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
+    
     
     
     // Set color of back navigation item based on event type
@@ -2289,7 +2305,7 @@
     
     // Always return the brand colors (including for Econ as that's taken care of in the brand colors).
     // TO DO: Delete before shipping v4.3
-    NSLog(@"TICKER FOR EEVENT IS:%@",self.parentTicker);
+    //NSLog(@"TICKER FOR EEVENT IS:%@",self.parentTicker);
     colorToReturn = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
     
    /* if ([eventType isEqualToString:@"Quarterly Earnings"]) {

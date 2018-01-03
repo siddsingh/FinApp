@@ -251,8 +251,8 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFutureCryptoEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-            self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
+            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
         }
     }
     // If following is selected in which case show the right following events
@@ -270,7 +270,7 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureCryptoEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureProductEvents];
         }
     }
@@ -662,9 +662,15 @@
             [self.eventsSearchBar performSelector: @selector(resignFirstResponder) withObject: nil afterDelay: 0.1];
         }
     }
-    // If not then, fetch event details, if the event is of type quarterly earnings before segueing to the details view
+    // If not then, fetch event details, if the event is of type quarterly earnings before segueing to the details view.
+    // CURRENTLY simplified this to just go to details with a description. Commenting out a price fetch.
     else {
         
+        // Get Details to pass off to detailed view.
+        NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
+        FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
+        
+        /*
         // New structure to fetch prices and segue to the detail view
         
         // Get Details to pass off to async processing of the price details fetch
@@ -696,7 +702,9 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self performSegueWithIdentifier:@"ShowEventDetails1" sender:selectedCell];
             });
-        });
+        }); */
+        
+        [self performSegueWithIdentifier:@"ShowEventDetails1" sender:selectedCell];
     }
     
     // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
@@ -1618,7 +1626,7 @@
         }
         
         // Check to see if "Product" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -1858,7 +1866,7 @@
         }
 
         // Check to see if "Product" events types are selected. Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
@@ -2059,12 +2067,12 @@
         }
         
         // Check to see if "News" event type is selected.
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
             
             // Check to see if the Events Main Nav is selected
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
                 // Query all future events, including today, as that is the default view
-                self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
+                self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
                 
                 // Set the Filter Specified flag to false, indicating that no search filter has been specified
                 self.filterSpecified = NO;
@@ -2350,8 +2358,8 @@
                       parameters:@{ @"Event Type" : @"Crypto" } ];
     }
     
-    // NEWS - Black
-    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+    // NEWS (Prod) - Black
+    if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
         
         // Black
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -2365,14 +2373,14 @@
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT NEWS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING PRODUCT EVENTS"];
             // Clear out the search context
             [self.eventsSearchBar setText:@""];
             [self searchBar:self.eventsSearchBar textDidChange:@""];
             // Set correct search bar placeholder text
             self.eventsSearchBar.placeholder = @"COMPANY/TICKER/EVENT";
             
-            self.eventResultsController = [self.primaryDataController getPastProductEventsIncludingNext7Days];
+            self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
             [self.eventsListTable reloadData];
             
             // Refresh all product events asynchronously
@@ -2388,7 +2396,7 @@
         // TRACKING EVENT: Event Type Selected: User selected Product event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
         [FBSDKAppEvents logEvent:@"Event Type Selected"
-                      parameters:@{ @"Event Type" : @"News" } ];
+                      parameters:@{ @"Event Type" : @"Prod" } ];
     }
     
     // PRICE - BLACK
@@ -2524,7 +2532,7 @@
     
     // Go with either NEWS or PRICE option based on Events or Following
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-        [self.eventTypeSelector setTitle:@"NEWS" forSegmentAtIndex:4];
+        [self.eventTypeSelector setTitle:@"PROD" forSegmentAtIndex:4];
     }
     else if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
         [self.eventTypeSelector setTitle:@"PRICE" forSegmentAtIndex:4];
@@ -2550,7 +2558,11 @@
     UIImageView *eventIcon = (UIImageView *)gestureRecognizer.view;
     NSIndexPath *tappedIndexPath = [NSIndexPath indexPathForRow:eventIcon.tag inSection:0];
     FAEventsTableViewCell *tappedIconCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:tappedIndexPath];
-    NSString *formattedEventType = tappedIconCell.eventDescription.text;
+    
+    // Currently just transitioning to the detail view as the shortcut was confusing to users. Uncomment if you need to bring it back.
+    [self performSegueWithIdentifier:@"ShowEventDetails1" sender:tappedIconCell];
+    
+   /* NSString *formattedEventType = tappedIconCell.eventDescription.text;
     NSString *ticker = tappedIconCell.companyTicker.text;
     
     // Open the corresponding News in mobile Safari
@@ -2562,8 +2574,8 @@
     
     // TO DO: If you want to revert to using Bing
     // Bing News is the default we are going with for now
-    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
-     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    //moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+    // searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
     
     // Google news is default for now
     moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
@@ -2623,7 +2635,7 @@
         // Just use whatever is the default color for the Safari View Controller
         //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] withCompanyTicker:ticker];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
-    }
+    } */
 }
 
 // News Button on cell press
@@ -2632,7 +2644,11 @@
     // Get the event description corresponding to the pressed button
     NSIndexPath *tappedIndexPath = [NSIndexPath indexPathForRow:sender.tag inSection:0];
     FAEventsTableViewCell *tappedButtonCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:tappedIndexPath];
-    NSString *formattedEventType = tappedButtonCell.eventDescription.text;
+    
+    // Currently just transitioning to the detail view as the shortcut was confusing to users. Uncomment if you need to bring it back.
+    [self performSegueWithIdentifier:@"ShowEventDetails1" sender:tappedButtonCell];
+    
+   /* NSString *formattedEventType = tappedButtonCell.eventDescription.text;
     NSString *ticker = tappedButtonCell.companyTicker.text;
     
     // Open the corresponding News in mobile Safari
@@ -2644,8 +2660,8 @@
     
     // TO DO: If you want to revert to using Bing
     // Bing News is the default we are going with for now
-    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
-     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    //moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+    // searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
     
     // Google news is default for now
     moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
@@ -2706,7 +2722,7 @@
         // Just use whatever is the default color for the Safari View Controller
         //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
-    }
+    } */
 }
 
 #pragma mark - Support Related
@@ -2757,8 +2773,8 @@
         if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
             self.eventResultsController = [secondaryDataController getAllFutureCryptoEvents];
         }
-        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-            self.eventResultsController = [secondaryDataController getPastProductEventsIncludingNext7Days];
+        if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
+            self.eventResultsController = [secondaryDataController getAllFutureProductEvents];
         }
     }
     // If following is selected in which case show the right following events
@@ -3379,10 +3395,12 @@
     {
         // Very lightish gray
         colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
-    } else if (([rawEventType containsString:@"Launch"]||[rawEventType containsString:@"Conference"])&&([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame)) {
+    }
+    // Don't need this anymore as we are not treating PROD events any differently.
+    /*else if (([rawEventType containsString:@"Launch"]||[rawEventType containsString:@"Conference"])&&([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame)) {
         // Very lightish gray
         colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
-    }
+    }*/
     else {
         
         // Return the standard color pattern
@@ -3742,8 +3760,8 @@
                 [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING CRYPTO EVENTS"];
             }
             
-            // If News is selected
-            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+            // If News (Prod) is selected
+            if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
                 [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT NEWS"];
             }
         }

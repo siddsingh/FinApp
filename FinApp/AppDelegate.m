@@ -89,7 +89,7 @@
                 
                 if ([self checkForInternetConnectivity]) {
                     // TO DO: Testing. Delete before shipping v4.3
-                    NSLog(@"Kicking off refresh of events");
+                    //NSLog(@"Kicking off refresh of events");
                 [self refreshEventsIfNeededFromApiInBackgroundWithDataController:eventDataController];
                 }
             });
@@ -128,7 +128,7 @@
     }
     
     // TO DO: Testing. Delete before shipping v4.3
-    NSLog(@"Did finish launching with options");
+    //NSLog(@"Did finish launching with options");
     
     return YES;
 }
@@ -162,7 +162,7 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
                 
                 // TO DO: Testing. Delete before shipping v4.3
-                NSLog(@"Kicking of refresh of events");
+                //NSLog(@"Kicking of refresh of events");
                 
                 // Create a new FADataController so that this thread has its own MOC
                 FADataController *eventDataController = [[FADataController alloc] init];

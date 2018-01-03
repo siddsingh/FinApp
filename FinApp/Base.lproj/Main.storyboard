@@ -84,7 +84,7 @@
                                     <segment title="EARNINGS"/>
                                     <segment title="CRYPTO"/>
                                     <segment title="ECON"/>
-                                    <segment title="NEWS"/>
+                                    <segment title="PROD"/>
                                 </segments>
                                 <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <variation key="default">
@@ -207,7 +207,7 @@
                                                         <constraint firstAttribute="height" constant="27" id="1P0-Tt-uzs"/>
                                                         <constraint firstAttribute="width" constant="20" id="yYo-1K-idO"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="13"/>
+                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                                                     <color key="textColor" red="0.89803921568627454" green="0.21568627450980393" blue="0.20784313725490194" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -580,7 +580,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DRe-pW-ZhJ">
-                                                    <rect key="frame" x="229.66666666666663" y="16" width="289" height="25"/>
+                                                    <rect key="frame" x="52.666666666666657" y="16" width="289" height="25"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
@@ -592,7 +592,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" indicatorStyle="white" delaysContentTouches="NO" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PEv-AN-HGr">
-                                                    <rect key="frame" x="229.66666666666663" y="41" width="289" height="66"/>
+                                                    <rect key="frame" x="52.666666666666657" y="41" width="289" height="66"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="0.1137254902" green="0.46666666670000001" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <gestureRecognizers/>
@@ -615,7 +615,7 @@
                                                     </connections>
                                                 </textView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="epa-cv-1rn">
-                                                    <rect key="frame" x="0.0" y="107" width="748" height="10"/>
+                                                    <rect key="frame" x="0.0" y="107" width="394" height="10"/>
                                                     <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
@@ -856,6 +856,8 @@
                                 <exclude reference="vBP-zD-Jj2"/>
                                 <exclude reference="xuu-i6-AE9"/>
                                 <exclude reference="zoO-aD-LkP"/>
+                                <exclude reference="H7q-Cb-LTQ"/>
+                                <exclude reference="Jvy-4g-F8g"/>
                                 <exclude reference="Mwx-It-GKL"/>
                                 <exclude reference="htv-wh-qlW"/>
                                 <exclude reference="25s-CI-nqv"/>
@@ -875,8 +877,6 @@
                                 <exclude reference="t6T-GC-NVK"/>
                                 <exclude reference="xtT-mY-r4A"/>
                                 <exclude reference="yXH-jU-e2V"/>
-                                <exclude reference="H7q-Cb-LTQ"/>
-                                <exclude reference="Jvy-4g-F8g"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
@@ -901,6 +901,9 @@
                                 <exclude reference="fqq-VA-3Rw"/>
                                 <include reference="hFR-jM-SnZ"/>
                                 <include reference="oJK-pZ-HQZ"/>
+                                <exclude reference="879-h8-jPx"/>
+                                <include reference="H7q-Cb-LTQ"/>
+                                <include reference="Jvy-4g-F8g"/>
                                 <exclude reference="25s-CI-nqv"/>
                                 <include reference="3jv-bH-4Kk"/>
                                 <exclude reference="CHt-RL-eLa"/>
@@ -911,9 +914,6 @@
                                 <exclude reference="nXZ-1B-4lf"/>
                                 <include reference="t6T-GC-NVK"/>
                                 <exclude reference="yXH-jU-e2V"/>
-                                <exclude reference="879-h8-jPx"/>
-                                <include reference="H7q-Cb-LTQ"/>
-                                <include reference="Jvy-4g-F8g"/>
                             </mask>
                         </variation>
                     </view>

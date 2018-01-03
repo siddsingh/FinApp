@@ -190,7 +190,7 @@ bool eventsUpdated = NO;
     [dataStoreContext save:&error];
     
     // Delete before shipping v4.3
-    NSLog(@"DONE COMITTING DELETE OF BBRY TICKER COMPANY");
+    //NSLog(@"DONE COMITTING DELETE OF BBRY TICKER COMPANY");
 }
 
 #pragma mark - Events Data Related
@@ -631,7 +631,7 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
-// Get all future product events including today. Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// Get all future product events including today (minus the Crypto events). Returns a results controller with identities of all product events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 // NOTE: If there is a new type of product event like launch or conference added, add that here as well.
 - (NSFetchedResultsController *)getAllFutureProductEvents
 {
@@ -645,8 +645,15 @@ bool eventsUpdated = NO;
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
     // Set the event and date filter
+    
+    // Old way which includes crypto events
+    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@)", todaysDate, @"Launch", @"Conference"];
+    
+    // New way does not include crypto.
     // NOTE: If there is a new type of product event like launch or conference added, add that here as well
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@)", todaysDate, @"Launch", @"Conference"];
+    // FOR BTC - Add any new crypto currency here to make it show up in the Crypto section
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker !=[c] %@ AND listedCompany.ticker !=[c] %@ AND listedCompany.ticker !=[c] %@ AND listedCompany.ticker !=[c] %@)", todaysDate, @"Launch", @"Conference", @"BTC", @"ETHR", @"BCH$", @"XRP"];
+    
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -656,7 +663,7 @@ bool eventsUpdated = NO;
                                                                             cacheName:nil];
     NSError *error;
     if (![self.resultsController performFetch:&error]) {
-        NSLog(@"ERROR: Getting all future events from data store failed: %@",error.description);
+        NSLog(@"ERROR: Getting all future events, minus crypto, from data store failed: %@",error.description);
     }
     
     return self.resultsController;
@@ -828,10 +835,10 @@ bool eventsUpdated = NO;
     NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
     
     // Add 7 days
-    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
-    differenceDayComponents.day = 7;
-    NSDate *weekDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:todaysDate options:0];
+    //NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    //NSDateComponents *differenceDayComponents = [[NSDateComponents alloc] init];
+    //differenceDayComponents.day = 7;
+    //NSDate *weekDate = [aGregorianCalendar dateByAddingComponents:differenceDayComponents toDate:todaysDate options:0];
     
     NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
     
@@ -885,9 +892,16 @@ bool eventsUpdated = NO;
     
     // Check to see if the event type is "Product". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all product events
     if ([eventType caseInsensitiveCompare:@"Product"] == NSOrderedSame) {
+        
+        // Old way included crypto events and sorting was different.
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (type contains[cd] %@ OR type contains[cd] %@) AND (date <= %@)", searchText, searchText, searchText, @"Launch", @"Conference", weekDate];
-        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+        //searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (type contains[cd] %@ OR type contains[cd] %@) AND (date <= %@)", searchText, searchText, searchText, @"Launch", @"Conference", weekDate];
+        //sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+        
+        // New way does not include crypto events and only allows future events.
+        // FOR BTC - Add any new crypto currency here to make it show up in the Crypto section
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (type contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (listedCompany.ticker !=[c] %@ AND listedCompany.ticker !=[c] %@ AND listedCompany.ticker !=[c] %@ AND listedCompany.ticker !=[c] %@)", searchText, searchText, searchText, @"Launch", @"Conference", todaysDate, @"BTC", @"ETHR", @"BCH$", @"XRP"];
+        sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
     [eventFetchRequest setPredicate:searchPredicate];
@@ -1270,7 +1284,7 @@ bool eventsUpdated = NO;
     [dataStoreContext save:&error];
     
     // Delete before shipping v4.3
-    NSLog(@"DONE COMITTING DELETE OF BBRY EVENTS");
+    //NSLog(@"DONE COMITTING DELETE OF BBRY EVENTS");
 }
 
 // Delete all events where parent event ticker is empty. Need this to clear out some BBRY events since ticker has changed from BBRY to BB
@@ -1294,21 +1308,15 @@ bool eventsUpdated = NO;
     // Delete all the FIFA events
     for (NSManagedObject *noTickerEvent in events) {
         // Delete before shipping v4.3
-        NSLog(@"KILLING A NO TICKER EVENT:%@",noTickerEvent.description);
+        //NSLog(@"KILLING A NO TICKER EVENT:%@",noTickerEvent.description);
         [dataStoreContext deleteObject:noTickerEvent];
     }
-    
-    // Delete before shipping v4.3
-    Event *event1 = events.firstObject;
-    Event *event2 = events.lastObject;
-    NSLog(@"TICKER EVENT 1 BEING KILLED:%@",event1.type);
-    NSLog(@"TICKER EVENT 2 BEING KILLED:%@",event2.type);
     
     // Save managed object context to persist the delete.
     [dataStoreContext save:&error];
     
     // Delete before shipping v4.3
-    NSLog(@"DONE COMITTING DELETE OF NULL EVENTS");
+    //NSLog(@"DONE COMITTING DELETE OF NULL EVENTS");
 }
 
 
@@ -2177,9 +2185,12 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"SNCR" name:@"Synchronoss Technologies"];
     [self insertUniqueCompanyWithTicker:@"SFIX" name:@"Stitch Fix"];
     
+    // Missing
+    [self insertUniqueCompanyWithTicker:@"TWLO" name:@"Twilio"];
+    
     // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
     // Delete before shipping v4.3
-    NSLog(@"Ended the background get incremental companies from local HARD CODE");
+    //NSLog(@"Ended the background get incremental companies from local HARD CODE");
 }
 
 // Get all company tickers and names from local files, which currently is a csv file and write them to the data store.
@@ -2495,7 +2506,7 @@ bool eventsUpdated = NO;
                 if (!(([parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([parentTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame))) {
                     if(![self doesEventExistForParentEventTicker:parentTicker andEventType:@"Quarterly Earnings"]) {
                         // TO DO: Delete before shipping v4.3
-                        NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
+                        //NSLog(@"About to fetch earnings for ticker:%@",parentTicker);
                         [self getAllEventsFromApiWithTicker:parentTicker];
                     }
                 }
@@ -4090,13 +4101,18 @@ bool eventsUpdated = NO;
     NSDateComponents *hourComponents = [gregorianCalendar components:NSCalendarUnitHour fromDate:lastSyncDate toDate:todaysDate options:0];
     NSInteger hoursBetween = [hourComponents hour];
     // TO DO: Delete Later before shipping v4.3
-    NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
-    NSLog(@"Hours between LAST EVENT SYNC AND TODAY are: %d",(int)hoursBetween);
+    //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
+    //NSLog(@"Hours between LAST EVENT SYNC AND TODAY are: %d",(int)hoursBetween);
 
     // Uncomment this if you want it to sync only after 24 hours.
     //if((int)daysBetween > 0) {
-    // TO DO: Make this 4 before shipping v4.3 Sync every 4 hours.
-    if((int)hoursBetween >= 4) {
+    // TO DO: Sync every 2 hours or if it's an upgrade to force a sync when the user might have just synced under 2 hrs ago on the old version.
+    if(((int)hoursBetween >= 2)||(![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_3_2_Upgraded"])) {
+        
+        // Set that the user has upgraded so that it now respects the 2 hours sync.
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V4_3_2_Upgraded"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];
         
@@ -4118,7 +4134,7 @@ bool eventsUpdated = NO;
              // Start the busy spinner on the UI to indicate that a fetch is in progress. Any async UI element update has to happen in the main thread.
              dispatch_async(dispatch_get_main_queue(), ^{
              // TO DO: Delete before shipping v4.3
-             NSLog(@"About to start busy spinner");
+             //NSLog(@"About to start busy spinner");
              [[NSNotificationCenter defaultCenter]postNotificationName:@"StartBusySpinner" object:self];
              });
              //}
@@ -4130,7 +4146,7 @@ bool eventsUpdated = NO;
                 if ((([localEvent.certainty isEqualToString:@"Estimated"]||[localEvent.certainty isEqualToString:@"Unknown"])&&((int)daysBetween <= 31))||([localEvent.certainty isEqualToString:@"Confirmed"]&&((int)daysBetween < 0))){
                     
                     // TO DO: Delete before shipping v4.3
-                    NSLog(@"About to fetch earnings from initial non product sync for ticker:%@",localEvent.listedCompany.ticker);
+                    //NSLog(@"About to fetch earnings from initial non product sync for ticker:%@",localEvent.listedCompany.ticker);
                     
                     [self getAllEventsFromApiWithTicker:localEvent.listedCompany.ticker];
                     
@@ -4182,7 +4198,7 @@ bool eventsUpdated = NO;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self sendEventsChangeNotification];
                 // TO DO: Delete before shipping v4.3
-                NSLog(@"About to stop busy spinner");
+                //NSLog(@"About to stop busy spinner");
                 [[NSNotificationCenter defaultCenter]postNotificationName:@"StopBusySpinner" object:self];
             });
         }
@@ -4815,7 +4831,7 @@ bool eventsUpdated = NO;
     // Any async UI element update (navBar title gets updated) hs to happen in the main thread.
     dispatch_async(dispatch_get_main_queue(), ^{
         // TO DO: Delete before shipping v4.3
-        NSLog(@"About to error message: %@ to the nav bar title",msgContents);
+        //NSLog(@"About to error message: %@ to the nav bar title",msgContents);
         [[NSNotificationCenter defaultCenter]postNotificationName:@"UserMessageCreated" object:msgContents];
     });
 }
