@@ -60,7 +60,7 @@
 // than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
 - (NSFetchedResultsController *)getAllFutureEvents;
 
-// Get all future events including today. The included product events will only be the ones that have very high impact
+// Get all future events including today. The included product events will only be the ones that have very high impact.Changing this to not have any product events, which was an interesting experiment that needs to be rethought.
 - (NSFetchedResultsController *)getAllFutureEventsWithProductEventsOfVeryHighImpact;
 
 // Get all future following events including today. Returns a results controller with identities of all Events recorded, but no more

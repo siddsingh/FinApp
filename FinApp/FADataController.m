@@ -359,7 +359,7 @@ bool eventsUpdated = NO;
     return self.resultsController;
 }
 
-// Get all future events including today. The included product events will only be the ones that have very high impact
+// Get all future events including today. The included product events will only be the ones that have very high impact. Changing this to not have any product events, which was an interesting experiment that needs to be rethought.
 - (NSFetchedResultsController *)getAllFutureEventsWithProductEventsOfVeryHighImpact
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -371,8 +371,9 @@ bool eventsUpdated = NO;
     NSFetchRequest *eventFetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     [eventFetchRequest setEntity:eventEntity];
-    // Set the filter
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type =[c] %@ OR listedCompany.ticker contains %@ OR type contains[cd] %@ OR type contains[cd] %@) AND ((NOT ((relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@))) OR (relatedEventHistory.previous1Status contains[cd] %@))", todaysDate, @"Quarterly Earnings", @"ECONOMY_", @"Launch", @"Conference", @"High_", @"Medium_", @"Low_", @"Very High_"];
+    // Set the filter. Older filter had future product events of high impact.
+    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type =[c] %@ OR listedCompany.ticker contains %@ OR type contains[cd] %@ OR type contains[cd] %@) AND ((NOT ((relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@))) OR (relatedEventHistory.previous1Status contains[cd] %@))", todaysDate, @"Quarterly Earnings", @"ECONOMY_", @"Launch", @"Conference", @"High_", @"Medium_", @"Low_", @"Very High_"];
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type =[c] %@ OR listedCompany.ticker contains %@)", todaysDate, @"Quarterly Earnings", @"ECONOMY_"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -861,10 +862,11 @@ bool eventsUpdated = NO;
         sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
-    // Check to see if the event display type is "Home". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events, Exclude product events with impact other than Very High.
+    // Check to see if the event display type is "Home". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all events, Exclude product events with impact other than Very High. No longer including product events.
     if ([eventType caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT ((type contains[cd] %@) OR (type contains[cd] %@) OR (type contains[cd] %@))) AND ((NOT ((relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@))) OR (relatedEventHistory.previous1Status contains[cd] %@))", searchText, searchText, searchText, todaysDate, @"% up", @"% down", @"52 Week", @"High_", @"Medium_", @"Low_", @"Very High_"];
+        //searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT ((type contains[cd] %@) OR (type contains[cd] %@) OR (type contains[cd] %@))) AND ((NOT ((relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@) OR (relatedEventHistory.previous1Status contains[cd] %@))) OR (relatedEventHistory.previous1Status contains[cd] %@))", searchText, searchText, searchText, todaysDate, @"% up", @"% down", @"52 Week", @"High_", @"Medium_", @"Low_", @"Very High_"];
+        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (date >= %@) AND (NOT ((type contains[cd] %@) OR (type contains[cd] %@) OR (type contains[cd] %@) OR (type contains[cd] %@) OR (type contains[cd] %@)))", searchText, searchText, searchText, todaysDate, @"% up", @"% down", @"52 Week", @"Launch", @"Conference"];
         sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
@@ -1920,10 +1922,10 @@ bool eventsUpdated = NO;
     // TO DO: DELETE: Use this endpoint for testing an incorrect API response.
     // NSString *endpointURL = @"https://www.quandl.com/api/v2/datasets.json?query=*&source_code=ZEA&per_page=300&page=1&auth_token=Mq-sCZjPwiJNcsTkUyoQ";
     
-    // For the ticker HSBC use a custom URL where you are manually updating the json, since ZEA doesn't really track HSBC
-    if ([companyTicker caseInsensitiveCompare:@"HSBC"] == NSOrderedSame) {
+    // For the ticker HSBC use a custom URL where you are manually updating the json, since ZEA doesn't really track HSBC. No longer needed.
+    /*if ([companyTicker caseInsensitiveCompare:@"HSBC"] == NSOrderedSame) {
         endpointURL = @"https://gist.github.com/siddsingh/714f8c3897d644a66e116b633202b73e/raw/HSBC_Earnings.json";
-    }
+    }*/
         
     NSError * error = nil;
     NSURLResponse *response = nil;
@@ -2187,6 +2189,11 @@ bool eventsUpdated = NO;
     
     // Missing
     [self insertUniqueCompanyWithTicker:@"TWLO" name:@"Twilio"];
+    
+    // Added these starting 04/10
+    [self insertUniqueCompanyWithTicker:@"SPOT" name:@"Spotify"];
+    [self insertUniqueCompanyWithTicker:@"DBX" name:@"Dropbox"];
+    [self insertUniqueCompanyWithTicker:@"SEND" name:@"SendGrid"];
     
     // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
     // Delete before shipping v4.3
@@ -4168,13 +4175,14 @@ bool eventsUpdated = NO;
         
         // Check to see if product events need to be added or refreshed. If yes, do that.
         // *****NOTE*****Currently always returning true since we have not implemented update logic.
-        if ([self doProductEventsNeedToBeAddedRefreshed]) {
+        // Product events was an interesting experiment but did not really take in it's current form. Will revisit in the future
+       /* if ([self doProductEventsNeedToBeAddedRefreshed]) {
             
             // Use the wrapper as it sets off a start busy spinner as well.
             // NOTE:!!!!!!!! the wrapper also stops the busy spinner so if we need to do additional stuff here like price change fetch modify accordingly.
             //[self getAllProductEventsFromApi];
             [self syncProductEventsWrapper];
-        }
+        } */
     
         // Fetch any price change events using the new API which gets it the sme way as in the client. Currently only getting daily price changes.
         // Delete the existing daily price change events from the db to not create duplicates
@@ -4413,7 +4421,7 @@ bool eventsUpdated = NO;
 // Additionally since the user object is created when the first company data sync is done, set the event sync
 // status for the user to "NoSyncPerformed" when creating the user, not for the update.
 // Synced Page number is the page to which the company data sync was completed, ranges from 0 to total no of pages in the company data API response.
-- (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus syncedPageNo: (NSNumber *)pageNo;
+- (void)upsertUserWithCompanySyncStatus:(NSString *)syncStatus syncedPageNo: (NSNumber *)pageNo
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
     
