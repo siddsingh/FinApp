@@ -4105,16 +4105,16 @@ bool eventsUpdated = NO;
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
     // Get the number of hours between the 2 dates
-    NSDateComponents *hourComponents = [gregorianCalendar components:NSCalendarUnitHour fromDate:lastSyncDate toDate:todaysDate options:0];
-    NSInteger hoursBetween = [hourComponents hour];
+    //NSDateComponents *hourComponents = [gregorianCalendar components:NSCalendarUnitHour fromDate:lastSyncDate toDate:todaysDate options:0];
+    //NSInteger hoursBetween = [hourComponents hour];
     // TO DO: Delete Later before shipping v4.3
     //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
     //NSLog(@"Hours between LAST EVENT SYNC AND TODAY are: %d",(int)hoursBetween);
 
     // Uncomment this if you want it to sync only after 24 hours.
-    //if((int)daysBetween > 0) {
+    if((int)daysBetween > 0) {
     // TO DO: Sync every 2 hours or if it's an upgrade to force a sync when the user might have just synced under 2 hrs ago on the old version.
-    if(((int)hoursBetween >= 2)||(![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_3_2_Upgraded"])) {
+   // if(((int)hoursBetween >= 2)||(![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_3_2_Upgraded"])) {
         
         // Set that the user has upgraded so that it now respects the 2 hours sync.
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V4_3_2_Upgraded"];

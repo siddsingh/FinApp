@@ -130,7 +130,7 @@
     
     // Format the main nav type selector
     // Set text color of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
-    [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
+  /*  [self.mainNavSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
     // Set text color for the segment selected for the very first time which is Black for ALL events type. Also set focus bar to draw focus to the search bar to the same color.
     if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -138,7 +138,10 @@
                                     [UIColor blackColor], NSForegroundColorAttributeName,
                                     nil];
         [self.mainNavSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
-    }
+    } */
+    
+    // Format the initiate support button's background color to get it right. For some weird reason it doesn't go through properly when setting it in the storyboard.
+    [self.supportButton setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
 
     // Get a primary data controller that you will use later
     self.primaryDataController = [[FADataController alloc] init];
@@ -393,11 +396,20 @@
     // Make the cell user interaction enabled in case it's been turned off for 52 week events.
     cell.userInteractionEnabled = YES;
     
-    // Reset backgrnd and text colors for Ticker and news button to white and dark blackish respectively, in case it's been altered.
-    cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
-    cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
+    // Reset backgrnd and text colors for Ticker and news button to white and dark blackish respectively, in case it's been altered. Don't need this anymore.
+    //cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
+    //cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
+    
+    // Disable and hide the ticker label
+    
+    [cell.companyTicker setHidden:YES];
+    
+    // Make the news button round and set bkgrnd color
+    cell.newsButon.clipsToBounds = YES;
+    cell.newsButon.layer.cornerRadius = 25;
     cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
     [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
+    
     
     // Show the event date in case it's been hidden for news.
     cell.eventDate.hidden = NO;
@@ -409,7 +421,7 @@
     cell.eventImpact.hidden = YES;
     
     // Unhide the company ticker in case it was hidden during a product timeline view
-    [[cell  companyTicker] setHidden:NO];
+    //[[cell  companyTicker] setHidden:NO];
     
     // Hide the timeline label in case it was shown in the timeline view
     cell.timelineLbl.hidden = YES;
@@ -2325,37 +2337,55 @@
     // Crypto - Black 
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
         
-        NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
-                                        [UIColor blackColor], NSForegroundColorAttributeName,
-                                        nil];
-        [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
         
-        // Clear out the search context
-        [self.eventsSearchBar setText:@""];
-        [self searchBar:self.eventsSearchBar textDidChange:@""];
-        
-        // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"TICKER/NAME/EVENT";
-        
-        // Query all future economic events or following economic events, including today.
-        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
-            // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING CRYPTO EVENTS"];
-            self.eventResultsController = [self.primaryDataController getAllFutureCryptoEvents];
-            [self.eventsListTable reloadData];
-        }
-        if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
-            // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED CRYPTO EVENTS"];
-            self.eventResultsController = [self.primaryDataController getAllFollowingFutureCryptoEvents];
-            [self.eventsListTable reloadData];
-        }
         
         // TRACKING EVENT: Event Type Selected: User selected Crypto event type explicitly in the events type selector
         // TO DO: Disabling to not track development events. Enable before shipping.
         [FBSDKAppEvents logEvent:@"Event Type Selected"
                       parameters:@{ @"Event Type" : @"Crypto" } ];
+        
+        NSURL *targetURL = [NSURL URLWithString:@"https://itunes.apple.com/us/app/cryptofi-learn-crypto/id1347709980"];
+        
+        if (targetURL) {
+            
+            NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                            [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                            [UIColor blackColor], NSForegroundColorAttributeName,
+                                            nil];
+            [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
+            
+            // Clear out the search context
+            [self.eventsSearchBar setText:@""];
+            [self searchBar:self.eventsSearchBar textDidChange:@""];
+            
+            // Set correct search bar placeholder text
+            self.eventsSearchBar.placeholder = @"TICKER/NAME/EVENT";
+            
+            // Query all future economic events or following economic events, including today.
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
+                // Set correct header text
+                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING CRYPTO EVENTS"];
+                self.eventResultsController = [self.primaryDataController getAllFutureCryptoEvents];
+                [self.eventsListTable reloadData];
+            }
+            if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
+                // Set correct header text
+                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED CRYPTO EVENTS"];
+                self.eventResultsController = [self.primaryDataController getAllFollowingFutureCryptoEvents];
+                [self.eventsListTable reloadData];
+            }
+            
+            // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            [FBSDKAppEvents logEvent:@"Go to Cryptofi App Listing"
+                          parameters:@{ @"Event Type" : @"External Link" } ];
+            
+            SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+            externalInfoVC.delegate = self;
+            // Just use whatever is the default color for the Safari View Controller
+            //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] withCompanyTicker:ticker];
+            [self presentViewController:externalInfoVC animated:YES completion:nil];
+        }
     }
     
     // NEWS (Prod) - Black
