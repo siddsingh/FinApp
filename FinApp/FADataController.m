@@ -542,6 +542,7 @@ bool eventsUpdated = NO;
 }
 
 // Get all future cryptocurrency events including today. Returns a results controller with identities of all crypto events recorded, but no more than batchSize (currently set to 15) objects’ data will be fetched from the persistent store at a time.
+// Make this return empty for now.
 - (NSFetchedResultsController *)getAllFutureCryptoEvents
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -555,7 +556,8 @@ bool eventsUpdated = NO;
     [eventFetchRequest setEntity:eventEntity];
     // Set the filter for date and event type
     // FOR BTC - Add any new crypto currency here to make it show up in the Crypto section
-    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@)", todaysDate, @"BTC", @"ETHR", @"BCH$", @"XRP"];
+    //NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@)", todaysDate, @"BTC", @"ETHR", @"BCH$", @"XRP"];
+    NSPredicate *datePredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@)", todaysDate, @"EventTypeNotDefined", @"EventTypeNotDefined"];
     [eventFetchRequest setPredicate:datePredicate];
     NSSortDescriptor *sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     [eventFetchRequest setSortDescriptors:[NSArray arrayWithObject:sortField]];
@@ -884,11 +886,12 @@ bool eventsUpdated = NO;
         sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     
-    // Check to see if the event type is "Crypto". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events
+    // Check to see if the event type is "Crypto". Search on "ticker" or "name" fields for the listed Company or the "type" field on the event for all economic events. Don't return anything for now.
     if ([eventType caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
         // Case and Diacractic Insensitive Filtering
         // FOR BTC: Add any new cryptocurrencies here as well.
-        searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@) AND (date >= %@)", searchText, searchText, searchText, @"BTC", @"ETHR", @"BCH$", @"XRP", todaysDate];
+       // searchPredicate = [NSPredicate predicateWithFormat:@"(listedCompany.name contains[cd] %@ OR listedCompany.ticker contains[cd] %@ OR type contains[cd] %@) AND (listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@ OR listedCompany.ticker =[c] %@) AND (date >= %@)", searchText, searchText, searchText, @"BTC", @"ETHR", @"BCH$", @"XRP", todaysDate];
+        searchPredicate = [NSPredicate predicateWithFormat:@"date >= %@ AND (type contains[cd] %@ OR type contains[cd] %@)", todaysDate, @"EventTypeNotDefined", @"EventTypeNotDefined"];
         sortField = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     }
     

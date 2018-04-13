@@ -400,16 +400,15 @@
     //cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
     //cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
     
-    // Disable and hide the ticker label
+    // Disable and Hide the ticker label
+    [[cell companyTicker] setEnabled:NO];
+    [[cell companyTicker] setHidden:YES];
     
-    [cell.companyTicker setHidden:YES];
-    
-    // Make the news button round and set bkgrnd color
-    cell.newsButon.clipsToBounds = YES;
-    cell.newsButon.layer.cornerRadius = 25;
+    // Set bkgrnd color for news button & make it round
     cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
     [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
-    
+    cell.newsButon.clipsToBounds = YES;
+    cell.newsButon.layer.cornerRadius = 25;
     
     // Show the event date in case it's been hidden for news.
     cell.eventDate.hidden = NO;
@@ -467,6 +466,8 @@
     if ([self.filterType isEqualToString:@"Match_Companies_NoEvents"]||[self.filterType isEqualToString:@"Match_Companies_ForTimeline"]) {
         
         // Show the company ticker associated with the event
+        [[cell  companyTicker] setHidden:NO];
+        [[cell companyTicker] setEnabled:YES];
         [[cell  companyTicker] setText:companyAtIndex.ticker];
         // Left align the ticker for visual consistency with this view
         [[cell  companyTicker] setTextAlignment:NSTextAlignmentLeft];
@@ -539,20 +540,24 @@
         } else {
             cell.userInteractionEnabled = YES;
         }
-        // Set the company ticker text and Add a tap gesture recognizer to the event ticker
+        // Set the company ticker text and then disable,hide it and no need for the gesture recognizer as the news button now takes it's place
         [[cell companyTicker] setText:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker]];
-        UITapGestureRecognizer *tickerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processTypeIconTap:)];
+        [[cell companyTicker] setEnabled:NO];
+        [[cell companyTicker] setHidden:YES];
+        /*UITapGestureRecognizer *tickerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(processTypeIconTap:)];
         tickerTap.cancelsTouchesInView = YES;
         tickerTap.numberOfTapsRequired = 1;
         tickerTap.numberOfTouchesRequired = 1;
         [cell.companyTicker addGestureRecognizer:tickerTap];
-        cell.companyTicker.tag = indexPath.row;
+        cell.companyTicker.tag = indexPath.row;*/
         
-        // Enable, Show and Set News Button text color
+        // Enable, Show and Set News Button text and color
+        [[cell newsButon] setTitle:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker] forState:UIControlStateNormal];
         [[cell newsButon] setHidden:NO];
+        [[cell newsButon] setEnabled:YES];
         cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
         [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
-        [[cell newsButon] setEnabled:YES];
+        
         cell.newsButon.tag = indexPath.row;
         // Also add the button press action
         [cell.newsButon addTarget:self action:@selector(newsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -678,9 +683,94 @@
     // CURRENTLY simplified this to just go to details with a description. Commenting out a price fetch.
     else {
         
+        // Super simple, just spin out to a webview with news
+        // Get the event description corresponding to the pressed button
+        NSIndexPath *tappedIndexPath = [self.eventsListTable indexPathForSelectedRow];
+        FAEventsTableViewCell *tappedButtonCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:tappedIndexPath];
+        
+        // Simplifying this a lot to directly open the appropriate informational webview
+        // Currently just transitioning to the detail view as the shortcut was confusing to users. Uncomment if you need to bring it back.
+        // [self performSegueWithIdentifier:@"ShowEventDetails1" sender:tappedButtonCell];
+        
+        NSString *formattedEventType = tappedButtonCell.eventDescription.text;
+        NSString *ticker = tappedButtonCell.companyTicker.text;
+        
+        // Open the corresponding News in mobile Safari
+        NSString *moreInfoURL = nil;
+        NSString *searchTerm = nil;
+        NSURL *targetURL = nil;
+        
+        // Send them to different sites with different queries based on which site has the best informtion for that event type
+        
+        // TO DO: If you want to revert to using Bing
+        // Bing News is the default we are going with for now
+        //moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+        // searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
+        
+        // Google news is default for now
+        moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
+        
+        // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
+        if ([formattedEventType isEqualToString:@"Earnings"]) {
+            searchTerm = [NSString stringWithFormat:@"%@ %@",ticker,@"earnings"];
+        }
+        
+        // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
+        if ([formattedEventType containsString:@"Launch"]) {
+            searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+        }
+        // E.g. Naples Epyc Sales Launch becomes Naples Epyc
+        if ([formattedEventType containsString:@"Sales Launch"]) {
+            searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Sales Launch" withString:@""];
+        }
+        // For conference you want to use the raw event type as it contains the word conference and formatted does not
+        if ([[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] containsString:@"Conference"]) {
+            searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+        }
+        
+        // For economic events, search query term is customized for each type
+        if ([formattedEventType containsString:@"GDP Release"]) {
+            searchTerm = @"us gdp growth";
+        }
+        if ([formattedEventType containsString:@"Consumer Confidence"]) {
+            searchTerm = @"us consumer confidence";
+        }
+        if ([formattedEventType containsString:@"Fed Meeting"]) {
+            searchTerm = @"fomc meeting";
+        }
+        if ([formattedEventType containsString:@"Jobs Report"]) {
+            searchTerm = @"jobs report us";
+        }
+        if ([formattedEventType containsString:@"% up"]||[formattedEventType containsString:@"% down"]) {
+            searchTerm = [NSString stringWithFormat:@"%@ %@",ticker,@"stock"];
+        }
+        
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+        
+        targetURL = [NSURL URLWithString:moreInfoURL];
+        
+        if (targetURL) {
+            
+            // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            [FBSDKAppEvents logEvent:@"Go To Details"
+                          parameters:@{ @"Ticker" : ticker,
+                                        @"Event Type" : searchTerm,
+                                        @"Name" : @"External Google News" } ];
+            
+            SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+            externalInfoVC.delegate = self;
+            // Just use whatever is the default color for the Safari View Controller
+            //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
+            [self presentViewController:externalInfoVC animated:YES completion:nil];
+        }
+        
         // Get Details to pass off to detailed view.
-        NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
-        FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];
+        /*NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
+        FAEventsTableViewCell *selectedCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:selectedRowIndexPath];*/
         
         /*
         // New structure to fetch prices and segue to the detail view
@@ -714,9 +804,9 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self performSegueWithIdentifier:@"ShowEventDetails1" sender:selectedCell];
             });
-        }); */
+        });
         
-        [self performSegueWithIdentifier:@"ShowEventDetails1" sender:selectedCell];
+        [self performSegueWithIdentifier:@"ShowEventDetails1" sender:selectedCell];*/
     }
     
     // If search bar is in edit mode but the user has not entered any character to search (i.e. a search filter has not been applied), clear out of the search context when a user clicks on a row
@@ -2262,7 +2352,7 @@
         
         // Making size smaller to fit iphone SE
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:13], NSFontAttributeName,
+                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2675,10 +2765,11 @@
     NSIndexPath *tappedIndexPath = [NSIndexPath indexPathForRow:sender.tag inSection:0];
     FAEventsTableViewCell *tappedButtonCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:tappedIndexPath];
     
+    // Simplifying this a lot to directly open the appropriate informational webview
     // Currently just transitioning to the detail view as the shortcut was confusing to users. Uncomment if you need to bring it back.
-    [self performSegueWithIdentifier:@"ShowEventDetails1" sender:tappedButtonCell];
+   // [self performSegueWithIdentifier:@"ShowEventDetails1" sender:tappedButtonCell];
     
-   /* NSString *formattedEventType = tappedButtonCell.eventDescription.text;
+    NSString *formattedEventType = tappedButtonCell.eventDescription.text;
     NSString *ticker = tappedButtonCell.companyTicker.text;
     
     // Open the corresponding News in mobile Safari
@@ -2740,19 +2831,19 @@
     
     if (targetURL) {
         
-        // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+        // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
         // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"See External News Shortcut"
-                      parameters:@{ @"News Source" : @"Google",
-                                    @"Action Query" : searchTerm,
-                                    @"Action URL" : [targetURL absoluteString]} ];
+        [FBSDKAppEvents logEvent:@"Go To Details"
+                      parameters:@{ @"Ticker" : ticker,
+                                    @"Event Type" : searchTerm,
+                                    @"Name" : @"External Google News" } ];
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
         externalInfoVC.delegate = self;
         // Just use whatever is the default color for the Safari View Controller
         //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
-    } */
+    }
 }
 
 #pragma mark - Support Related
@@ -3469,8 +3560,8 @@
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
         //colorToReturn = [UIColor blackColor];
-        // Return normal blue
-        colorToReturn = [UIColor blueColor];
+        // Darkish almost black
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         
     } else if (difference == 1) {
         // Older slightly less orangish red
@@ -3485,8 +3576,8 @@
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
         //colorToReturn = [UIColor blackColor];
-        // Return the blue that was used for Econ events
-        colorToReturn = [UIColor blueColor];
+        // Darkish almost black
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     } else if ((difference > 1)&&(difference < 8)){
         // Older More orange, less red
         //colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:89.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
@@ -3500,18 +3591,8 @@
         //colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
         // Return black
         //colorToReturn = [UIColor blackColor];
-        // Return blue
-        colorToReturn = [UIColor blueColor];
-    } else if ((difference < 0)&&(difference > -8)){
-        // Return almost black
-        // colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
-        // Return total black
-        colorToReturn = [UIColor blackColor];
-    } else if (((difference > 7)&&(difference < 31))||((difference > -31)&&(difference < -7))){
-        // Return almost black
-        // colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
-        // Return total black
-        colorToReturn = [UIColor blackColor];
+        // Darkish almost black
+        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:63.0f/255.0f blue:63.0f/255.0f alpha:1.0f];
     }
     
     return colorToReturn;
@@ -3612,27 +3693,19 @@
     }
     if ([eventType containsString:@"Fed Meeting"]) {
         // Econ Blue
-        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-        // Light purple
-        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Jobs Report"]) {
         // Econ Blue
-        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-        // Light purple
-        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Consumer Confidence"]) {
         // Econ Blue
-        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-        // Light purple
-        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"GDP Release"]) {
         // Econ Blue
-        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-        // Light purple
-        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         // FOR BTC: Add any new cryptocurrencies here. Return copper penny color. Don't need this anymore.

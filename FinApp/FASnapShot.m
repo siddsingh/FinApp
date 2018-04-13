@@ -280,15 +280,16 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:67.0f/255.0f green:68.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
     }
     
+    // Just use default dark gray with econ blue for text as there's a lot of other blues.
     if ([ticker caseInsensitiveCompare:@"ECON"] == NSOrderedSame) {
-        // Dark purple for econ
-        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:39.0f/255.0f blue:72.0f/255.0f alpha:1.0f];
+        // Very lightish gray
+        colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:232.0f/255.0f blue:232.0f/255.0f alpha:1.0f];
     }
     
     // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
     if (([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame)) {
-        // Dark purple for econ
-        colorToReturn = [UIColor colorWithRed:63.0f/255.0f green:39.0f/255.0f blue:72.0f/255.0f alpha:1.0f];
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"JPM"] == NSOrderedSame) {
@@ -478,7 +479,7 @@ static FASnapShot *sharedInstance;
 - (UIColor *)getBrandTextColorForCompany:(NSString *)ticker {
     
     //Default black color
-    UIColor *colorToReturn = [UIColor blackColor];
+    UIColor *colorToReturn = [UIColor whiteColor];
     
     if ([ticker caseInsensitiveCompare:@"SNE"] == NSOrderedSame) {
         // Bluish light for PS4 controller light
@@ -624,8 +625,8 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"ECON"] == NSOrderedSame) {
-        // White for Econ
-        colorToReturn = [UIColor whiteColor];
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
     
     // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
