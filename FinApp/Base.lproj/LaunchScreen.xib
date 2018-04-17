@@ -24,7 +24,7 @@
                         <constraint firstAttribute="width" constant="70" id="mNP-2K-6uC"/>
                     </constraints>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="60"/>
-                    <color key="textColor" red="0.0" green="0.83529411764705885" blue="0.20392156862745098" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.4062454144" green="0.71372549019607845" blue="0.14636443830000001" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>

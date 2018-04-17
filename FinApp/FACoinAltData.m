@@ -114,6 +114,34 @@ static FACoinAltData *sharedInstance;
         [infoArray addObject:@"https://www.jpmorganchase.com/corporate/investor-relations/quarterly-earnings.htm"];
     }
     
+    else if ([ticker caseInsensitiveCompare:@"IBM"] == NSOrderedSame) {
+        // 1. Investor Site(for stock)/Agency home page
+        [infoArray addObject:@"https://www.ibm.com/investor/"];
+        // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
+        [infoArray addObject:@"https://www.ibm.com/investor/events/"];
+    }
+    
+    else if ([ticker caseInsensitiveCompare:@"MS"] == NSOrderedSame) {
+        // 1. Investor Site(for stock)/Agency home page
+        [infoArray addObject:@"https://www.morganstanley.com/about-us-ir"];
+        // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
+        [infoArray addObject:@"https://www.morganstanley.com/about-us-ir/earnings-releases"];
+    }
+    
+    else if ([ticker caseInsensitiveCompare:@"CLDR"] == NSOrderedSame) {
+        // 1. Investor Site(for stock)/Agency home page
+        [infoArray addObject:@"https://investors.cloudera.com/Investors/default.aspx.html"];
+        // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
+        [infoArray addObject:@"https://investors.cloudera.com/events/Events/default.aspx"];
+    }
+    
+    else if ([ticker caseInsensitiveCompare:@"FOX"] == NSOrderedSame) {
+        // 1. Investor Site(for stock)/Agency home page
+        [infoArray addObject:@"https://www.21cf.com/investor-relations/"];
+        // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
+        [infoArray addObject:@"https://www.21cf.com/investor-relations/"];
+    }
+    
  /*   else if ([ticker caseInsensitiveCompare:@"GM"] == NSOrderedSame) {
         // 1. Investor Site(for stock)/Agency home page
         [infoArray addObject:@""];
@@ -226,20 +254,6 @@ static FACoinAltData *sharedInstance;
         [infoArray addObject:@""];
     }
     
-    else if ([ticker caseInsensitiveCompare:@"MS"] == NSOrderedSame) {
-        // 1. Investor Site(for stock)/Agency home page
-        [infoArray addObject:@""];
-        // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
-        [infoArray addObject:@""];
-    }
-    
-    else if ([ticker caseInsensitiveCompare:@"IBM"] == NSOrderedSame) {
-        // 1. Investor Site(for stock)/Agency home page
-        [infoArray addObject:@""];
-        // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
-        [infoArray addObject:@""];
-    }
-    
     else if ([ticker caseInsensitiveCompare:@"VIA"] == NSOrderedSame) {
         // 1. Investor Site(for stock)/Agency home page
         [infoArray addObject:@""];
@@ -345,13 +359,6 @@ static FACoinAltData *sharedInstance;
         [infoArray addObject:@""];
     }
     
-    else if ([ticker caseInsensitiveCompare:@"FOX"] == NSOrderedSame) {
-        // 1. Investor Site(for stock)/Agency home page
-        [infoArray addObject:@""];
-        // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
-        [infoArray addObject:@""];
-    }
-    
     else if ([ticker caseInsensitiveCompare:@"BABA"] == NSOrderedSame) {
         // 1. Investor Site(for stock)/Agency home page
         [infoArray addObject:@""];
@@ -408,12 +415,7 @@ static FACoinAltData *sharedInstance;
         [infoArray addObject:@""];
     }
     
-    else if ([ticker caseInsensitiveCompare:@"CLDR"] == NSOrderedSame) {
-        // 1. Investor Site(for stock)/Agency home page
-        [infoArray addObject:@""];
-        // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
-        [infoArray addObject:@""];
-    } */
+    */
     
     // If not available set to default value of Not Available
     else {

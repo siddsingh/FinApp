@@ -264,7 +264,18 @@ static FASnapShot *sharedInstance;
     // Just use default dark gray with econ blue for text as there's a lot of other blues.
     if ([ticker caseInsensitiveCompare:@"ECON"] == NSOrderedSame) {
         // Very lightish gray
-        colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:232.0f/255.0f blue:232.0f/255.0f alpha:1.0f];
+        // colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:232.0f/255.0f blue:232.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:77.0f/255.0f blue:139.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"MS"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor colorWithRed:70.0f/255.0f green:204.0f/255.0f blue:206.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"IBM"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor blackColor];
     }
     
     // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
@@ -458,6 +469,16 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:109.0f/255.0f green:151.0f/255.0f blue:200.0f/255.0f alpha:1.0f];
     }
     
+    if ([ticker caseInsensitiveCompare:@"CLDR"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor colorWithRed:83.0f/255.0f green:73.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"FOX"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor colorWithRed:24.0f/255.0f green:23.0f/255.0f blue:23.0f/255.0f alpha:1.0f];
+    }
+    
     return colorToReturn;
 }
 
@@ -612,7 +633,28 @@ static FASnapShot *sharedInstance;
     
     if ([ticker caseInsensitiveCompare:@"ECON"] == NSOrderedSame) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        // colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:248.0f/255.0f green:152.0f/255.0f blue:97.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"MS"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor blackColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"IBM"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"CLDR"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"FOX"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:186.0f/255.0f blue:238.0f/255.0f alpha:1.0f];
     }
     
     // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well

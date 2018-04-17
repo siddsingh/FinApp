@@ -875,7 +875,8 @@
             // TO DO: Hardcoding this for now to be quarterly earnings
             if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:@"Quarterly Earnings"])
             {
-                actionName = [NSString stringWithFormat:@"Unfollow %@",cell.companyTicker.text];
+                //actionName = [NSString stringWithFormat:@"Unfollow %@",cell.companyTicker.text];
+                actionName = [NSString stringWithFormat:@"Unfollow"];
                 
                 // Create the "Reimder Already Set" Action and handle it being exercised.
                 setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
@@ -910,7 +911,8 @@
             else
             // If not create the follow action
             {
-                actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
+                //actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
+                actionName = [NSString stringWithFormat:@"Follow"];
                 
                 setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
                     
@@ -948,7 +950,8 @@
             // If yes, show a appropriately formatted status action, in this case that you are following the ticker.
             if ([self.primaryDataController doesReminderActionExistForEventWithTicker:cell.companyTicker.text eventType:cellEventType])
             {
-                actionName = [NSString stringWithFormat:@"Unfollow %@",cell.companyTicker.text];
+                //actionName = [NSString stringWithFormat:@"Unfollow %@",cell.companyTicker.text];
+                actionName = [NSString stringWithFormat:@"Unfollow"];
                 
                 // Create the "Reimder Already Set" Action and handle it being exercised.
                 setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
@@ -983,7 +986,8 @@
             else
             // If not create the follow action
             {
-                actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
+                //actionName = [NSString stringWithFormat:@"Follow %@",cell.companyTicker.text];
+                actionName = [NSString stringWithFormat:@"Follow"];
                 
                 setReminderAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:actionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
                     
@@ -1188,11 +1192,11 @@
         }
     }];
     // Format the result Action UI to be the correct color and everything
-    //resultAction.backgroundColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
-    resultAction.backgroundColor = [UIColor colorWithRed:0.0f/255.0f green:213.0f/255.0f blue:52.0f/255.0f alpha:1.0f];
+    // Original Econ Blue
+    resultAction.backgroundColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     
     // Delete Action when needed
-   /* UITableViewRowAction  *deleteEventAction;
+   /*UITableViewRowAction  *deleteEventAction;
     deleteEventAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
         
         NSLog(@"Delete action triggered");
