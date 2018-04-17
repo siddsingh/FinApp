@@ -11,6 +11,8 @@
 		9E0CC2A21C894D51009E088C /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */; };
 		9E0CC2A31C894D54009E088C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBD8EE91BAC9DAB008A0370 /* SystemConfiguration.framework */; };
 		9E0CC2A41C894D58009E088C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E6D807A1AAFDF5800E1F2D3 /* CoreData.framework */; };
+		9E150B8F2084429700CAF02D /* FACoinAltData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E150B8E2084429700CAF02D /* FACoinAltData.m */; };
+		9E150B902084429700CAF02D /* FACoinAltData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E150B8E2084429700CAF02D /* FACoinAltData.m */; };
 		9E1BF82E1DA1FA6000D50E4F /* PriceChangeEvents_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E1BF82D1DA1FA6000D50E4F /* PriceChangeEvents_Local.json */; };
 		9E2C2A4A1C8786DC00297F37 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */; };
 		9E2F49571CE1622700D51401 /* ProductEvents_2016_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */; };
@@ -68,6 +70,8 @@
 /* Begin PBXFileReference section */
 		9E0AC7B61C6EB9CA0078EAA5 /* FACompanyInfoStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FACompanyInfoStore.h; sourceTree = "<group>"; };
 		9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FACompanyInfoStore.m; sourceTree = "<group>"; };
+		9E150B8D2084423C00CAF02D /* FACoinAltData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FACoinAltData.h; sourceTree = "<group>"; };
+		9E150B8E2084429700CAF02D /* FACoinAltData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FACoinAltData.m; sourceTree = "<group>"; };
 		9E1BF82D1DA1FA6000D50E4F /* PriceChangeEvents_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = PriceChangeEvents_Local.json; sourceTree = "<group>"; };
 		9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ProductEvents_2016_Local.json; sourceTree = "<group>"; };
@@ -193,6 +197,8 @@
 				9E0AC7B71C6EB9CA0078EAA5 /* FACompanyInfoStore.m */,
 				9E6F0B931ED1FA4F007BACD7 /* FASnapShot.h */,
 				9E6F0B941ED1FA4F007BACD7 /* FASnapShot.m */,
+				9E150B8E2084429700CAF02D /* FACoinAltData.m */,
+				9E150B8D2084423C00CAF02D /* FACoinAltData.h */,
 				9E602D2419E655DF00ACDEC6 /* Main.storyboard */,
 				9E602D2919E655DF00ACDEC6 /* LaunchScreen.xib */,
 				9ECE7B461CBF60BF000F8D77 /* FinApp.sqlite */,
@@ -382,6 +388,7 @@
 				9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */,
 				9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */,
 				9E6D80761A9EB49700E1F2D3 /* FADataStore.m in Sources */,
+				9E150B8F2084429700CAF02D /* FACoinAltData.m in Sources */,
 				9E6D80731A958C9E00E1F2D3 /* Company.m in Sources */,
 				9E79C92B1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */,
 				9EBD8EED1BAC9EA0008A0370 /* Reachability.m in Sources */,
@@ -399,6 +406,7 @@
 				9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */,
 				9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */,
 				9E79C92C1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */,
+				9E150B902084429700CAF02D /* FACoinAltData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

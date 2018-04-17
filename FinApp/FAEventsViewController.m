@@ -21,6 +21,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import "FASnapShot.h"
 #import <SafariServices/SafariServices.h>
+#import "FACoinAltData.h"
 @import EventKit;
 
 @interface FAEventsViewController () <SFSafariViewControllerDelegate>
@@ -856,9 +857,11 @@
     NSString *cellEventType = [self formatBackToEventType:cell.eventDescription.text withAddedInfo:cell.eventCertainty.text];
     
     UITableViewRowAction *setReminderAction;
+    UITableViewRowAction *resultAction;
     
     // String to hold the action name
     NSString *actionName = nil;
+    NSString *resultActionName = nil;
     
     FADataController *unfollowDataController = [[FADataController alloc] init];
     
@@ -1079,7 +1082,124 @@
         }
     }
     
-    return @[setReminderAction];
+    // Add the see result action
+    resultActionName = [self getActionTypeForEvent:cellEventType withEventDistance:cell.eventDistance.text];
+    resultAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:resultActionName handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+        
+        // Get the cell for the row on which the action is being exercised
+        FAEventsTableViewCell *cell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:indexPath];
+        
+        // Simplifying this a lot to directly open the appropriate informational webview
+        NSString *formattedEventType = cell.eventDescription.text;
+        NSString *ticker = cell.companyTicker.text;
+        
+        // Open the corresponding News in mobile Safari
+        NSString *moreInfoURL = nil;
+        NSString *searchTerm = nil;
+        NSURL *targetURL = nil;
+        
+        // Google news is default for now
+        moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?q="];
+        searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
+        
+        // Get an instance of Data for entity like company
+        FACoinAltData *entityData = [[FACoinAltData alloc] init];
+        NSString *actionLocation = nil;
+        
+        // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
+        if ([formattedEventType isEqualToString:@"Earnings"]) {
+            
+            // Get location of results action
+            actionLocation = [NSString stringWithFormat:@"%@",[[entityData getProfileInfoForCoin:ticker] objectAtIndex:1]];
+            
+            // If location for call is not available, do a generic google search
+            if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
+            {
+                searchTerm = [NSString stringWithFormat:@"Listen %@ %@",ticker,@"earnings call"];
+                // Remove any spaces in the URL query string params
+                searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+                moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+            }
+            // If location is available, use that
+            else
+            {
+                moreInfoURL = actionLocation;
+            }
+        }
+        
+        // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
+        if ([formattedEventType containsString:@"Launch"]) {
+            searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+            // Remove any spaces in the URL query string params
+            searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+            moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+        }
+        // E.g. Naples Epyc Sales Launch becomes Naples Epyc
+        if ([formattedEventType containsString:@"Sales Launch"]) {
+            searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Sales Launch" withString:@""];
+            // Remove any spaces in the URL query string params
+            searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+            moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+        }
+        // For conference you want to use the raw event type as it contains the word conference and formatted does not
+        if ([[self formatBackToEventType:cell.eventDescription.text withAddedInfo:cell.eventCertainty.text] containsString:@"Conference"]) {
+            searchTerm = [formattedEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+            // Remove any spaces in the URL query string params
+            searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+            moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+        }
+        
+        // For economic events, search query term is customized for each type
+        if ([formattedEventType containsString:@"GDP Release"]) {
+            moreInfoURL = @"http://www.bea.gov/newsreleases/news_release_sort_national.htm";
+        }
+        if ([formattedEventType containsString:@"Consumer Confidence"]) {
+            moreInfoURL = @"https://www.conference-board.org/data/consumerconfidence.cfm";
+        }
+        if ([formattedEventType containsString:@"Fed Meeting"]) {
+            moreInfoURL = @"http://www.federalreserve.gov/monetarypolicy/default.htm";
+        }
+        if ([formattedEventType containsString:@"Jobs Report"]) {
+            moreInfoURL = @"http://www.bls.gov/mobile/mobile_releases.htm";
+        }
+        if ([formattedEventType containsString:@"% up"]||[formattedEventType containsString:@"% down"]) {
+            searchTerm = [NSString stringWithFormat:@"%@ %@",ticker,@"stock"];
+            // Remove any spaces in the URL query string params
+            searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+            moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+        }
+        
+        targetURL = [NSURL URLWithString:moreInfoURL];
+        
+        if (targetURL) {
+            
+            // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            [FBSDKAppEvents logEvent:@"Event Action Taken"
+                          parameters:@{ @"Ticker" : ticker,
+                                        @"Event Type" : formattedEventType,
+                                        @"Name" :  action.title} ];
+            
+            SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+            externalInfoVC.delegate = self;
+            // Just use whatever is the default color for the Safari View Controller
+            //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
+            [self presentViewController:externalInfoVC animated:YES completion:nil];
+        }
+    }];
+    // Format the result Action UI to be the correct color and everything
+    //resultAction.backgroundColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+    resultAction.backgroundColor = [UIColor colorWithRed:0.0f/255.0f green:213.0f/255.0f blue:52.0f/255.0f alpha:1.0f];
+    
+    // Delete Action when needed
+   /* UITableViewRowAction  *deleteEventAction;
+    deleteEventAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"Delete" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+        
+        NSLog(@"Delete action triggered");
+    }];
+    deleteEventAction.backgroundColor = [UIColor redColor];*/
+    
+    return @[resultAction,setReminderAction];
 }
 
 #pragma mark - Following Reminder Creation
@@ -3244,6 +3364,50 @@
     }
     
     return formattedEventType;
+}
+
+// Get the action type based on the raw event and event distance text
+- (NSString *)getActionTypeForEvent:(NSString *)rawEventType withEventDistance:(NSString *)distanceTxt
+{
+    NSString *actionType = @"More";
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        // If event happened in the past, type is "Replay"
+        if ([distanceTxt containsString:@"Yesterday"]||[distanceTxt containsString:@"Day Before"]||[distanceTxt containsString:@"ago"]) {
+            actionType = @"Replay";
+        }
+        // If event is today, type is "Listen"
+        else if ([distanceTxt containsString:@"Today"]) {
+            actionType = @"Listen";
+        }
+        // If the event is happening in the future, the type is "Preview"
+        else {
+            actionType = @"Preview";
+        }
+    }
+    
+    if ([rawEventType containsString:@"Fed Meeting"]) {
+        actionType = @"More";
+    }
+    
+    if ([rawEventType containsString:@"Jobs Report"]) {
+        actionType = @"More";
+    }
+    
+    if ([rawEventType containsString:@"Consumer Confidence"]) {
+        actionType = @"More";
+    }
+    
+    if ([rawEventType containsString:@"GDP Release"]) {
+        actionType = @"More";
+    }
+    
+    if ([rawEventType containsString:@"Conference"]) {
+        actionType = @"More";
+    }
+    
+    return actionType;
 }
 
 // Take the event displayed and format it back to the event type stored in the db. Currently the formatting looks like the following: Earnings -> Quarterly Earnings. Fed Meeting -> Jan Fed Meeting. Jobs Report -> Jan Jobs Report and so on. For product events, only the conference keyword needs to be added back. So WWDC 2016 -> WWDC 2016 Conference. NOTE: When a new product event type other than launch or conference is added, reconcile here as well.

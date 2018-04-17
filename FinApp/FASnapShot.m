@@ -47,54 +47,35 @@ static FASnapShot *sharedInstance;
     // If the event type is earnings, return true for big name companies earnings like FANG or Apple whose earnings can impact overall market
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         
-        // Cramer's FANG
-        /*if ([parentTicker containsString:@"FB"]) {
+        // Tech Stocks that are super popular, plus Knotifi community, plus popular themes curated by Sidd
+        if ([parentTicker containsString:@"FB"]) {
             highImpact = YES;
-        }*/
+        }
         if ([parentTicker containsString:@"AMZN"]) {
             highImpact = YES;
         }
         if ([parentTicker containsString:@"NFLX"]) {
             highImpact = YES;
         }
-        /*if ([parentTicker containsString:@"GOOG"]) {
-            highImpact = YES;
-        }*/
-        
-        // From Knotifi top 10
-        if ([parentTicker containsString:@"BAC"]) {
-            highImpact = YES;
-        }
-        /*if ([parentTicker containsString:@"BABA"]) {
-            highImpact = YES;
-        }*/
-        if ([parentTicker containsString:@"LULU"]) {
-            highImpact = YES;
-        }
-        /*if ([parentTicker containsString:@"TSLA"]) {
-            highImpact = YES;
-        }*/
-        if ([parentTicker containsString:@"NKE"]) {
-            highImpact = YES;
-        }
-        /*if ([parentTicker containsString:@"MSFT"]) {
-            highImpact = YES;
-        }*/
-        if ([parentTicker containsString:@"BAC"]) {
-            highImpact = YES;
-        }
-        
-        // Curated by Sidd
         if ([parentTicker containsString:@"AAPL"]) {
-            highImpact = YES;
-        }
-        if ([parentTicker containsString:@"JPM"]) {
             highImpact = YES;
         }
         if ([parentTicker containsString:@"GS"]) {
             highImpact = YES;
         }
+        if ([parentTicker containsString:@"JPM"]) {
+            highImpact = YES;
+        }
         if ([parentTicker containsString:@"NVDA"]) {
+            highImpact = YES;
+        }
+        if ([parentTicker containsString:@"ATVI"]) {
+            highImpact = YES;
+        }
+        if ([parentTicker containsString:@"EA"]) {
+            highImpact = YES;
+        }
+        if ([parentTicker containsString:@"NKE"]) {
             highImpact = YES;
         }
     }
@@ -105,11 +86,11 @@ static FASnapShot *sharedInstance;
         highImpact = YES;
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+   /* if ([eventType containsString:@"Jobs Report"]) {
         // This is the event description
         //description = @"Very High Impact.Reflects the health of the job market.";
         highImpact = YES;
-    }
+    } */
     
     // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
@@ -472,6 +453,11 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:12.0f/255.0f green:16.0f/255.0f blue:75.0f/255.0f alpha:1.0f];
     }
     
+    if ([ticker caseInsensitiveCompare:@"GS"] == NSOrderedSame) {
+        //
+        colorToReturn = [UIColor colorWithRed:109.0f/255.0f green:151.0f/255.0f blue:200.0f/255.0f alpha:1.0f];
+    }
+    
     return colorToReturn;
 }
 
@@ -813,6 +799,11 @@ static FASnapShot *sharedInstance;
     if ([ticker caseInsensitiveCompare:@"BB"] == NSOrderedSame) {
         //
         colorToReturn = [UIColor colorWithRed:132.0f/255.0f green:166.0f/255.0f blue:220.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"GS"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor whiteColor];
     }
     
     return colorToReturn;

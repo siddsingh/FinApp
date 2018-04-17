@@ -2197,6 +2197,7 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"SPOT" name:@"Spotify"];
     [self insertUniqueCompanyWithTicker:@"DBX" name:@"Dropbox"];
     [self insertUniqueCompanyWithTicker:@"SEND" name:@"SendGrid"];
+    [self insertUniqueCompanyWithTicker:@"ZUO" name:@"Zuora"];
     
     // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
     // Delete before shipping v4.3
@@ -4108,20 +4109,16 @@ bool eventsUpdated = NO;
     NSDateComponents *components = [gregorianCalendar components:NSCalendarUnitDay fromDate:lastSyncDate toDate:todaysDate options:0];
     NSInteger daysBetween = [components day];
     // Get the number of hours between the 2 dates
-    //NSDateComponents *hourComponents = [gregorianCalendar components:NSCalendarUnitHour fromDate:lastSyncDate toDate:todaysDate options:0];
-    //NSInteger hoursBetween = [hourComponents hour];
+    NSDateComponents *hourComponents = [gregorianCalendar components:NSCalendarUnitHour fromDate:lastSyncDate toDate:todaysDate options:0];
+    NSInteger hoursBetween = [hourComponents hour];
     // TO DO: Delete Later before shipping v4.3
     //NSLog(@"Days between LAST EVENT SYNC AND TODAY are: %ld",(long)daysBetween);
     //NSLog(@"Hours between LAST EVENT SYNC AND TODAY are: %d",(int)hoursBetween);
 
     // Uncomment this if you want it to sync only after 24 hours.
-    if((int)daysBetween > 0) {
-    // TO DO: Sync every 2 hours or if it's an upgrade to force a sync when the user might have just synced under 2 hrs ago on the old version.
-   // if(((int)hoursBetween >= 2)||(![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_3_2_Upgraded"])) {
-        
-        // Set that the user has upgraded so that it now respects the 2 hours sync.
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"V4_3_2_Upgraded"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+    //if((int)daysBetween > 0) {
+    // TO DO: Sync every 6 hours
+    if((int)hoursBetween >= 6) {
         
         // Get all events in the local data store.
         NSFetchedResultsController *eventResultsController = [self getAllEvents];
