@@ -104,7 +104,7 @@ static FACoinAltData *sharedInstance;
         // 1. Investor Site(for stock)/Agency home page
         [infoArray addObject:@"http://www.goldmansachs.com/investor-relations/"];
         // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
-        [infoArray addObject:@"http://www.goldmansachs.com/investor-relations/financials/current/quarterly-earnings-releases/index.html"];
+        [infoArray addObject:@"http://www.goldmansachs.com/investor-relations/presentations/index.html"];
     }
     
     else if ([ticker caseInsensitiveCompare:@"JPM"] == NSOrderedSame) {
