@@ -9,10 +9,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <CoreData/CoreData.h>
 @class FADataController;
 @class FASnapShot;
-@class FACoinAltData;
 
 @interface FAEventDetailsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
@@ -58,9 +56,6 @@
 // Access to the one data snapshot.
 @property (strong,nonatomic) FASnapShot *dataSnapShot2;
 
-// Access to the one data snapshot.
-@property (strong,nonatomic) FACoinAltData *altDataSnapShot;
-
 // Button for setting the Reminder
 @property (weak, nonatomic) IBOutlet UIButton *reminderButton;
 
@@ -84,23 +79,5 @@
 
 // Corresponding Action
 - (IBAction)seeNewsAction3:(id)sender;
-
-// Select the different kinds of data
-@property (weak, nonatomic) IBOutlet UISegmentedControl *detailsInfoSelector;
-
-// Take action when a details info type is selected
-//- (IBAction)detailsInfoTypeSelected:(id)sender;
-
-// Divider Label 2
-@property (weak, nonatomic) IBOutlet UILabel *bottomBorderLbl2;
-
-// Divider Label 1
-@property (weak, nonatomic) IBOutlet UILabel *bottomBorderLbl1;
-
-// Controller containing results of queries to Core Data store
-@property (strong, nonatomic) NSFetchedResultsController *infoResultsController;
-
-// Pull to refresh control
-@property (strong,nonatomic) UIRefreshControl *deetsTblRefreshControl;
 
 @end

@@ -10,10 +10,6 @@
 
 #import "FAEventDetailsTableViewCell.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
-#import <SafariServices/SafariServices.h>
-
-@interface FAEventDetailsTableViewCell () <SFSafariViewControllerDelegate>
-@end
 
 @implementation FAEventDetailsTableViewCell
 
@@ -53,7 +49,7 @@
         // TO DO FINAL: Delete after final test
         //NSLog(@"LINK TAPPED:%@ %@", self.descriptionArea.text, targetURL);
         
-       // [[UIApplication sharedApplication] openURL:targetURL];
+        [[UIApplication sharedApplication] openURL:targetURL];
     }
 }
 

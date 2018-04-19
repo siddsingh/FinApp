@@ -19,6 +19,8 @@
 		9E2F49581CE1622800D51401 /* ProductEvents_2016_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */; };
 		9E44C29B1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */; };
 		9E44C29C1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */; };
+		9E4F439320892F8500683D89 /* FAEventDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E4F438F20892F8400683D89 /* FAEventDetailsViewController.m */; };
+		9E4F439420892F8500683D89 /* FAEventDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E4F439220892F8400683D89 /* FAEventDetailsTableViewCell.m */; };
 		9E602D1A19E655DF00ACDEC6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1919E655DF00ACDEC6 /* main.m */; };
 		9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1C19E655DF00ACDEC6 /* AppDelegate.m */; };
 		9E602D2019E655DF00ACDEC6 /* FinApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9E602D1E19E655DF00ACDEC6 /* FinApp.xcdatamodeld */; };
@@ -37,10 +39,6 @@
 		9E7586461AF44679009DD7B2 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E7586451AF44679009DD7B2 /* User.m */; };
 		9E79C9241BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
 		9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9231BCDE3B9007E17B6 /* EventHistory.m */; };
-		9E79C92B1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */; };
-		9E79C92C1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */; };
-		9E79C9371BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */; };
-		9E79C9381BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */; };
 		9E81709C1DE0DD610066C85B /* EconomicEvents_2017.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E81709B1DE0DD610066C85B /* EconomicEvents_2017.json */; };
 		9E81709D1DE0DD610066C85B /* EconomicEvents_2017.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E81709B1DE0DD610066C85B /* EconomicEvents_2017.json */; };
 		9E81709F1DE11FBC0066C85B /* ZEA-datasets-codes_20161119.csv in Resources */ = {isa = PBXBuildFile; fileRef = 9E81709E1DE11FBB0066C85B /* ZEA-datasets-codes_20161119.csv */; };
@@ -77,6 +75,10 @@
 		9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ProductEvents_2016_Local.json; sourceTree = "<group>"; };
 		9E44C2991DD6A3B7009D9317 /* FATutorialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FATutorialViewController.h; sourceTree = "<group>"; };
 		9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FATutorialViewController.m; sourceTree = "<group>"; };
+		9E4F438F20892F8400683D89 /* FAEventDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsViewController.m; sourceTree = "<group>"; };
+		9E4F439020892F8400683D89 /* FAEventDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventDetailsViewController.h; sourceTree = "<group>"; };
+		9E4F439120892F8400683D89 /* FAEventDetailsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventDetailsTableViewCell.h; sourceTree = "<group>"; };
+		9E4F439220892F8400683D89 /* FAEventDetailsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsTableViewCell.m; sourceTree = "<group>"; };
 		9E602D1419E655DF00ACDEC6 /* Knotifi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Knotifi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E602D1819E655DF00ACDEC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E602D1919E655DF00ACDEC6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -108,10 +110,6 @@
 		9E7586451AF44679009DD7B2 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		9E79C9221BCDE3B9007E17B6 /* EventHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventHistory.h; sourceTree = "<group>"; };
 		9E79C9231BCDE3B9007E17B6 /* EventHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventHistory.m; sourceTree = "<group>"; };
-		9E79C9291BD85C46007E17B6 /* FAEventDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventDetailsViewController.h; sourceTree = "<group>"; };
-		9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsViewController.m; sourceTree = "<group>"; };
-		9E79C9351BDAC78F007E17B6 /* FAEventDetailsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAEventDetailsTableViewCell.h; sourceTree = "<group>"; };
-		9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsTableViewCell.m; sourceTree = "<group>"; };
 		9E81709B1DE0DD610066C85B /* EconomicEvents_2017.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = EconomicEvents_2017.json; sourceTree = "<group>"; };
 		9E81709E1DE11FBB0066C85B /* ZEA-datasets-codes_20161119.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ZEA-datasets-codes_20161119.csv"; sourceTree = "<group>"; };
 		9E953F641FEDE0C200D60343 /* EconomicEvents_2018.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = EconomicEvents_2018.json; sourceTree = "<group>"; };
@@ -185,10 +183,10 @@
 				9E681D4C1A43B08F00FC5E5D /* FAEventsViewController.m */,
 				9E681D4E1A4A660D00FC5E5D /* FAEventsTableViewCell.h */,
 				9E681D4F1A4A660D00FC5E5D /* FAEventsTableViewCell.m */,
-				9E79C9291BD85C46007E17B6 /* FAEventDetailsViewController.h */,
-				9E79C92A1BD85C46007E17B6 /* FAEventDetailsViewController.m */,
-				9E79C9351BDAC78F007E17B6 /* FAEventDetailsTableViewCell.h */,
-				9E79C9361BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m */,
+				9E4F438F20892F8400683D89 /* FAEventDetailsViewController.m */,
+				9E4F439020892F8400683D89 /* FAEventDetailsViewController.h */,
+				9E4F439120892F8400683D89 /* FAEventDetailsTableViewCell.h */,
+				9E4F439220892F8400683D89 /* FAEventDetailsTableViewCell.m */,
 				9E6D80771AA4E07100E1F2D3 /* FADataController.h */,
 				9E6D80781AA4E07100E1F2D3 /* FADataController.m */,
 				9E6D80741A9EB49700E1F2D3 /* FADataStore.h */,
@@ -382,17 +380,17 @@
 				9E602D1D19E655DF00ACDEC6 /* AppDelegate.m in Sources */,
 				9E6F0B951ED1FA4F007BACD7 /* FASnapShot.m in Sources */,
 				9E0AC7B81C6EB9CA0078EAA5 /* FACompanyInfoStore.m in Sources */,
-				9E79C9371BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */,
 				9E44C29B1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */,
 				9E602D1A19E655DF00ACDEC6 /* main.m in Sources */,
 				9E681D501A4A660D00FC5E5D /* FAEventsTableViewCell.m in Sources */,
+				9E4F439420892F8500683D89 /* FAEventDetailsTableViewCell.m in Sources */,
 				9EBD8EE61B82CEB9008A0370 /* Action.m in Sources */,
 				9E6D80761A9EB49700E1F2D3 /* FADataStore.m in Sources */,
 				9E150B8F2084429700CAF02D /* FACoinAltData.m in Sources */,
 				9E6D80731A958C9E00E1F2D3 /* Company.m in Sources */,
-				9E79C92B1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */,
 				9EBD8EED1BAC9EA0008A0370 /* Reachability.m in Sources */,
 				9E6D80791AA4E07100E1F2D3 /* FADataController.m in Sources */,
+				9E4F439320892F8500683D89 /* FAEventDetailsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,10 +400,8 @@
 			files = (
 				9E79C9251BCDE3B9007E17B6 /* EventHistory.m in Sources */,
 				9E44C29C1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */,
-				9E79C9381BDAC78F007E17B6 /* FAEventDetailsTableViewCell.m in Sources */,
 				9EBD8EEE1BAC9EA0008A0370 /* Reachability.m in Sources */,
 				9E602D3719E655DF00ACDEC6 /* FinAppTests.m in Sources */,
-				9E79C92C1BD85C46007E17B6 /* FAEventDetailsViewController.m in Sources */,
 				9E150B902084429700CAF02D /* FACoinAltData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

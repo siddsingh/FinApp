@@ -125,7 +125,7 @@ static FACoinAltData *sharedInstance;
         // 1. Investor Site(for stock)/Agency home page
         [infoArray addObject:@"https://www.morganstanley.com/about-us-ir"];
         // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
-        [infoArray addObject:@"https://www.morganstanley.com/about-us-ir/earnings-releases"];
+        [infoArray addObject:@"https://www.morganstanley.com/about-us-ir"];
     }
     
     else if ([ticker caseInsensitiveCompare:@"CLDR"] == NSOrderedSame) {

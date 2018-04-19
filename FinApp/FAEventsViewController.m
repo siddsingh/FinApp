@@ -684,6 +684,31 @@
     // CURRENTLY simplified this to just go to details with a description. Commenting out a price fetch.
     else {
         
+        // Transition to detail view without fetching anything currently
+        
+        // Get data to pass to destination
+        // Get the event
+        Event *eventSelected = nil;
+        if (self.filterSpecified) {
+            // If the filter type is Match_Companies_Events, meaning a filter of matching companies with existing events
+            // has been specified.
+            if ([self.filterType isEqualToString:@"Match_Companies_Events"]) {
+                // Use filtered events results set
+                eventSelected = [self.filteredResultsController objectAtIndexPath:indexPath];
+            }
+        }
+        // If no search filter
+        else {
+            eventSelected = [self.eventResultsController objectAtIndexPath:indexPath];
+        }
+        // TO DO: Delete Later
+        NSLog(@"EVENT SELECTED IS:%@",eventSelected.type);
+        [self performSegueWithIdentifier:@"ShowEventDetails1" sender:eventSelected];
+        
+        // This is the code for going directly to news
+        
+        /********
+        
         // Super simple, just spin out to a webview with news
         // Get the event description corresponding to the pressed button
         NSIndexPath *tappedIndexPath = [self.eventsListTable indexPathForSelectedRow];
@@ -768,6 +793,9 @@
             //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
             [self presentViewController:externalInfoVC animated:YES completion:nil];
         }
+         
+         *********/
+        // End of directly go to news processing
         
         // Get Details to pass off to detailed view.
         /*NSIndexPath *selectedRowIndexPath = [self.eventsListTable indexPathForSelectedRow];
@@ -3157,8 +3185,43 @@
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
-   // if ([[segue identifier] isEqualToString:@"ShowEventDetails"]) {
+    // NEW WAY
     if ([[segue identifier] isEqualToString:@"ShowEventDetails1"]) {
+        FAEventDetailsViewController *eventDetailsViewController = [segue destinationViewController];
+        
+        // Get the currently selected cell and set details for the destination.
+        // IMPORTANT: If the format here or in the events UI is changed, reminder creation in the details screen will break.
+        Event *sentEvent = sender;
+        
+        // Set the full name of the Event Parent Ticker for processing in destination
+        [eventDetailsViewController setParentTicker:sentEvent.listedCompany.ticker];
+        // Set Event Type for processing in destination
+        [eventDetailsViewController setEventType:sentEvent.type];
+        // Set Event Schedule as text for processing in destination
+        [eventDetailsViewController setEventDateText:[self formatDateBasedOnEventType:sentEvent.type withDate:sentEvent.date withRelatedDetails:sentEvent.relatedDetails withStatus:sentEvent.certainty]];
+        // Set Event certainty status for processing in destination
+        [eventDetailsViewController setEventCertainty:sentEvent.certainty];
+        // Set Event Parent Company Name for processing in destination
+        [eventDetailsViewController setParentCompany:sentEvent.listedCompany.name];
+        
+        // Set Event Title for display in destination
+        [eventDetailsViewController setEventTitleStr:sentEvent.listedCompany.name];
+        // Set current price and change string in the destination
+        [eventDetailsViewController setCurrentPriceAndChange:@"NA"];
+        // Set Event Schedule for display in destination
+        [eventDetailsViewController setEventScheduleStr:@"NA"];
+        
+        // TRACKING EVENT: Go To Details: User clicked the event in the events list to go to the details screen.
+        // TO DO: Disabling to not track development events. Enable before shipping.
+        [FBSDKAppEvents logEvent:@"Go To Details"
+                      parameters:@{ @"Ticker" : sentEvent.listedCompany.ticker,
+                                    @"Event Type" : sentEvent.type,
+                                    @"Name" : sentEvent.listedCompany.name } ];
+    }
+   
+    // OLD WAY
+    // if ([[segue identifier] isEqualToString:@"ShowEventDetails"]) {
+   /* if ([[segue identifier] isEqualToString:@"ShowEventDetails1"]) {
         FAEventDetailsViewController *eventDetailsViewController = [segue destinationViewController];
         
         // Get the currently selected cell and set details for the destination.
@@ -3208,7 +3271,7 @@
                       parameters:@{ @"Ticker" : [segueDataController getTickerForName:selectedCell.companyName.text],
                                     @"Event Type" : eventType,
                                     @"Name" : (selectedCell.companyName).text } ];
-    }
+    }*/
 }
 
 #pragma mark - Utility Methods

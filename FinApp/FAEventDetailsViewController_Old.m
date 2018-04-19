@@ -17,10 +17,8 @@
 #import "Reachability.h"
 #import "FACompanyInfoStore.h"
 #import "FASnapShot.h"
-#import "FACoinAltData.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <SafariServices/SafariServices.h>
-#import <QuartzCore/QuartzCore.h>
 @import EventKit;
 
 @interface FAEventDetailsViewController () <SFSafariViewControllerDelegate>
@@ -54,9 +52,6 @@
     
     // Get the one data snapshot
     self.dataSnapShot2 = [[FASnapShot alloc] init];
-    
-    // Get the one alt data snapshot
-    self.altDataSnapShot = [[FACoinAltData alloc] init];
 
     // Show the company name in the navigation bar header.
     self.navigationItem.title = [self.eventTitleStr uppercaseString];
@@ -65,46 +60,8 @@
     [self.eventTitle setText:[self.eventType uppercaseString]];
     [self.eventSchedule setText:[self.eventScheduleStr uppercaseString]];
     
-    // Format the details Info type selector and bottom border labels
-    // Set Background color and tint to a very light almost white gray
-    /* [self.detailsInfoSelector setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-    [self.detailsInfoSelector setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-    // Set text color and size of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
-    NSDictionary *unselectedAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                          [UIFont systemFontOfSize:16], NSFontAttributeName,
-                                          [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
-                                          nil];
-    [self.detailsInfoSelector setTitleTextAttributes:unselectedAttributes forState:UIControlStateNormal];
-    // Set text and size for selected segment
-    NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [UIFont boldSystemFontOfSize:16], NSFontAttributeName,
-                                    [UIColor blackColor], NSForegroundColorAttributeName,
-                                    nil];
-    [self.detailsInfoSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
-    // Bottom border label
-    if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-        [self.bottomBorderLbl1 setBackgroundColor:[UIColor blackColor]];
-        [self.bottomBorderLbl1 setTintColor:[UIColor blackColor]];
-        [self.bottomBorderLbl1 setTextColor:[UIColor blackColor]];
-        [self.bottomBorderLbl2 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl2 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl2 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-    } else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-        [self.bottomBorderLbl2 setBackgroundColor:[UIColor blackColor]];
-        [self.bottomBorderLbl2 setTintColor:[UIColor blackColor]];
-        [self.bottomBorderLbl2 setTextColor:[UIColor blackColor]];
-        [self.bottomBorderLbl1 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl1 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl1 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-    } */
-    
-    //Adding a pull to refresh action on the table.
-    /*self.deetsTblRefreshControl = [[UIRefreshControl alloc] init];
-    // tblRefreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Please Wait..."];
-    [self.deetsTblRefreshControl addTarget:self action:@selector(deetsRefreshTbl:) forControlEvents:UIControlEventValueChanged];
-    [self.eventDetailsTable addSubview:self.deetsTblRefreshControl];*/
-    
     // Set status of button to Follow or Following (for all events except econ events) and to Set Reminder or Reminder Set (for econ events)
+    
     // String to hold the action name
     //NSString *actionName = nil;
     
@@ -174,24 +131,31 @@
             [self.reminderButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
         }
     } */
+
+    // For Crypto events, disable + hide the newsbuttons 2 & 3 for others enable + show them.
+    // FOR BTC or ETHR or BCH$ or XRP.
+    if (([self.parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame)) {
+        [self.newsButton2 setEnabled:NO];
+        [self.newsButton2 setHidden:YES];
+        [self.newsButton3 setEnabled:NO];
+        [self.newsButton3 setHidden:YES];
+    }
+    else {
+        [self.newsButton2 setEnabled:YES];
+        [self.newsButton2 setHidden:NO];
+        [self.newsButton3 setEnabled:YES];
+        [self.newsButton3 setHidden:NO];
+    }
     
-   /* self.newsButton2.clipsToBounds = YES;
-    self.newsButton2.layer.cornerRadius = 5;
-    self.newsButton3.clipsToBounds = YES;
-    self.newsButton3.layer.cornerRadius = 5;
-    
-    // Set color of news button 2 per event type as this is the primary contextual callout
+    // Set color of "See News" buttons based on event type. Currently not using News Buttons 2 and 3.
+    [self.newsButton setBackgroundColor:[self getColorForEventType:self.eventType]];
     [self.newsButton2 setBackgroundColor:[self getColorForEventType:self.eventType]];
+    [self.newsButton3 setBackgroundColor:[self getColorForEventType:self.eventType]];
+    [self.newsButton setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
     [self.newsButton2 setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
-    // Set title of news buttons 2 and 3 as they vary per event type
-    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"])
-    {
-        [self.newsButton2 setTitle:[NSString stringWithFormat:@"%@ NEWS",self.parentTicker] forState:UIControlStateNormal];
-        
-    } else {
-        [self.newsButton2 setTitle:[NSString stringWithFormat:@"Best Info"] forState:UIControlStateNormal];
-        [self.newsButton3 setTitle:[NSString stringWithFormat:@"More Info"] forState:UIControlStateNormal];
-    } */
+    [self.newsButton3 setTitleColor:[self getTextColorForEventType:self.eventType] forState:UIControlStateNormal];
+    
+    
     
     // Set color of back navigation item based on event type
     self.navigationController.navigationBar.tintColor = [self getColorForEventTypeForBackNav:self.eventType];
@@ -222,1298 +186,622 @@
 // Return number of sections in the events list table view
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSInteger noOfSections = 2;
-    
-    // If it's a currency price event there are 2 sections for Info and 1 section for News
-   /* if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-    
-        if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-            noOfSections = 2;
-            
-        } else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-            noOfSections = 1;
-        }
-    }
-    // Else there are 3
-    else {
-        noOfSections = 3;
-    } */
-    
-    return noOfSections;
+    // There's only one section for now
+    return 1;
 }
 
-// To style the header appropriately
--(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+// TO DO: Delete before shipping v2.5
+// Set the header for the table view to a special table cell that serves as header.
+// TO DO: Currently only set a customized header for non ipad devices since there are weird
+// alignment problems with ipad.
+/*-(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     
-    UILabel *customHeaderView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 25)];
+    UITableViewCell *headerView = nil;
     
-    // ipad needed special treatment in the past. If no longer needed you can probably consolidate this code
-   /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-       [customHeaderView setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-       customHeaderView.textColor = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
-       customHeaderView.textAlignment = NSTextAlignmentCenter;
-       [customHeaderView setFont:[UIFont systemFontOfSize:14]];
-       
-       // If it's a currency price event there are 2 sections
-       if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-           
-           if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-               if(section == 0) {
-                   [customHeaderView setText:@"STATS"];
-               }
-               if(section == 1) {
-                   [customHeaderView setText:@"ABOUT"];
-               }
-               
-           } else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-               if(section == 0) {
-                   [customHeaderView setText:@"LATEST"];
-               }
-           }
-       }
-       // Else 3 sections
-       else {
-           if(section == 0) {
-               [customHeaderView setText:@"SUMMARY"];
-           }
-           if(section == 1) {
-               [customHeaderView setText:@"STATS"];
-           }
-           if(section == 2) {
-               [customHeaderView setText:@"ABOUT"];
-           }
-       }
-    } */
-    // For all other devices
-//    else {
-        [customHeaderView setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        customHeaderView.textColor = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
-        customHeaderView.textAlignment = NSTextAlignmentCenter;
-        [customHeaderView setFont:[UIFont systemFontOfSize:14]];
-    
-        if(section == 0) {
-            [customHeaderView setText:[self.eventType uppercaseString]];
-        }
-        if(section == 1) {
-            [customHeaderView setText:@"MORE"];
-        }
+    // If device is ipad
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         
-        // If it's a currency price event there are 2 sections
-        /*if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-            
-            if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-                if(section == 0) {
-                    [customHeaderView setText:@"STATS"];
-                }
-                if(section == 1) {
-                    [customHeaderView setText:@"ABOUT"];
-                }
-                
-            } else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-                if(section == 0) {
-                    [customHeaderView setText:@"LATEST"];
-                }
-            }
-        }
-        // Else 3 sections
-        else {
-            if(section == 0) {
-                [customHeaderView setText:@"SUMMARY"];
-            }
-            if(section == 1) {
-                [customHeaderView setText:@"STATS"];
-            }
-            if(section == 2) {
-                [customHeaderView setText:@"ABOUT"];
-            }
-        }*/
-//    }
+        // Don't set the header
+    }
+    // For all other devices
+    else {
+        
+        // Set the header to the appropriate table cell
+        //headerView = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsTableHeader"];
+    }
     
-    return customHeaderView;
-}
+    return headerView;
+}*/
 
-// Not needed since you are using a Custom Header
+// TO DO: Delete before shipping v2.5
+// Set the section header title for the table view that serves as the overall header.
+// TO DO: Currently only do this for the ipad since we can't use a customized header for it. See above.
+// When we are able to set a customized header for the ipad this won't be needed.
 /*- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-   NSString *sectionTitle = nil;
+    NSString *sectionTitle = nil;
     
-    // If it's a currency price event there are 2 sections
-    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-        if(section == 0) {
-            sectionTitle = @"   STATS";
-        }
-        if(section == 1) {
-            sectionTitle = @"   ABOUT";
-        }
-    }
-    // Else 3 sections
-    else {
-        if(section == 0) {
-            sectionTitle = @"   SUMMARY";
-        }
-        if(section == 1) {
-            sectionTitle = @"   STATS";
-        }
-        if(section == 2) {
-            sectionTitle = @"   ABOUT";
-        }
+    // If device is ipad
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        
+        // Set title. Don't use a title for related data table anymore.
+        // sectionTitle = @"RELATED DATA";
     }
     
     return sectionTitle;
 }*/
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+// Set the table header to 0 height as we don't need this for the details table.
+// TO DO: Test on the ipad and then remove the above 2 header related methods as they are no longer needed.
+/*- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     
-    //Default height is 93.0
-    CGFloat cellHeight = 93.0;
-    
-    // If info type details is selected
-    if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-        
-        // Assign a row no to the type of event detail row.
-        #define infoRow0  -1
-        #define infoRow1  0
-        #define infoRow2  1
-        #define infoRow3  2
-        #define infoRow4  3
-        #define infoRow5  4
-        #define infoRow6  5
-        #define infoRow7  6
-        #define infoRow8  7
-        #define infoRow9  8
-        #define infoRow10  9
-        #define infoRow11 10
-        #define infoRow12 11
-        #define infoRow13 12
-        #define infoRow14 13
-        
-        int rowNo = 0;
-        
-        // If it's a currency price event, start at Row 1
-        if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-            if (indexPath.section == 0) {
-                rowNo = (int)indexPath.row;
-            }
-            if (indexPath.section == 1) {
-                rowNo = ((int)indexPath.row + 5);
-            }
-        }
-        // If it's a news event, start at Row 0, which includes a description of the event.
-        else {
-            if (indexPath.section == 0) {
-                rowNo = ((int)indexPath.row - 1);
-            }
-            if (indexPath.section == 1) {
-                rowNo = (int)indexPath.row;
-            }
-            if (indexPath.section == 2) {
-                rowNo = ((int)indexPath.row + 5);
-            }
-        }
-        
-        // Display the appropriate details based on the row no
-        switch (rowNo) {
-                
-            case infoRow0:
-            {
-                cellHeight = 93.0;
-            }
-                break;
-                
-            case infoRow1:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            case infoRow2:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            case infoRow3:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            case infoRow4:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            case infoRow5:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            case infoRow6:
-            {
-                cellHeight = 93.0;
-            }
-                break;
-                
-            case infoRow7:
-            {
-                cellHeight = 93.0;
-            }
-                break;
-                
-            case infoRow8:
-            {
-                cellHeight = 93.0;
-            }
-                break;
-                
-            case infoRow9:
-            {
-                cellHeight = 93.0;
-            }
-                break;
-                
-            case infoRow10:
-            {
-                cellHeight = 93.0;
-            }
-                break;
-                
-            case infoRow11:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            case infoRow12:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            case infoRow13:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            case infoRow14:
-            {
-                cellHeight = 70.0;
-            }
-                break;
-                
-            default:
-                break;
-        }
-    }
-    
-    // If News type detail is selected
-    else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-        
-        cellHeight = 93.0;
-    }
-    
-    return cellHeight;
-}
+    return 0.0;
+}*/
 
-// Set the table header to 25.0 height
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    
-    CGFloat headerSize = 25.0;
-    
-    return headerSize;
-}
-
-// Return number of rows in the events list table view for a given section
+// Return number of rows in the events list table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self getNoOfInfoPiecesForEventTypeForSection:section];
+    return [self getNoOfInfoPiecesForEventType];
 }
 
-// Return a cell configured to display the event details based on the cell number and event type.
+// Return a cell configured to display the event details based on the cell number and event type. Currently upto 6 types of information pieces are available.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
     FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
-    Event *eventData = nil;
     
-    // If info type details is selected
-    if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-        
-        NSString *actionLocation = nil;
-        
-        // Get the event details parts of which will be displayed in the details table
-        // Trickery: We basically want to get the price change event to get the related details, so when viewing a news event trick it into getting the price change event
-        EventHistory *eventHistoryData = nil;
-        if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-            eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:self.eventType];
-        }
-        else {
-            eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:@"% up today"];
-        }
-        // Set the event history details
-        eventHistoryData = (EventHistory *)[eventData relatedEventHistory];
-        
-        // Define formatters
-        // Currency formatter. Currently using US locale for everything.
-        NSNumberFormatter *currencyFormatter1 = [[NSNumberFormatter alloc] init];
-        [currencyFormatter1 setNumberStyle:NSNumberFormatterCurrencyStyle];
-        currencyFormatter1.locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
-        [currencyFormatter1 setMaximumFractionDigits:0];
-        
-        NSNumberFormatter *currencyFormatter2 = [[NSNumberFormatter alloc] init];
-        [currencyFormatter2 setNumberStyle:NSNumberFormatterCurrencyStyle];
-        currencyFormatter2.locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
-        [currencyFormatter2 setMaximumFractionDigits:4];
-        
-        NSNumberFormatter *twoDecNumberFormatter = [[NSNumberFormatter alloc] init];
-        twoDecNumberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-        [twoDecNumberFormatter setMaximumFractionDigits:2];
-        
-        // Assign a row no to the type of event detail row.
-        #define infoRow0  -1
-        #define infoRow1  0
-        #define infoRow2  1
-        #define infoRow3  2
-        #define infoRow4  3
-        #define infoRow5  4
-        #define infoRow6  5
-        #define infoRow7  6
-        #define infoRow8  7
-        #define infoRow9  8
-        #define infoRow10  9
-        #define infoRow11 10
-        #define infoRow12 11
-        #define infoRow13 12
-        #define infoRow14 13
-        
-        int rowNo = 0;
-        
-        // If it's a currency price event, start at Row 1
-        if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-            if (indexPath.section == 0) {
-                rowNo = (int)indexPath.row;
-            }
-            if (indexPath.section == 1) {
-                rowNo = ((int)indexPath.row + 5);
-            }
-        }
-        // If it's a news event, start at Row 0, which includes a description of the event.
-        else {
-            if (indexPath.section == 0) {
-                rowNo = ((int)indexPath.row - 1);
-            }
-            if (indexPath.section == 1) {
-                rowNo = (int)indexPath.row;
-            }
-            if (indexPath.section == 2) {
-                rowNo = ((int)indexPath.row + 5);
-            }
-        }
-        
-        // Default
-        [[cell titleLabel] setText:@"NA"];
-        [[cell descriptionArea] setText:@"Details not available."];
-        
-        // Display the appropriate details based on the row no
-        switch (rowNo) {
-                
-                // Show impact and desscription for product events right now.
-            case infoRow0:
-            {
-                // Hide detail action label
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                
-                // Get Impact String
-                NSString *impact_str = [self getImpactDescriptionForEventType:self.eventType eventParent:self.parentTicker];
-                
-                // Set proper formatting
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // Set the impact icon
-                // Very High Impact
-                if ([impact_str caseInsensitiveCompare:@"Very High Impact"] == NSOrderedSame) {
-                    [[cell titleLabel] setText:@"Very High Impact"];
-                }
-                // High Impact
-                if ([impact_str caseInsensitiveCompare:@"High Impact"] == NSOrderedSame) {
-                    //cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
-                    [[cell titleLabel] setText:@"High Impact"];
-                }
-                // Medium Impact
-                if ([impact_str caseInsensitiveCompare:@"Medium Impact"] == NSOrderedSame) {
-                    //cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-                    [[cell titleLabel] setText:@"Medium Impact"];
-                }
-                // Low Impact
-                if ([impact_str caseInsensitiveCompare:@"Low Impact"] == NSOrderedSame) {
-                    //cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
-                    [[cell titleLabel] setText:@"Low Impact"];
-                }
-                
-                // Set the rationale
-                [[cell descriptionArea] setText:[NSString stringWithFormat:@"%@",[self getEventDescriptionForEventType:self.eventType eventParent:self.parentTicker]]];
-            }
-                break;
-                
-                // Show Market Cap Rank and Total
-            case infoRow1:
-            {
-                // Hide detail action label
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                
-                // Correct Font and Colors
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:19]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // Total Cap String
-                NSString *totalCapString = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.estimatedEps]];
-                // Cap Rank String
-                NSString *capCumulativeStr = [NSString stringWithFormat:@"#%@  %@", eventData.relatedDetails, totalCapString];
-                
-                [[cell titleLabel] setText:capCumulativeStr];
-                [[cell descriptionArea] setText:@"MARKET CAP"];
-            }
-                break;
-                
-                // Show Current Price
-            case infoRow2:
-            {
-                // Hide detail action label
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:19]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // Default State Colors
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                // If 24 hr price change is 0 or positive set green else red
-                if ([eventHistoryData.previous1RelatedPrice floatValue] >= 0.0f) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
-                } else {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
-                }
-                
-                // Curr Price String
-                NSString *currPriceString = [NSString stringWithFormat:@"%@", [currencyFormatter2 stringFromNumber:eventHistoryData.currentPrice]];
-                
-                [[cell titleLabel] setText:currPriceString];
-                [[cell descriptionArea] setText:@"CURRENT PRICE"];
-            }
-                break;
-                
-                // Show 1 Hr Price Change
-            case infoRow3:
-            {
-                // Hide detail action label
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:19]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // Default State Colors
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                // If 1 hr price change is 0 or positive set green else red
-                if ([eventData.actualEpsPrior floatValue] >=  0.0f) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
-                } else {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
-                }
-                
-                NSString *oneChangeString = [NSString stringWithFormat:@"%@%%", [twoDecNumberFormatter stringFromNumber:eventData.actualEpsPrior]];
-                
-                [[cell titleLabel] setText:oneChangeString];
-                [[cell descriptionArea] setText:@"1 HR PRICE CHANGE"];
-            }
-                break;
-                
-                // Show 24 Hr Price Change
-            case infoRow4:
-            {
-                // Hide detail action label
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:19]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // Default State Colors
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                // If 24 hr price change is 0 or positive set green else red
-                if ([eventHistoryData.previous1RelatedPrice floatValue] >= 0.0f) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
-                } else {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
-                }
-                
-                // Curr Price String
-                NSString *twentyChangeString = [NSString stringWithFormat:@"%@%%", [twoDecNumberFormatter stringFromNumber:eventHistoryData.previous1RelatedPrice]];
-                
-                [[cell titleLabel] setText:twentyChangeString];
-                [[cell descriptionArea] setText:@"24 HR PRICE CHANGE"];
-            }
-                break;
-                
-                // Show 7 Days Price Change
-            case infoRow5:
-            {
-                // Hide detail action label
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:19]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // Default State Colors
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                // If 24 hr price change is 0 or positive set green else red
-                if ([eventHistoryData.previous1Price floatValue] >= 0.0f) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
-                } else {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
-                }
-                
-                // Curr Price String
-                NSString *sevenChangeString = [NSString stringWithFormat:@"%@%%", [twoDecNumberFormatter stringFromNumber:eventHistoryData.previous1Price]];
-                
-                [[cell titleLabel] setText:sevenChangeString];
-                [[cell descriptionArea] setText:@"7 DAYS PRICE CHANGE"];
-            }
-                break;
-                
-                // Show What is ?
-            case infoRow6:
-            {
-                // Show action detail label if the data exists
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:2]];
-                
-                // Set proper formatting
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                cell.titleLabel.textColor =[self getColorForEventType:self.eventType];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // What is <coin name>
-                NSString *whatIsString = [NSString stringWithFormat:@"%@",[self.parentCompany uppercaseString]];
-                NSString *descString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:0]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                    cell.detailsActionLbl.hidden = YES;
-                }
-                else
-                {
-                    cell.detailsActionLbl.textColor = [self getColorForEventType:self.eventType];
-                    cell.detailsActionLbl.hidden = NO;
-                }
-                
-                [[cell titleLabel] setText:whatIsString];
-                [[cell descriptionArea] setText:descString];
-                [[cell detailsActionLbl] setText:@"Website >"];
-            }
-                break;
-                
-                // Show Use Cases
-            case infoRow7:
-            {
-                // Show action detail label if the data exists
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:3]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                    cell.detailsActionLbl.hidden = YES;
-                }
-                else
-                {
-                    cell.detailsActionLbl.textColor = [UIColor blackColor];
-                    cell.detailsActionLbl.hidden = NO;
-                }
-                
-                // Set proper formatting
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // Used For
-                NSString *usedForString = [NSString stringWithFormat:@"USES"];
-                NSString *usedForDescString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:1]];
-                
-                [[cell titleLabel] setText:usedForString];
-                [[cell descriptionArea] setText:usedForDescString];
-                [[cell detailsActionLbl] setText:@"Details >"];
-            }
-                break;
-                
-                // Show Backed By
-            case infoRow8:
-            {
-                // Set proper formatting
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                // Backed By
-                NSString *backedByString = [NSString stringWithFormat:@"BACKERS"];
-                NSString *backedByDescString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:7]];
-                
-                [[cell titleLabel] setText:backedByString];
-                [[cell descriptionArea] setText:backedByDescString];
-            }
-                break;
-                
-                // Show Concerns
-            case infoRow9:
-            {
-                // Set proper formatting
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                NSString *concernsString = [NSString stringWithFormat:@"CONCERNS"];
-                NSString *concernsDescString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:8]];
-                
-                [[cell titleLabel] setText:concernsString];
-                [[cell descriptionArea] setText:concernsDescString];
-            }
-                break;
-                
-            // Show Exchanges
-            case infoRow10:
-            {
-                // Set proper formatting
-                cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                cell.detailsActionLbl.hidden = YES;
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                cell.titleLabel.textColor = [UIColor blackColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                NSString *exchangesString = [NSString stringWithFormat:@"EXCHANGES"];
-                NSString *exchangesListString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:11]];
-                
-                [[cell titleLabel] setText:exchangesString];
-                [[cell descriptionArea] setText:exchangesListString];
-            }
-                break;
-                
-                // Show Reddit
-            case infoRow11:
-            {
-                // Show action detail label if the data exists
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:4]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                    cell.detailsActionLbl.hidden = YES;
-                    cell.titleLabel.textColor = [UIColor blackColor];
-                }
-                else
-                {
-                    // Reddit Orangish Red
-                    cell.detailsActionLbl.textColor = [UIColor colorWithRed:233.0f/255.0f green:63.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                    cell.detailsActionLbl.hidden = NO;
-                    cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:63.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                }
-                
-                // Set proper formatting
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                NSString *redditTxt = [NSString stringWithFormat:@"SEE REDDIT DISCUSSION"];
-                NSString *subRedditExt = [NSString stringWithFormat:@"%@",actionLocation];
-                
-                [[cell titleLabel] setText:subRedditExt];
-                [[cell descriptionArea] setText:redditTxt];
-                [[cell detailsActionLbl] setText:@">"];
-            }
-                break;
-                
-                // Show Twitter
-            case infoRow12:
-            {
-                NSString *twitterHandle = nil;
-                
-                // Show action detail label if the data exists
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:6]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                    cell.detailsActionLbl.hidden = YES;
-                    cell.titleLabel.textColor = [UIColor blackColor];
-                    twitterHandle = [NSString stringWithFormat:@"%@",actionLocation];
-                }
-                else
-                {
-                    // Twitter Blue
-                    cell.detailsActionLbl.textColor = [UIColor colorWithRed:34.0f/255.0f green:125.0f/255.0f blue:251.0f/255.0f alpha:1.0f];
-                    cell.detailsActionLbl.hidden = NO;
-                    cell.titleLabel.textColor = [UIColor colorWithRed:34.0f/255.0f green:125.0f/255.0f blue:251.0f/255.0f alpha:1.0f];
-                    twitterHandle = [NSString stringWithFormat:@"@%@",actionLocation];
-                }
-                
-                // Set proper formatting
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                NSString *twitterTxt = [NSString stringWithFormat:@"SEE TWEETS"];
-                
-                [[cell titleLabel] setText:twitterHandle];
-                [[cell descriptionArea] setText:twitterTxt];
-                [[cell detailsActionLbl] setText:@">"];
-            }
-                break;
-                
-                // Show Github
-            case infoRow13:
-            {
-                // Show action detail label if the data exists
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:5]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    cell.detailsActionLbl.textColor = [UIColor whiteColor];
-                    cell.detailsActionLbl.hidden = YES;
-                    cell.titleLabel.textColor = [UIColor blackColor];
-                }
-                else
-                {
-                    // Code Blue
-                    cell.detailsActionLbl.textColor = [UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:214.0f/255.0f alpha:1.0f];
-                    cell.detailsActionLbl.hidden = NO;
-                    cell.titleLabel.textColor = [UIColor colorWithRed:0.0f/255.0f green:102.0f/255.0f blue:214.0f/255.0f alpha:1.0f];
-                }
-                
-                // Set proper formatting
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-                
-                NSString *githubTxt = [NSString stringWithFormat:@"SEE GITHUB ACTIVITY"];
-                NSString *githubRepo = [NSString stringWithFormat:@"%@",actionLocation];
-                
-                [[cell titleLabel] setText:githubRepo];
-                [[cell descriptionArea] setText:githubTxt];
-                [[cell detailsActionLbl] setText:@">"];
-            }
-                break;
-                
-            // Show data warning
-            case infoRow14:
-            {
-                // Set proper formatting
-                cell.detailsActionLbl.hidden = NO;
-                cell.detailsActionLbl.textColor = [UIColor grayColor];
-                cell.titleLabel.textColor = [UIColor grayColor];
-                cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:14]];
-                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:10]];
-                [cell.descriptionArea setTextColor:[UIColor grayColor]];
-                
-                NSString *dataTxt = [NSString stringWithFormat:@"©"];
-                NSString *dataDesc = @"About data by Litchi Labs.Contact us to reuse.";
-                
-                [[cell titleLabel] setText:dataTxt];
-                [[cell descriptionArea] setText:dataDesc];
-                [[cell detailsActionLbl] setText:@">"];
-            }
-                break;
-                
-            default:
-                break;
-        }
-    }
+    // Assign a row no to the type of event detail row. Currently upto 5 types of related info pieces are available.
+    #define infoRow1  0
     
-    // If News type detail is selected
-    else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+    // Get Row no
+    int rowNo = (int)indexPath.row;
+    
+    // Default
+    [[cell titleLabel] setText:@"?"];
+    [[cell descriptionArea] setText:@"Details not available."];
+    
+    // Display the appropriate details based on the row no
+    // TO DO: SOLIDIFY LATER: Currently we use the event data to get the previous related date in expectedEps, priorEps, changeSincePrevQuarter. The scrubbed version of the previous related date (updated if it was on a weekend) is stored in the event history so that the stock price can be fetched. This is working fine for now but might want to rethink this.
+    switch (rowNo) {
         
-        eventData = [self.infoResultsController objectAtIndexPath:indexPath];
-        
-        // Proper formatting
-        [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:14]];
-        [cell.descriptionArea setTextColor:[UIColor blackColor]];
-        cell.detailsActionLbl.hidden = NO;
-        cell.detailsActionLbl.textColor = [UIColor lightGrayColor];
-        
-        // Set the source for attribution
-        //[[cell  titleLabel] setText:[self.dataSnapShot2 getNewsSource:eventData]];
-        //[[cell titleLabel] setAttributedText:[self.dataSnapShot2 getFormattedSource:[self.dataSnapShot2 getNewsSource:eventData]]];
-        
-        // Show the news title
-        [[cell descriptionArea] setText:[self formatEventType:eventData]];
-        
-        // Set the date of the article to the eventImpact.
-        [[cell detailsActionLbl] setText:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]];
+            // Common impact and description cell
+        case infoRow1:
+        {
+            // Get Impact String
+            NSString *impact_str = [self getImpactDescriptionForEventType:self.eventType eventParent:self.parentTicker];
+            
+            // Set the impact icon
+            // Very High Impact
+            if ([impact_str caseInsensitiveCompare:@"Very High Impact"] == NSOrderedSame) {
+                [[cell titleLabel] setText:@"🔥"];
+            }
+            // High Impact
+            if ([impact_str caseInsensitiveCompare:@"High Impact"] == NSOrderedSame) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"♨︎"];
+            }
+            // Medium Impact
+            if ([impact_str caseInsensitiveCompare:@"Medium Impact"] == NSOrderedSame) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"♨︎"];
+            }
+            // Low Impact
+            if ([impact_str caseInsensitiveCompare:@"Low Impact"] == NSOrderedSame) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"♨︎"];
+            }
+            
+            // Set the rationale
+            [[cell descriptionArea] setText:[NSString stringWithFormat:@"%@.%@",[self getImpactDescriptionForEventType:self.eventType eventParent:self.parentTicker],[self getEventDescriptionForEventType:self.eventType eventParent:self.parentTicker]]];
+        }
+            break;
+            
+        default:
+            
+            break;
     }
     
     return cell;
 }
 
-// When a row is selected send it to the respective detail view based on section and cell
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+// OLD ONE, REPLACED BY A SIMPLER DETAIL VIEW:Return a cell configured to display the event details based on the cell number and event type. Currently upto 6 types of information pieces are available.
+/*- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    EventHistory *eventHistoryData;
     
-    // Check to see if the row selected has an event cell with remote fetch status set to true
-    FAEventDetailsTableViewCell *cell = (FAEventDetailsTableViewCell *)[self.eventDetailsTable cellForRowAtIndexPath:indexPath];
-    Event *eventData = nil;
+    // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
+    FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
     
-    NSString *actionLocation = nil;
-    NSString *actionURL = nil;
-    NSURL *targetURL = nil;
+    // Assign a row no to the type of event detail row. Currently upto 5 types of related info pieces are available.
+    #define infoRow1  0
+    #define infoRow2  1
+    #define infoRow3  2
+    #define infoRow4  3
+    #define infoRow5  4
     
-    // If info type details is selected
-    if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
+    // Define date formatters that will be used later
+    // 1. Jun 30 2015
+    NSDateFormatter *monthDateYearFormatter = [[NSDateFormatter alloc] init];
+    [monthDateYearFormatter setDateFormat:@"MMM dd yyyy"];
+    
+    // Define number formatters to be used later.
+    NSNumberFormatter *decimal2Formatter = [[NSNumberFormatter alloc] init];
+    [decimal2Formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    [decimal2Formatter setMaximumFractionDigits:2];
+    [decimal2Formatter setRoundingMode: NSNumberFormatterRoundUp];
+    
+    // Set a value indicating that a value is not available. Currently a Not Available value
+    // is represented by
+    double notAvailable = 999999.9f;
+
+    // Get Row no
+    int rowNo = (int)indexPath.row;
+    
+    // Get the event details parts of which will be displayed in the details table
+    Event *eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:self.eventType];
+    
+    // Get the event history, only if the event type is quarterly earnings or price change event or a product event, to be displayed as the details based on parent company ticker and event type. Assumption is that ticker and event type uniquely identify an event.
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]||[self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]||[self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         
-        // Assign a row no to the type of event detail row.
-        #define infoRow0  -1
-        #define infoRow1  0
-        #define infoRow2  1
-        #define infoRow3  2
-        #define infoRow4  3
-        #define infoRow5  4
-        #define infoRow6  5
-        #define infoRow7  6
-        #define infoRow8  7
-        #define infoRow9  8
-        #define infoRow10  9
-        #define infoRow11 10
-        #define infoRow12 11
-        #define infoRow13 12
-        #define infoRow14 13
-        
-        int rowNo = 0;
-        
-        // If it's a currency price event, start at Row 1
-        if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-            if (indexPath.section == 0) {
-                rowNo = (int)indexPath.row;
-            }
-            if (indexPath.section == 1) {
-                rowNo = ((int)indexPath.row + 5);
-            }
-        }
-        // If it's a news event, start at Row 0, which includes a description of the event.
-        else {
-            if (indexPath.section == 0) {
-                rowNo = ((int)indexPath.row - 1);
-            }
-            if (indexPath.section == 1) {
-                rowNo = (int)indexPath.row;
-            }
-            if (indexPath.section == 2) {
-                rowNo = ((int)indexPath.row + 5);
-            }
-        }
-        
-        // Display the appropriate details based on the section and row no
-        switch (rowNo) {
-                
-                // For event summary Do nothing
-            case infoRow0:
-            {
-                
-            }
-                break;
-                
-                // For Market Cap Rank Do nothing
-            case infoRow1:
-            {
-                
-            }
-                break;
-                
-                // Show Current Price Do nothing
-            case infoRow2:
-            {
-                
-            }
-                break;
-                
-                // Show 1 Hr Price Change Do nothing
-            case infoRow3:
-            {
-                
-            }
-                break;
-                
-                // Show 24 Hr Price Change Do nothing
-            case infoRow4:
-            {
-                
-            }
-                break;
-                
-                // Show 7 Days Price Change Do nothing
-            case infoRow5:
-            {
-                
-            }
-                break;
-                
-                // Show What is ? and link to website for the ticker
-            case infoRow6:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:2]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    targetURL = [NSURL URLWithString:actionLocation];
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"What is > Website",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Use Cases and link to more detailed description
-            case infoRow7:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:3]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    cell.detailsActionLbl.textColor = [UIColor blackColor];
-                    cell.detailsActionLbl.hidden = NO;
-                    targetURL = [NSURL URLWithString:actionLocation];
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"Uses > Detailed Description Site",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Backed By Do nothing
-            case infoRow8:
-            {
-                
-            }
-                break;
-                
-                // Show Concerns Do nothing
-            case infoRow9:
-            {
-                
-            }
-                break;
-                
-                // Do nothingHide the detail action label
-            case infoRow10:
-            {
-                
-            }
-                break;
-                
-                // Show Reddit
-            case infoRow11:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:4]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    actionURL = [NSString stringWithFormat:@"https://www.reddit.com%@",actionLocation];
-                    targetURL = [NSURL URLWithString:actionURL];
-                    
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"See Reddit",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Twitter
-            case infoRow12:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:6]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    actionURL = [NSString stringWithFormat:@"https://twitter.com/%@",actionLocation];
-                    targetURL = [NSURL URLWithString:actionURL];
-                    
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"See Twitter",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Github
-            case infoRow13:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:5]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    actionURL = [NSString stringWithFormat:@"https://github.com%@",actionLocation];
-                    targetURL = [NSURL URLWithString:actionURL];
-                    
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"See Github",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Support/contact us page
-            case infoRow14:
-            {
-                SFSafariViewController *supportVC = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"http://www.knotifi.com/p/contact.html"]];
-                supportVC.delegate = self;
-                supportVC.preferredControlTintColor = [UIColor blackColor];
-                [self presentViewController:supportVC animated:YES completion:nil];
-            }
-                break;
-                
-            default:
-                break;
-        }
+        // Since we use the eventhistory for the quarterly earnings event for price events, use the string "Quarterly Earnings" instead of self.eventType
+        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:@"Quarterly Earnings"];
     }
     
-    // If News type detail is selected
-    else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
+    // Display the appropriate details based on the row no
+    // TO DO: SOLIDIFY LATER: Currently we use the event data to get the previous related date in expectedEps, priorEps, changeSincePrevQuarter. The scrubbed version of the previous related date (updated if it was on a weekend) is stored in the event history so that the stock price can be fetched. This is working fine for now but might want to rethink this.
+    switch (rowNo) {
         
-        eventData = [self.infoResultsController objectAtIndexPath:indexPath];
-        NSURL *targetURL = [NSURL URLWithString:eventData.relatedDetails];
-        
-        if (targetURL) {
+        // Display todays price or description or impact depending on event type.
+        case infoRow1:
+        {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
+
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]||[self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+                [[cell descriptionArea] setText:@"Current price"];
+                if ([self.currentPriceAndChange containsString:@"-"]) {
+                    // Set color to Red
+                    cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:self.currentPriceAndChange];
+                } else {
+                    // Set color to Green
+                    cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:self.currentPriceAndChange];
+                }
+            }
+            if ([self.eventType containsString:@"Fed Meeting"]) {
+                
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
+                // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+                //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+                
+                // Econ Blue
+                //cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                // Light purple
+                cell.titleLabel.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
+            if ([self.eventType containsString:@"Jobs Report"]) {
+                
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
+                // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+                //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+                
+                // Econ Blue
+                //cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                // Light purple
+                cell.titleLabel.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
+            if ([self.eventType containsString:@"Consumer Confidence"]) {
+                
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
+                // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+                //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+                
+                // Econ Blue
+                //cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                // Light purple
+                cell.titleLabel.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
+            if ([self.eventType containsString:@"GDP Release"]) {
+                
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:self.eventType parentCompanyName:self.parentCompany]];
+                // TO DO: See if you want to bring back the icon later. If you do uncheck the resetting of label states for each row.
+                //cell.titleLabel.backgroundColor = [UIColor colorWithPatternImage:[self getImageBasedOnEventType:self.eventType]];
+                
+                // Econ Blue
+                //cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                // Light purple
+                cell.titleLabel.textColor = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"?"];
+            }
+            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+                
+                // Show EPS for earnings and Impact Image bars for all others
+                // Description
+                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+                
+                // Very High, High Impact
+                if ([cell.descriptionArea.text containsString:@"High Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||||||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+                // Medium Impact
+                if ([cell.descriptionArea.text containsString:@"Medium Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+                // Low Impact
+                if ([cell.descriptionArea.text containsString:@"Low Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+
+            }
+        }
+        break;
             
-            // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
-            // TO DO: Disabling to not track development events. Enable before shipping.
-            [FBSDKAppEvents logEvent:@"See External News Article"
-                          parameters:@{ @"News Source" : cell.titleLabel.text,
-                                        @"News Title" : cell.descriptionArea.text,
-                                        @"External URL" : [targetURL absoluteString]} ];
+        // Display Impact Level or 1 month price change depending on the event type
+        case infoRow2:
+        {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
             
-            SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-            externalInfoVC.delegate = self;
-            // Just use whatever is the default color for the Safari View Controller
-            //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] withCompanyTicker:ticker];
-            [self presentViewController:externalInfoVC animated:YES completion:nil];
+            // For product event show the current price
+            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+                [[cell descriptionArea] setText:@"Current price"];
+                if ([self.currentPriceAndChange containsString:@"-"]) {
+                    // Set color to Red
+                    cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:self.currentPriceAndChange];
+                } else {
+                    // Set color to Green
+                    cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:self.currentPriceAndChange];
+                }
+            }
+            // Else for Quarterly Earnings, econ events
+            else {
+                // Show EPS for earnings and Impact Image bars for all others
+                // Description
+                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+                
+                // Display Label
+                // EPS
+                if ([self.eventType isEqualToString:@"Quarterly Earnings"]||[self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+                    // Text
+                    // Get the 30 days prior date
+                    // More detailed formatting if needed in the future
+                    
+                    // TO DO: Comment 1st line and delete second line before shipping v2.7
+                    //NSString *priorEndDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1Date]];
+                    //NSLog(@"30 days price change range is:%@",priorEndDateToYestString);
+                    
+                    //[[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:priorEndDateToYestString]];
+                    [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:@""]];
+                    
+                    // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
+                    double prev1RelatedPriceDbl = [[eventHistoryData previous1Price] doubleValue];
+                    double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+                    // TO DO: Comment 1st line and delete second line before shipping v2.7
+                    //NSLog(@"The 30 days ago price was:%f and current price is:%f",prev1RelatedPriceDbl,currentPriceDbl);
+                    if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
+                    {
+                        double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
+                        double priceDiffAbs = fabs(priceDiff);
+                        double percentageDiff = (100 * priceDiff)/prev1RelatedPriceDbl;
+                        NSString *priceDiffString = nil;
+                        NSString *percentageDiffString = nil;
+                        NSString *pricesString = nil;
+                        if(priceDiff < 0)
+                        {
+                            priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
+                            percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                            // Set color to Red
+                            cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                            [[cell titleLabel] setText:percentageDiffString];
+                        }
+                        else
+                        {
+                            priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
+                            percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                            // Set color to Green
+                            cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                            [[cell titleLabel] setText:percentageDiffString];
+                        }
+                        pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1RelatedPriceDbl, currentPriceDbl];
+                    }
+                    // If not available, display an appropriately formatted NA
+                    else
+                    {
+                        [[cell titleLabel] setTextColor:[UIColor blackColor]];
+                        [[cell titleLabel] setText:@"NA"];
+                    }
+                }
+                // Very High, High Impact
+                if ([cell.descriptionArea.text containsString:@"High Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||||||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+                // Medium Impact
+                if ([cell.descriptionArea.text containsString:@"Medium Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+                // Low Impact
+                if ([cell.descriptionArea.text containsString:@"Low Impact"]) {
+                    cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
+                    //[[cell titleLabel] setText:@"||||"];
+                    [[cell titleLabel] setText:@"♨︎"];
+                }
+            }
         }
+        break;
+            
+        // Display "Sectors Affected" link for economic events and "year to date change" for earnings event. Nothing for product
+        case infoRow3:
+        {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
+            
+            // For product event show the 30 days price change
+            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+                
+                [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:@""]];
+                
+                // Calculate the difference in stock prices from end of prior quarter to yesterday, if both of them are available, format and display them
+                double prev1RelatedPriceDbl = [[eventHistoryData previous1Price] doubleValue];
+                double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+                // TO DO: Comment 1st line and delete second line before shipping v2.7
+                //NSLog(@"The 30 days ago price was:%f and current price is:%f",prev1RelatedPriceDbl,currentPriceDbl);
+                if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
+                {
+                    double priceDiff = currentPriceDbl - prev1RelatedPriceDbl;
+                    double priceDiffAbs = fabs(priceDiff);
+                    double percentageDiff = (100 * priceDiff)/prev1RelatedPriceDbl;
+                    NSString *priceDiffString = nil;
+                    NSString *percentageDiffString = nil;
+                    NSString *pricesString = nil;
+                    if(priceDiff < 0)
+                    {
+                        priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
+                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                        // Set color to Red
+                        cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                        [[cell titleLabel] setText:percentageDiffString];
+                    }
+                    else
+                    {
+                        priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
+                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                        // Set color to Green
+                        cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                        [[cell titleLabel] setText:percentageDiffString];
+                    }
+                    pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1RelatedPriceDbl, currentPriceDbl];
+                }
+                // If not available, display an appropriately formatted NA
+                else
+                {
+                    [[cell titleLabel] setTextColor:[UIColor blackColor]];
+                    [[cell titleLabel] setText:@"NA"];
+                }
+            }
+            // Else for Quarterly Earnings, econ events
+            else {
+                
+                // Description
+                [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
+                
+                // Image/Value
+                if ([self.eventType isEqualToString:@"Quarterly Earnings"]||[self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+                    // Text
+                    // Get the start of the year date
+                    // More detailed formatting in case you need it later.
+                    
+                    // TO DO: Comment 1st line and delete second line before shipping v2.7
+                    //NSString *priorEarningsDateToYestString = [NSString stringWithFormat:@"%@ - Now", [monthDateYearFormatter stringFromDate:eventHistoryData.previous1RelatedDate]];
+                    //NSLog(@"ytd price change range is:%@",priorEarningsDateToYestString);
+                    
+                    //[[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:priorEarningsDateToYestString]];
+                    [[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:@""]];
+                    
+                    // Calculate the difference in stock prices since start of the year, if both of them are available, format and display them
+                    double prev1PriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+                    double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+                    // TO DO: Comment 1st line and delete second line before shipping v2.7
+                    //NSLog(@"The first day of the yr price was:%f and current price is:%f and NA is:%f",prev1PriceDbl,currentPriceDbl, notAvailable);
+                    if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
+                    {
+                        double priceDiff = currentPriceDbl - prev1PriceDbl;
+                        double priceDiffAbs = fabs(priceDiff);
+                        double percentageDiff = (100 * priceDiff)/prev1PriceDbl;
+                        NSString *priceDiffString = nil;
+                        NSString *percentageDiffString = nil;
+                        NSString *pricesString = nil;
+                        if(priceDiff < 0)
+                        {
+                            priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
+                            percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                            // Set color to Red
+                            cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                            [[cell titleLabel] setText:percentageDiffString];
+                        }
+                        else
+                        {
+                            priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
+                            percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                            // Set color to Green
+                            cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                            [[cell titleLabel] setText:percentageDiffString];
+                        }
+                        pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1PriceDbl, currentPriceDbl];
+                    }
+                    // If not available, display an appropriately formatted NA
+                    else
+                    {
+                        [[cell titleLabel] setTextColor:[UIColor blackColor]];
+                        [[cell titleLabel] setText:@"NA"];
+                    }
+                }
+                
+                if ([self.eventType containsString:@"Fed Meeting"]) {
+                    // Select the appropriate color and text for Financial Stocks
+                    cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"$"];
+                }
+                
+                if ([self.eventType containsString:@"Jobs Report"]) {
+                    // Select the appropriate color and text for All Stocks
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"☼"];
+                }
+                
+                if ([self.eventType containsString:@"Consumer Confidence"]) {
+                    // Select the appropriate color and text for Retail Stocks
+                    // Pinkish deep red
+                    cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"⦿"];
+                }
+                
+                if ([self.eventType containsString:@"GDP Release"]) {
+                    // Select the appropriate color and text for All Stocks
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"☼"];
+                }
+            }
+        }
+        break;
+        
+        // Display Expected EPS or Tip depending on the event type
+        case infoRow4:
+        {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
+            
+            // For product event show the 30 days price change
+            if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+                
+                [[cell descriptionArea] setText:[self getPriceSincePriorEstimatedEarningsDate:self.eventType additionalInfo:@""]];
+                
+                // Calculate the difference in stock prices since start of the year, if both of them are available, format and display them
+                double prev1PriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+                double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+                // TO DO: Comment 1st line and delete second line before shipping v2.7
+                //NSLog(@"The first day of the yr price was:%f and current price is:%f",prev1PriceDbl,currentPriceDbl);
+                if ((prev1PriceDbl != notAvailable)&&(currentPriceDbl != notAvailable))
+                {
+                    double priceDiff = currentPriceDbl - prev1PriceDbl;
+                    double priceDiffAbs = fabs(priceDiff);
+                    double percentageDiff = (100 * priceDiff)/prev1PriceDbl;
+                    NSString *priceDiffString = nil;
+                    NSString *percentageDiffString = nil;
+                    NSString *pricesString = nil;
+                    if(priceDiff < 0)
+                    {
+                        priceDiffString = [NSString stringWithFormat:@"-%.1f", priceDiffAbs];
+                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                        // Set color to Red
+                        cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                        [[cell titleLabel] setText:percentageDiffString];
+                    }
+                    else
+                    {
+                        priceDiffString = [NSString stringWithFormat:@"+%.1f", priceDiffAbs];
+                        percentageDiffString = [NSString stringWithFormat:@"%.1f%%", percentageDiff];
+                        // Set color to Green
+                        cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                        [[cell titleLabel] setText:percentageDiffString];
+                    }
+                    pricesString = [NSString stringWithFormat:@"%.2f - %.2f", prev1PriceDbl, currentPriceDbl];
+                }
+                // If not available, display an appropriately formatted NA
+                else
+                {
+                    [[cell titleLabel] setTextColor:[UIColor blackColor]];
+                    [[cell titleLabel] setText:@"NA"];
+                }
+            }
+            // Else for Quarterly Earnings, econ events
+            else {
+                
+                // Text
+                [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:self.eventType additionalInfo:@""]];
+                
+                // Value
+                if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                    // Show EPS for earnings and Impact Image bars for all others
+                    // Description
+                    [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:self.eventType eventParent:self.parentTicker]];
+                    
+                    // Display Label
+                    // EPS
+                    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                        cell.titleLabel.textColor = [UIColor blackColor];
+                        [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.estimatedEps]];
+                    }
+                }
+                
+                if ([self.eventType containsString:@"Fed Meeting"]) {
+                    // Select the appropriate color and text for Pro Tip
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"⚇"];
+                }
+                
+                if ([self.eventType containsString:@"Jobs Report"]) {
+                    // Select the appropriate color and text for Pro Tip
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"⚇"];
+                }
+                
+                if ([self.eventType containsString:@"Consumer Confidence"]) {
+                    // Select the appropriate color and text for Pro Tip
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"⚇"];
+                }
+                
+                if ([self.eventType containsString:@"GDP Release"]) {
+                    // Select the appropriate color and text for Pro Tip
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"⚇"];
+                }  
+            }
+        }
+        break;
+            
+        // Show prior EPS for Quarterly earnings
+        case infoRow5:
+        {
+            // Clear the image if it's been added to the background and remove text to reset state
+            //cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            //[[cell titleLabel] setText:@""];
+            
+            // Description
+            [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:self.eventType]];
+            
+            cell.titleLabel.textColor = [UIColor blackColor];
+            [[cell titleLabel] setText:[decimal2Formatter stringFromNumber:eventData.actualEpsPrior]];
+        }
+        break;
+        
+        default:
+            
+        break;
     }
-}
-
-// When a user scrolls on the detail view
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    // TRACKING EVENT:
-    // TO DO: Disabling to not track development events. Enable before shipping.
-    [FBSDKAppEvents logEvent:@"Viewed About"
-                  parameters:@{ @"About Ticker" : self.parentTicker} ];
-}
-
-#pragma mark - Info Selector Related
-
-// Take action when a details info type is selected
-- (IBAction)detailsInfoTypeSelected:(id)sender {
     
-    // Reset the navigation bar header text color to black
-    NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
-                                             [UIColor blackColor], NSForegroundColorAttributeName,
-                                             nil];
-    [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
-    
-    
-    // Set text color and size of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
-    NSDictionary *unselectedAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                          [UIFont systemFontOfSize:16], NSFontAttributeName,
-                                          [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
-                                          nil];
-    [self.detailsInfoSelector setTitleTextAttributes:unselectedAttributes forState:UIControlStateNormal];
-    // Set text and size for selected segment
-    NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [UIFont boldSystemFontOfSize:16], NSFontAttributeName,
-                                    [UIColor blackColor], NSForegroundColorAttributeName,
-                                    nil];
-    [self.detailsInfoSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
-    
-    // If Info
-    if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-        
-        // Reset the company name in the navigation bar header.
-        self.navigationItem.title = [self.eventTitleStr uppercaseString];
-        
-        // Format
-        [self.bottomBorderLbl1 setBackgroundColor:[UIColor blackColor]];
-        [self.bottomBorderLbl1 setTintColor:[UIColor blackColor]];
-        [self.bottomBorderLbl1 setTextColor:[UIColor blackColor]];
-        [self.bottomBorderLbl2 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl2 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl2 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        
-        //Action
-        [self.eventDetailsTable reloadData];
-        
-        // TRACKING EVENT: Event Type Selected: User selected Crypto event type explicitly in the events type selector
-        // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"Event Type Selected"
-                      parameters:@{ @"Event Type" : @"Price Info in Details" } ];
-    }
-    // If News
-    else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-        
-        // Reset crypto in the navigation bar header.
-        self.navigationItem.title = @"CRYPTO";
-        
-        // Format
-        [self.bottomBorderLbl2 setBackgroundColor:[UIColor blackColor]];
-        [self.bottomBorderLbl2 setTintColor:[UIColor blackColor]];
-        [self.bottomBorderLbl2 setTextColor:[UIColor blackColor]];
-        [self.bottomBorderLbl1 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl1 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl1 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        
-        // Action
-        // Reload the details table with the news.
-        //self.infoResultsController = [self.primaryDetailsDataController getLatestCryptoEvents];
-        [self.eventDetailsTable reloadData];
-        
-        // Set navigation bar header to an attention orange color
-        NSDictionary *attentionHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                   [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
-                                                   [UIColor colorWithRed:205.0f/255.0f green:151.0f/255.0f blue:61.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
-                                                   nil];
-        [self.navigationController.navigationBar setTitleTextAttributes:attentionHeaderAttributes];
-        //[self.navigationController.navigationBar.topItem setTitle:[notification object]];
-        self.navigationItem.title = @"Fetching...";
-        
-        // Force a pull down to refresh asynchronously
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Trigger the table refresh
-                [self.deetsTblRefreshControl sendActionsForControlEvents:UIControlEventValueChanged];
-            });
-        });
-        
-        
-        // TRACKING EVENT: Event Type Selected: User selected Crypto event type explicitly in the events type selector
-        // TO DO: Disabling to not track development events. Enable before shipping.
-        [FBSDKAppEvents logEvent:@"In App News Viewed"
-                      parameters:@{ @"Event Type" : @"Latest News in Details" } ];
-    }
-}
+    return cell;
+} */
 
 #pragma mark - Reminder Related
 
@@ -1744,8 +1032,8 @@
 
 #pragma mark - News related
 
-// Show them Google news
-- (IBAction)seeNewsAction2:(id)sender {
+// Send the user to the appropriate news site when they click the news button 1. Currently Google.
+- (IBAction)seeNewsAction:(id)sender {
     
     NSString *moreInfoURL = nil;
     NSString *searchTerm = nil;
@@ -1760,21 +1048,47 @@
     
     // Google news is default for now
     moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-    searchTerm = [NSString stringWithFormat:@"%@",@"cryptocurrency news"];
+    searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
     
-    // If price change event this button label is <TICKER> News and links out to Ticker cryptocurrency.
+    // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentTicker,@"earnings"];
+    }
+    
+    // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
+    if ([self.eventType containsString:@"Launch"]) {
+        searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+    }
+    // E.g. Naples Epyc Sales Launch becomes Naples Epyc
+    if ([self.eventType containsString:@"Sales Launch"]) {
+        searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Sales Launch" withString:@""];
+    }
+    if ([self.eventType containsString:@"Conference"]) {
+        searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+    }
+    
+    // For economic events, search query term is customized for each type
+    if ([self.eventType containsString:@"GDP Release"]) {
+        searchTerm = @"us gdp growth";
+    }
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
+        searchTerm = @"us consumer confidence";
+    }
+    if ([self.eventType containsString:@"Fed Meeting"]) {
+        searchTerm = @"fomc meeting";
+    }
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        searchTerm = @"jobs report us";
+    }
     if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-        searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentCompany,@"cryptocurrency"];
-        // Remove any spaces in the URL query string params
-        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-        moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
-        targetURL = [NSURL URLWithString:moreInfoURL];
+        searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentTicker,@"stock"];
     }
-    // Else the button label is Best Info and links out to the linked article stored as part of the event.
-    else {
-        moreInfoURL = [self getBestInfoUrlWithEventType:self.eventType eventParentTicker:self.parentTicker];
-        targetURL = [NSURL URLWithString:moreInfoURL];
-    }
+    
+    // Remove any spaces in the URL query string params
+    searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+    
+    targetURL = [NSURL URLWithString:moreInfoURL];
     
     if (targetURL) {
         
@@ -1793,17 +1107,55 @@
     }
 }
 
-// Currently being shown in the About section so no longer used
-// Surface Reddit content through Bing https://www.bing.com/search?q=Reddit+Ripple
-- (IBAction)seeNewsAction:(id)sender {
+
+// Send the user to the appropriate news site when they click the news button 2. Currently Seeking Alpha News.
+- (IBAction)seeNewsAction2:(id)sender {
     
     NSString *moreInfoURL = nil;
     NSString *searchTerm = nil;
     NSURL *targetURL = nil;
     
-    // Here is the URL for surfacing Reddit info on Bing https://www.bing.com/search?q=Reddit+Ripple
-    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/search?q="];
-    searchTerm = [NSString stringWithFormat:@"%@ %@",@"reddit",self.parentCompany];
+    // Send them to different sites with different queries based on which site has the best informtion for that event type
+    
+    // TO DO: If you want to revert to using Bing
+    // Bing News is the default we are going with for now
+    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    
+    // Seeking Alpha home is default
+    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://seekingalpha.com"];
+    searchTerm = [NSString stringWithFormat:@"%@",@""];
+    
+    // For Quarterly Earnings, the URL extension is the ticker /symbol/NVDA
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@",@"/symbol/",self.parentTicker];
+    }
+    
+    // For Product events, the URL extension is the ticker /symbol/NVDA
+    if ([self.eventType containsString:@"Launch"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@",@"/symbol/",self.parentTicker];
+    }
+    if ([self.eventType containsString:@"Conference"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@",@"/symbol/",self.parentTicker];
+    }
+    
+    // For economic events, just take them to the SA home page, so no URL extension
+    if ([self.eventType containsString:@"GDP Release"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Fed Meeting"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        searchTerm = @"";
+    }
+    // For Price events, the URL extension is the ticker /symbol/NVDA
+    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+        searchTerm =[NSString stringWithFormat:@"%@%@",@"/symbol/",self.parentTicker];
+    }
     
     // Remove any spaces in the URL query string params
     searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
@@ -1816,7 +1168,7 @@
         // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
         // TO DO: Disabling to not track development events. Enable before shipping.
         [FBSDKAppEvents logEvent:@"See External News"
-                      parameters:@{ @"News Source" : @"Bing_Reddit",
+                      parameters:@{ @"News Source" : @"Seeking Alpha",
                                     @"Action Query" : searchTerm,
                                     @"Action URL" : [targetURL absoluteString]} ];
         
@@ -1828,51 +1180,68 @@
     } 
 }
 
-// Send the user to the appropriate news site when they click the news button 3. Currently cointelegraph.
+// Send the user to the appropriate news site when they click the news button 3. Currently Yahoo Finance.
 - (IBAction)seeNewsAction3:(id)sender {
     
-    [self.navigationController popViewControllerAnimated:YES];
-    
-   /* NSString *moreInfoURL = nil;
-    NSURL *targetURL = nil;
+    NSString *moreInfoURL = nil;
     NSString *searchTerm = nil;
+    NSURL *targetURL = nil;
     
-    // For price events this take them to CoinTelegraph
+    // Send them to different sites with different queries based on which site has the best informtion for that event type
+    
+    // TO DO: If you want to revert to using Bing
+    // Bing News is the default we are going with for now
+    /*moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.bing.com/news/search?q="];
+     searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];*/
+    
+    // Yahoo finance is default
+    moreInfoURL = [NSString stringWithFormat:@"%@",@"https://finance.yahoo.com"];
+    searchTerm = [NSString stringWithFormat:@"%@",@""];
+    
+    // For Quarterly Earnings, the URL extension is the ticker /quote/NVDA?ql
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@%@",@"/quote/",self.parentTicker,@"?ql"];
+    }
+    
+    // For Product events, the URL extension is the ticker /quote/NVDA?ql
+    if ([self.eventType containsString:@"Launch"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@%@",@"/quote/",self.parentTicker,@"?ql"];
+    }
+    if ([self.eventType containsString:@"Conference"]) {
+        searchTerm = [NSString stringWithFormat:@"%@%@%@",@"/quote/",self.parentTicker,@"?ql"];
+    }
+    
+    // For economic events, just take them to the home page, so no URL extension
+    if ([self.eventType containsString:@"GDP Release"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Fed Meeting"]) {
+        searchTerm = @"";
+    }
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        searchTerm = @"";
+    }
+    // For Price events, the URL extension is the ticker /quote/NVDA?ql
     if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-        moreInfoURL = [NSString stringWithFormat:@"%@",@"https://cointelegraph.com"];
-        targetURL = [NSURL URLWithString:moreInfoURL];
+        searchTerm = [NSString stringWithFormat:@"%@%@%@",@"/quote/",self.parentTicker,@"?ql"];
     }
-    // Else do a google news with the correct search term
-    else {
-        moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-        searchTerm = [NSString stringWithFormat:@"%@",@"cryptocurrency news"];
-        
-        // For News events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
-        if ([self.eventType containsString:@"Launch"]) {
-            searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentCompany,[self.eventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""]];
-        }
-        // E.g. Naples Epyc Sales Launch becomes Naples Epyc
-        if ([self.eventType containsString:@"Sales Launch"]) {
-            searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentCompany,[self.eventType stringByReplacingOccurrencesOfString:@" Sales Launch" withString:@""]];
-        }
-        if ([self.eventType containsString:@"Conference"]) {
-            searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentCompany,[self.eventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""]];
-        }
-        
-        // Remove any spaces in the URL query string params
-        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-        moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
-        
-        targetURL = [NSURL URLWithString:moreInfoURL];
-    }
+    
+    // Remove any spaces in the URL query string params
+    searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+    
+    targetURL = [NSURL URLWithString:moreInfoURL];
     
     if (targetURL) {
         
         // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
         // TO DO: Disabling to not track development events. Enable before shipping.
         [FBSDKAppEvents logEvent:@"See External News"
-                      parameters:@{ @"News Source" : @"Cointelegraph",
-                                    @"Action Query" : @" ",
+                      parameters:@{ @"News Source" : @"Yahoo Finance",
+                                    @"Action Query" : searchTerm,
                                     @"Action URL" : [targetURL absoluteString]} ];
         
         SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
@@ -1880,7 +1249,7 @@
         // Just use whatever is the default color for the Safari View Controller
         //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
-    } */
+    } 
 }
 
 
@@ -1890,24 +1259,74 @@
     //[self dismissViewControllerAnimated:true completion:nil];
 }
 
-// Get the Best Info url that's stored on the event history for a news event
-- (NSString *)getBestInfoUrlWithEventType:(NSString *)eventType eventParentTicker:(NSString *)parentTicker
+// Load the appropriate news site in a web view in the app, when the user clicks the See News button
+/*- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    NSString *moreInfoURL = @"NA";
-    EventHistory *eventHistoryData = nil;
-    NSArray *infoComponents = nil;
-    
-    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
-        // Get event history that stores the following string for product events in it's previous1Status field: Impact_Impact Description_MoreInfoTitle_MoreInfoUrl
-        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:parentTicker parentEventType:eventType];
+    if ([[segue identifier] isEqualToString:@"ShowExternalInfo"]) {
         
-        // Parse out the MoreInfoUrl
-        infoComponents = [eventHistoryData.previous1Status componentsSeparatedByString:@"_"];
-        moreInfoURL = infoComponents[3];
+        FAExternalInfoViewController *webViewController = [segue destinationViewController];
+        
+        NSString *moreInfoURL = nil;
+        NSString *searchTerm = nil;
+        NSURL *targetURL = nil;
+        
+        // Send them to different sites with different queries based on which site has the best informtion for that event type
+        
+        // Google news is default for now
+        moreInfoURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = [NSString stringWithFormat:@"%@",@"stocks"];
+        
+        // For Quarterly Earnings, search query term is ticker and Earnings e.g. BOX earnings
+        if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+            searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentTicker,@"earnings"];
+        }
+        
+        // For Product events, search query term is the product name i.e. iPhone 7 or WWWDC 2016
+        if ([self.eventType containsString:@"Launch"]) {
+            searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Launch" withString:@""];
+        }
+        if ([self.eventType containsString:@"Conference"]) {
+            searchTerm = [self.eventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
+        }
+        
+        // For economic events, search query term is customized for each type
+        if ([self.eventType containsString:@"GDP Release"]) {
+            searchTerm = @"us gdp growth";
+        }
+        if ([self.eventType containsString:@"Consumer Confidence"]) {
+            searchTerm = @"us consumer confidence";
+        }
+        if ([self.eventType containsString:@"Fed Meeting"]) {
+            searchTerm = @"fomc meeting";
+        }
+        if ([self.eventType containsString:@"Jobs Report"]) {
+            searchTerm = @"jobs report us";
+        }
+        if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+            searchTerm = [NSString stringWithFormat:@"%@ %@",self.parentTicker,@"stock"];
+        }
+        
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        moreInfoURL = [moreInfoURL stringByAppendingString:searchTerm];
+        
+        targetURL = [NSURL URLWithString:moreInfoURL];
+        
+        if (targetURL) {
+            
+            // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
+            // TO DO: Disabling to not track development events. Enable before shipping.
+            [FBSDKAppEvents logEvent:@"External Action Clicked"
+                          parameters:@{ @"Action Title" : @"See News",
+                                        @"Action Query" : searchTerm,
+                                        @"Action URL" : [targetURL absoluteString]} ];
+            
+            // Set the URL for the webview to open
+            webViewController.externalInfoURL =  moreInfoURL;
+        }
     }
-    
-    return moreInfoURL;
-}
+}*/
+
 
 #pragma mark - Calendar and Event Related
 
@@ -2344,13 +1763,15 @@
 // TO DO: Currently set to 20 seconds. Change as you see fit.
 - (void)userGuidanceGenerated:(NSNotification *)notification {
     
-    // Set navigation bar header to an attention orange color
-    NSDictionary *attentionHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                               [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
-                                               [UIColor colorWithRed:205.0f/255.0f green:151.0f/255.0f blue:61.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
-                                               nil];
-    [self.navigationController.navigationBar setTitleTextAttributes:attentionHeaderAttributes];
-    [self.navigationController.navigationBar.topItem setTitle:[notification object]];
+    // Make sure the message bar is empty and visible to the user
+    self.messagesArea.text = @"";
+    self.messagesArea.alpha = 1.0;
+    
+    // Show the message that's generated for a period of 20 seconds
+    [UIView animateWithDuration:20 animations:^{
+        self.messagesArea.text = [notification object];
+        self.messagesArea.alpha = 0;
+    }];
 }
 
 #pragma mark - Connectivity Methods
@@ -2374,40 +1795,92 @@
 
 #pragma mark - Event Info Related
 
-- (NSInteger)getNoOfInfoPiecesForEventTypeForSection:(NSInteger)sectionNo
+//CURRENTLY: Just retunr one row for all types. Depending on the event type return the number of related information pieces available. Currently: Quarterly Earnings -> 5 possible info pieces: Short Description, Expected Eps, Prior Eps, ChangeSincePriorQuarter, ChangeSincePriorEarnings. Jan Fed Meeting -> 4 possible info pieces: Short Description, Impact, SectorsAffected, Tips). NOTE: If any of these pieces is not available that piece will not be counted.
+- (NSInteger)getNoOfInfoPiecesForEventType
 {
     NSInteger numberOfPieces = 0;
-    FADataController *piecesDC = piecesDC = [[FADataController alloc] init];
     
-    // If it's a currency price event
-    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+/*    // Set a value indicating that a value is not available. Currently a Not Available value is represented by
+    double notAvailable = 999999.9f;
+    EventHistory *eventHistoryData;
+    
+    // Based on event type and what's available, return the no of pieces of information.
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
         
-        if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-            if(sectionNo == 0) {
-                numberOfPieces = 5;
-            }
-            if(sectionNo == 1) {
-                numberOfPieces = 9;
-            }
-        } else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-            if(sectionNo == 0) {
-               // id newsSection = [[[piecesDC getLatestCryptoEvents] sections] objectAtIndex:0];
-          //      numberOfPieces = [newsSection numberOfObjects];
-            }
-        }
-    }
-    // Else
-    else {
-        if(sectionNo == 0) {
-            numberOfPieces = 1;
-        }
-        if(sectionNo == 1) {
+        numberOfPieces = 5;
+        // Get the event history.
+        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
+        
+        // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
+        double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+        double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+        
+        // Always return 5 pieces
+        if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
+            numberOfPieces = 5;
+        } else {
             numberOfPieces = 5;
         }
-        if(sectionNo == 2) {
-            numberOfPieces = 9;
+        
+    }
+    
+    if ([self.eventType containsString:@"Fed Meeting"]) {
+        numberOfPieces = 4;
+    }
+    
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        numberOfPieces = 4;
+    }
+    
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
+        numberOfPieces = 4;
+    }
+    
+    if ([self.eventType containsString:@"GDP Release"]) {
+        numberOfPieces = 4;
+    }
+    
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+        
+        numberOfPieces = 4;
+        
+        // FOR BTC or ETHR or BCH$ or XRP, only show one cell right now. Later make this 4 to show price data.
+        if (([self.parentTicker caseInsensitiveCompare:@"BTC"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"ETHR"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"BCH$"] == NSOrderedSame)||([self.parentTicker caseInsensitiveCompare:@"XRP"] == NSOrderedSame)) {
+            numberOfPieces = 1;
+        }
+        else {
+            // Get the event history.
+            eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
+            
+            // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
+            double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+            double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+            // Always return 4 pieces
+            if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
+                numberOfPieces = 4;
+            } else {
+                numberOfPieces = 4;
+            }
         }
     }
+    
+    // Price change events we want to show the current stock price and 30 day and ytd change.
+    if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
+        
+        numberOfPieces = 3;
+        // Get the event history.
+        eventHistoryData = [self.primaryDetailsDataController getEventHistoryForParentEventTicker:self.parentTicker parentEventType:self.eventType];
+        
+        // Check to see if stock prices at end of prior quarter and yesterday are available.If yes, then return 4 pieces. If not then return 2 pieces (desc, expected eps, prior eps)
+        double prev1RelatedPriceDbl = [[eventHistoryData previous1RelatedPrice] doubleValue];
+        double currentPriceDbl = [[eventHistoryData currentPrice] doubleValue];
+        // Always return 3
+        if ((prev1RelatedPriceDbl != notAvailable)&&(currentPriceDbl != notAvailable)) {
+            numberOfPieces = 3;
+        } else {
+            numberOfPieces = 3;
+        }
+    } */
         
     return numberOfPieces;
 }
@@ -3049,145 +2522,6 @@
     NSDate *formattedDate = [aGregorianCalendar dateFromComponents:dateComponents];
     
     return formattedDate;
-}
-
-// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan Fed Meeting -> Fed Meeting. Jan Jobs Report -> Jobs Report and so on. For product events strip out conference keyword WWDC 2016 Conference -> WWDC 2016
-- (NSString *)formatEventType:(Event *)rawEvent
-{
-    NSString *rawEventType = rawEvent.type;
-    NSString *formattedEventType = rawEventType;
-    //NSMutableString *tempString = [NSMutableString stringWithFormat:@"%@",formattedEventType];
-    NSArray *typeComponents = nil;
-    
-    // For price events strip out the up and down
-    if ([rawEventType containsString:@"% up"])
-    {
-        
-    }
-    else if ([rawEventType containsString:@"% down"])
-    {
-        
-    }
-    // For news event, strip out the cryptofinews:: from the beginning
-    else if ([rawEventType containsString:@"cryptofinews::"]) {
-        typeComponents = [rawEventType componentsSeparatedByString:@"::"];
-        formattedEventType = [typeComponents objectAtIndex:1];
-    }
-    else if ([rawEventType containsString:@"Conference"]) {
-        formattedEventType = [rawEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
-    }
-    
-    return formattedEventType;
-}
-
-// Calculate how far the event is from today. Typical values are Past,Today, Tomorrow, 2d, 3d and so on.
-- (NSString *)calculateDistanceFromEventDate:(NSDate *)eventDate withEventType:(NSString *)rawEventType
-{
-    NSString *formattedDistance = @" ";
-    
-    // Calculate the number of days between event date and today's date
-    NSCalendar *aGregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSUInteger unitFlags =  NSCalendarUnitDay;
-    NSDateComponents *diffDateComponents = [aGregorianCalendar components:unitFlags fromDate:[self setTimeToMidnightLastNightOnDate:[NSDate date]] toDate:[self setTimeToMidnightLastNightOnDate:eventDate] options:0];
-    NSInteger difference = [diffDateComponents day];
-    
-    if ((difference < 0)&&(difference > -2)) {
-        formattedDistance = @"1d ago >";
-    } else if ((difference <= -2)&&(difference > -4)) {
-        formattedDistance = @"2d ago >";
-    } else if ((difference <= -4)&&(difference > -31)) {
-        formattedDistance = [NSString stringWithFormat:@"%@d ago >",[@(ABS(difference)) stringValue]];
-    } else if ((difference <= -31)&&(difference > -366)) {
-        formattedDistance = [NSString stringWithFormat:@"%@m ago >",[@(ABS(difference/30)) stringValue]];
-    } else if (difference <= -366) {
-        formattedDistance = @">1y ago >";
-    } else if (difference == 0) {
-        formattedDistance = @"Today >";
-    } else if (difference == 1) {
-        formattedDistance = @"Tomorrow >";
-    } else if ((difference > 1)&&(difference < 31)) {
-        formattedDistance = [NSString stringWithFormat:@"In %@d ",[@(difference) stringValue]];
-    } else if ((difference >= 31)&&(difference < 366)) {
-        formattedDistance = [NSString stringWithFormat:@"In %@mos ",[@(difference/30) stringValue]];
-    } else if (difference >= 366) {
-        formattedDistance = @"Beyond 1yr ";
-    } else {
-        formattedDistance = [NSString stringWithFormat:@"%@d ",[@(difference) stringValue]];
-    }
-    
-    return formattedDistance;
-}
-
-
-// Refresh table view per the main nav action selected.
-- (void)deetsRefreshTbl:(UIRefreshControl *)refreshTblControl
-{
-    // Check for connectivity. If yes, sync data from remote data source
-    if ([self checkForInternetConnectivity]) {
-        
-        // If Info is selected, sync the price
-        if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-            
-            // Asynchronous refresh
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                   // FADataController *priceRefreshDataController = [[FADataController alloc] init];
-                   // [priceRefreshDataController getAllCryptoPriceChangeEventsFromApi];
-                    [self.eventDetailsTable reloadData];
-                    [refreshTblControl endRefreshing];
-                    // Reset the navigation bar header text color to black
-                    NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                             [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
-                                                             [UIColor blackColor], NSForegroundColorAttributeName,
-                                                             nil];
-                    [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
-                    // Reset the company name in the navigation bar header.
-                    self.navigationItem.title = [self.eventTitleStr uppercaseString];
-                    // Make sure the price list is refreshed as well.
-                    [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
-                });
-            });
-            
-            
-            // TRACKING EVENT: Event Type Selected: User selected Crypto event type explicitly in the events type selector
-            // TO DO: Disabling to not track development events. Enable before shipping.
-            [FBSDKAppEvents logEvent:@"Pull Down Refresh"
-                          parameters:@{ @"Event Type" : @"Price Info in Details" } ];
-        }
-        // If News is selected, fetch the news and refresh
-        else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-            
-            // Asynchronous refresh
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                   // FADataController *newsRefreshDataController = [[FADataController alloc] init];
-                   // [newsRefreshDataController getAllNewsFromApi];
-                   // self.infoResultsController = [newsRefreshDataController getLatestCryptoEvents];
-                    [self.eventDetailsTable reloadData];
-                    [refreshTblControl endRefreshing];
-                    // Reset the navigation bar header text color to black
-                    NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                             [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
-                                                             [UIColor blackColor], NSForegroundColorAttributeName,
-                                                             nil];
-                    [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
-                    // Reset the company name in the navigation bar header.
-                    self.navigationItem.title = @"CRYPTO";
-                });
-            });
-            
-            // TRACKING EVENT: Event Type Selected: User selected Crypto event type explicitly in the events type selector
-            // TO DO: Disabling to not track development events. Enable before shipping.
-            [FBSDKAppEvents logEvent:@"Pull Down Refresh"
-                          parameters:@{ @"Event Type" : @"Latest News in Details" } ];
-        }
-    }
-    // If not, show error message
-    else {
-        
-        [self sendUserGuidanceCreatedNotificationWithMessage:@"No Connection. Limited functionality."];
-        [refreshTblControl endRefreshing];
-    }
 }
 
 #pragma mark - unused code
