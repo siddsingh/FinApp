@@ -67,36 +67,55 @@
     
     // Format the details Info type selector and bottom border labels
     // Set Background color and tint to a very light almost white gray
-    /* [self.detailsInfoSelector setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+    [self.detailsInfoSelector setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
     [self.detailsInfoSelector setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-    // Set text color and size of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
+    // Set text color and size of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113). Making this the almost white gray to hide it currently. Revert back to before when using this control
     NSDictionary *unselectedAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                           [UIFont systemFontOfSize:16], NSFontAttributeName,
-                                          [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                          [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
                                           nil];
     [self.detailsInfoSelector setTitleTextAttributes:unselectedAttributes forState:UIControlStateNormal];
-    // Set text and size for selected segment
+    // Set text and size for selected segment to black. Making this the almost white gray to hide it currently. Revert back to before when using this control
     NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                     [UIFont boldSystemFontOfSize:16], NSFontAttributeName,
-                                    [UIColor blackColor], NSForegroundColorAttributeName,
+                                    [UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
                                     nil];
     [self.detailsInfoSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
     // Bottom border label
     if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-        [self.bottomBorderLbl1 setBackgroundColor:[UIColor blackColor]];
+        
+        // TO hide set everything to almost white. TO revert use code below
+        [self.bottomBorderLbl1 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl1 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl1 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl2 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl2 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl2 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        // Old way
+        /*[self.bottomBorderLbl1 setBackgroundColor:[UIColor blackColor]];
         [self.bottomBorderLbl1 setTintColor:[UIColor blackColor]];
         [self.bottomBorderLbl1 setTextColor:[UIColor blackColor]];
         [self.bottomBorderLbl2 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
         [self.bottomBorderLbl2 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl2 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl2 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];*/
     } else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-        [self.bottomBorderLbl2 setBackgroundColor:[UIColor blackColor]];
+        
+        // TO hide set everything to almost white. TO revert use code below
+        [self.bottomBorderLbl1 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl1 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl1 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl2 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl2 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        [self.bottomBorderLbl2 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
+        
+        // Old Way
+        /*[self.bottomBorderLbl2 setBackgroundColor:[UIColor blackColor]];
         [self.bottomBorderLbl2 setTintColor:[UIColor blackColor]];
         [self.bottomBorderLbl2 setTextColor:[UIColor blackColor]];
         [self.bottomBorderLbl1 setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
         [self.bottomBorderLbl1 setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        [self.bottomBorderLbl1 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-    } */
+        [self.bottomBorderLbl1 setTextColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];*/
+    }
     
     //Adding a pull to refresh action on the table.
     /*self.deetsTblRefreshControl = [[UIRefreshControl alloc] init];
@@ -367,8 +386,11 @@
     //Default height is 93.0
     CGFloat cellHeight = 93.0;
     
+    // Currently use the shorter height for all cells.
+    cellHeight = 70.0;
+    
     // If info type details is selected
-    if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
+  /*  if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
         
         // Assign a row no to the type of event detail row.
         #define infoRow0  -1
@@ -513,7 +535,7 @@
     else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
         
         cellHeight = 93.0;
-    }
+    } */
     
     return cellHeight;
 }
@@ -537,10 +559,342 @@
 {
     // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
     FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
-    Event *eventData = nil;
+    Event *eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:self.eventType];
     
+    // NEW WAY
+    // Assign a row no to the type of event detail row.
+    #define infoRow0  -1
+    #define infoRow1  0
+    #define infoRow2  1
+    #define infoRow3  2
+    #define infoRow4  3
+    #define infoRow5  4
+    #define infoRow6  5
+    #define infoRow7  6
+    #define infoRow8  7
+    #define infoRow9  8
+  /*  #define infoRow10  9
+    #define infoRow11 10
+    #define infoRow12 11
+    #define infoRow13 12
+    #define infoRow14 13*/
+    
+    // Define formatters
+    // Currency formatter. Currently using US locale for everything.
+    NSNumberFormatter *currencyFormatter1 = [[NSNumberFormatter alloc] init];
+    [currencyFormatter1 setNumberStyle:NSNumberFormatterCurrencyStyle];
+    currencyFormatter1.locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
+    [currencyFormatter1 setMaximumFractionDigits:2];
+    
+    int rowNo = 0;
+    
+    // Adjust for different event types
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        if (indexPath.section == 0) {
+            rowNo = (int)indexPath.row;
+        }
+        if (indexPath.section == 1) {
+            rowNo = ((int)indexPath.row + 4);
+        }
+    }
+    // If it's an econ event, do the same for now.
+    else {
+        if (indexPath.section == 0) {
+            rowNo = (int)indexPath.row;
+        }
+        if (indexPath.section == 1) {
+            rowNo = ((int)indexPath.row + 4);
+        }
+    }
+    
+    // Default
+    [[cell titleLabel] setText:@"NA"];
+    [[cell descriptionArea] setText:@"Details not available."];
+    
+    // Display the appropriate details based on the row no
+    switch (rowNo) {
+            
+        // Use for econ event
+        case infoRow0:
+        {
+            // Hide detail action label
+            cell.detailsActionLbl.textColor = [UIColor whiteColor];
+            cell.detailsActionLbl.hidden = YES;
+            
+            // Get Impact String
+            NSString *impact_str = [self getImpactDescriptionForEventType:self.eventType eventParent:self.parentTicker];
+            
+            // Set proper formatting
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            cell.titleLabel.textColor = [UIColor blackColor];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            
+            // Set the impact icon
+            // Very High Impact
+            if ([impact_str caseInsensitiveCompare:@"Very High Impact"] == NSOrderedSame) {
+                [[cell titleLabel] setText:@"Very High Impact"];
+            }
+            // High Impact
+            if ([impact_str caseInsensitiveCompare:@"High Impact"] == NSOrderedSame) {
+                //cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"High Impact"];
+            }
+            // Medium Impact
+            if ([impact_str caseInsensitiveCompare:@"Medium Impact"] == NSOrderedSame) {
+                //cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"Medium Impact"];
+            }
+            // Low Impact
+            if ([impact_str caseInsensitiveCompare:@"Low Impact"] == NSOrderedSame) {
+                //cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"Low Impact"];
+            }
+            
+            // Set the rationale
+            [[cell descriptionArea] setText:[NSString stringWithFormat:@"%@",[self getEventDescriptionForEventType:self.eventType eventParent:self.parentTicker]]];
+        }
+        break;
+            
+        // Show When
+        case infoRow1:
+        {
+            // Hide detail action label
+            cell.detailsActionLbl.textColor = [UIColor whiteColor];
+            cell.detailsActionLbl.hidden = YES;
+            
+            // Correct Font and Colors
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            cell.titleLabel.textColor = [UIColor blackColor];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:19]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            
+            // DISTANCE STRING
+            NSString *distanceString = [self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type];
+            
+            [[cell titleLabel] setText:distanceString];
+            [[cell descriptionArea] setText:@"WHEN"];
+        }
+            break;
+            
+        // Show Schedule
+        case infoRow2:
+        {
+            // Hide detail action label
+            cell.detailsActionLbl.textColor = [UIColor whiteColor];
+            cell.detailsActionLbl.hidden = YES;
+            
+            // Correct Font and Colors
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            cell.titleLabel.textColor = [UIColor blackColor];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:19]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            
+            // Schedule String
+            NSString *schedString = self.eventDateText;
+            
+            [[cell titleLabel] setText:schedString];
+            [[cell descriptionArea] setText:@"SCHEDULE"];
+        }
+            break;
+            
+        // Show expected EPS
+        case infoRow3:
+        {
+            // Hide detail action label
+            cell.detailsActionLbl.textColor = [UIColor whiteColor];
+            cell.detailsActionLbl.hidden = YES;
+            
+            // Correct Font and Colors
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            if ([eventData.estimatedEps floatValue] >=  0.0f) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+            } else {
+                cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
+            }
+            
+            NSString *expectedEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.estimatedEps]];
+            
+            [[cell titleLabel] setText:expectedEPS];
+            [[cell descriptionArea] setText:@"EXPECTED EPS"];
+        }
+            break;
+            
+        // Show 24 Hr Price Change
+        case infoRow4:
+        {
+            // Hide detail action label
+            cell.detailsActionLbl.textColor = [UIColor whiteColor];
+            cell.detailsActionLbl.hidden = YES;
+            
+            // Correct Font and Colors
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            if ([eventData.actualEpsPrior floatValue] >=  0.0f) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+            } else {
+                cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
+            }
+            
+            NSString *lastEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.actualEpsPrior]];
+            
+            [[cell titleLabel] setText:lastEPS];
+            [[cell descriptionArea] setText:@"LAST EPS"];
+        }
+            break;
+            
+            // Show 7 Days Price Change
+        case infoRow5:
+        {
+            // Hide detail action label
+         /*   cell.detailsActionLbl.textColor = [UIColor whiteColor];
+            cell.detailsActionLbl.hidden = YES;
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:19]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            
+            // Default State Colors
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            // If 24 hr price change is 0 or positive set green else red
+            if ([eventHistoryData.previous1Price floatValue] >= 0.0f) {
+                cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+            } else {
+                cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
+            }
+            
+            // Curr Price String
+            NSString *sevenChangeString = [NSString stringWithFormat:@"%@%%", [twoDecNumberFormatter stringFromNumber:eventHistoryData.previous1Price]];
+            
+            [[cell titleLabel] setText:sevenChangeString];
+            [[cell descriptionArea] setText:@"7 DAYS PRICE CHANGE"]; */
+        }
+            break;
+            
+            // Show What is ?
+        case infoRow6:
+        {
+            // Show action detail label if the data exists
+        /*    actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:2]];
+            
+            // Set proper formatting
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            cell.titleLabel.textColor =[self getColorForEventType:self.eventType];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:18]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            
+            // What is <coin name>
+            NSString *whatIsString = [NSString stringWithFormat:@"%@",[self.parentCompany uppercaseString]];
+            NSString *descString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:0]];
+            
+            if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
+            {
+                cell.detailsActionLbl.textColor = [UIColor whiteColor];
+                cell.detailsActionLbl.hidden = YES;
+            }
+            else
+            {
+                cell.detailsActionLbl.textColor = [self getColorForEventType:self.eventType];
+                cell.detailsActionLbl.hidden = NO;
+            }
+            
+            [[cell titleLabel] setText:whatIsString];
+            [[cell descriptionArea] setText:descString];
+            [[cell detailsActionLbl] setText:@"Website >"]; */
+        }
+            break;
+            
+            // Show Use Cases
+        case infoRow7:
+        {
+            // Show action detail label if the data exists
+        /*    actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:3]];
+            
+            if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
+            {
+                cell.detailsActionLbl.textColor = [UIColor whiteColor];
+                cell.detailsActionLbl.hidden = YES;
+            }
+            else
+            {
+                cell.detailsActionLbl.textColor = [UIColor blackColor];
+                cell.detailsActionLbl.hidden = NO;
+            }
+            
+            // Set proper formatting
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            cell.titleLabel.textColor = [UIColor blackColor];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            
+            // Used For
+            NSString *usedForString = [NSString stringWithFormat:@"USES"];
+            NSString *usedForDescString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:1]];
+            
+            [[cell titleLabel] setText:usedForString];
+            [[cell descriptionArea] setText:usedForDescString];
+            [[cell detailsActionLbl] setText:@"Details >"]; */
+        }
+            break;
+            
+            // Show Backed By
+        case infoRow8:
+        {
+            // Set proper formatting
+       /*     cell.detailsActionLbl.textColor = [UIColor whiteColor];
+            cell.detailsActionLbl.hidden = YES;
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            cell.titleLabel.textColor = [UIColor blackColor];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            
+            // Backed By
+            NSString *backedByString = [NSString stringWithFormat:@"BACKERS"];
+            NSString *backedByDescString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:7]];
+            
+            [[cell titleLabel] setText:backedByString];
+            [[cell descriptionArea] setText:backedByDescString]; */
+        }
+            break;
+            
+            // Show Concerns
+        case infoRow9:
+        {
+            // Set proper formatting
+         /*   cell.detailsActionLbl.textColor = [UIColor whiteColor];
+            cell.detailsActionLbl.hidden = YES;
+            cell.titleLabel.backgroundColor = [UIColor whiteColor];
+            cell.titleLabel.textColor = [UIColor blackColor];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+            
+            NSString *concernsString = [NSString stringWithFormat:@"CONCERNS"];
+            NSString *concernsDescString = [NSString stringWithFormat:@"%@.",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:8]];
+            
+            [[cell titleLabel] setText:concernsString];
+            [[cell descriptionArea] setText:concernsDescString];*/
+        }
+            break;
+    
+        default:
+            break;
+    }
+    
+    
+    // OLD WAY WHERE INFO AND NEWS SELECTOR IS AVAILABLE
     // If info type details is selected
-    if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
+   /* if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
         
         NSString *actionLocation = nil;
         
@@ -1087,6 +1441,7 @@
         // Set the date of the article to the eventImpact.
         [[cell detailsActionLbl] setText:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]];
     }
+    */
     
     return cell;
 }
@@ -2377,7 +2732,63 @@
 - (NSInteger)getNoOfInfoPiecesForEventTypeForSection:(NSInteger)sectionNo
 {
     NSInteger numberOfPieces = 0;
-    FADataController *piecesDC = piecesDC = [[FADataController alloc] init];
+    
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 4;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 5;
+        }
+    }
+    
+    if ([self.eventType containsString:@"Fed Meeting"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 4;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 5;
+        }
+    }
+    
+    if ([self.eventType containsString:@"Jobs Report"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 4;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 5;
+        }
+    }
+    
+    if ([self.eventType containsString:@"Consumer Confidence"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 4;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 5;
+        }
+    }
+    
+    if ([self.eventType containsString:@"GDP Release"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 4;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 5;
+        }
+    }
+    
+    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 4;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 5;
+        }
+    }
+    
+    // Old way
+    /*FADataController *piecesDC = [[FADataController alloc] init];
     
     // If it's a currency price event
     if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
@@ -2407,7 +2818,7 @@
         if(sectionNo == 2) {
             numberOfPieces = 9;
         }
-    }
+    } */
         
     return numberOfPieces;
 }
@@ -2438,7 +2849,7 @@
         description = @"GDP is a measure of the country's economic health.";
     }
     
-    if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
+    if ([eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         description = [NSString stringWithFormat:@"Related to products or services offered by %@",companyName];
     }
     
@@ -3092,27 +3503,27 @@
     NSInteger difference = [diffDateComponents day];
     
     if ((difference < 0)&&(difference > -2)) {
-        formattedDistance = @"1d ago >";
+        formattedDistance = @"Yesterday";
     } else if ((difference <= -2)&&(difference > -4)) {
-        formattedDistance = @"2d ago >";
+        formattedDistance = @"Day Before";
     } else if ((difference <= -4)&&(difference > -31)) {
-        formattedDistance = [NSString stringWithFormat:@"%@d ago >",[@(ABS(difference)) stringValue]];
+        formattedDistance = [NSString stringWithFormat:@"%@ days ago",[@(ABS(difference)) stringValue]];
     } else if ((difference <= -31)&&(difference > -366)) {
-        formattedDistance = [NSString stringWithFormat:@"%@m ago >",[@(ABS(difference/30)) stringValue]];
+        formattedDistance = [NSString stringWithFormat:@"%@ mos ago",[@(ABS(difference/30)) stringValue]];
     } else if (difference <= -366) {
-        formattedDistance = @">1y ago >";
+        formattedDistance = @"Over 1 yr ago";
     } else if (difference == 0) {
-        formattedDistance = @"Today >";
+        formattedDistance = @"Today";
     } else if (difference == 1) {
-        formattedDistance = @"Tomorrow >";
+        formattedDistance = @"Tomorrow";
     } else if ((difference > 1)&&(difference < 31)) {
-        formattedDistance = [NSString stringWithFormat:@"In %@d ",[@(difference) stringValue]];
+        formattedDistance = [NSString stringWithFormat:@"In %@ days",[@(difference) stringValue]];
     } else if ((difference >= 31)&&(difference < 366)) {
-        formattedDistance = [NSString stringWithFormat:@"In %@mos ",[@(difference/30) stringValue]];
+        formattedDistance = [NSString stringWithFormat:@"In %@ mos",[@(difference/30) stringValue]];
     } else if (difference >= 366) {
-        formattedDistance = @"Beyond 1yr ";
+        formattedDistance = @"Beyond 1 yr";
     } else {
-        formattedDistance = [NSString stringWithFormat:@"%@d ",[@(difference) stringValue]];
+        formattedDistance = [NSString stringWithFormat:@"%@ days",[@(difference) stringValue]];
     }
     
     return formattedDistance;
