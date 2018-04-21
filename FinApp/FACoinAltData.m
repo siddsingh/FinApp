@@ -153,7 +153,7 @@ static FACoinAltData *sharedInstance;
         // 1. Investor Site(for stock)/Agency home page
         [infoArray addObject:@"https://abc.xyz/investor/"];
         // 2. Best Earnings/Econ event outcome link (typically on the site from 1)
-        [infoArray addObject:@""];
+        [infoArray addObject:@"https://abc.xyz/investor/"];
     }
     
     else if ([ticker caseInsensitiveCompare:@"GOOGL"] == NSOrderedSame) {

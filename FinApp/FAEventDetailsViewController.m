@@ -1475,7 +1475,7 @@
     [currencyFormatter1 setMaximumFractionDigits:2];
     
     // Target URLs
-    NSString *actionLocation = nil;
+    NSString *actionURL = nil;
     NSURL *targetURL = nil;
     
     int rowNo = 0;
@@ -1544,15 +1544,23 @@
         // Show Action 1
         case infoRow5:
         {
-            actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:2]];
+            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation1ForEvent:self.eventType]];
+            targetURL = [NSURL URLWithString:actionURL];
             
-            if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-            {
+            if (targetURL) {
                 
-            }
-            else
-            {
-                }
+                // TRACKING EVENT:
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Take External Action"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event" : self.eventType,
+                                            @"Action" : @"Preview Earnings/See Earnings Release"} ];
+                
+                SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+                externalInfoVC.delegate = self;
+                // Just use whatever is the default color for the Safari View Controller
+                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+                [self presentViewController:externalInfoVC animated:YES completion:nil];
             }
         }
             break;
@@ -3765,9 +3773,21 @@
 - (NSString *)getActionLocation1ForEvent:(NSString *)rawEventType
 {
     NSString *actionLocation = @"Not Available";
+    NSString *externalURL = nil;
+    NSString *searchTerm = nil;
     
     if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
         
+        actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:1]];
+        
+        if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
+        {
+           externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?q="];
+           searchTerm = [NSString stringWithFormat:@"%@ %@ investor site events",self.parentCompany,self.parentTicker];
+           // Remove any spaces in the URL query string params
+           searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+           actionLocation = [externalURL stringByAppendingString:searchTerm];
+        }
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
