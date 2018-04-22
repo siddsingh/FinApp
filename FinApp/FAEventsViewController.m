@@ -92,7 +92,7 @@
     [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING MARKET EVENTS"];
     
     // Set font and size for searchbar text.
-    [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{ NSFontAttributeName: [UIFont fontWithName:@"Helvetica" size:14],}];
+    [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{ NSFontAttributeName: [UIFont fontWithName:@"Helvetica" size:12]}];
     
     // Change the color of the events search bar placeholder text and text entered
     // Set it to a light gray color

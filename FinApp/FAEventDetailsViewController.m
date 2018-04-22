@@ -213,7 +213,7 @@
     } */
     
     // Set color of back navigation item based on event type
-    self.navigationController.navigationBar.tintColor = [self getColorForEventTypeForBackNav:self.eventType];
+    //self.navigationController.navigationBar.tintColor = [self getColorForEventTypeForBackNav:self.eventType];
     
     // Register a listener for guidance messages to be shown to the user in the messages bar
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -264,7 +264,7 @@
 // To style the header appropriately
 -(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     
-    UILabel *customHeaderView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 25)];
+    UILabel *customHeaderView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 32)];
     
     // ipad needed special treatment in the past. If no longer needed you can probably consolidate this code
    /*if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -540,10 +540,10 @@
     return cellHeight;
 }
 
-// Set the table header to 25.0 height
+// Set the table header to 32.0 height
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     
-    CGFloat headerSize = 25.0;
+    CGFloat headerSize = 32.0;
     
     return headerSize;
 }
@@ -631,8 +631,8 @@
             // Set proper formatting
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
             cell.titleLabel.textColor = [UIColor blackColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
             // Set the impact icon
@@ -671,8 +671,8 @@
             // Correct Font and Colors
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
             cell.titleLabel.textColor = [UIColor blackColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:19]];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
             // DISTANCE STRING
@@ -693,8 +693,8 @@
             // Correct Font and Colors
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
             cell.titleLabel.textColor = [UIColor blackColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:19]];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
             // Schedule String
@@ -715,8 +715,8 @@
             // Correct Font and Colors
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
             cell.titleLabel.textColor = [UIColor blackColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
             // Check that the eps value is available
@@ -724,10 +724,10 @@
             {
                 if ([eventData.estimatedEps floatValue] >=  0.0f) {
                     cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
                 } else {
                     cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
                 }
                 
                 NSString *expectedEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.estimatedEps]];
@@ -737,7 +737,7 @@
             }
             else
             {
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:17]];
                 [[cell titleLabel] setText:@"NA"];
                 [[cell descriptionArea] setText:@"EXPECTED EPS"];
             }
@@ -754,8 +754,8 @@
             // Correct Font and Colors
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
             cell.titleLabel.textColor = [UIColor blackColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
             // Check that the eps value is available
@@ -768,10 +768,10 @@
             {
                 if ([eventData.actualEpsPrior floatValue] >=  0.0f) {
                     cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
                 } else {
                     cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
                 }
                 
                 NSString *lastEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.actualEpsPrior]];
@@ -781,14 +781,14 @@
             }
             else
             {
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:18]];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:17]];
                 [[cell titleLabel] setText:@"NA"];
                 [[cell descriptionArea] setText:@"LAST EPS"];
             }
         }
             break;
             
-        // Show Action 1
+        // Show Action 1 - Preview/See Earnings
         case infoRow5:
         {
             // Hide the action label anyways
@@ -797,9 +797,11 @@
             
             // Format the title label & description
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
             cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            // Delete later
+            NSLog(@"The ticker is:%@", self.parentTicker);
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor blackColor]];
             
             [[cell titleLabel] setText:@"▶︎"];
@@ -807,7 +809,7 @@
         }
             break;
             
-        // Show Action 2
+        // Show Action 2 - See News
         case infoRow6:
         {
             // Hide the action label anyways
@@ -816,17 +818,17 @@
             
             // Format the title label & description
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
             cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor blackColor]];
             
             [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType2ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            [[cell descriptionArea] setText:[[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
         }
             break;
             
-        // Show Action 3
+        // Show Action 3 - Play Earnings call
         case infoRow7:
         {
             // Hide the action label anyways
@@ -835,17 +837,17 @@
             
             // Format the title label & description
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
             cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor blackColor]];
             
             [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType3ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            [[cell descriptionArea] setText:[[self getActionType2ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
         }
             break;
             
-        // Show Action 4
+        // Show Action 4 - View Transcript
         case infoRow8:
         {
             // Hide the action label anyways
@@ -854,17 +856,17 @@
             
             // Format the title label & description
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
             cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor blackColor]];
             
             [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            [[cell descriptionArea] setText:[[self getActionType3ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
         }
             break;
             
-        // Show Action 5
+        // Show Action 5 - Go to Investor Site
         case infoRow9:
         {
             // Hide the action label anyways
@@ -873,9 +875,9 @@
             
             // Format the title label & description
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
             cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
+            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor blackColor]];
             
             [[cell titleLabel] setText:@"▶︎"];
@@ -1447,7 +1449,6 @@
 {
     // Get a custom cell to display details and reset states/colors of cell elements to avoid carryover
     FAEventDetailsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EventDetailsCell" forIndexPath:indexPath];
-    Event *eventData = [self.primaryDetailsDataController getEventForParentEventTicker:self.parentTicker andEventType:self.eventType];
     
     // NEW WAY
     // Assign a row no to the type of event detail row.
@@ -1541,11 +1542,14 @@
         }
             break;
             
-        // Show Action 1
+        // Show Action 1 Preview Earnings/See Earnings Release
         case infoRow5:
         {
             actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation1ForEvent:self.eventType]];
             targetURL = [NSURL URLWithString:actionURL];
+            
+            // Delete Later:
+            NSLog(@"Clicked URL is:%@",targetURL);
             
             if (targetURL) {
                 
@@ -1565,79 +1569,111 @@
         }
             break;
             
-            // Show Action 2
+        // Show Action 2 See News
         case infoRow6:
         {
-            // Hide the action label anyways
-            cell.detailsActionLbl.textColor = [UIColor whiteColor];
-            cell.detailsActionLbl.hidden = YES;
+            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation4ForEvent:self.eventType]];
+            targetURL = [NSURL URLWithString:actionURL];
             
-            // Format the title label & description
-            cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-            cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
+            // Delete Later:
+            NSLog(@"Clicked URL is:%@",targetURL);
             
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType2ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            if (targetURL) {
+                
+                // TRACKING EVENT:
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Take External Action"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event" : self.eventType,
+                                            @"Action" : @"See News"} ];
+                
+                SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+                externalInfoVC.delegate = self;
+                // Just use whatever is the default color for the Safari View Controller
+                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+                [self presentViewController:externalInfoVC animated:YES completion:nil];
+            }
         }
             break;
             
-            // Show Action 3
+        // Show Action 2 Play Earnings Call or Replay Earnings Call
         case infoRow7:
         {
-            // Hide the action label anyways
-            cell.detailsActionLbl.textColor = [UIColor whiteColor];
-            cell.detailsActionLbl.hidden = YES;
+            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation2ForEvent:self.eventType]];
+            targetURL = [NSURL URLWithString:actionURL];
             
-            // Format the title label & description
-            cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-            cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
+            // Delete Later:
+            NSLog(@"Clicked URL is:%@",targetURL);
             
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType3ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            if (targetURL) {
+                
+                // TRACKING EVENT:
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Take External Action"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event" : self.eventType,
+                                            @"Action" : @"Play/Replay Earnings call"} ];
+                
+                SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+                externalInfoVC.delegate = self;
+                // Just use whatever is the default color for the Safari View Controller
+                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+                [self presentViewController:externalInfoVC animated:YES completion:nil];
+            }
         }
             break;
             
-            // Show Action 4
+        // Show Action 3 View Transcript or View last Transcript
         case infoRow8:
         {
-            // Hide the action label anyways
-            cell.detailsActionLbl.textColor = [UIColor whiteColor];
-            cell.detailsActionLbl.hidden = YES;
+            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation3ForEvent:self.eventType]];
+            targetURL = [NSURL URLWithString:actionURL];
             
-            // Format the title label & description
-            cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-            cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
+            // Delete Later:
+            NSLog(@"Clicked URL is:%@",targetURL);
             
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            if (targetURL) {
+                
+                // TRACKING EVENT:
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Take External Action"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event" : self.eventType,
+                                            @"Action" : @"View Transcript"} ];
+                
+                SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+                externalInfoVC.delegate = self;
+                // Just use whatever is the default color for the Safari View Controller
+                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+                [self presentViewController:externalInfoVC animated:YES completion:nil];
+            }
         }
             break;
             
-            // Show Action 5
+        // Show Action 5 Go to Investor Site
         case infoRow9:
         {
-            // Hide the action label anyways
-            cell.detailsActionLbl.textColor = [UIColor whiteColor];
-            cell.detailsActionLbl.hidden = YES;
+            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation5ForEvent:self.eventType]];
+            targetURL = [NSURL URLWithString:actionURL];
             
-            // Format the title label & description
-            cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
-            cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:16]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
+            // Delete Later:
+            NSLog(@"Clicked URL is:%@",targetURL);
             
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType5ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            if (targetURL) {
+                
+                // TRACKING EVENT:
+                // TO DO: Disabling to not track development events. Enable before shipping.
+                [FBSDKAppEvents logEvent:@"Take External Action"
+                              parameters:@{ @"Ticker" : self.parentTicker,
+                                            @"Event" : self.eventType,
+                                            @"Action" : @"Go To Investor Site"} ];
+                
+                SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+                externalInfoVC.delegate = self;
+                // Just use whatever is the default color for the Safari View Controller
+                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+                [self presentViewController:externalInfoVC animated:YES completion:nil];
+            }
         }
             break;
             
@@ -2938,6 +2974,7 @@
         }
     }
     
+    // For econ events: Description(getShortDescriptionForEventType:), Impact(getEpsOrImpactTextForEventType:), Sectors Affected(getEpsOrSectorsTextForEventType:), Tip(getPriceSinceOrTipTextForEventType:), if needed Just Impact Level: getImpactDescriptionForEventType:
     if ([self.eventType containsString:@"Fed Meeting"]) {
         if(sectionNo == 0) {
             numberOfPieces = 4;
@@ -3857,6 +3894,50 @@
     return actionType;
 }
 
+// Get the second action type location: Play Earnings Call or Replay Earnings Call
+- (NSString *)getActionLocation2ForEvent:(NSString *)rawEventType
+{
+    NSString *actionLocation = @"Not Available";
+    NSString *externalURL = nil;
+    NSString *searchTerm = nil;
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:1]];
+        
+        if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
+        {
+            externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?q="];
+            searchTerm = [NSString stringWithFormat:@"%@ %@ listen to earnings call",self.parentCompany,self.parentTicker];
+            // Remove any spaces in the URL query string params
+            searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+            actionLocation = [externalURL stringByAppendingString:searchTerm];
+        }
+    }
+    
+    if ([rawEventType containsString:@"Fed Meeting"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Jobs Report"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Consumer Confidence"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"GDP Release"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Conference"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    return actionLocation;
+}
+
 // Get the third action type: View Transcript or View last Transcript
 - (NSString *)getActionType3ForEvent:(NSString *)rawEventType withEventDistance:(NSString *)distanceTxt
 {
@@ -3899,6 +3980,45 @@
     }
     
     return actionType;
+}
+
+// Get the third action type location: View Transcript or View last Transcript
+- (NSString *)getActionLocation3ForEvent:(NSString *)rawEventType
+{
+    NSString *actionLocation = @"Not Available";
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        // Replacing GOOGL with GOOG as the former doesn't work for SA.
+        if ([[self.parentTicker uppercaseString] isEqualToString:@"GOOGL"]) {
+            actionLocation = [NSString stringWithFormat:@"https://seekingalpha.com/symbol/GOOG/earnings/transcripts"];
+        }
+        else {
+            actionLocation = [NSString stringWithFormat:@"https://seekingalpha.com/symbol/%@/earnings/transcripts",[self.parentTicker uppercaseString]];
+        }
+    }
+    
+    if ([rawEventType containsString:@"Fed Meeting"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Jobs Report"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Consumer Confidence"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"GDP Release"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Conference"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    return actionLocation;
 }
 
 // Get the fourth action type: See News
@@ -3945,6 +4065,45 @@
     return actionType;
 }
 
+// Get the 4th action type location: See News
+- (NSString *)getActionLocation4ForEvent:(NSString *)rawEventType
+{
+    NSString *actionLocation = @"Not Available";
+    NSString *externalURL = nil;
+    NSString *searchTerm = nil;
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = [NSString stringWithFormat:@"%@ %@ stock news",self.parentCompany,self.parentTicker];
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
+    }
+    
+    if ([rawEventType containsString:@"Fed Meeting"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Jobs Report"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Consumer Confidence"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"GDP Release"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Conference"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    return actionLocation;
+}
+
 // Get the fifth action type: Go to Investor Site
 - (NSString *)getActionType5ForEvent:(NSString *)rawEventType withEventDistance:(NSString *)distanceTxt
 {
@@ -3987,6 +4146,50 @@
     }
     
     return actionType;
+}
+
+// Get the 5th action type location: Go to Investor Site
+- (NSString *)getActionLocation5ForEvent:(NSString *)rawEventType
+{
+    NSString *actionLocation = @"Not Available";
+    NSString *externalURL = nil;
+    NSString *searchTerm = nil;
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+        actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:0]];
+        
+        if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
+        {
+            externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?q="];
+            searchTerm = [NSString stringWithFormat:@"%@ %@ investor site",self.parentCompany,self.parentTicker];
+            // Remove any spaces in the URL query string params
+            searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+            actionLocation = [externalURL stringByAppendingString:searchTerm];
+        }
+    }
+    
+    if ([rawEventType containsString:@"Fed Meeting"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Jobs Report"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Consumer Confidence"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"GDP Release"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    if ([rawEventType containsString:@"Conference"]) {
+        actionLocation = @"Not Available";
+    }
+    
+    return actionLocation;
 }
 
 // Refresh table view per the main nav action selected.

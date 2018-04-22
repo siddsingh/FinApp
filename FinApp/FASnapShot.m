@@ -48,34 +48,35 @@ static FASnapShot *sharedInstance;
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         
         // Tech Stocks that are super popular, plus Knotifi community, plus popular themes curated by Sidd
-        if ([parentTicker containsString:@"FB"]) {
+        
+        if ([parentTicker caseInsensitiveCompare:@"FB"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"AMZN"]) {
+        if ([parentTicker caseInsensitiveCompare:@"AMZN"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"NFLX"]) {
+        if ([parentTicker caseInsensitiveCompare:@"NFLX"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"AAPL"]) {
+        if ([parentTicker caseInsensitiveCompare:@"AAPL"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"GS"]) {
+        if ([parentTicker caseInsensitiveCompare:@"GS"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"JPM"]) {
+        if ([parentTicker caseInsensitiveCompare:@"JPM"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"NVDA"]) {
+        if ([parentTicker caseInsensitiveCompare:@"NVDA"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"ATVI"]) {
+        if ([parentTicker caseInsensitiveCompare:@"ATVI"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"EA"]) {
+        if ([parentTicker caseInsensitiveCompare:@"EA"] == NSOrderedSame) {
             highImpact = YES;
         }
-        if ([parentTicker containsString:@"NKE"]) {
+        if ([parentTicker caseInsensitiveCompare:@"NKE"] == NSOrderedSame) {
             highImpact = YES;
         }
     }
@@ -261,7 +262,7 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:67.0f/255.0f green:68.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
     }
     
-    // Just use default dark gray with econ blue for text as there's a lot of other blues.
+    // Just use default dark gray with econ blue for text as there's a lot of other blues. ECONOMY_ for detail view
     if ([ticker caseInsensitiveCompare:@"ECON"] == NSOrderedSame) {
         // Very lightish gray
         // colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:232.0f/255.0f blue:232.0f/255.0f alpha:1.0f];
@@ -281,7 +282,8 @@ static FASnapShot *sharedInstance;
     // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
     if (([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame)) {
         // Econ Blue
-        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:77.0f/255.0f blue:139.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"JPM"] == NSOrderedSame) {
@@ -660,7 +662,8 @@ static FASnapShot *sharedInstance;
     // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
     if (([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame)) {
         // White for Econ
-        colorToReturn = [UIColor whiteColor];
+        //colorToReturn = [UIColor whiteColor];
+        colorToReturn = [UIColor colorWithRed:248.0f/255.0f green:152.0f/255.0f blue:97.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"JPM"] == NSOrderedSame) {
