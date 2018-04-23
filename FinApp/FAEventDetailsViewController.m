@@ -386,8 +386,41 @@
     //Default height is 93.0
     CGFloat cellHeight = 93.0;
     
-    // Currently use the shorter height for all cells.
-    cellHeight = 70.0;
+    int rowNo = (int)indexPath.row;
+    
+    // If earnings use the shorter height
+    if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+        cellHeight = 70.0;
+    }
+    // For econ event
+    else {
+        if (indexPath.section == 0) {
+            
+            if (rowNo == 0)
+            {
+                cellHeight = 93.0;
+            }
+            else if (rowNo == 1)
+            {
+                cellHeight = 70.0;
+            }
+            else if (rowNo == 2)
+            {
+                cellHeight = 70.0;
+            }
+            else if (rowNo == 1)
+            {
+                cellHeight = 93.0;
+            }
+            else {
+                cellHeight = 93.0;
+            }
+        }
+        if (indexPath.section == 1) {
+           cellHeight = 70.0;
+        }
+    }
+    
     
     // If info type details is selected
   /*  if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
@@ -602,6 +635,7 @@
         }
     }
     // If it's an econ event, do the same for now.
+    // For econ events here are the 4 section 1 rows: Description(getShortDescriptionForEventType:),Impact Level (getImpactDescriptionForEventType:) + Impact(getEpsOrImpactTextForEventType:), Sectors Affected(getEpsOrSectorsTextForEventType:), Tip(getPriceSinceOrTipTextForEventType:).
     else {
         if (indexPath.section == 0) {
             rowNo = (int)indexPath.row;
@@ -618,11 +652,12 @@
     // Display the appropriate details based on the row no
     switch (rowNo) {
             
-        // Use for econ event
+        // Keep for later. Unused for now
         case infoRow0:
         {
+            // OLD WAY
             // Hide detail action label
-            cell.detailsActionLbl.textColor = [UIColor whiteColor];
+          /*  cell.detailsActionLbl.textColor = [UIColor whiteColor];
             cell.detailsActionLbl.hidden = YES;
             
             // Get Impact String
@@ -657,11 +692,11 @@
             }
             
             // Set the rationale
-            [[cell descriptionArea] setText:[NSString stringWithFormat:@"%@",[self getEventDescriptionForEventType:self.eventType eventParent:self.parentTicker]]];
+            [[cell descriptionArea] setText:[NSString stringWithFormat:@"%@",[self getEventDescriptionForEventType:self.eventType eventParent:self.parentTicker]]]; */
         }
         break;
             
-        // Show When
+        // Show When for Earnings/Description for Econ events
         case infoRow1:
         {
             // Hide detail action label
@@ -675,15 +710,20 @@
             [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
-            // DISTANCE STRING
-            NSString *distanceString = [self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type];
-            
-            [[cell titleLabel] setText:distanceString];
-            [[cell descriptionArea] setText:@"WHEN"];
+            // Earnings
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                [[cell titleLabel] setText:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]];
+                [[cell descriptionArea] setText:@"WHEN"];
+            }
+            // Econ
+            else {
+                [[cell titleLabel] setText:@"What"];
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:eventData.type parentCompanyName:self.parentCompany]];
+            }
         }
             break;
             
-        // Show Schedule
+        // Show Schedule/Impact for Econ
         case infoRow2:
         {
             // Hide detail action label
@@ -697,15 +737,20 @@
             [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
-            // Schedule String
-            NSString *schedString = self.eventDateText;
-            
-            [[cell titleLabel] setText:schedString];
-            [[cell descriptionArea] setText:@"SCHEDULE"];
+            // Earnings
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                [[cell titleLabel] setText:self.eventDateText];
+                [[cell descriptionArea] setText:@"SCHEDULE"];
+            }
+            // Econ Impact Level (getImpactDescriptionForEventType:) + Impact(getEpsOrImpactTextForEventType:)
+            else {
+                [[cell titleLabel] setText:[self getImpactDescriptionForEventType:eventData.type eventParent:self.parentCompany]];
+                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:eventData.type eventParent:self.parentCompany]];
+            }
         }
             break;
             
-        // Show expected EPS
+        // Show expected EPS for earnings/econ Sectors Affected(getEpsOrSectorsTextForEventType:)
         case infoRow3:
         {
             // Hide detail action label
@@ -719,32 +764,66 @@
             [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
-            // Check that the eps value is available
-            if (([eventData.estimatedEps floatValue] != notAvailable)&&([eventData.estimatedEps floatValue] != zeroValue))
-            {
-                if ([eventData.estimatedEps floatValue] >=  0.0f) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
-                } else {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+            // Earnings
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                // Check that the eps value is available
+                if (([eventData.estimatedEps floatValue] != notAvailable)&&([eventData.estimatedEps floatValue] != zeroValue))
+                {
+                    if ([eventData.estimatedEps floatValue] >=  0.0f) {
+                        cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+                        [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+                    } else {
+                        cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
+                        [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+                    }
+                    
+                    NSString *expectedEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.estimatedEps]];
+                    
+                    [[cell titleLabel] setText:expectedEPS];
+                    [[cell descriptionArea] setText:@"EXPECTED EPS"];
+                }
+                else
+                {
+                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:17]];
+                    [[cell titleLabel] setText:@"NA"];
+                    [[cell descriptionArea] setText:@"EXPECTED EPS"];
+                }
+            }
+            // Econ Sectors Affected(getEpsOrSectorsTextForEventType:)
+            else {
+                if ([self.eventType containsString:@"Fed Meeting"]) {
+                    // Select the appropriate color and text for Financial Stocks
+                    cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"$"];
                 }
                 
-                NSString *expectedEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.estimatedEps]];
+                if ([self.eventType containsString:@"Jobs Report"]) {
+                    // Select the appropriate color and text for All Stocks
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"☼"];
+                }
                 
-                [[cell titleLabel] setText:expectedEPS];
-                [[cell descriptionArea] setText:@"EXPECTED EPS"];
+                if ([self.eventType containsString:@"Consumer Confidence"]) {
+                    // Select the appropriate color and text for Retail Stocks
+                    // Pinkish deep red
+                    cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"⦿"];
+                }
+                
+                if ([self.eventType containsString:@"GDP Release"]) {
+                    // Select the appropriate color and text for All Stocks
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"☼"];
+                }
+               
+                [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:eventData.type]];
             }
-            else
-            {
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:17]];
-                [[cell titleLabel] setText:@"NA"];
-                [[cell descriptionArea] setText:@"EXPECTED EPS"];
-            }
+            
+            
         }
             break;
             
-        // Show last eps
+        // Show last eps for earnings/econ Tip(getPriceSinceOrTipTextForEventType:)
         case infoRow4:
         {
             // Hide detail action label
@@ -758,32 +837,42 @@
             [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
-            // Check that the eps value is available
-            double lastEpsDbl = [eventData.actualEpsPrior doubleValue];
-            // Delete Later
-            NSLog(@"Last EPS in double is:%f",lastEpsDbl);
-            NSLog(@"Last EPS in float is:%f",[eventData.actualEpsPrior floatValue]);
-            
-            if (([eventData.actualEpsPrior floatValue] != notAvailable)&&([eventData.actualEpsPrior floatValue] != zeroValue))
-            {
-                if ([eventData.actualEpsPrior floatValue] >=  0.0f) {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
-                } else {
-                    cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
-                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+            // Earnings
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                // Check that the eps value is available
+                double lastEpsDbl = [eventData.actualEpsPrior doubleValue];
+                // Delete Later
+                NSLog(@"Last EPS in double is:%f",lastEpsDbl);
+                NSLog(@"Last EPS in float is:%f",[eventData.actualEpsPrior floatValue]);
+                
+                if (([eventData.actualEpsPrior floatValue] != notAvailable)&&([eventData.actualEpsPrior floatValue] != zeroValue))
+                {
+                    if ([eventData.actualEpsPrior floatValue] >=  0.0f) {
+                        cell.titleLabel.textColor = [UIColor colorWithRed:41.0f/255.0f green:151.0f/255.0f blue:127.0f/255.0f alpha:1.0f];
+                        [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+                    } else {
+                        cell.titleLabel.textColor = [UIColor colorWithRed:226.0f/255.0f green:35.0f/255.0f blue:95.0f/255.0f alpha:1.0f];
+                        [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+                    }
+                    
+                    NSString *lastEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.actualEpsPrior]];
+                    
+                    [[cell titleLabel] setText:lastEPS];
+                    [[cell descriptionArea] setText:@"LAST EPS"];
                 }
-                
-                NSString *lastEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.actualEpsPrior]];
-                
-                [[cell titleLabel] setText:lastEPS];
-                [[cell descriptionArea] setText:@"LAST EPS"];
+                else
+                {
+                    [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:17]];
+                    [[cell titleLabel] setText:@"NA"];
+                    [[cell descriptionArea] setText:@"LAST EPS"];
+                }
             }
-            else
-            {
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:17]];
-                [[cell titleLabel] setText:@"NA"];
-                [[cell descriptionArea] setText:@"LAST EPS"];
+            // Econ Impact Level (getPriceSinceOrTipTextForEventType:)
+            else {
+                // Econ Blue
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"⚇"];
+                [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:eventData.type additionalInfo:@"NA"]];
             }
         }
             break;
@@ -2974,13 +3063,13 @@
         }
     }
     
-    // For econ events: Description(getShortDescriptionForEventType:), Impact(getEpsOrImpactTextForEventType:), Sectors Affected(getEpsOrSectorsTextForEventType:), Tip(getPriceSinceOrTipTextForEventType:), if needed Just Impact Level: getImpactDescriptionForEventType:
+    // For econ events: Description(getShortDescriptionForEventType:), Impact Level: getImpactDescriptionForEventType: + Impact(getEpsOrImpactTextForEventType:), Sectors Affected(getEpsOrSectorsTextForEventType:), Tip(getPriceSinceOrTipTextForEventType:),
     if ([self.eventType containsString:@"Fed Meeting"]) {
         if(sectionNo == 0) {
             numberOfPieces = 4;
         }
         if(sectionNo == 1) {
-            numberOfPieces = 5;
+            numberOfPieces = 2;
         }
     }
     
@@ -2989,7 +3078,7 @@
             numberOfPieces = 4;
         }
         if(sectionNo == 1) {
-            numberOfPieces = 5;
+            numberOfPieces = 2;
         }
     }
     
@@ -2998,7 +3087,7 @@
             numberOfPieces = 4;
         }
         if(sectionNo == 1) {
-            numberOfPieces = 5;
+            numberOfPieces = 2;
         }
     }
     
@@ -3007,7 +3096,7 @@
             numberOfPieces = 4;
         }
         if(sectionNo == 1) {
-            numberOfPieces = 5;
+            numberOfPieces = 2;
         }
     }
     
@@ -3016,7 +3105,7 @@
             numberOfPieces = 4;
         }
         if(sectionNo == 1) {
-            numberOfPieces = 5;
+            numberOfPieces = 2;
         }
     }
     
@@ -3171,19 +3260,19 @@
     }
     
     if ([eventType containsString:@"Fed Meeting"]) {
-        description = @"Very High Impact.Outcome determines key interest rates.";
+        description = @"Outcome determines key interest rates.";
     }
     
     if ([eventType containsString:@"Jobs Report"]) {
-        description = @"Very High Impact.Reflects the health of the job market.";
+        description = @"Reflects the health of the job market.";
     }
     
     if ([eventType containsString:@"Consumer Confidence"]) {
-        description = @"Medium Impact.Indicator of future personal spending.";
+        description = @"Indicator of future personal spending.";
     }
     
     if ([eventType containsString:@"GDP Release"]) {
-        description = @"Medium Impact.Scorecard of the country's economic health.";
+        description = @"Scorecard of the country's economic health.";
     }
     
     // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
@@ -3784,19 +3873,19 @@
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
-        actionType = @"Not Available";
+        actionType = @"SEE FOMC SITE";
     }
     
     if ([rawEventType containsString:@"Jobs Report"]) {
-        actionType = @"Not Available";
+        actionType = @"SEE BLS SITE";
     }
     
     if ([rawEventType containsString:@"Consumer Confidence"]) {
-        actionType = @"Not Available";
+        actionType = @"SEE TCB SITE";
     }
     
     if ([rawEventType containsString:@"GDP Release"]) {
-        actionType = @"Not Available";
+        actionType = @"SEE BEA SITE";
     }
     
     if ([rawEventType containsString:@"Conference"]) {
@@ -3828,19 +3917,19 @@
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
-        actionLocation = @"Not Available";
+        actionLocation = @"https://www.federalreserve.gov/monetarypolicy.htm";
     }
     
     if ([rawEventType containsString:@"Jobs Report"]) {
-        actionLocation = @"Not Available";
+        actionLocation = @"https://www.bls.gov/mobile/mobile_releases.htm";
     }
     
     if ([rawEventType containsString:@"Consumer Confidence"]) {
-        actionLocation = @"Not Available";
+        actionLocation = @"https://www.conference-board.org/data/consumerconfidence.cfm";
     }
     
     if ([rawEventType containsString:@"GDP Release"]) {
-        actionLocation = @"Not Available";
+        actionLocation = @"https://www.bea.gov/newsreleases/news_release_sort_national.htm";
     }
     
     if ([rawEventType containsString:@"Conference"]) {
@@ -4082,19 +4171,35 @@
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
-        actionLocation = @"Not Available";
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"fomc meeting";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
     if ([rawEventType containsString:@"Jobs Report"]) {
-        actionLocation = @"Not Available";
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"jobs report us";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
     if ([rawEventType containsString:@"Consumer Confidence"]) {
-        actionLocation = @"Not Available";
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"usa consumer confidence";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
     if ([rawEventType containsString:@"GDP Release"]) {
-        actionLocation = @"Not Available";
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"usa gdp growth";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
     if ([rawEventType containsString:@"Conference"]) {

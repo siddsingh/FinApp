@@ -560,7 +560,7 @@
         [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
         
         cell.newsButon.tag = indexPath.row;
-        // Also add the button press action
+        // Also add the button press action.
         [cell.newsButon addTarget:self action:@selector(newsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         
         // Format the company ticker just like above
@@ -1231,7 +1231,8 @@
     }];
     deleteEventAction.backgroundColor = [UIColor redColor];*/
     
-    return @[resultAction,setReminderAction];
+    // For now, only add the setReminderAction
+    return @[setReminderAction];
 }
 
 #pragma mark - Following Reminder Creation
@@ -2913,6 +2914,30 @@
 // News Button on cell press
 - (void)newsButtonPressed:(UIButton *)sender
 {
+    // Transition to detail view without fetching anything currently
+    
+    // Get data to pass to destination
+    // Get the event description corresponding to the pressed button
+    NSIndexPath *tappedIndexPath = [NSIndexPath indexPathForRow:sender.tag inSection:0];
+    // Get the event
+    Event *eventSelected = nil;
+    if (self.filterSpecified) {
+        // If the filter type is Match_Companies_Events, meaning a filter of matching companies with existing events
+        // has been specified.
+        if ([self.filterType isEqualToString:@"Match_Companies_Events"]) {
+            // Use filtered events results set
+            eventSelected = [self.filteredResultsController objectAtIndexPath:tappedIndexPath];
+        }
+    }
+    // If no search filter
+    else {
+        eventSelected = [self.eventResultsController objectAtIndexPath:tappedIndexPath];
+    }
+    // TO DO: Delete Later
+    NSLog(@"EVENT SELECTED IS:%@",eventSelected.type);
+    [self performSegueWithIdentifier:@"ShowEventDetails1" sender:eventSelected];
+    
+    /* OLD WAY to go directly to news
     // Get the event description corresponding to the pressed button
     NSIndexPath *tappedIndexPath = [NSIndexPath indexPathForRow:sender.tag inSection:0];
     FAEventsTableViewCell *tappedButtonCell = (FAEventsTableViewCell *)[self.eventsListTable cellForRowAtIndexPath:tappedIndexPath];
@@ -2995,7 +3020,7 @@
         // Just use whatever is the default color for the Safari View Controller
         //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedButtonCell.eventDescription.text withAddedInfo:tappedButtonCell.eventCertainty.text] withCompanyTicker:ticker];
         [self presentViewController:externalInfoVC animated:YES completion:nil];
-    }
+    } */
 }
 
 #pragma mark - Support Related
