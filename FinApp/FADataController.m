@@ -2199,6 +2199,33 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"SEND" name:@"SendGrid"];
     [self insertUniqueCompanyWithTicker:@"ZUO" name:@"Zuora"];
     
+    // Added these starting 03/17/2019
+    [self insertUniqueCompanyWithTicker:@"PVTL" name:@"Pivotal Software"];
+    [self insertUniqueCompanyWithTicker:@"DOCU" name:@"Docusign"];
+    [self insertUniqueCompanyWithTicker:@"BJ" name:@"BJ's Wholesale Club Holdings"];
+    [self insertUniqueCompanyWithTicker:@"NIO" name:@"NIO Inc"];
+    [self insertUniqueCompanyWithTicker:@"ADT" name:@"ADT Inc"];
+    [self insertUniqueCompanyWithTicker:@"PDD" name:@"Pinduoduo"];
+    [self insertUniqueCompanyWithTicker:@"PAGS" name:@"Pagseguro Digital"];
+    [self insertUniqueCompanyWithTicker:@"PLAN" name:@"Anaplan"];
+    [self insertUniqueCompanyWithTicker:@"SWI" name:@"SolarWinds"];
+    [self insertUniqueCompanyWithTicker:@"ESTC" name:@"Elastic"];
+    [self insertUniqueCompanyWithTicker:@"UPWK" name:@"Upwork"];
+    [self insertUniqueCompanyWithTicker:@"SVMK" name:@"SurveyMonkey"];
+    [self insertUniqueCompanyWithTicker:@"EB" name:@"Eventbrite"];
+    [self insertUniqueCompanyWithTicker:@"QTT" name:@"Qutoutiao"];
+    [self insertUniqueCompanyWithTicker:@"ARLO" name:@"Arlo Technologies"];
+    [self insertUniqueCompanyWithTicker:@"SONO" name:@"Sonos"];
+    [self insertUniqueCompanyWithTicker:@"DAVA" name:@"Endava"];
+    [self insertUniqueCompanyWithTicker:@"OPRA" name:@"Opera"];
+    [self insertUniqueCompanyWithTicker:@"JG" name:@"Aurora Mobile"];
+    [self insertUniqueCompanyWithTicker:@"CANG" name:@"Cango"];
+    [self insertUniqueCompanyWithTicker:@"TENB" name:@"Tenable Holdings"];
+    [self insertUniqueCompanyWithTicker:@"DOMO" name:@"Domo"];
+    [self insertUniqueCompanyWithTicker:@"EVER" name:@"EverQuote"];
+    [self insertUniqueCompanyWithTicker:@"ZS" name:@"Zscaler"];
+    [self insertUniqueCompanyWithTicker:@"CBLK" name:@"Carbon Black"];
+    
     // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
     // Delete before shipping v4.3
     //NSLog(@"Ended the background get incremental companies from local HARD CODE");
