@@ -17,6 +17,7 @@
 		9E2C2A4A1C8786DC00297F37 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */; };
 		9E2F49571CE1622700D51401 /* ProductEvents_2016_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */; };
 		9E2F49581CE1622800D51401 /* ProductEvents_2016_Local.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */; };
+		9E3A96C72240BD8D002038E2 /* EconomicEvents_2019.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E3A96C62240BD8C002038E2 /* EconomicEvents_2019.json */; };
 		9E44C29B1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */; };
 		9E44C29C1DD6A3B7009D9317 /* FATutorialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */; };
 		9E4F439320892F8500683D89 /* FAEventDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E4F438F20892F8400683D89 /* FAEventDetailsViewController.m */; };
@@ -73,6 +74,7 @@
 		9E1BF82D1DA1FA6000D50E4F /* PriceChangeEvents_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = PriceChangeEvents_Local.json; sourceTree = "<group>"; };
 		9E2C2A491C8786DC00297F37 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		9E2F49561CE1622700D51401 /* ProductEvents_2016_Local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ProductEvents_2016_Local.json; sourceTree = "<group>"; };
+		9E3A96C62240BD8C002038E2 /* EconomicEvents_2019.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = EconomicEvents_2019.json; sourceTree = "<group>"; };
 		9E44C2991DD6A3B7009D9317 /* FATutorialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FATutorialViewController.h; sourceTree = "<group>"; };
 		9E44C29A1DD6A3B7009D9317 /* FATutorialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FATutorialViewController.m; sourceTree = "<group>"; };
 		9E4F438F20892F8400683D89 /* FAEventDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAEventDetailsViewController.m; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 				9EA8E47B1C99053C002B1F5E /* EconomicEvents_2016.json */,
 				9E81709B1DE0DD610066C85B /* EconomicEvents_2017.json */,
 				9E953F641FEDE0C200D60343 /* EconomicEvents_2018.json */,
+				9E3A96C62240BD8C002038E2 /* EconomicEvents_2019.json */,
 				9EBD8EE41B82CEB9008A0370 /* Action.h */,
 				9EBD8EE51B82CEB9008A0370 /* Action.m */,
 				9E7586441AF44679009DD7B2 /* User.h */,
@@ -345,6 +348,7 @@
 				9E602D2619E655DF00ACDEC6 /* Main.storyboard in Resources */,
 				9E953F651FEDE0C200D60343 /* EconomicEvents_2018.json in Resources */,
 				9ECE7B471CBF60BF000F8D77 /* FinApp.sqlite in Resources */,
+				9E3A96C72240BD8D002038E2 /* EconomicEvents_2019.json in Resources */,
 				9EA8E47C1C99053C002B1F5E /* EconomicEvents_2016.json in Resources */,
 				9E81709C1DE0DD610066C85B /* EconomicEvents_2017.json in Resources */,
 				9E602D2B19E655DF00ACDEC6 /* LaunchScreen.xib in Resources */,

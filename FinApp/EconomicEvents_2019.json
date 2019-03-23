@@ -1,0 +1,237 @@
+{
+    "eventSets":[
+                 {
+                 "name":"Fed Meeting",
+                 "identifier":"ECONOMY_FOMC",
+                 "agency":"Federal Open Market Committee",
+                 "impact":"Very High",
+                 "impactReason":"Outcome determines key interest rates.",
+                 "sectorsImpacted":"Financial",
+                 "shortDescription":"Meeting between federal officials to determine future monetary policy.",
+                 "moreInfoUrl":"https://www.federalreserve.gov/monetarypolicy.htm",
+                 "tip":"If interest rates go up, stocks typically fare worse. The reverse is also true.",
+                 "timing":"2:00 p.m. ET",
+                 "instances":[
+                              {
+                              "date":20190130,
+                              "relatedPeriod":"Jan"
+                              },
+                              {
+                              "date":20190320,
+                              "relatedPeriod":"Mar"
+                              },
+                              {
+                              "date":20190501,
+                              "relatedPeriod":"May"
+                              },
+                              {
+                              "date":20190619,
+                              "relatedPeriod":"Jun"
+                              },
+                              {
+                              "date":20190731,
+                              "relatedPeriod":"July"
+                              },
+                              {
+                              "date":20190918,
+                              "relatedPeriod":"Sep"
+                              },
+                              {
+                              "date":20191030,
+                              "relatedPeriod":"Oct"
+                              },
+                              {
+                              "date":20191211,
+                              "relatedPeriod":"Dec"
+                              }
+                              ],
+                 "datesPressConference":[20190320,20190619,20190918,20191211]
+                 },
+                 {
+                 "name":"Jobs Report",
+                 "identifier":"ECONOMY_BLS",
+                 "agency":"Bureau of Labor Statistics",
+                 "impact":"Very High",
+                 "impactReason":"Reflects the health of the job market.",
+                 "sectorsImpacted":"All",
+                 "shortDescription":"An estimate of the number of people who have jobs and those that don't.",
+                 "moreInfoUrl":"http://www.bls.gov/mobile/mobile_releases.htm",
+                 "tip":"A strong number is considered a positive for the economy and hence stocks.",
+                 "timing":"8:30 a.m. ET",
+                 "instances":[
+                              {
+                              "date":20190104,
+                              "relatedPeriod":"Dec"
+                              },
+                              {
+                              "date":20190201,
+                              "relatedPeriod":"Jan"
+                              },
+                              {
+                              "date":20190308,
+                              "relatedPeriod":"Feb"
+                              },
+                              {
+                              "date":20190405,
+                              "relatedPeriod":"Mar"
+                              },
+                              {
+                              "date":20190503,
+                              "relatedPeriod":"Apr"
+                              },
+                              {
+                              "date":20190607,
+                              "relatedPeriod":"May"
+                              },
+                              {
+                              "date":20190705,
+                              "relatedPeriod":"Jun"
+                              },
+                              {
+                              "date":20190802,
+                              "relatedPeriod":"Jul"
+                              },
+                              {
+                              "date":20190906,
+                              "relatedPeriod":"Aug"
+                              },
+                              {
+                              "date":20191004,
+                              "relatedPeriod":"Sep"
+                              },
+                              {
+                              "date":20191101,
+                              "relatedPeriod":"Oct"
+                              },
+                              {
+                              "date":20191206,
+                              "relatedPeriod":"Nov"
+                              }
+                              ]
+                 },
+                 {
+                 "name":"Consumer Confidence",
+                 "identifier":"ECONOMY_TCB",
+                 "agency":"The Conference Board",
+                 "impact":"Medium",
+                 "impactReason":"Indicator of future personal spending.",
+                 "sectorsImpacted":"Retail",
+                 "shortDescription":"Measure of how likely people are to spend money in the future.",
+                 "moreInfoUrl":"https://www.conference-board.org/data/consumerconfidence.cfm",
+                 "tip":"Consumers account for about two-thirds of the nation's economic activity.",
+                 "timing":"10:00 a.m. ET",
+                 "instances":[
+                              {
+                              "date":20190129,
+                              "relatedPeriod":"Jan"
+                              },
+                              {
+                              "date":20190226,
+                              "relatedPeriod":"Feb"
+                              },
+                              {
+                              "date":20190326,
+                              "relatedPeriod":"Mar"
+                              },
+                              {
+                              "date":20190430,
+                              "relatedPeriod":"Apr"
+                              },
+                              {
+                              "date":20190528,
+                              "relatedPeriod":"May"
+                              },
+                              {
+                              "date":20190625,
+                              "relatedPeriod":"Jun"
+                              },
+                              {
+                              "date":20190730,
+                              "relatedPeriod":"Jul"
+                              },
+                              {
+                              "date":20190827,
+                              "relatedPeriod":"Aug"
+                              },
+                              {
+                              "date":20190924,
+                              "relatedPeriod":"Sep"
+                              },
+                              {
+                              "date":20191029,
+                              "relatedPeriod":"Oct"
+                              },
+                              {
+                              "date":20191126,
+                              "relatedPeriod":"Nov"
+                              },
+                              {
+                              "date":20191231,
+                              "relatedPeriod":"Dec"
+                              }
+                              ]
+                 },
+                 {
+                 "name":"GDP Release",
+                 "identifier":"ECONOMY_BEA",
+                 "agency":"Bureau of Economic Analysis",
+                 "impact":"High",
+                 "impactReason":"Scorecard of the country's economic health.",
+                 "sectorsImpacted":"All",
+                 "shortDescription":"Represents the total value of all goods & services produced over a period.",
+                 "moreInfoUrl":"https://www.bea.gov/data/gdp/gross-domestic-product",
+                 "tip":"Decreasing GDP for 2 or more quarters indicates a recession.",
+                 "timing":"8:30 a.m. ET",
+                 "instances":[
+                              {
+                              "date":20190228,
+                              "relatedPeriod":"Q4 2018 Initial"
+                              },
+                              {
+                              "date":20190228,
+                              "relatedPeriod":"Q4 2018 Second"
+                              },
+                              {
+                              "date":20190328,
+                              "relatedPeriod":"Q4 2018 Third"
+                              },
+                              {
+                              "date":20190426,
+                              "relatedPeriod":"Q1 Initial"
+                              },
+                              {
+                              "date":20190530,
+                              "relatedPeriod":"Q1 Second"
+                              },
+                              {
+                              "date":20190627,
+                              "relatedPeriod":"Q1 Third"
+                              },
+                              {
+                              "date":20190726,
+                              "relatedPeriod":"Q2 Initial"
+                              },
+                              {
+                              "date":20190829,
+                              "relatedPeriod":"Q2 Second"
+                              },
+                              {
+                              "date":20190926,
+                              "relatedPeriod":"Q2 Third"
+                              },
+                              {
+                              "date":20191030,
+                              "relatedPeriod":"Q3 Initial"
+                              },
+                              {
+                              "date":20191127,
+                              "relatedPeriod":"Q3 Second"
+                              },
+                              {
+                              "date":20191220,
+                              "relatedPeriod":"Q3 Third"
+                              }
+                              ]
+                 }
+                 ]
+}
