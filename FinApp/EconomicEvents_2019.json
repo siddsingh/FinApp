@@ -232,6 +232,40 @@
                               "relatedPeriod":"Q3 Third"
                               }
                               ]
+                 },
+                 {
+                     "name":"India GDP Release",
+                     "identifier":"ECONOMY_MOS",
+                     "agency":"Ministry of Statistics",
+                     "impact":"High",
+                     "impactReason":"Scorecard of the country's economic health.",
+                     "sectorsImpacted":"All",
+                     "shortDescription":"Represents the total value of all goods & services produced over a period.",
+                     "moreInfoUrl":"http://mospi.nic.in",
+                     "tip":"Decreasing GDP for 2 or more quarters indicates a recession.",
+                     "timing":"5:30 p.m. IST (~7:00 a.m. EST)",
+                     "instances":[
+                         {
+                             "date":20190228,
+                             "relatedPeriod":"Q3 FY2018-2019"
+                         },
+                         {
+                             "date":20190531,
+                             "relatedPeriod":"Q4 FY2018-2019"
+                         },
+                         {
+                             "date":20190830,
+                             "relatedPeriod":"Q1 FY2019-2020"
+                         },
+                         {
+                             "date":20191129,
+                             "relatedPeriod":"Q2 FY2019-2020"
+                         },
+                         {
+                             "date":20200228,
+                             "relatedPeriod":"Q3 FY2019-2020"
+                         }
+                     ]
                  }
-                 ]
+                ]
 }
