@@ -396,21 +396,9 @@
     else {
         if (indexPath.section == 0) {
             
-            if (rowNo == 0)
-            {
-                cellHeight = 93.0;
-            }
-            else if (rowNo == 1)
+            if ((rowNo == 0)||(rowNo == 1))
             {
                 cellHeight = 70.0;
-            }
-            else if (rowNo == 2)
-            {
-                cellHeight = 70.0;
-            }
-            else if (rowNo == 1)
-            {
-                cellHeight = 93.0;
             }
             else {
                 cellHeight = 93.0;
@@ -641,7 +629,7 @@
             rowNo = (int)indexPath.row;
         }
         if (indexPath.section == 1) {
-            rowNo = ((int)indexPath.row + 4);
+            rowNo = ((int)indexPath.row + 6);
         }
     }
     
@@ -696,7 +684,7 @@
         }
         break;
             
-        // Show When for Earnings/Description for Econ events
+        // Show When for Earnings/Econ events
         case infoRow1:
         {
             // Hide detail action label
@@ -711,19 +699,14 @@
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
             // Earnings
-            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+            //if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 [[cell titleLabel] setText:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]];
                 [[cell descriptionArea] setText:@"WHEN"];
-            }
-            // Econ
-            else {
-                [[cell titleLabel] setText:@"What"];
-                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:eventData.type parentCompanyName:self.parentCompany]];
-            }
+            //}
         }
             break;
             
-        // Show Schedule/Impact for Econ
+        // Show Schedule for Earnings/Econ
         case infoRow2:
         {
             // Hide detail action label
@@ -738,19 +721,14 @@
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
             // Earnings
-            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+            //if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 [[cell titleLabel] setText:self.eventDateText];
                 [[cell descriptionArea] setText:@"SCHEDULE"];
-            }
-            // Econ Impact Level (getImpactDescriptionForEventType:) + Impact(getEpsOrImpactTextForEventType:)
-            else {
-                [[cell titleLabel] setText:[self getImpactDescriptionForEventType:eventData.type eventParent:self.parentCompany]];
-                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:eventData.type eventParent:self.parentCompany]];
-            }
+            //}
         }
             break;
             
-        // Show expected EPS for earnings/econ Sectors Affected(getEpsOrSectorsTextForEventType:)
+        // Show expected EPS for earnings/econ event description Sectors Affected(getEpsOrSectorsTextForEventType:)
         case infoRow3:
         {
             // Hide detail action label
@@ -789,37 +767,11 @@
                     [[cell descriptionArea] setText:@"EXPECTED EPS"];
                 }
             }
-            // Econ Sectors Affected(getEpsOrSectorsTextForEventType:)
+            // Econ event description
             else {
-                if ([self.eventType containsString:@"Fed Meeting"]) {
-                    // Select the appropriate color and text for Financial Stocks
-                    cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
-                    [[cell titleLabel] setText:@"$"];
-                }
-                
-                if ([self.eventType containsString:@"Jobs Report"]) {
-                    // Select the appropriate color and text for All Stocks
-                    cell.titleLabel.textColor = [UIColor blackColor];
-                    [[cell titleLabel] setText:@"☼"];
-                }
-                
-                if ([self.eventType containsString:@"Consumer Confidence"]) {
-                    // Select the appropriate color and text for Retail Stocks
-                    // Pinkish deep red
-                    cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
-                    [[cell titleLabel] setText:@"⦿"];
-                }
-                
-                if ([self.eventType containsString:@"GDP Release"]) {
-                    // Select the appropriate color and text for All Stocks
-                    cell.titleLabel.textColor = [UIColor blackColor];
-                    [[cell titleLabel] setText:@"☼"];
-                }
-               
-                [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:eventData.type]];
+                [[cell titleLabel] setText:@"?"];
+                [[cell descriptionArea] setText:[self getShortDescriptionForEventType:eventData.type parentCompanyName:self.parentCompany]];
             }
-            
-            
         }
             break;
             
@@ -867,12 +819,10 @@
                     [[cell descriptionArea] setText:@"LAST EPS"];
                 }
             }
-            // Econ Impact Level (getPriceSinceOrTipTextForEventType:)
+            // Econ impact level
             else {
-                // Econ Blue
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"⚇"];
-                [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:eventData.type additionalInfo:@"NA"]];
+                [[cell titleLabel] setText:[self getImpactDescriptionForEventType:eventData.type eventParent:self.parentCompany]];
+                [[cell descriptionArea] setText:[self getEpsOrImpactTextForEventType:eventData.type eventParent:self.parentCompany]];
             }
         }
             break;
@@ -880,40 +830,82 @@
         // Show Action 1 - Preview/See Earnings
         case infoRow5:
         {
-            // Hide the action label anyways
-            cell.detailsActionLbl.textColor = [UIColor whiteColor];
-            cell.detailsActionLbl.hidden = YES;
-            
-            // Format the title label & description
-            cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
-            cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            // Delete later
-            NSLog(@"The ticker is:%@", self.parentTicker);
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
-            
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType1ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            // Earnings
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                // Hide the action label anyways
+                cell.detailsActionLbl.textColor = [UIColor whiteColor];
+                cell.detailsActionLbl.hidden = YES;
+                
+                // Format the title label & description
+                cell.titleLabel.backgroundColor = [UIColor whiteColor];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
+                cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
+                // Delete later
+                NSLog(@"The ticker is:%@", self.parentTicker);
+                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+                [cell.descriptionArea setTextColor:[UIColor blackColor]];
+                
+                [[cell titleLabel] setText:@"▶︎"];
+                [[cell descriptionArea] setText:[[self getActionType1ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            }
+            // Econ Sectors Affected(getEpsOrSectorsTextForEventType:)
+            else {
+                if ([self.eventType containsString:@"Fed Meeting"]) {
+                    // Select the appropriate color and text for Financial Stocks
+                    cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"$"];
+                }
+                
+                if ([self.eventType containsString:@"Jobs Report"]) {
+                    // Select the appropriate color and text for All Stocks
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"☼"];
+                }
+                
+                if ([self.eventType containsString:@"Consumer Confidence"]) {
+                    // Select the appropriate color and text for Retail Stocks
+                    // Pinkish deep red
+                    cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"⦿"];
+                }
+                
+                if ([self.eventType containsString:@"GDP Release"]) {
+                    // Select the appropriate color and text for All Stocks
+                    cell.titleLabel.textColor = [UIColor blackColor];
+                    [[cell titleLabel] setText:@"☼"];
+                }
+                
+                [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:eventData.type]];
+             }
         }
             break;
             
         // Show Action 2 - See News
         case infoRow6:
         {
-            // Hide the action label anyways
-            cell.detailsActionLbl.textColor = [UIColor whiteColor];
-            cell.detailsActionLbl.hidden = YES;
-            
-            // Format the title label & description
-            cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
-            cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
-            
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            // Earnings
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                // Hide the action label anyways
+                cell.detailsActionLbl.textColor = [UIColor whiteColor];
+                cell.detailsActionLbl.hidden = YES;
+                
+                // Format the title label & description
+                cell.titleLabel.backgroundColor = [UIColor whiteColor];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
+                cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
+                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+                [cell.descriptionArea setTextColor:[UIColor blackColor]];
+                
+                [[cell titleLabel] setText:@"▶︎"];
+                [[cell descriptionArea] setText:[[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            }
+            // Econ Impact Level (getPriceSinceOrTipTextForEventType:)
+            else {
+                // Econ Blue
+                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"⚇"];
+                [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:eventData.type additionalInfo:@"NA"]];
+             }
         }
             break;
             
@@ -3066,7 +3058,7 @@
     // For econ events: Description(getShortDescriptionForEventType:), Impact Level: getImpactDescriptionForEventType: + Impact(getEpsOrImpactTextForEventType:), Sectors Affected(getEpsOrSectorsTextForEventType:), Tip(getPriceSinceOrTipTextForEventType:),
     if ([self.eventType containsString:@"Fed Meeting"]) {
         if(sectionNo == 0) {
-            numberOfPieces = 4;
+            numberOfPieces = 6;
         }
         if(sectionNo == 1) {
             numberOfPieces = 2;
@@ -3075,7 +3067,7 @@
     
     if ([self.eventType containsString:@"Jobs Report"]) {
         if(sectionNo == 0) {
-            numberOfPieces = 4;
+            numberOfPieces = 6;
         }
         if(sectionNo == 1) {
             numberOfPieces = 2;
@@ -3084,7 +3076,7 @@
     
     if ([self.eventType containsString:@"Consumer Confidence"]) {
         if(sectionNo == 0) {
-            numberOfPieces = 4;
+            numberOfPieces = 6;
         }
         if(sectionNo == 1) {
             numberOfPieces = 2;
@@ -3093,7 +3085,7 @@
     
     if ([self.eventType containsString:@"GDP Release"]) {
         if(sectionNo == 0) {
-            numberOfPieces = 4;
+            numberOfPieces = 6;
         }
         if(sectionNo == 1) {
             numberOfPieces = 2;
@@ -3102,7 +3094,7 @@
     
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         if(sectionNo == 0) {
-            numberOfPieces = 4;
+            numberOfPieces = 6;
         }
         if(sectionNo == 1) {
             numberOfPieces = 2;

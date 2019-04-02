@@ -1182,14 +1182,17 @@
         }
         
         // For economic events, search query term is customized for each type
-        if ([formattedEventType containsString:@"GDP Release"]) {
-            moreInfoURL = @"http://www.bea.gov/newsreleases/news_release_sort_national.htm";
+        if ([formattedEventType isEqualToString:@"USA GDP Release"]) {
+            moreInfoURL = @"https://www.bea.gov/data/gdp/gross-domestic-product";
+        }
+        if ([formattedEventType isEqualToString:@"India GDP Release"]) {
+            moreInfoURL = @"http://mospi.nic.in";
         }
         if ([formattedEventType containsString:@"Consumer Confidence"]) {
             moreInfoURL = @"https://www.conference-board.org/data/consumerconfidence.cfm";
         }
         if ([formattedEventType containsString:@"Fed Meeting"]) {
-            moreInfoURL = @"http://www.federalreserve.gov/monetarypolicy/default.htm";
+            moreInfoURL = @"https://www.federalreserve.gov/monetarypolicy.htm";
         }
         if ([formattedEventType containsString:@"Jobs Report"]) {
             moreInfoURL = @"http://www.bls.gov/mobile/mobile_releases.htm";
@@ -1530,8 +1533,11 @@
     if ([eventType containsString:@"Consumer Confidence"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Consumer Confidence Report tomorrow %@", eventDateText];
     }
-    if ([eventType containsString:@"GDP Release"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ GDP Release tomorrow %@", eventDateText];
+    if ([eventType isEqualToString:@"USA GDP Release"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ USA GDP Release tomorrow %@", eventDateText];
+    }
+    if ([eventType isEqualToString:@"India GDP Release"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ India GDP Release tomorrow %@", eventDateText];
     }
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ %@ tomorrow %@",eventType,eventDateText];
@@ -3448,7 +3454,12 @@
     }
     
     if ([rawEventType containsString:@"GDP Release"]) {
-        formattedEventType = @"GDP Release";
+        if ([rawEventType containsString:@"India"]) {
+            formattedEventType = @"India GDP Release";
+        } else
+        {
+            formattedEventType = @"USA GDP Release";
+        }
     }
     
     if ([rawEventType containsString:@"Conference"]) {
@@ -3595,8 +3606,14 @@
     
     if ([rawEventType containsString:@"GDP Release"]) {
         
-        eventTimeString = @"8:30 a.m. ET";
-        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+        if ([rawEventType containsString:@"India"]) {
+            eventTimeString = @"5:30 p.m. IST ~7 a.m. ET";
+            eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+        } else
+        {
+            eventTimeString = @"8:30 a.m. ET";
+            eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+        }
     }
     
     if ([rawEventType containsString:@"Launch"]||[rawEventType containsString:@"Conference"]) {
@@ -3892,7 +3909,7 @@
 {
     UIImage *eventImage;
     
-    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+  /*  if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         
         eventImage = [UIImage imageNamed:@"EarningsListCircle"];
         
@@ -3913,7 +3930,12 @@
         eventImage = [UIImage imageNamed:@"EconListCircle"];
     }
     
-    if ([eventType containsString:@"GDP Release"]) {
+    if ([eventType isEqualToString:@"GDP Release"]) {
+        
+        eventImage = [UIImage imageNamed:@"EconListCircle"];
+    }
+    
+    if ([eventType isEqualToString:@"India GDP Release"]) {
         
         eventImage = [UIImage imageNamed:@"EconListCircle"];
     }
@@ -3932,7 +3954,7 @@
     if([eventType containsString:@"% down"]) {
         
         eventImage = [UIImage imageNamed:@"PriceDecreaseListCircle"];
-    }
+    } */
     
     return eventImage;
 }
@@ -3943,7 +3965,7 @@
     // Set returned color to dark gray text to start with
     UIColor *colorToReturn = [UIColor darkGrayColor];
     
-    if ([eventType isEqualToString:@"Quarterly Earnings"]) {
+  /*  if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         // Punchy Knotifi Green
         colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
     }
@@ -3959,7 +3981,11 @@
         // Econ Blue
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
-    if ([eventType containsString:@"GDP Release"]) {
+    if ([eventType isEqualToString:@"USA GDP Release"]) {
+        // Econ Blue
+        colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType isEqualToString:@"India GDP Release"]) {
         // Econ Blue
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
@@ -3996,7 +4022,7 @@
         // Very lightish gray
         //colorToReturn = [UIColor colorWithRed:150.0f/255.0f green:150.0f/255.0f blue:150.0f/255.0f alpha:1.0f];
         colorToReturn = [UIColor whiteColor];
-    }
+    } */
     
     return colorToReturn;
 }

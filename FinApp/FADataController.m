@@ -2312,7 +2312,7 @@ bool eventsUpdated = NO;
 - (void)getAllEconomicEventsFromLocalStorage
 {
     // Get the economic events file path
-    NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"EconomicEvents_2018" ofType:@"json"];
+    NSString *eventsFilePath = [[NSBundle mainBundle] pathForResource:@"EconomicEvents_2019" ofType:@"json"];
     // TO DO: Delete Later
     //NSLog(@"Found the json file at: %@",eventsFilePath);
     

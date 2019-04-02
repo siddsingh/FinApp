@@ -243,7 +243,7 @@
                      "shortDescription":"Represents the total value of all goods & services produced over a period.",
                      "moreInfoUrl":"http://mospi.nic.in",
                      "tip":"Decreasing GDP for 2 or more quarters indicates a recession.",
-                     "timing":"5:30 p.m. IST (~7:00 a.m. EST)",
+                     "timing":"5:30 p.m. IST ~7 a.m. ET",
                      "instances":[
                          {
                              "date":20190228,

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0h3-IF-CPY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0h3-IF-CPY">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -128,7 +128,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vega Frontier Edition Sales Launch" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="257" translatesAutoresizingMaskIntoConstraints="NO" id="r65-ua-5Pc">
-                                                    <rect key="frame" x="97" y="15.000000000000002" width="290" height="18.666666666666671"/>
+                                                    <rect key="frame" x="97" y="15.000000000000002" width="251" height="18.666666666666671"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="257" id="GCO-po-Lkx">
                                                             <variation key="widthClass=regular" constant="275"/>
@@ -152,7 +152,7 @@
                                                     </variation>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Confirmed" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y7j-P2-Lf8">
-                                                    <rect key="frame" x="363" y="0.0" width="47" height="11"/>
+                                                    <rect key="frame" x="324" y="0.0" width="47" height="11"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="47" id="kSk-pJ-ig8"/>
                                                     </constraints>
@@ -161,9 +161,9 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thu September 14 Before Open" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jou-oj-rjb">
-                                                    <rect key="frame" x="97" y="33.666666666666664" width="190" height="15"/>
+                                                    <rect key="frame" x="97" y="33.666666666666664" width="250" height="15"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="190" id="KiF-Hk-9Rq"/>
+                                                        <constraint firstAttribute="width" constant="250" id="KiF-Hk-9Rq"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="13"/>
                                                     <color key="textColor" red="0.44326073230000002" green="0.44326073230000002" blue="0.44326073230000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -193,7 +193,7 @@
                                                     </state>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="🔥" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Cc-6r-XL8">
-                                                    <rect key="frame" x="390" y="11" width="20" height="27"/>
+                                                    <rect key="frame" x="351" y="11" width="20" height="27"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="27" id="1P0-Tt-uzs"/>
                                                         <constraint firstAttribute="width" constant="20" id="yYo-1K-idO"/>
@@ -203,7 +203,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Over 1yr ago ▸" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hii-le-ydl">
-                                                    <rect key="frame" x="318" y="51.666666666666664" width="92" height="13.999999999999993"/>
+                                                    <rect key="frame" x="279" y="51.666666666666664" width="92" height="13.999999999999993"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="92" id="qh9-r2-Wxz"/>
                                                     </constraints>
@@ -937,6 +937,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="KnotifiIntro" width="1242" height="2208"/>
+        <image name="KnotifiIntro" width="414" height="736"/>
     </resources>
 </document>

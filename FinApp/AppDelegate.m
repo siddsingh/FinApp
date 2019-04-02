@@ -49,7 +49,7 @@
      
     // Check to see if application version 4.2 has been used by the user at least once. If not show tutorial and do the data updates. The format for key represents app store version 4_1 and the final internal build being shipped. Lagging build number by 1.
     // *****************IMPORTANT*********************************************************************** If you are changing this, also change applicationbecameactive and tutorialDonePressed button on FATutorialViewController as that makes more sense.
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V4_5_1_UsedOnce"])
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"V5_0_1_UsedOnce"])
     {
         // Show tutorial
         [self configViewControllerWithName:@"FATutorialViewController"];
@@ -157,7 +157,7 @@
         // Refresh events, sync product events after upgrade is done
         // Async processing of non ui tasks should not be done on the main thread.
         // *****************IMPORTANT*********************************************************************** If you are changing this, also change applicationfinishedlaunching and tutorialDonePressed button on FATutorialViewController.
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"V4_5_1_UsedOnce"])
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"V5_0_1_UsedOnce"])
         {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0),^{
                 
