@@ -55,7 +55,7 @@
                  "impactReason":"Reflects the health of the job market.",
                  "sectorsImpacted":"All",
                  "shortDescription":"An estimate of the number of people who have jobs and those that don't.",
-                 "moreInfoUrl":"http://www.bls.gov/mobile/mobile_releases.htm",
+                 "moreInfoUrl":"https://www.bls.gov/mobile/mobile_releases.htm",
                  "tip":"A strong number is considered a positive for the economy and hence stocks.",
                  "timing":"8:30 a.m. ET",
                  "instances":[

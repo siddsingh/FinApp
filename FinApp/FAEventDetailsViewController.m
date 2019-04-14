@@ -622,8 +622,8 @@
             rowNo = ((int)indexPath.row + 4);
         }
     }
-    // If it's an econ event, do the same for now.
-    // For econ events here are the 4 section 1 rows: Description(getShortDescriptionForEventType:),Impact Level (getImpactDescriptionForEventType:) + Impact(getEpsOrImpactTextForEventType:), Sectors Affected(getEpsOrSectorsTextForEventType:), Tip(getPriceSinceOrTipTextForEventType:).
+    // If it's an econ event, there are 6 rows in section 1.
+    // For econ events here are the 6 section 1 rows: Description(getShortDescriptionForEventType:),Impact Level (getImpactDescriptionForEventType:) + Impact(getEpsOrImpactTextForEventType:), Sectors Affected(getEpsOrSectorsTextForEventType:), Tip(getPriceSinceOrTipTextForEventType:).
     else {
         if (indexPath.section == 0) {
             rowNo = (int)indexPath.row;
@@ -643,44 +643,7 @@
         // Keep for later. Unused for now
         case infoRow0:
         {
-            // OLD WAY
-            // Hide detail action label
-          /*  cell.detailsActionLbl.textColor = [UIColor whiteColor];
-            cell.detailsActionLbl.hidden = YES;
-            
-            // Get Impact String
-            NSString *impact_str = [self getImpactDescriptionForEventType:self.eventType eventParent:self.parentTicker];
-            
-            // Set proper formatting
-            cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            cell.titleLabel.textColor = [UIColor blackColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
-            
-            // Set the impact icon
-            // Very High Impact
-            if ([impact_str caseInsensitiveCompare:@"Very High Impact"] == NSOrderedSame) {
-                [[cell titleLabel] setText:@"Very High Impact"];
-            }
-            // High Impact
-            if ([impact_str caseInsensitiveCompare:@"High Impact"] == NSOrderedSame) {
-                //cell.titleLabel.textColor = [UIColor colorWithRed:229.0f/255.0f green:55.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"High Impact"];
-            }
-            // Medium Impact
-            if ([impact_str caseInsensitiveCompare:@"Medium Impact"] == NSOrderedSame) {
-                //cell.titleLabel.textColor = [UIColor colorWithRed:255.0f/255.0f green:127.0f/255.0f blue:0.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"Medium Impact"];
-            }
-            // Low Impact
-            if ([impact_str caseInsensitiveCompare:@"Low Impact"] == NSOrderedSame) {
-                //cell.titleLabel.textColor = [UIColor colorWithRed:207.0f/255.0f green:187.0f/255.0f blue:29.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"Low Impact"];
-            }
-            
-            // Set the rationale
-            [[cell descriptionArea] setText:[NSString stringWithFormat:@"%@",[self getEventDescriptionForEventType:self.eventType eventParent:self.parentTicker]]]; */
+           
         }
         break;
             
@@ -701,7 +664,7 @@
             // Earnings
             //if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 [[cell titleLabel] setText:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]];
-                [[cell descriptionArea] setText:@"WHEN"];
+                [[cell descriptionArea] setText:@"When"];
             //}
         }
             break;
@@ -723,7 +686,7 @@
             // Earnings
             //if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 [[cell titleLabel] setText:self.eventDateText];
-                [[cell descriptionArea] setText:@"SCHEDULE"];
+                [[cell descriptionArea] setText:@"Schedule"];
             //}
         }
             break;
@@ -758,13 +721,13 @@
                     NSString *expectedEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.estimatedEps]];
                     
                     [[cell titleLabel] setText:expectedEPS];
-                    [[cell descriptionArea] setText:@"EXPECTED EPS"];
+                    [[cell descriptionArea] setText:@"Expected EPS"];
                 }
                 else
                 {
                     [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:17]];
                     [[cell titleLabel] setText:@"NA"];
-                    [[cell descriptionArea] setText:@"EXPECTED EPS"];
+                    [[cell descriptionArea] setText:@"Expected EPS"];
                 }
             }
             // Econ event description
@@ -791,11 +754,6 @@
             
             // Earnings
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
-                // Check that the eps value is available
-                double lastEpsDbl = [eventData.actualEpsPrior doubleValue];
-                // Delete Later
-                NSLog(@"Last EPS in double is:%f",lastEpsDbl);
-                NSLog(@"Last EPS in float is:%f",[eventData.actualEpsPrior floatValue]);
                 
                 if (([eventData.actualEpsPrior floatValue] != notAvailable)&&([eventData.actualEpsPrior floatValue] != zeroValue))
                 {
@@ -810,13 +768,13 @@
                     NSString *lastEPS = [NSString stringWithFormat:@"%@", [currencyFormatter1 stringFromNumber:eventData.actualEpsPrior]];
                     
                     [[cell titleLabel] setText:lastEPS];
-                    [[cell descriptionArea] setText:@"LAST EPS"];
+                    [[cell descriptionArea] setText:@"Last EPS"];
                 }
                 else
                 {
                     [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica" size:17]];
                     [[cell titleLabel] setText:@"NA"];
-                    [[cell descriptionArea] setText:@"LAST EPS"];
+                    [[cell descriptionArea] setText:@"Last EPS"];
                 }
             }
             // Econ impact level
@@ -827,10 +785,10 @@
         }
             break;
             
-        // Show Action 1 - Preview/See Earnings
+        // Show Action 1
         case infoRow5:
         {
-            // Earnings
+            // Earnings - Price on CNBC
             if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
                 // Hide the action label anyways
                 cell.detailsActionLbl.textColor = [UIColor whiteColor];
@@ -838,18 +796,22 @@
                 
                 // Format the title label & description
                 cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
-                cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-                // Delete later
-                NSLog(@"The ticker is:%@", self.parentTicker);
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                cell.titleLabel.textColor = [UIColor colorWithRed:21.0f/255.0f green:85.0f/255.0f blue:148.0f/255.0f alpha:1.0f];
                 [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor blackColor]];
+                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 
-                [[cell titleLabel] setText:@"▶︎"];
-                [[cell descriptionArea] setText:[[self getActionType1ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+                [[cell titleLabel] setText:@"$"];
+                [[cell descriptionArea] setText:@"See Price"];
             }
             // Econ Sectors Affected(getEpsOrSectorsTextForEventType:)
             else {
+                
+                cell.titleLabel.backgroundColor = [UIColor whiteColor];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                
                 if ([self.eventType containsString:@"Fed Meeting"]) {
                     // Select the appropriate color and text for Financial Stocks
                     cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
@@ -858,8 +820,8 @@
                 
                 if ([self.eventType containsString:@"Jobs Report"]) {
                     // Select the appropriate color and text for All Stocks
-                    cell.titleLabel.textColor = [UIColor blackColor];
-                    [[cell titleLabel] setText:@"☼"];
+                    cell.titleLabel.textColor = [UIColor orangeColor];
+                    [[cell titleLabel] setText:@"❖"];
                 }
                 
                 if ([self.eventType containsString:@"Consumer Confidence"]) {
@@ -871,8 +833,8 @@
                 
                 if ([self.eventType containsString:@"GDP Release"]) {
                     // Select the appropriate color and text for All Stocks
-                    cell.titleLabel.textColor = [UIColor blackColor];
-                    [[cell titleLabel] setText:@"☼"];
+                    cell.titleLabel.textColor = [UIColor orangeColor];
+                    [[cell titleLabel] setText:@"❖"];
                 }
                 
                 [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:eventData.type]];
@@ -891,40 +853,61 @@
                 
                 // Format the title label & description
                 cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
-                cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                cell.titleLabel.textColor = [UIColor colorWithRed:85.0f/255.0f green:169.0f/255.0f blue:84.0f/255.0f alpha:1.0f];
                 [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-                [cell.descriptionArea setTextColor:[UIColor blackColor]];
+                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 
-                [[cell titleLabel] setText:@"▶︎"];
-                [[cell descriptionArea] setText:[[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+                [[cell titleLabel] setText:@"𝙉"];
+                [[cell descriptionArea] setText:[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
             }
             // Econ Impact Level (getPriceSinceOrTipTextForEventType:)
             else {
+                cell.titleLabel.backgroundColor = [UIColor whiteColor];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 // Econ Blue
-                cell.titleLabel.textColor = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"⚇"];
+                cell.titleLabel.textColor = [UIColor blackColor];
+                [[cell titleLabel] setText:@"!"];
                 [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:eventData.type additionalInfo:@"NA"]];
              }
         }
             break;
             
-        // Show Action 3 - Play Earnings call
+        // Show Action 3 - Preview Earnings
         case infoRow7:
         {
             // Hide the action label anyways
             cell.detailsActionLbl.textColor = [UIColor whiteColor];
             cell.detailsActionLbl.hidden = YES;
             
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                
             // Format the title label & description
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
             cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
             [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType2ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            [[cell titleLabel] setText:@"$"];
+            [[cell descriptionArea] setText:[self getActionType1ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
+            }
+            // For econ events
+            else {
+                cell.titleLabel.backgroundColor = [UIColor whiteColor];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                // Econ Blue  close to current blue in icon
+                cell.titleLabel.textColor = [UIColor colorWithRed:21.0f/255.0f green:85.0f/255.0f blue:148.0f/255.0f alpha:1.0f];
+                [[cell titleLabel] setText:@"!"];
+                [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:eventData.type additionalInfo:@"NA"]];
+            }
+            
+            // Play Earnings call
+            //[[cell descriptionArea] setText:[[self getActionType2ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
         }
             break;
             
@@ -1571,13 +1554,13 @@
             rowNo = ((int)indexPath.row + 4);
         }
     }
-    // If it's an econ event, do the same for now.
+    // If it's an econ event.
     else {
         if (indexPath.section == 0) {
             rowNo = (int)indexPath.row;
         }
         if (indexPath.section == 1) {
-            rowNo = ((int)indexPath.row + 4);
+            rowNo = ((int)indexPath.row + 6);
         }
     }
     
@@ -1623,29 +1606,30 @@
         }
             break;
             
-        // Show Action 1 Preview Earnings/See Earnings Release
+        // Show Action 1
         case infoRow5:
         {
-            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation1ForEvent:self.eventType]];
-            targetURL = [NSURL URLWithString:actionURL];
-            
-            // Delete Later:
-            NSLog(@"Clicked URL is:%@",targetURL);
-            
-            if (targetURL) {
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                actionURL = [NSString stringWithFormat:@"%@",[self getLocationType6ForEvent:self.eventType withTicker:self.parentTicker]];
+                targetURL = [NSURL URLWithString:actionURL];
                 
-                // TRACKING EVENT:
-                // TO DO: Disabling to not track development events. Enable before shipping.
-                [FBSDKAppEvents logEvent:@"Take External Action"
-                              parameters:@{ @"Ticker" : self.parentTicker,
-                                            @"Event" : self.eventType,
-                                            @"Action" : @"Preview Earnings/See Earnings Release"} ];
+                if (targetURL) {
+                    
+                    // TRACKING EVENT:
+                    // TO DO: Disabling to not track development events. Enable before shipping.
+                    [FBSDKAppEvents logEvent:@"Take External Action"
+                                  parameters:@{ @"Ticker" : self.parentTicker,
+                                                @"Event" : self.eventType,
+                                                @"Action" : @"see Price"} ];
+                    
+                    SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+                    externalInfoVC.delegate = self;
+                    [self presentViewController:externalInfoVC animated:YES completion:nil];
+                }
+            }
+            // Do nothing for Econ
+            else {
                 
-                SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                externalInfoVC.delegate = self;
-                // Just use whatever is the default color for the Safari View Controller
-                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                [self presentViewController:externalInfoVC animated:YES completion:nil];
             }
         }
             break;
@@ -1653,38 +1637,37 @@
         // Show Action 2 See News
         case infoRow6:
         {
-            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation4ForEvent:self.eventType]];
-            targetURL = [NSURL URLWithString:actionURL];
-            
-            // Delete Later:
-            NSLog(@"Clicked URL is:%@",targetURL);
-            
-            if (targetURL) {
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation4ForEvent:self.eventType]];
+                targetURL = [NSURL URLWithString:actionURL];
                 
-                // TRACKING EVENT:
-                // TO DO: Disabling to not track development events. Enable before shipping.
-                [FBSDKAppEvents logEvent:@"Take External Action"
-                              parameters:@{ @"Ticker" : self.parentTicker,
-                                            @"Event" : self.eventType,
-                                            @"Action" : @"See News"} ];
+                if (targetURL) {
+                    
+                    // TRACKING EVENT:
+                    // TO DO: Disabling to not track development events. Enable before shipping.
+                    [FBSDKAppEvents logEvent:@"Take External Action"
+                                  parameters:@{ @"Ticker" : self.parentTicker,
+                                                @"Event" : self.eventType,
+                                                @"Action" : @"See Google News"} ];
+                    
+                    SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
+                    externalInfoVC.delegate = self;
+                    [self presentViewController:externalInfoVC animated:YES completion:nil];
+                }
+            }
+            // Do nothing for Econ
+            else {
                 
-                SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                externalInfoVC.delegate = self;
-                // Just use whatever is the default color for the Safari View Controller
-                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                [self presentViewController:externalInfoVC animated:YES completion:nil];
             }
         }
             break;
             
-        // Show Action 2 Play Earnings Call or Replay Earnings Call
+        // Show Action 3
         case infoRow7:
         {
-            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation2ForEvent:self.eventType]];
+            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation1ForEvent:self.eventType withTicker:self.parentTicker]];
             targetURL = [NSURL URLWithString:actionURL];
             
-            // Delete Later:
-            NSLog(@"Clicked URL is:%@",targetURL);
             
             if (targetURL) {
                 
@@ -1693,12 +1676,10 @@
                 [FBSDKAppEvents logEvent:@"Take External Action"
                               parameters:@{ @"Ticker" : self.parentTicker,
                                             @"Event" : self.eventType,
-                                            @"Action" : @"Play/Replay Earnings call"} ];
+                                            @"Action" : @"Preview Earnings/See Econ Agency Site"} ];
                 
                 SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
                 externalInfoVC.delegate = self;
-                // Just use whatever is the default color for the Safari View Controller
-                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
                 [self presentViewController:externalInfoVC animated:YES completion:nil];
             }
         }
@@ -1761,326 +1742,6 @@
         default:
             break;
     }
-    
-    /* OLD WAY WITH DETAILS SEGMENTS
-    // Check to see if the row selected has an event cell with remote fetch status set to true
-    FAEventDetailsTableViewCell *cell = (FAEventDetailsTableViewCell *)[self.eventDetailsTable cellForRowAtIndexPath:indexPath];
-    Event *eventData = nil;
-    
-    NSString *actionLocation = nil;
-    NSString *actionURL = nil;
-    NSURL *targetURL = nil;
-    
-    // If info type details is selected
-    if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
-        
-        // Assign a row no to the type of event detail row.
-        #define infoRow0  -1
-        #define infoRow1  0
-        #define infoRow2  1
-        #define infoRow3  2
-        #define infoRow4  3
-        #define infoRow5  4
-        #define infoRow6  5
-        #define infoRow7  6
-        #define infoRow8  7
-        #define infoRow9  8
-        #define infoRow10  9
-        #define infoRow11 10
-        #define infoRow12 11
-        #define infoRow13 12
-        #define infoRow14 13
-        
-        int rowNo = 0;
-        
-        // If it's a currency price event, start at Row 1
-        if ([self.eventType containsString:@"% up"]||[self.eventType containsString:@"% down"]) {
-            if (indexPath.section == 0) {
-                rowNo = (int)indexPath.row;
-            }
-            if (indexPath.section == 1) {
-                rowNo = ((int)indexPath.row + 5);
-            }
-        }
-        // If it's a news event, start at Row 0, which includes a description of the event.
-        else {
-            if (indexPath.section == 0) {
-                rowNo = ((int)indexPath.row - 1);
-            }
-            if (indexPath.section == 1) {
-                rowNo = (int)indexPath.row;
-            }
-            if (indexPath.section == 2) {
-                rowNo = ((int)indexPath.row + 5);
-            }
-        }
-        
-        // Display the appropriate details based on the section and row no
-        switch (rowNo) {
-                
-                // For event summary Do nothing
-            case infoRow0:
-            {
-                
-            }
-                break;
-                
-                // For Market Cap Rank Do nothing
-            case infoRow1:
-            {
-                
-            }
-                break;
-                
-                // Show Current Price Do nothing
-            case infoRow2:
-            {
-                
-            }
-                break;
-                
-                // Show 1 Hr Price Change Do nothing
-            case infoRow3:
-            {
-                
-            }
-                break;
-                
-                // Show 24 Hr Price Change Do nothing
-            case infoRow4:
-            {
-                
-            }
-                break;
-                
-                // Show 7 Days Price Change Do nothing
-            case infoRow5:
-            {
-                
-            }
-                break;
-                
-                // Show What is ? and link to website for the ticker
-            case infoRow6:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:2]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    targetURL = [NSURL URLWithString:actionLocation];
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"What is > Website",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Use Cases and link to more detailed description
-            case infoRow7:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:3]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    cell.detailsActionLbl.textColor = [UIColor blackColor];
-                    cell.detailsActionLbl.hidden = NO;
-                    targetURL = [NSURL URLWithString:actionLocation];
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"Uses > Detailed Description Site",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Backed By Do nothing
-            case infoRow8:
-            {
-                
-            }
-                break;
-                
-                // Show Concerns Do nothing
-            case infoRow9:
-            {
-                
-            }
-                break;
-                
-                // Do nothingHide the detail action label
-            case infoRow10:
-            {
-                
-            }
-                break;
-                
-                // Show Reddit
-            case infoRow11:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:4]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    actionURL = [NSString stringWithFormat:@"https://www.reddit.com%@",actionLocation];
-                    targetURL = [NSURL URLWithString:actionURL];
-                    
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"See Reddit",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Twitter
-            case infoRow12:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:6]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    actionURL = [NSString stringWithFormat:@"https://twitter.com/%@",actionLocation];
-                    targetURL = [NSURL URLWithString:actionURL];
-                    
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"See Twitter",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Github
-            case infoRow13:
-            {
-                actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:5]];
-                
-                if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-                {
-                    
-                }
-                else
-                {
-                    actionURL = [NSString stringWithFormat:@"https://github.com%@",actionLocation];
-                    targetURL = [NSURL URLWithString:actionURL];
-                    
-                    if (targetURL) {
-                        
-                        // TRACKING EVENT:
-                        // TO DO: Disabling to not track development events. Enable before shipping.
-                        [FBSDKAppEvents logEvent:@"See External About Information"
-                                      parameters:@{ @"About Ticker" : self.parentTicker,
-                                                    @"About Field" : @"See Github",
-                                                    @"Action URL" : [targetURL absoluteString]} ];
-                        
-                        SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-                        externalInfoVC.delegate = self;
-                        // Just use whatever is the default color for the Safari View Controller
-                        //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
-                        [self presentViewController:externalInfoVC animated:YES completion:nil];
-                    }
-                }
-            }
-                break;
-                
-                // Show Support/contact us page
-            case infoRow14:
-            {
-                SFSafariViewController *supportVC = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:@"http://www.knotifi.com/p/contact.html"]];
-                supportVC.delegate = self;
-                supportVC.preferredControlTintColor = [UIColor blackColor];
-                [self presentViewController:supportVC animated:YES completion:nil];
-            }
-                break;
-                
-            default:
-                break;
-        }
-    }
-    
-    // If News type detail is selected
-    else if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"News"] == NSOrderedSame) {
-        
-        eventData = [self.infoResultsController objectAtIndexPath:indexPath];
-        NSURL *targetURL = [NSURL URLWithString:eventData.relatedDetails];
-        
-        if (targetURL) {
-            
-            // TRACKING EVENT: External Action Clicked: User clicked a link to do something outside Knotifi.
-            // TO DO: Disabling to not track development events. Enable before shipping.
-            [FBSDKAppEvents logEvent:@"See External News Article"
-                          parameters:@{ @"News Source" : cell.titleLabel.text,
-                                        @"News Title" : cell.descriptionArea.text,
-                                        @"External URL" : [targetURL absoluteString]} ];
-            
-            SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
-            externalInfoVC.delegate = self;
-            // Just use whatever is the default color for the Safari View Controller
-            //externalInfoVC.preferredControlTintColor = [self getColorForEventType:[self formatBackToEventType:tappedIconCell.eventDescription.text withAddedInfo:tappedIconCell.eventCertainty.text] withCompanyTicker:ticker];
-            [self presentViewController:externalInfoVC animated:YES completion:nil];
-        }
-    } */
 }
 
 // When a user scrolls on the detail view
@@ -3160,7 +2821,7 @@
     }
     
     if ([eventType containsString:@"GDP Release"]) {
-        description = @"GDP is a measure of the country's economic health.";
+        description = @"Represents the total value of all goods & services produced over a period.";
     }
     
     if ([eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
@@ -3852,11 +3513,11 @@
         
         // If event happened in the past, type is "Replay"
         if ([distanceTxt containsString:@"Yesterday"]||[distanceTxt containsString:@"Day Before"]||[distanceTxt containsString:@"ago"]) {
-            actionType = @"See Earnings Release";
+            actionType = @"Preview Earnings";
         }
         // If event is today, type is "Listen"
         else if ([distanceTxt containsString:@"Today"]) {
-            actionType = @"See Earnings Release";
+            actionType = @"Preview Earnings";
         }
         // If the event is happening in the future, the type is "Preview"
         else {
@@ -3865,19 +3526,30 @@
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
-        actionType = @"SEE FOMC SITE";
+        actionType = @"See FOMC site";
     }
     
     if ([rawEventType containsString:@"Jobs Report"]) {
-        actionType = @"SEE BLS SITE";
+        actionType = @"See BLS site";
     }
     
     if ([rawEventType containsString:@"Consumer Confidence"]) {
-        actionType = @"SEE TCB SITE";
+        actionType = @"See TCB site";
     }
     
-    if ([rawEventType containsString:@"GDP Release"]) {
+   /* if ([rawEventType containsString:@"GDP Release"]) {
+        
+        
         actionType = @"SEE BEA SITE";
+    }*/
+    
+    if ([rawEventType containsString:@"GDP Release"]) {
+        if ([rawEventType containsString:@"India"]) {
+            actionType = @"See MOS site";
+        } else
+        {
+            actionType = @"See BEA site";
+        }
     }
     
     if ([rawEventType containsString:@"Conference"]) {
@@ -3888,24 +3560,12 @@
 }
 
 // Get the first action type location: Preview Earnings or See Earnings Release
-- (NSString *)getActionLocation1ForEvent:(NSString *)rawEventType
+- (NSString *)getActionLocation1ForEvent:(NSString *)rawEventType withTicker:(NSString *)eventTicker
 {
-    NSString *actionLocation = @"Not Available";
-    NSString *externalURL = nil;
-    NSString *searchTerm = nil;
+    NSString *actionLocation = @"https://seekingalpha.com";
     
     if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
-        
-        actionLocation = [NSString stringWithFormat:@"%@",[[self.altDataSnapShot getProfileInfoForCoin:self.parentTicker] objectAtIndex:1]];
-        
-        if ([actionLocation caseInsensitiveCompare:@"Not Available"] == NSOrderedSame)
-        {
-           externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?q="];
-           searchTerm = [NSString stringWithFormat:@"%@ %@ investor site events",self.parentCompany,self.parentTicker];
-           // Remove any spaces in the URL query string params
-           searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-           actionLocation = [externalURL stringByAppendingString:searchTerm];
-        }
+            actionLocation = [NSString stringWithFormat:@"https://seekingalpha.com/symbol/%@/earnings",eventTicker];
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
@@ -3921,7 +3581,12 @@
     }
     
     if ([rawEventType containsString:@"GDP Release"]) {
-        actionLocation = @"https://www.bea.gov/newsreleases/news_release_sort_national.htm";
+        if ([rawEventType containsString:@"India"]) {
+            actionLocation = @"http://mospi.nic.in";
+        } else
+        {
+            actionLocation = @"https://www.bea.gov/data/gdp/gross-domestic-product";
+        }
     }
     
     if ([rawEventType containsString:@"Conference"]) {
@@ -4111,36 +3776,36 @@
         
         // If event happened in the past, type is "Replay"
         if ([distanceTxt containsString:@"Yesterday"]||[distanceTxt containsString:@"Day Before"]||[distanceTxt containsString:@"ago"]) {
-            actionType = @"See News";
+            actionType = @"Scan News";
         }
         // If event is today, type is "Listen"
         else if ([distanceTxt containsString:@"Today"]) {
-            actionType = @"See News";
+            actionType = @"Scan News";
         }
         // If the event is happening in the future, the type is "Preview"
         else {
-            actionType = @"See News";
+            actionType = @"Scan News";
         }
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
-        actionType = @"See News";
+        actionType = @"Scan News";
     }
     
     if ([rawEventType containsString:@"Jobs Report"]) {
-        actionType = @"See News";
+        actionType = @"Scan News";
     }
     
     if ([rawEventType containsString:@"Consumer Confidence"]) {
-        actionType = @"See News";
+        actionType = @"Scan News";
     }
     
     if ([rawEventType containsString:@"GDP Release"]) {
-        actionType = @"See News";
+        actionType = @"Scan News";
     }
     
     if ([rawEventType containsString:@"Conference"]) {
-        actionType = @"See News";
+        actionType = @"Scan News";
     }
     
     return actionType;
@@ -4284,6 +3949,21 @@
     
     if ([rawEventType containsString:@"Conference"]) {
         actionLocation = @"Not Available";
+    }
+    
+    return actionLocation;
+}
+
+// Get the sixth location type: See Price, currently on CNBC
+- (NSString *)getLocationType6ForEvent:(NSString *)rawEventType withTicker:(NSString *)eventTicker
+{
+    NSString *actionLocation = @"https://www.cnbc.com";
+    NSString *externalURL = @"NA";
+    
+    if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
+        
+            externalURL = [NSString stringWithFormat:@"%@",@"https://www.cnbc.com/quotes/?symbol="];
+            actionLocation = [externalURL stringByAppendingString:eventTicker];
     }
     
     return actionLocation;
