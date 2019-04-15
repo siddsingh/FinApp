@@ -858,7 +858,7 @@
                 [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
                 [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 
-                [[cell titleLabel] setText:@"𝙉"];
+                [[cell titleLabel] setText:@"𝗡"];
                 [[cell descriptionArea] setText:[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
             }
             // Econ Impact Level (getPriceSinceOrTipTextForEventType:)
@@ -875,7 +875,7 @@
         }
             break;
             
-        // Show Action 3 - Preview Earnings
+        // Show Action 3
         case infoRow7:
         {
             // Hide the action label anyways
@@ -887,11 +887,11 @@
             // Format the title label & description
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
             [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
-            cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
+            cell.titleLabel.textColor = [UIColor colorWithRed:245.0f/255.0f green:115.0f/255.0f blue:67.0f/255.0f alpha:1.0f];
             [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
             [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
-            [[cell titleLabel] setText:@"$"];
+            [[cell titleLabel] setText:@"𝗘"];
             [[cell descriptionArea] setText:[self getActionType1ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
             }
             // For econ events
@@ -902,31 +902,47 @@
                 [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 // Econ Blue  close to current blue in icon
                 cell.titleLabel.textColor = [UIColor colorWithRed:21.0f/255.0f green:85.0f/255.0f blue:148.0f/255.0f alpha:1.0f];
-                [[cell titleLabel] setText:@"!"];
-                [[cell descriptionArea] setText:[self getPriceSinceOrTipTextForEventType:eventData.type additionalInfo:@"NA"]];
+                [[cell titleLabel] setText:@"▶︎"];
+                [[cell descriptionArea] setText:[self getActionType1ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
             }
-            
-            // Play Earnings call
-            //[[cell descriptionArea] setText:[[self getActionType2ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
         }
             break;
             
-        // Show Action 4 - View Transcript
+        // Show Action 4
         case infoRow8:
         {
             // Hide the action label anyways
             cell.detailsActionLbl.textColor = [UIColor whiteColor];
             cell.detailsActionLbl.hidden = YES;
             
-            // Format the title label & description
-            cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
-            cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
-            [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
+            if ([self.eventType isEqualToString:@"Quarterly Earnings"]) {
+                // Format the title label & description
+                cell.titleLabel.backgroundColor = [UIColor whiteColor];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
+                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
+                [cell.descriptionArea setTextColor:[UIColor blackColor]];
+                
+                [[cell titleLabel] setText:@"▶︎"];
+                // Play Earnings Call
+                [[cell descriptionArea] setText:[self getActionType2ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
+            }
+            // If econ events
+            else {
+                // Format the title label & description
+                cell.titleLabel.backgroundColor = [UIColor whiteColor];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
+                cell.titleLabel.textColor = [UIColor colorWithRed:85.0f/255.0f green:169.0f/255.0f blue:84.0f/255.0f alpha:1.0f];
+                [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
+                [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
+                
+                [[cell titleLabel] setText:@"𝗡"];
+                [[cell descriptionArea] setText:[self getActionType4ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
+            }
             
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType3ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            
+            //View Transcript
+            //[[cell descriptionArea] setText:[self getActionType3ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
         }
             break;
             
@@ -1685,10 +1701,10 @@
         }
             break;
             
-        // Show Action 3 View Transcript or View last Transcript
+        // Show Action 3
         case infoRow8:
         {
-            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation3ForEvent:self.eventType]];
+            actionURL = [NSString stringWithFormat:@"%@",[self getActionLocation2ForEvent:self.eventType]];
             targetURL = [NSURL URLWithString:actionURL];
             
             // Delete Later:
@@ -1701,12 +1717,10 @@
                 [FBSDKAppEvents logEvent:@"Take External Action"
                               parameters:@{ @"Ticker" : self.parentTicker,
                                             @"Event" : self.eventType,
-                                            @"Action" : @"View Transcript"} ];
+                                            @"Action" : @"Play Earnings Call/Scan Econ News"} ];
                 
                 SFSafariViewController *externalInfoVC = [[SFSafariViewController alloc] initWithURL:targetURL];
                 externalInfoVC.delegate = self;
-                // Just use whatever is the default color for the Safari View Controller
-                //externalInfoVC.preferredControlTintColor = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
                 [self presentViewController:externalInfoVC animated:YES completion:nil];
             }
         }
@@ -2216,7 +2230,8 @@
 // Delegate mthod to dismiss the Safari View Controller when a user is done with it.
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
     
-    //[self dismissViewControllerAnimated:true completion:nil];
+    // Refresh details table when user clicks Done in Safari view to prevent crashes if same cell is clicked again
+    [self.eventDetailsTable reloadData];
 }
 
 // Get the Best Info url that's stored on the event history for a news event
@@ -3559,13 +3574,13 @@
     return actionType;
 }
 
-// Get the first action type location: Preview Earnings or See Earnings Release
+// Get the first action type location: Preview Earnings
 - (NSString *)getActionLocation1ForEvent:(NSString *)rawEventType withTicker:(NSString *)eventTicker
 {
     NSString *actionLocation = @"https://seekingalpha.com";
     
     if ([rawEventType isEqualToString:@"Quarterly Earnings"]) {
-            actionLocation = [NSString stringWithFormat:@"https://seekingalpha.com/symbol/%@/earnings",eventTicker];
+            actionLocation = [NSString stringWithFormat:@"https://seekingalpha.com/symbol/%@",eventTicker];
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
@@ -3662,19 +3677,35 @@
     }
     
     if ([rawEventType containsString:@"Fed Meeting"]) {
-        actionLocation = @"Not Available";
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"fomc meeting";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
     if ([rawEventType containsString:@"Jobs Report"]) {
-        actionLocation = @"Not Available";
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"jobs report us";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
     if ([rawEventType containsString:@"Consumer Confidence"]) {
-        actionLocation = @"Not Available";
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"usa consumer confidence";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
     if ([rawEventType containsString:@"GDP Release"]) {
-        actionLocation = @"Not Available";
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"usa gdp growth";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
     if ([rawEventType containsString:@"Conference"]) {
@@ -3811,7 +3842,7 @@
     return actionType;
 }
 
-// Get the 4th action type location: See News
+// Get the 4th action type location: See News for earnings
 - (NSString *)getActionLocation4ForEvent:(NSString *)rawEventType
 {
     NSString *actionLocation = @"Not Available";
@@ -3826,43 +3857,7 @@
         searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
         actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
-    
-    if ([rawEventType containsString:@"Fed Meeting"]) {
-        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-        searchTerm = @"fomc meeting";
-        // Remove any spaces in the URL query string params
-        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-        actionLocation = [externalURL stringByAppendingString:searchTerm];
-    }
-    
-    if ([rawEventType containsString:@"Jobs Report"]) {
-        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-        searchTerm = @"jobs report us";
-        // Remove any spaces in the URL query string params
-        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-        actionLocation = [externalURL stringByAppendingString:searchTerm];
-    }
-    
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
-        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-        searchTerm = @"usa consumer confidence";
-        // Remove any spaces in the URL query string params
-        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-        actionLocation = [externalURL stringByAppendingString:searchTerm];
-    }
-    
-    if ([rawEventType containsString:@"GDP Release"]) {
-        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-        searchTerm = @"usa gdp growth";
-        // Remove any spaces in the URL query string params
-        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-        actionLocation = [externalURL stringByAppendingString:searchTerm];
-    }
-    
-    if ([rawEventType containsString:@"Conference"]) {
-        actionLocation = @"Not Available";
-    }
-    
+
     return actionLocation;
 }
 
