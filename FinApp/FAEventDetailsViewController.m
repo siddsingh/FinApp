@@ -311,7 +311,21 @@
         [customHeaderView setFont:[UIFont systemFontOfSize:14]];
     
         if(section == 0) {
-            [customHeaderView setText:[self.eventType uppercaseString]];
+            
+            // Handle for USA GDP Release, since the text doesn't contain USA
+            if ([self.eventType containsString:@"GDP Release"]) {
+                if ([self.eventType containsString:@"India"]) {
+                    [customHeaderView setText:[self.eventType uppercaseString]];
+                }
+                else
+                {
+                    [customHeaderView setText:[NSString stringWithFormat:@"USA %@",[self.eventType uppercaseString]]];
+                }
+            }
+            else
+            {
+                [customHeaderView setText:[self.eventType uppercaseString]];
+            }
         }
         if(section == 1) {
             [customHeaderView setText:@"MORE"];
@@ -955,13 +969,13 @@
             
             // Format the title label & description
             cell.titleLabel.backgroundColor = [UIColor whiteColor];
-            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:14]];
+            [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
             cell.titleLabel.textColor = [self.dataSnapShot2 getBrandBkgrndColorForCompany:self.parentTicker];
             [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
-            [cell.descriptionArea setTextColor:[UIColor blackColor]];
+            [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
             
-            [[cell titleLabel] setText:@"▶︎"];
-            [[cell descriptionArea] setText:[[self getActionType5ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]] uppercaseString]];
+            [[cell titleLabel] setText:@"▷"];
+            [[cell descriptionArea] setText:[self getActionType5ForEvent:self.eventType withEventDistance:[self calculateDistanceFromEventDate:eventData.date withEventType:eventData.type]]];
         }
             break;
     
@@ -3702,7 +3716,12 @@
     
     if ([rawEventType containsString:@"GDP Release"]) {
         externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-        searchTerm = @"usa gdp growth";
+        if ([rawEventType containsString:@"India"]) {
+            searchTerm = @"india gdp growth";
+        } else
+        {
+            searchTerm = @"usa gdp growth";
+        }
         // Remove any spaces in the URL query string params
         searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
         actionLocation = [externalURL stringByAppendingString:searchTerm];
