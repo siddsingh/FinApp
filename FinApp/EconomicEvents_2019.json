@@ -178,7 +178,7 @@
                  "impact":"High",
                  "impactReason":"Scorecard of the country's economic health.",
                  "sectorsImpacted":"All",
-                 "shortDescription":"Represents the total value of all goods & services produced over a period.",
+                 "shortDescription":"Total value of goods & services produced over a period, compared to the prior period.",
                  "moreInfoUrl":"https://www.bea.gov/data/gdp/gross-domestic-product",
                  "tip":"Decreasing GDP for 2 or more quarters indicates a recession.",
                  "timing":"8:30 a.m. ET",
@@ -240,7 +240,7 @@
                      "impact":"High",
                      "impactReason":"Scorecard of the country's economic health.",
                      "sectorsImpacted":"All",
-                     "shortDescription":"Represents the total value of all goods & services produced over a period.",
+                     "shortDescription":"Total value of goods & services produced over a period, compared to the prior period.",
                      "moreInfoUrl":"http://mospi.nic.in",
                      "tip":"Decreasing GDP for 2 or more quarters indicates a recession.",
                      "timing":"5:30 p.m. IST ~7 a.m. ET",
@@ -264,6 +264,64 @@
                          {
                              "date":20200228,
                              "relatedPeriod":"Q3 FY2019-2020"
+                         }
+                     ]
+                 },
+                 {
+                     "name":"US Retail Sales",
+                     "identifier":"ECONOMY_UCB",
+                     "agency":"US Census Bureau",
+                     "impact":"Medium",
+                     "impactReason":"Component in the calculation of GDP.",
+                     "sectorsImpacted":"Retail",
+                     "shortDescription":"Measure of retail sales to consumers, compared to prior month.",
+                     "moreInfoUrl":"https://www.census.gov/retail/index.html",
+                     "tip":"As consumer spending increases, the economy grows.",
+                     "timing":"8:30 a.m. ET",
+                     "instances":[
+                         {
+                             "date":20190311,
+                             "relatedPeriod":"Jan"
+                         },
+                         {
+                             "date":20190401,
+                             "relatedPeriod":"Feb"
+                         },
+                         {
+                             "date":20190418,
+                             "relatedPeriod":"Mar"
+                         },
+                         {
+                             "date":20190515,
+                             "relatedPeriod":"Apr"
+                         },
+                         {
+                             "date":20190614,
+                             "relatedPeriod":"May"
+                         },
+                         {
+                             "date":20190716,
+                             "relatedPeriod":"Jun"
+                         },
+                         {
+                             "date":20190815,
+                             "relatedPeriod":"Jul"
+                         },
+                         {
+                             "date":20190913,
+                             "relatedPeriod":"Aug"
+                         },
+                         {
+                             "date":20191016,
+                             "relatedPeriod":"Sep"
+                         },
+                         {
+                             "date":20191115,
+                             "relatedPeriod":"Oct"
+                         },
+                         {
+                             "date":20191213,
+                             "relatedPeriod":"Nov"
                          }
                      ]
                  }

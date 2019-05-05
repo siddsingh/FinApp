@@ -1182,7 +1182,7 @@
         }
         
         // For economic events, search query term is customized for each type
-        if ([formattedEventType isEqualToString:@"USA GDP Release"]) {
+        if ([formattedEventType isEqualToString:@"US GDP Release"]) {
             moreInfoURL = @"https://www.bea.gov/data/gdp/gross-domestic-product";
         }
         if ([formattedEventType isEqualToString:@"India GDP Release"]) {
@@ -1533,8 +1533,8 @@
     if ([eventType containsString:@"Consumer Confidence"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Consumer Confidence Report tomorrow %@", eventDateText];
     }
-    if ([eventType isEqualToString:@"USA GDP Release"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ USA GDP Release tomorrow %@", eventDateText];
+    if ([eventType isEqualToString:@"US GDP Release"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US GDP Release tomorrow %@", eventDateText];
     }
     if ([eventType isEqualToString:@"India GDP Release"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ India GDP Release tomorrow %@", eventDateText];
@@ -3458,7 +3458,7 @@
             formattedEventType = @"India GDP Release";
         } else
         {
-            formattedEventType = @"USA GDP Release";
+            formattedEventType = @"US GDP Release";
         }
     }
     
@@ -3981,7 +3981,7 @@
         // Econ Blue
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
-    if ([eventType isEqualToString:@"USA GDP Release"]) {
+    if ([eventType isEqualToString:@"US GDP Release"]) {
         // Econ Blue
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }

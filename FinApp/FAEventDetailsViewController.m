@@ -312,14 +312,14 @@
     
         if(section == 0) {
             
-            // Handle for USA GDP Release, since the text doesn't contain USA
+            // Handle for US GDP Release, since the text doesn't contain US
             if ([self.eventType containsString:@"GDP Release"]) {
                 if ([self.eventType containsString:@"India"]) {
                     [customHeaderView setText:[self.eventType uppercaseString]];
                 }
                 else
                 {
-                    [customHeaderView setText:[NSString stringWithFormat:@"USA %@",[self.eventType uppercaseString]]];
+                    [customHeaderView setText:[NSString stringWithFormat:@"US %@",[self.eventType uppercaseString]]];
                 }
             }
             else
@@ -2850,7 +2850,9 @@
     }
     
     if ([eventType containsString:@"GDP Release"]) {
-        description = @"Represents the total value of all goods & services produced over a period.";
+        // Old text
+        // description = @"Represents the total value of all goods & services produced over a period.";
+        description = @"Total value of goods & services produced over a period, compared to the prior period.";
     }
     
     if ([eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
@@ -2999,7 +3001,7 @@
     }
     
     if ([eventType containsString:@"GDP Release"]) {
-        description = @"Medium Impact";
+        description = @"High Impact";
     }
     
     // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
