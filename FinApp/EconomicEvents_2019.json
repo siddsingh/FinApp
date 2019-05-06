@@ -324,6 +324,122 @@
                              "relatedPeriod":"Nov"
                          }
                      ]
+                 },
+                 {
+                     "name":"US Housing Starts",
+                     "identifier":"ECONOMY_UCB",
+                     "agency":"US Census Bureau",
+                     "impact":"High",
+                     "impactReason":"Leading (~ 1 yr) indicator of housing demand & prices.",
+                     "sectorsImpacted":"Housing",
+                     "shortDescription":"No. of new residential construction projects that began in a given month.",
+                     "moreInfoUrl":"https://www.census.gov/construction/nrc/index.html",
+                     "tip":"When starts are rising, house prices should appreciate as well & vice versa.",
+                     "timing":"8:30 a.m. ET",
+                     "instances":[
+                         {
+                             "date":20190308,
+                             "relatedPeriod":"Jan"
+                         },
+                         {
+                             "date":20190326,
+                             "relatedPeriod":"Feb"
+                         },
+                         {
+                             "date":20190419,
+                             "relatedPeriod":"Mar"
+                         },
+                         {
+                             "date":20190516,
+                             "relatedPeriod":"Apr"
+                         },
+                         {
+                             "date":20190618,
+                             "relatedPeriod":"May"
+                         },
+                         {
+                             "date":20190717,
+                             "relatedPeriod":"Jun"
+                         },
+                         {
+                             "date":20190816,
+                             "relatedPeriod":"Jul"
+                         },
+                         {
+                             "date":20190918,
+                             "relatedPeriod":"Aug"
+                         },
+                         {
+                             "date":20191017,
+                             "relatedPeriod":"Sep"
+                         },
+                         {
+                             "date":20191119,
+                             "relatedPeriod":"Oct"
+                         },
+                         {
+                             "date":20191217,
+                             "relatedPeriod":"Nov"
+                         }
+                     ]
+                 },
+                 {
+                     "name":"US New Homes Sales",
+                     "identifier":"ECONOMY_UCB",
+                     "agency":"US Census Bureau",
+                     "impact":"Medium",
+                     "impactReason":"Lagging indicator of housing demand & prices.",
+                     "sectorsImpacted":"Housing",
+                     "shortDescription":"Sales (deposit or contract signing) of newly built homes in a given month.",
+                     "moreInfoUrl":"https://www.census.gov/construction/nrc/index.html",
+                     "tip":"Along with housing starts, is a leading indicator (~ 1 yr) of home prices.",
+                     "timing":"10:00 a.m. ET",
+                     "instances":[
+                         {
+                             "date":20190314,
+                             "relatedPeriod":"Jan"
+                         },
+                         {
+                             "date":20190329,
+                             "relatedPeriod":"Feb"
+                         },
+                         {
+                             "date":20190423,
+                             "relatedPeriod":"Mar"
+                         },
+                         {
+                             "date":20190523,
+                             "relatedPeriod":"Apr"
+                         },
+                         {
+                             "date":20190625,
+                             "relatedPeriod":"May"
+                         },
+                         {
+                             "date":20190724,
+                             "relatedPeriod":"Jun"
+                         },
+                         {
+                             "date":20190823,
+                             "relatedPeriod":"Jul"
+                         },
+                         {
+                             "date":20190925,
+                             "relatedPeriod":"Aug"
+                         },
+                         {
+                             "date":20191024,
+                             "relatedPeriod":"Sep"
+                         },
+                         {
+                             "date":20191126,
+                             "relatedPeriod":"Oct"
+                         },
+                         {
+                             "date":20191223,
+                             "relatedPeriod":"Nov"
+                         }
+                     ]
                  }
                 ]
 }
