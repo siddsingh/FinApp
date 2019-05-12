@@ -391,7 +391,7 @@
                      "impactReason":"Lagging indicator of housing demand & prices.",
                      "sectorsImpacted":"Housing",
                      "shortDescription":"Sales (deposit or contract signing) of newly built homes in a given month.",
-                     "moreInfoUrl":"https://www.census.gov/construction/nrc/index.html",
+                     "moreInfoUrl":"https://www.census.gov/construction/nrs/index.html",
                      "tip":"Along with housing starts, is a leading indicator (~ 1 yr) of home prices.",
                      "timing":"10:00 a.m. ET",
                      "instances":[

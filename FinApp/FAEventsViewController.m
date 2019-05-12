@@ -1197,6 +1197,18 @@
         if ([formattedEventType containsString:@"Jobs Report"]) {
             moreInfoURL = @"http://www.bls.gov/mobile/mobile_releases.htm";
         }
+        // New econ events types
+        if ([formattedEventType containsString:@"US Retail Sales"]) {
+            moreInfoURL = @"https://www.census.gov/retail/index.html";
+        }
+        if ([formattedEventType containsString:@"US Housing Starts"]) {
+            moreInfoURL = @"https://www.census.gov/construction/nrc/index.html";
+        }
+        if ([formattedEventType containsString:@"US New Homes Sales"]) {
+            moreInfoURL = @"https://www.census.gov/construction/nrs/index.html";
+        }
+        // End new econ events types
+    
         if ([formattedEventType containsString:@"% up"]||[formattedEventType containsString:@"% down"]) {
             searchTerm = [NSString stringWithFormat:@"%@ %@",ticker,@"stock"];
             // Remove any spaces in the URL query string params
@@ -1354,7 +1366,7 @@
         }
     }
     // Economic Event
-    if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]) {
+    if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]||[cellEventType containsString:@"Retail Sales"]||[cellEventType containsString:@"Housing Starts"]||[cellEventType containsString:@"Homes Sales"]) {
         
         // Get the fully formatted ticker for ECON events i.e. ECON_FOMC
         cellCompanyTicker = [appropriateDataController getTickerForName:eventCell.companyName.text];
@@ -1539,6 +1551,17 @@
     if ([eventType isEqualToString:@"India GDP Release"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ India GDP Release tomorrow %@", eventDateText];
     }
+    // New econ events types
+    if ([eventType containsString:@"US Retail Sales"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US Retail Sales %@", eventDateText];
+    }
+    if ([eventType containsString:@"US Housing Starts"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US Housing Starts %@", eventDateText];
+    }
+    if ([eventType containsString:@"US New Homes Sales"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US New Homes Sales %@", eventDateText];
+    }
+    // End new econ events types
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ %@ tomorrow %@",eventType,eventDateText];
     }
@@ -3462,6 +3485,18 @@
         }
     }
     
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        formattedEventType = @"US Retail Sales";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        formattedEventType = @"US Housing Starts";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        formattedEventType = @"US New Homes Sales";
+    }
+    // End new econ events types
+    
     if ([rawEventType containsString:@"Conference"]) {
         formattedEventType = [rawEventType stringByReplacingOccurrencesOfString:@" Conference" withString:@""];
     }
@@ -3505,6 +3540,18 @@
     if ([rawEventType containsString:@"GDP Release"]) {
         actionType = @"More";
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionType = @"More";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionType = @"More";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionType = @"More";
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Conference"]) {
         actionType = @"More";
@@ -3615,6 +3662,21 @@
             eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
         }
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        eventTimeString = @"8:30 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        eventTimeString = @"8:30 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        eventTimeString = @"10:00 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Launch"]||[rawEventType containsString:@"Conference"]) {
         

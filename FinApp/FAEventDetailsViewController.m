@@ -851,6 +851,27 @@
                     [[cell titleLabel] setText:@"❖"];
                 }
                 
+                // New econ events types
+                if ([self.eventType containsString:@"US Retail Sales"]) {
+                    // Select the appropriate color and text for Retail Stocks
+                    // Pinkish deep red
+                    cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"⦿"];
+                }
+                if ([self.eventType containsString:@"US Housing Starts"]) {
+                    // Select the appropriate color and text for Retail Stocks
+                    // Blue
+                    cell.titleLabel.textColor = [UIColor colorWithRed:0.0f/255.0f green:117.0f/255.0f blue:251.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"⌂"];
+                }
+                if ([self.eventType containsString:@"US New Homes Sales"]) {
+                    // Select the appropriate color and text for Retail Stocks
+                    // Blue
+                    cell.titleLabel.textColor = [UIColor colorWithRed:0.0f/255.0f green:117.0f/255.0f blue:251.0f/255.0f alpha:1.0f];
+                    [[cell titleLabel] setText:@"⌂"];
+                }
+                // End new econ events types
+                
                 [[cell descriptionArea] setText:[self getEpsOrSectorsTextForEventType:eventData.type]];
              }
         }
@@ -2782,6 +2803,33 @@
         }
     }
     
+    // New econ events types
+    if ([self.eventType containsString:@"US Retail Sales"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 6;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 2;
+        }
+    }
+    if ([self.eventType containsString:@"US Housing Starts"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 6;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 2;
+        }
+    }
+    if ([self.eventType containsString:@"US New Homes Sales"]) {
+        if(sectionNo == 0) {
+            numberOfPieces = 6;
+        }
+        if(sectionNo == 1) {
+            numberOfPieces = 2;
+        }
+    }
+    // End new econ events types
+    
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         if(sectionNo == 0) {
             numberOfPieces = 6;
@@ -2855,6 +2903,18 @@
         description = @"Total value of goods & services produced over a period, compared to the prior period.";
     }
     
+    // New econ events types
+    if ([self.eventType containsString:@"US Retail Sales"]) {
+        description = @"Measure of retail sales to consumers, compared to prior month.";
+    }
+    if ([self.eventType containsString:@"US Housing Starts"]) {
+        description = @"No. of new residential construction projects that began in a given month.";
+    }
+    if ([self.eventType containsString:@"US New Homes Sales"]) {
+        description = @"Sales (deposit or contract signing) of newly built homes in a given month.";
+    }
+    // End new econ events types
+    
     if ([eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
         description = [NSString stringWithFormat:@"Related to products or services offered by %@",companyName];
     }
@@ -2924,6 +2984,18 @@
         description = @"Retail stocks are impacted most by this.";
     }
     
+    // New econ events types
+    if ([eventType containsString:@"US Retail Sales"]) {
+        description = @"Retail stocks are impacted most by this.";
+    }
+    if ([eventType containsString:@"US Housing Starts"]) {
+        description = @"Housing stocks are impacted most by this.";
+    }
+    if ([eventType containsString:@"US New Homes Sales"]) {
+        description = @"Housing stocks are impacted most by this.";
+    }
+    // End new econ events types
+    
     if ([eventType containsString:@"GDP Release"]) {
         description = @"All types of stocks are impacted by this.";
     }
@@ -2958,6 +3030,18 @@
     if ([eventType containsString:@"GDP Release"]) {
         description = @"Scorecard of the country's economic health.";
     }
+    
+    // New econ events types
+    if ([eventType containsString:@"US Retail Sales"]) {
+        description = @"Component in the calculation of GDP.";
+    }
+    if ([eventType containsString:@"US Housing Starts"]) {
+        description = @"Leading (~ 1 yr) indicator of housing demand & prices.";
+    }
+    if ([eventType containsString:@"US New Homes Sales"]) {
+        description = @"Lagging indicator of housing demand & prices.";
+    }
+    // End new econ events types
     
     // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
     // If new product event types are added, add them here as well.
@@ -3004,6 +3088,18 @@
         description = @"High Impact";
     }
     
+    // New econ events types
+    if ([eventType containsString:@"US Retail Sales"]) {
+        description = @"Medium";
+    }
+    if ([eventType containsString:@"US Housing Starts"]) {
+        description = @"High";
+    }
+    if ([eventType containsString:@"US New Homes Sales"]) {
+        description = @"Medium";
+    }
+    // End new econ events types
+    
     // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
     // If new product event types are added, add them here as well.
     if ([self.eventType containsString:@"Launch"]||[self.eventType containsString:@"Conference"]) {
@@ -3049,6 +3145,18 @@
     if ([eventType containsString:@"GDP Release"]) {
         description = @"Scorecard of the country's economic health.";
     }
+    
+    // New econ events types
+    if ([eventType containsString:@"US Retail Sales"]) {
+        description = @"Component in the calculation of GDP.";
+    }
+    if ([eventType containsString:@"US Housing Starts"]) {
+        description = @"Leading (~ 1 yr) indicator of housing demand & prices.";
+    }
+    if ([eventType containsString:@"US New Homes Sales"]) {
+        description = @"Lagging indicator of housing demand & prices.";
+    }
+    // End new econ events types
     
     // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
     // If new product event types are added, add them here as well.
@@ -3192,6 +3300,18 @@
     if ([eventType containsString:@"GDP Release"]) {
         description = @"Pro Tip! Decreasing GDP for 2 or more quarters indicates a recession.";
     }
+    
+    // New econ events types
+    if ([eventType containsString:@"US Retail Sales"]) {
+        description = @"Pro Tip! As consumer spending increases, the economy grows.";
+    }
+    if ([eventType containsString:@"US Housing Starts"]) {
+        description = @"Pro Tip! When starts are rising, house prices should appreciate as well & vice versa.";
+    }
+    if ([eventType containsString:@"US New Homes Sales"]) {
+        description = @"Pro Tip! Along with housing starts, is a leading indicator (~ 1 yr) of home prices.";
+    }
+    // End new econ events types
     
     return description;
 }
@@ -3354,6 +3474,19 @@
         // Light purple
         colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
+    
+    // New econ events types
+    if ([eventType containsString:@"US Retail Sales"]) {
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"US Housing Starts"]) {
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+    }
+    if ([eventType containsString:@"US New Homes Sales"]) {
+        colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
+    }
+    // End new econ events types
+    
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
         // Dark Yellow
         colorToReturn = [UIColor colorWithRed:240.0f/255.0f green:142.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
@@ -3424,6 +3557,21 @@
         eventTimeString = @"8:30 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        eventTimeString = @"8:30 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        eventTimeString = @"8:30 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        eventTimeString = @"10:00 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Launch"]||[rawEventType containsString:@"Conference"]) {
         
@@ -3582,6 +3730,18 @@
             actionType = @"See BEA site";
         }
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionType = @"See UCB site";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionType = @"See UCB site";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionType = @"See UCB site";
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Conference"]) {
         actionType = @"Not Available";
