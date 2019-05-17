@@ -4833,7 +4833,18 @@ bool eventsUpdated = NO;
     if ([type containsString:@"GDP Release"]) {
        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"GDP Release"];
     }
-
+    // New econ events types
+    if ([type containsString:@"US Retail Sales"]) {
+        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"US Retail Sales"];
+    }
+    if ([type containsString:@"US Housing Starts"]) {
+        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"US Housing Starts"];
+    }
+    if ([type containsString:@"US New Homes Sales"]) {
+        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"US New Homes Sales"];
+    }
+    // End new econ events types
+    
     [actionsFetchRequest setEntity:actionEntity];
     [actionsFetchRequest setPredicate:actionsPredicate];
     NSError *error;

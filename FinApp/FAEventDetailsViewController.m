@@ -3780,6 +3780,18 @@
         }
     }
     
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionLocation = @"https://www.census.gov/retail/index.html";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionLocation = @"https://www.census.gov/construction/nrc/index.html";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionLocation = @"https://www.census.gov/construction/nrs/index.html";
+    }
+    // End new econ events types
+    
     if ([rawEventType containsString:@"Conference"]) {
         actionLocation = @"Not Available";
     }
@@ -3823,6 +3835,18 @@
     if ([rawEventType containsString:@"GDP Release"]) {
         actionType = @"Not Available";
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionType = @"Not Available";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionType = @"Not Available";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionType = @"Not Available";
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Conference"]) {
         actionType = @"Not Available";
@@ -3870,7 +3894,7 @@
     
     if ([rawEventType containsString:@"Consumer Confidence"]) {
         externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-        searchTerm = @"usa consumer confidence";
+        searchTerm = @"us consumer confidence";
         // Remove any spaces in the URL query string params
         searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
         actionLocation = [externalURL stringByAppendingString:searchTerm];
@@ -3882,12 +3906,36 @@
             searchTerm = @"india gdp growth";
         } else
         {
-            searchTerm = @"usa gdp growth";
+            searchTerm = @"us gdp growth";
         }
         // Remove any spaces in the URL query string params
         searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
         actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"us retail sales";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"us housing starts";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"us new homes sales";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Conference"]) {
         actionLocation = @"Not Available";
@@ -3933,6 +3981,18 @@
         actionType = @"Not Available";
     }
     
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionType = @"Not Available";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionType = @"Not Available";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionType = @"Not Available";
+    }
+    // End new econ events types
+    
     if ([rawEventType containsString:@"Conference"]) {
         actionType = @"Not Available";
     }
@@ -3971,6 +4031,18 @@
     if ([rawEventType containsString:@"GDP Release"]) {
         actionLocation = @"Not Available";
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionLocation = @"Not Available";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionLocation = @"Not Available";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionLocation = @"Not Available";
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Conference"]) {
         actionLocation = @"Not Available";
@@ -4015,6 +4087,18 @@
     if ([rawEventType containsString:@"GDP Release"]) {
         actionType = @"Scan News";
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionType = @"Scan News";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionType = @"Scan News";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionType = @"Scan News";
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Conference"]) {
         actionType = @"Scan News";
@@ -4079,6 +4163,18 @@
         actionType = @"Go to Site";
     }
     
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionType = @"Go to Site";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionType = @"Go to Site";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionType = @"Go to Site";
+    }
+    // End new econ events types
+    
     if ([rawEventType containsString:@"Conference"]) {
         actionType = @"Go to Site";
     }
@@ -4122,6 +4218,18 @@
     if ([rawEventType containsString:@"GDP Release"]) {
         actionLocation = @"Not Available";
     }
+    
+    // New econ events types
+    if ([rawEventType containsString:@"US Retail Sales"]) {
+        actionLocation = @"Not Available";
+    }
+    if ([rawEventType containsString:@"US Housing Starts"]) {
+        actionLocation = @"Not Available";
+    }
+    if ([rawEventType containsString:@"US New Homes Sales"]) {
+        actionLocation = @"Not Available";
+    }
+    // End new econ events types
     
     if ([rawEventType containsString:@"Conference"]) {
         actionLocation = @"Not Available";
