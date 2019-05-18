@@ -1291,6 +1291,7 @@
             }
             // If it's an econ event, create all reminders for all econ events of this type
             else {
+                
                 [self createAllRemindersForEconEventType:eventCell.eventDescription.text withDataController:accessDataController];
             }
             
@@ -1372,6 +1373,8 @@
         cellCompanyTicker = [appropriateDataController getTickerForName:eventCell.companyName.text];
         
         // Create the reminder and show user the appropriate message
+        // TO DO: Delete Later
+        NSLog(@"*******Econ Event for which reminder is being created event is:%@ with date text:%@",cellEventType,cellEventDateText);
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
         if (success) {
             [self sendUserMessageCreatedNotificationWithMessage:@"Following event"];
@@ -1545,11 +1548,11 @@
     if ([eventType containsString:@"Consumer Confidence"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Consumer Confidence Report tomorrow %@", eventDateText];
     }
-    if ([eventType isEqualToString:@"US GDP Release"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US GDP Release tomorrow %@", eventDateText];
+    if ([eventType containsString:@"India GDP Release"]) {
+            reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ India GDP Release tomorrow %@", eventDateText];
     }
-    if ([eventType isEqualToString:@"India GDP Release"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ India GDP Release tomorrow %@", eventDateText];
+    if ([eventType containsString:@"US GDP Release"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US GDP Release tomorrow %@", eventDateText];
     }
     // New econ events types
     if ([eventType containsString:@"US Retail Sales"]) {
@@ -3476,13 +3479,11 @@
         formattedEventType = @"Consumer Confidence";
     }
     
-    if ([rawEventType containsString:@"GDP Release"]) {
-        if ([rawEventType containsString:@"India"]) {
-            formattedEventType = @"India GDP Release";
-        } else
-        {
-            formattedEventType = @"US GDP Release";
-        }
+    if ([rawEventType containsString:@"US GDP Release"]) {
+        formattedEventType = @"US GDP Release";
+    }
+    if ([rawEventType containsString:@"India GDP Release"]) {
+        formattedEventType = @"India GDP Release";
     }
     
     // New econ events types
@@ -3573,8 +3574,7 @@
         // Do Nothing as for Launch the full event type already exists
     } else if ([rawEventType containsString:@"% up"]||[rawEventType containsString:@"% down"]) {
         // Do Nothing as for price events the full event type already exists
-    }
-    else {
+    } else {
         formattedEventType = [NSString stringWithFormat:@"%@ %@",addtlInfo,rawEventType];
     }
     
@@ -3651,16 +3651,14 @@
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     
-    if ([rawEventType containsString:@"GDP Release"]) {
+    if ([rawEventType containsString:@"US GDP Release"]) {
+        eventTimeString = @"8:30 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
+    }
         
-        if ([rawEventType containsString:@"India"]) {
-            eventTimeString = @"5:30 p.m. IST ~7 a.m. ET";
-            eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
-        } else
-        {
-            eventTimeString = @"8:30 a.m. ET";
-            eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
-        }
+    if ([rawEventType containsString:@"India GDP Release"]) {
+        eventTimeString = @"5:30 p.m. IST ~7 a.m. ET";
+        eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     
     // New econ events types

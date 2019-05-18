@@ -313,7 +313,7 @@
         if(section == 0) {
             
             // Handle for US GDP Release, since the text doesn't contain US
-            if ([self.eventType containsString:@"GDP Release"]) {
+           /* if ([self.eventType containsString:@"GDP Release"]) {
                 if ([self.eventType containsString:@"India"]) {
                     [customHeaderView setText:[self.eventType uppercaseString]];
                 }
@@ -325,7 +325,8 @@
             else
             {
                 [customHeaderView setText:[self.eventType uppercaseString]];
-            }
+            } */
+            [customHeaderView setText:[self.eventType uppercaseString]];
         }
         if(section == 1) {
             [customHeaderView setText:@"MORE"];
@@ -3039,7 +3040,7 @@
         description = @"Leading (~ 1 yr) indicator of housing demand & prices.";
     }
     if ([eventType containsString:@"US New Homes Sales"]) {
-        description = @"Lagging indicator of housing demand & prices.";
+        description = @"Indicator of housing demand & prices.";
     }
     // End new econ events types
     
@@ -3154,7 +3155,7 @@
         description = @"Leading (~ 1 yr) indicator of housing demand & prices.";
     }
     if ([eventType containsString:@"US New Homes Sales"]) {
-        description = @"Lagging indicator of housing demand & prices.";
+        description = @"Indicator of housing demand & prices.";
     }
     // End new econ events types
     
@@ -3722,13 +3723,11 @@
         actionType = @"SEE BEA SITE";
     }*/
     
-    if ([rawEventType containsString:@"GDP Release"]) {
-        if ([rawEventType containsString:@"India"]) {
+    if ([rawEventType containsString:@"US GDP Release"]) {
+        actionType = @"See BEA site";
+    }
+    if ([rawEventType containsString:@"India GDP Release"]) {
             actionType = @"See MOS site";
-        } else
-        {
-            actionType = @"See BEA site";
-        }
     }
     
     // New econ events types
@@ -3771,13 +3770,11 @@
         actionLocation = @"https://www.conference-board.org/data/consumerconfidence.cfm";
     }
     
-    if ([rawEventType containsString:@"GDP Release"]) {
-        if ([rawEventType containsString:@"India"]) {
-            actionLocation = @"http://mospi.nic.in";
-        } else
-        {
-            actionLocation = @"https://www.bea.gov/data/gdp/gross-domestic-product";
-        }
+    if ([rawEventType containsString:@"US GDP Release"]) {
+        actionLocation = @"https://www.bea.gov/data/gdp/gross-domestic-product";
+    }
+    if ([rawEventType containsString:@"India GDP Release"]) {
+        actionLocation = @"http://mospi.nic.in";
     }
     
     // New econ events types
@@ -3900,14 +3897,16 @@
         actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
-    if ([rawEventType containsString:@"GDP Release"]) {
+    if ([rawEventType containsString:@"US GDP Release"]) {
         externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
-        if ([rawEventType containsString:@"India"]) {
-            searchTerm = @"india gdp growth";
-        } else
-        {
-            searchTerm = @"us gdp growth";
-        }
+        searchTerm = @"us gdp release";
+        // Remove any spaces in the URL query string params
+        searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+        actionLocation = [externalURL stringByAppendingString:searchTerm];
+    }
+    if ([rawEventType containsString:@"India GDP Release"]) {
+        externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
+        searchTerm = @"india gdp release";
         // Remove any spaces in the URL query string params
         searchTerm = [searchTerm stringByReplacingOccurrencesOfString:@" " withString:@"+"];
         actionLocation = [externalURL stringByAppendingString:searchTerm];

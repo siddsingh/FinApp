@@ -85,7 +85,8 @@
                 FADataController *eventDataController = [[FADataController alloc] init];
                 
                 // Add newer company tickers from hard code. This gets all the newer added prod event tickers as well.
-                [eventDataController getAllTickersAndNamesFromLocalCode];
+                // TO DO LATEST: Check if the newer tickers get in
+                //[eventDataController getAllTickersAndNamesFromLocalCode];
                 
                 if ([self checkForInternetConnectivity]) {
                     // TO DO: Testing. Delete before shipping v4.3
@@ -228,7 +229,7 @@
 // Refresh events that are likely to be updated, from API. Additionally also get the events for trending tickers initially. Check to see if product events need to be added or refreshed. If yes, do that. Currently product events are being fetched whole each time. Plus  Typically called in a background thread.
 - (void)refreshEventsIfNeededFromApiInBackgroundWithDataController:(FADataController *)existingDC
 {
-    // TO DO: Uncomment for actual use. Comment for test data for event update testing.
+    [existingDC addCurrentTrendingEarnings];
     [existingDC updateEventsFromRemoteIfNeeded];
 }
 

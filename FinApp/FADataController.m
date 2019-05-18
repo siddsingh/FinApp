@@ -1125,12 +1125,13 @@ bool eventsUpdated = NO;
 - (NSArray *)getAllEconEventsOfType:(NSString *)eventType {
     
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
+    NSPredicate *eventsPredicate = nil;
     
     // Get the events by doing a case insensitive query on event type.
     NSFetchRequest *eventsFetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *eventEntity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:dataStoreContext];
     // Case and Diacractic Insensitive Filtering
-    NSPredicate *eventsPredicate = [NSPredicate predicateWithFormat:@"type contains[cd] %@",eventType];
+    eventsPredicate = [NSPredicate predicateWithFormat:@"type contains[cd] %@",eventType];
     [eventsFetchRequest setEntity:eventEntity];
     [eventsFetchRequest setPredicate:eventsPredicate];
     NSError *error;
@@ -2225,6 +2226,22 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"EVER" name:@"EverQuote"];
     [self insertUniqueCompanyWithTicker:@"ZS" name:@"Zscaler"];
     [self insertUniqueCompanyWithTicker:@"CBLK" name:@"Carbon Black"];
+    
+    // Added these starting 05/17/2019
+    [self insertUniqueCompanyWithTicker:@"UBER" name:@"Uber Technologies"];
+    [self insertUniqueCompanyWithTicker:@"BYND" name:@"Beyond Meat"];
+    [self insertUniqueCompanyWithTicker:@"PINS" name:@"Pinterest"];
+    [self insertUniqueCompanyWithTicker:@"ZM" name:@"Zoom Video Communications"];
+    [self insertUniqueCompanyWithTicker:@"JMIA" name:@"Jumia"];
+    [self insertUniqueCompanyWithTicker:@"PD" name:@"PagerDuty"];
+    [self insertUniqueCompanyWithTicker:@"TUFN" name:@"Tufin Software Technologies"];
+    [self insertUniqueCompanyWithTicker:@"LYFT" name:@"Lyft"];
+    [self insertUniqueCompanyWithTicker:@"LEVI" name:@"Levi Strauss & Co"];
+    [self insertUniqueCompanyWithTicker:@"YETI" name:@"YETI Holdings"];
+    [self insertUniqueCompanyWithTicker:@"FSLY" name:@"Fastly"];
+    [self insertUniqueCompanyWithTicker:@"SK" name:@"Slack"];
+    [self insertUniqueCompanyWithTicker:@"CRWD" name:@"CrowdStrike"];
+    [self insertUniqueCompanyWithTicker:@"PINS" name:@"Pinterest"];
     
     // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
     // Delete before shipping v4.3
@@ -4110,6 +4127,16 @@ bool eventsUpdated = NO;
     //[self getAllEventsFromApiWithTicker:@"UA"];
     
     eventsUpdated = YES;
+}
+
+// Add tickers and events for trending stocks.
+// Please make sure to call the Update Tickers From Local Code before this
+- (void)addCurrentTrendingEarnings {
+    
+    // Get events for these trending companies from the remote data source
+    [self getAllEventsFromApiWithTicker:@"LYFT"];
+    [self getAllEventsFromApiWithTicker:@"PD"];
+    [self getAllEventsFromApiWithTicker:@"PINS"];
 }
 
 // Update the existing events in the local data store, with latest information from the remote data source, if it's

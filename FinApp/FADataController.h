@@ -271,6 +271,10 @@
 // Add tickers and events for trending stocks.
 - (void)performTrendingEventSyncRemotely;
 
+// Add tickers and events for trending stocks.
+// Please make sure to call the Update Tickers From Local Code before this
+- (void)addCurrentTrendingEarnings;
+
 // Update the existing events in the local data store, with latest information from the remote data source, if it's
 // likely that the remote source has been updated. There are 2 scenarios where it's likely:
 // 1. If the speculated date of an event is within 2 weeks of today, then we consider it likely that the event has been updated

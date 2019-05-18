@@ -172,7 +172,7 @@
                               ]
                  },
                  {
-                 "name":"GDP Release",
+                 "name":"US GDP Release",
                  "identifier":"ECONOMY_BEA",
                  "agency":"Bureau of Economic Analysis",
                  "impact":"High",
@@ -388,7 +388,7 @@
                      "identifier":"ECONOMY_UCB",
                      "agency":"US Census Bureau",
                      "impact":"Medium",
-                     "impactReason":"Lagging indicator of housing demand & prices.",
+                     "impactReason":"Indicator of housing demand & prices.",
                      "sectorsImpacted":"Housing",
                      "shortDescription":"Sales (deposit or contract signing) of newly built homes in a given month.",
                      "moreInfoUrl":"https://www.census.gov/construction/nrs/index.html",
