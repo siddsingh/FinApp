@@ -262,10 +262,33 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:67.0f/255.0f green:68.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
     }
     
-    // Just use default dark gray with econ blue for text as there's a lot of other blues. ECONOMY_ for detail view
-    if ([ticker caseInsensitiveCompare:@"ECON"] == NSOrderedSame) {
-        // Very lightish gray
-        // colorToReturn = [UIColor colorWithRed:232.0f/255.0f green:232.0f/255.0f blue:232.0f/255.0f alpha:1.0f];
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_MOS"] == NSOrderedSame) {
+        // Orange
+        colorToReturn = [UIColor colorWithRed:255.0f/255.0f green:152.0f/255.0f blue:53.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame) {
+        // Light Blue
+        colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:33.0f/255.0f blue:71.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame) {
+        // Black
+        colorToReturn = [UIColor blackColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_UCB"] == NSOrderedSame) {
+        // Dark Blue
+        colorToReturn = [UIColor colorWithRed:17.0f/255.0f green:46.0f/255.0f blue:81.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame) {
+        // Brownish Red
+        colorToReturn = [UIColor colorWithRed:116.0f/255.0f green:26.0f/255.0f blue:20.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame) {
+        // Grayish Blue
         colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:77.0f/255.0f blue:139.0f/255.0f alpha:1.0f];
     }
     
@@ -277,13 +300,6 @@ static FASnapShot *sharedInstance;
     if ([ticker caseInsensitiveCompare:@"IBM"] == NSOrderedSame) {
         
         colorToReturn = [UIColor blackColor];
-    }
-    
-    // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
-    if (([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame)) {
-        // Econ Blue
-        //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
-        colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:77.0f/255.0f blue:139.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"JPM"] == NSOrderedSame) {
@@ -481,6 +497,32 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:24.0f/255.0f green:23.0f/255.0f blue:23.0f/255.0f alpha:1.0f];
     }
     
+    if ([ticker caseInsensitiveCompare:@"PD"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor colorWithRed:62.0f/255.0f green:177.0f/255.0f blue:65.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"LYFT"] == NSOrderedSame) {
+        
+        //colorToReturn = [UIColor colorWithRed:214.0f/255.0f green:73.0f/255.0f blue:176.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:201.0f/255.0f green:53.0f/255.0f blue:184.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"PINS"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor redColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"UBER"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor blackColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ZUO"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor colorWithRed:110.0f/255.0f green:197.0f/255.0f blue:101.0f/255.0f alpha:1.0f];
+    }
+    
     return colorToReturn;
 }
 
@@ -633,9 +675,33 @@ static FASnapShot *sharedInstance;
         colorToReturn = [UIColor colorWithRed:235.0f/255.0f green:65.0f/255.0f blue:68.0f/255.0f alpha:1.0f];
     }
     
-    if ([ticker caseInsensitiveCompare:@"ECON"] == NSOrderedSame) {
-        // Econ Blue
-        // colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_MOS"] == NSOrderedSame) {
+        // Green
+        colorToReturn = [UIColor colorWithRed:50.0f/255.0f green:100.0f/255.0f blue:10.0f/255.0f alpha:1.0f];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame) {
+        // Red
+        colorToReturn = [UIColor redColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame) {
+        // White
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_UCB"] == NSOrderedSame) {
+        // White
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame) {
+        // White
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame) {
+        // Pastel Orange
         colorToReturn = [UIColor colorWithRed:248.0f/255.0f green:152.0f/255.0f blue:97.0f/255.0f alpha:1.0f];
     }
     
@@ -657,13 +723,6 @@ static FASnapShot *sharedInstance;
     if ([ticker caseInsensitiveCompare:@"FOX"] == NSOrderedSame) {
         
         colorToReturn = [UIColor colorWithRed:0.0f/255.0f green:186.0f/255.0f blue:238.0f/255.0f alpha:1.0f];
-    }
-    
-    // From details view ticker has the econ agency initials appended (e.g. ECONOMY_BEA) so return the color for those as well
-    if (([ticker caseInsensitiveCompare:@"ECONOMY_BLS"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_TCB"] == NSOrderedSame)||([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame)) {
-        // White for Econ
-        //colorToReturn = [UIColor whiteColor];
-        colorToReturn = [UIColor colorWithRed:248.0f/255.0f green:152.0f/255.0f blue:97.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"JPM"] == NSOrderedSame) {
@@ -847,6 +906,31 @@ static FASnapShot *sharedInstance;
     }
     
     if ([ticker caseInsensitiveCompare:@"GS"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"PD"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"LYFT"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"PINS"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"UBER"] == NSOrderedSame) {
+        
+        colorToReturn = [UIColor whiteColor];
+    }
+    
+    if ([ticker caseInsensitiveCompare:@"ZUO"] == NSOrderedSame) {
         
         colorToReturn = [UIColor whiteColor];
     }

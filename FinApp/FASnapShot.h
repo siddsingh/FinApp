@@ -25,7 +25,6 @@
 - (UIColor *)getBrandBkgrndColorForCompany:(NSString *)ticker;
 
 // Get the brand text color for given ticker
-// Get the brand text color for given ticker
 - (UIColor *)getBrandTextColorForCompany:(NSString *)ticker;
 
 @end

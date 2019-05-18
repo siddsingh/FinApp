@@ -406,8 +406,11 @@
     [[cell companyTicker] setHidden:YES];
     
     // Set bkgrnd color for news button & make it round
-    cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
-    [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
+    //cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text eventType:cell.eventDescription.text];
+    //[cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text eventType:cell.eventDescription.text] forState:UIControlStateNormal];
+    // Bkgrnd color to default light gray with white text
+    cell.newsButon.backgroundColor = [UIColor colorWithRed:177.0f/255.0f green:177.0f/255.0f blue:177.0f/255.0f alpha:1.0f];
+    [cell.newsButon setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     cell.newsButon.clipsToBounds = YES;
     cell.newsButon.layer.cornerRadius = 25;
     
@@ -556,16 +559,16 @@
         [[cell newsButon] setTitle:[self formatTickerBasedOnEventType:eventAtIndex.listedCompany.ticker] forState:UIControlStateNormal];
         [[cell newsButon] setHidden:NO];
         [[cell newsButon] setEnabled:YES];
-        cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
-        [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
+        cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:eventAtIndex.listedCompany.ticker];
+        [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:eventAtIndex.listedCompany.ticker] forState:UIControlStateNormal];
         
         cell.newsButon.tag = indexPath.row;
         // Also add the button press action.
         [cell.newsButon addTarget:self action:@selector(newsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         
         // Format the company ticker just like above
-        cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
-        cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
+        cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:eventAtIndex.listedCompany.ticker];
+        cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:eventAtIndex.listedCompany.ticker];
         
         // Hide the company Name as this information is not needed to be displayed to the user.
         [[cell companyName] setHidden:YES];
@@ -579,10 +582,10 @@
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:self.mainNavProductOption] == NSOrderedSame) {
     
             // Format the ticker and news section with the correct brand colors. Looks hot!
-            cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
-            cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text];
-            cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:cell.companyTicker.text];
-            [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:cell.companyTicker.text] forState:UIControlStateNormal];
+            cell.companyTicker.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:eventAtIndex.listedCompany.ticker];
+            cell.companyTicker.textColor = [self.dataSnapShot getBrandTextColorForCompany:eventAtIndex.listedCompany.ticker];
+            cell.newsButon.backgroundColor = [self.dataSnapShot getBrandBkgrndColorForCompany:eventAtIndex.listedCompany.ticker];
+            [cell.newsButon setTitleColor:[self.dataSnapShot getBrandTextColorForCompany:eventAtIndex.listedCompany.ticker] forState:UIControlStateNormal];
             // Show the timeline label in case it was hidden
             cell.timelineLbl.hidden = NO;
             // Set color for timeline label based on event distance

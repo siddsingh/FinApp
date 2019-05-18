@@ -2242,6 +2242,7 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"SK" name:@"Slack"];
     [self insertUniqueCompanyWithTicker:@"CRWD" name:@"CrowdStrike"];
     [self insertUniqueCompanyWithTicker:@"PINS" name:@"Pinterest"];
+    [self insertUniqueCompanyWithTicker:@"LK" name:@"Luckin Coffee"];
     
     // TO DO: For testing, comment before shipping.Keeping it around for future pre seeding testing.
     // Delete before shipping v4.3
@@ -4136,7 +4137,6 @@ bool eventsUpdated = NO;
     // Get events for these trending companies from the remote data source
     [self getAllEventsFromApiWithTicker:@"LYFT"];
     [self getAllEventsFromApiWithTicker:@"PD"];
-    [self getAllEventsFromApiWithTicker:@"PINS"];
 }
 
 // Update the existing events in the local data store, with latest information from the remote data source, if it's
