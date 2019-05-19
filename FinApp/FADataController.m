@@ -1121,7 +1121,7 @@ bool eventsUpdated = NO;
     return events;
 }
 
-// Get all economic events of a given type (e.g. Jobs Report)
+// Get all economic events of a given type (e.g. US Jobs Report)
 - (NSArray *)getAllEconEventsOfType:(NSString *)eventType {
     
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -2378,11 +2378,11 @@ bool eventsUpdated = NO;
         // Get the array of upcoming dates
         NSArray *eventInstances = [event objectForKey:@"instances"];
         
-        // Get the individual upcoming instances like Jan Fed Meeting, Mar Fed Meeting, etc and the
+        // Get the individual upcoming instances like Jan US Fed Meeting, Mar US Fed Meeting, etc and the
         // dates for each
         for (NSDictionary *eventInstance in eventInstances) {
             
-            // Get Related Period to form unique event name for each instance of the Fed Meeting by prepending it to event name.
+            // Get Related Period to form unique event name for each instance of the US Fed Meeting by prepending it to event name.
             NSString *eventRelatedInfo = [eventInstance objectForKey:@"relatedPeriod"];
             NSString *uniqueName = [NSString stringWithFormat:@"%@ %@", eventRelatedInfo, eventName];
             // TO DO: Delete Later
@@ -3297,7 +3297,7 @@ bool eventsUpdated = NO;
     
     // Get and Set all the price details.
     // Get the database level (not display level) event type based on the display type.
-    // Earnings -> Quarterly Earnings, Fed Meeting -> Jan Fed Meeting, Jobs Report -> Jan Jobs Report and so on.
+    // Earnings -> Quarterly Earnings, US Fed Meeting -> Jan US Fed Meeting, US Jobs Report -> Jan US Jobs Report and so on.
     NSString *currPriceAndChangeStr = @"NA";
     NSString *eventType = cellEventType;
     
@@ -4712,7 +4712,7 @@ bool eventsUpdated = NO;
     return exists;
 }
 
-// Check to see if an Action associated with an event is present, in the Action Data Store, given the full event type (e.g. Feb Jobs Report).
+// Check to see if an Action associated with an event is present, in the Action Data Store, given the full event type (e.g. Feb US Jobs Report).
 - (BOOL)doesReminderActionExistForSpecificEvent:(NSString *)eventType
 {
     NSManagedObjectContext *dataStoreContext = [self managedObjectContext];
@@ -4848,17 +4848,20 @@ bool eventsUpdated = NO;
     NSPredicate *actionsPredicate;
     
     // Filter based on type
-    if ([type containsString:@"Fed Meeting"]) {
-        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"Fed Meeting"];
+    if ([type containsString:@"US Fed Meeting"]) {
+        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"US Fed Meeting"];
     }
-    if ([type containsString:@"Jobs Report"]) {
-        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"Jobs Report"];
+    if ([type containsString:@"US Jobs Report"]) {
+        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"US Jobs Report"];
     }
-    if ([type containsString:@"Consumer Confidence"]) {
-       actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"Consumer Confidence"];
+    if ([type containsString:@"US Consumer Confidence"]) {
+       actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"US Consumer Confidence"];
     }
-    if ([type containsString:@"GDP Release"]) {
-       actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"GDP Release"];
+    if ([type containsString:@"US GDP Release"]) {
+       actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"US GDP Release"];
+    }
+    if ([type containsString:@"India GDP Release"]) {
+        actionsPredicate = [NSPredicate predicateWithFormat:@"type =[c] %@ AND parentEvent.type contains %@", @"OSReminder", @"India GDP Release"];
     }
     // New econ events types
     if ([type containsString:@"US Retail Sales"]) {

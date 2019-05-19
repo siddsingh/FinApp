@@ -22,7 +22,7 @@
 
 // The type of event
 // 1. "Quarterly Earnings"
-// 2. "Jan Fed Meeting", "Feb Fed Meeting" (Economic Event)
+// 2. "Jan US Fed Meeting", "Feb US Fed Meeting" (Economic Event)
 // 3. "iPhone 7 Launch" (Product Event)
 // 4. "50.12% up today" "50.12% down today" "10.12% down 30 days" "30.12% down ytd" (Price Change events)
 @dynamic type;
@@ -30,7 +30,7 @@
 // Details related to the event, based on event type
 // 1. "Quarterly Earnings" would have timing information "After Market Close",
 // "Before Market Open, "During Market Trading", "Unknown".
-//  2. Economic Event like "Fed Meeting" would contain the weblink to get more details.
+//  2. Economic Event like "US Fed Meeting" would contain the weblink to get more details.
 // 3. Product Events like "iPhone 7 Launch" have timing information for the event.
 // 4. Price change events don't have any details currently.
 @dynamic relatedDetails;
@@ -45,7 +45,7 @@
 @dynamic priorEndDate;
 
 // For Quarterly Earnings, Indicator if this event is "Confirmed" or "Estimated" or "Unknown".
-// For Economic events like "Fed Meeting" contains the string representing the period to which the event applies.
+// For Economic events like "US Fed Meeting" contains the string representing the period to which the event applies.
 // For Product Events like "iPhone 7 Launch" the event is "Estimated" till it's "Confirmed"
 @dynamic certainty;
 

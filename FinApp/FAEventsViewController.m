@@ -597,7 +597,7 @@
         // be a unique identifier for each event ?
         cell.eventRemoteFetch = NO;
         
-        // Show the event type. Format it for display. Currently map "Quarterly Earnings" to "Earnings", "Jan Fed Meeting" to "Fed Meeting", "Jan Jobs Report" to "Jobs Report" and so on.
+        // Show the event type. Format it for display. Currently map "Quarterly Earnings" to "Earnings", "Jan US Fed Meeting" to "US Fed Meeting", "Jan US Jobs Report" to "US Jobs Report" and so on.
         // TO DO LATER: !!!!!!!!!!IMPORTANT!!!!!!!!!!!!! If you are making a change here, reconcile with prepareForSegue in addition to the methods mentioned above.
         [[cell  eventDescription] setText:[self formatEventType:eventAtIndex.type]];
         [cell.eventDescription setTextColor:[self getColorForCellLabelsBasedOnEventType:eventAtIndex.type]];
@@ -704,8 +704,7 @@
         else {
             eventSelected = [self.eventResultsController objectAtIndexPath:indexPath];
         }
-        // TO DO: Delete Later
-        NSLog(@"EVENT SELECTED IS:%@",eventSelected.type);
+        
         [self performSegueWithIdentifier:@"ShowEventDetails1" sender:eventSelected];
         
         // This is the code for going directly to news
@@ -765,10 +764,10 @@
         if ([formattedEventType containsString:@"Consumer Confidence"]) {
             searchTerm = @"us consumer confidence";
         }
-        if ([formattedEventType containsString:@"Fed Meeting"]) {
+        if ([formattedEventType containsString:@"US Fed Meeting"]) {
             searchTerm = @"fomc meeting";
         }
-        if ([formattedEventType containsString:@"Jobs Report"]) {
+        if ([formattedEventType containsString:@"US Jobs Report"]) {
             searchTerm = @"jobs report us";
         }
         if ([formattedEventType containsString:@"% up"]||[formattedEventType containsString:@"% down"]) {
@@ -1050,7 +1049,7 @@
             }
         }
     }
-    ///////// Else, for a non followable event (currently econ event), put a Set Reminder button, as we are not supporting following these yet. Update: Making Econ events followable as well, where you can follow a type of econ event like "Jobs Report" and we'll add all instances of Jobs Reports to your reminders/following list.
+    ///////// Else, for a non followable event (currently econ event), put a Set Reminder button, as we are not supporting following these yet. Update: Making Econ events followable as well, where you can follow a type of econ event like "US Jobs Report" and we'll add all instances of US Jobs Reports to your reminders/following list.
     else {
         // Check to see if a reminder action has already been created for the event represented by the cell.
         // If yes, show a appropriately formatted status action.
@@ -1072,7 +1071,7 @@
                 // Let the user know a reminder is already set for this ticker.
                 [self sendUserMessageCreatedNotificationWithMessage:@"Unfollowed event"];
                 
-                // Delete reminders for this event type e.g. containing Fed Meeting not Jan Fed Meeting
+                // Delete reminders for this event type e.g. containing US Fed Meeting not Jan US Fed Meeting
                 [self deleteRemindersForEconEventType:cell.eventDescription.text];
                 
                 // TRACKING EVENT: Unset Reminder: User clicked the "Set Reminder" button to create a reminder.
@@ -1191,13 +1190,13 @@
         if ([formattedEventType isEqualToString:@"India GDP Release"]) {
             moreInfoURL = @"http://mospi.nic.in";
         }
-        if ([formattedEventType containsString:@"Consumer Confidence"]) {
+        if ([formattedEventType containsString:@"US Consumer Confidence"]) {
             moreInfoURL = @"https://www.conference-board.org/data/consumerconfidence.cfm";
         }
-        if ([formattedEventType containsString:@"Fed Meeting"]) {
+        if ([formattedEventType containsString:@"US Fed Meeting"]) {
             moreInfoURL = @"https://www.federalreserve.gov/monetarypolicy.htm";
         }
-        if ([formattedEventType containsString:@"Jobs Report"]) {
+        if ([formattedEventType containsString:@"US Jobs Report"]) {
             moreInfoURL = @"http://www.bls.gov/mobile/mobile_releases.htm";
         }
         // New econ events types
@@ -1370,14 +1369,12 @@
         }
     }
     // Economic Event
-    if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]||[cellEventType containsString:@"Retail Sales"]||[cellEventType containsString:@"Housing Starts"]||[cellEventType containsString:@"Homes Sales"]) {
+    if ([cellEventType containsString:@"US Fed Meeting"]||[cellEventType containsString:@"US Jobs Report"]||[cellEventType containsString:@"US Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]||[cellEventType containsString:@"Retail Sales"]||[cellEventType containsString:@"Housing Starts"]||[cellEventType containsString:@"Homes Sales"]) {
         
         // Get the fully formatted ticker for ECON events i.e. ECON_FOMC
         cellCompanyTicker = [appropriateDataController getTickerForName:eventCell.companyName.text];
         
         // Create the reminder and show user the appropriate message
-        // TO DO: Delete Later
-        NSLog(@"*******Econ Event for which reminder is being created event is:%@ with date text:%@",cellEventType,cellEventDateText);
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
         if (success) {
             [self sendUserMessageCreatedNotificationWithMessage:@"Following event"];
@@ -1486,7 +1483,7 @@
     }
 }
 
-// Create reminders for all economic events of a certain type (e.g. Jobs Report) for a given ticker, if it's not already been created
+// Create reminders for all economic events of a certain type (e.g. US Jobs Report) for a given ticker, if it's not already been created
 - (void)createAllRemindersForEconEventType:(NSString *)type withDataController:(FADataController *)appropriateDataController {
     
     NSString *cellEventType = nil;
@@ -1542,14 +1539,14 @@
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ %@ Earnings tomorrow %@",companyTicker,eventDateText];
     }
-    if ([eventType containsString:@"Fed Meeting"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Fed Meeting Outcome tomorrow %@", eventDateText];
+    if ([eventType containsString:@"US Fed Meeting"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US Fed Meeting Outcome tomorrow %@", eventDateText];
     }
-    if ([eventType containsString:@"Jobs Report"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Jobs Report tomorrow %@", eventDateText];
+    if ([eventType containsString:@"US Jobs Report"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US Jobs Report tomorrow %@", eventDateText];
     }
-    if ([eventType containsString:@"Consumer Confidence"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Consumer Confidence Report tomorrow %@", eventDateText];
+    if ([eventType containsString:@"US Consumer Confidence"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US Consumer Confidence Report tomorrow %@", eventDateText];
     }
     if ([eventType containsString:@"India GDP Release"]) {
             reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ India GDP Release tomorrow %@", eventDateText];
@@ -1636,7 +1633,7 @@
     }];
 }
 
-// Delete reminders for a given econ event type e.g. Fed Meeting not Jan Fed Meeting
+// Delete reminders for a given econ event type e.g. US Fed Meeting not Jan US Fed Meeting
 - (void)deleteRemindersForEconEventType:(NSString *)eventType {
     
     // Get the default calendar where Knotifi events have been created
@@ -2913,10 +2910,10 @@
     if ([formattedEventType containsString:@"Consumer Confidence"]) {
         searchTerm = @"us consumer confidence";
     }
-    if ([formattedEventType containsString:@"Fed Meeting"]) {
+    if ([formattedEventType containsString:@"US Fed Meeting"]) {
         searchTerm = @"fomc meeting";
     }
-    if ([formattedEventType containsString:@"Jobs Report"]) {
+    if ([formattedEventType containsString:@"US Jobs Report"]) {
         searchTerm = @"jobs report us";
     }
     if ([formattedEventType containsString:@"% up"]||[formattedEventType containsString:@"% down"]) {
@@ -3025,10 +3022,10 @@
     if ([formattedEventType containsString:@"Consumer Confidence"]) {
         searchTerm = @"us consumer confidence";
     }
-    if ([formattedEventType containsString:@"Fed Meeting"]) {
+    if ([formattedEventType containsString:@"US Fed Meeting"]) {
         searchTerm = @"fomc meeting";
     }
-    if ([formattedEventType containsString:@"Jobs Report"]) {
+    if ([formattedEventType containsString:@"US Jobs Report"]) {
         searchTerm = @"jobs report us";
     }
     if ([formattedEventType containsString:@"% up"]||[formattedEventType containsString:@"% down"]) {
@@ -3461,7 +3458,7 @@
     return formattedTicker;
 }
 
-// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan Fed Meeting -> Fed Meeting. Jan Jobs Report -> Jobs Report and so on. For product events strip out conference keyword WWDC 2016 Conference -> WWDC 2016
+// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan US Fed Meeting -> US Fed Meeting. Jan US Jobs Report -> US Jobs Report and so on. For product events strip out conference keyword WWDC 2016 Conference -> WWDC 2016
 - (NSString *)formatEventType:(NSString *)rawEventType
 {
     NSString *formattedEventType = rawEventType;
@@ -3470,16 +3467,16 @@
         formattedEventType = @"Earnings";
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
-        formattedEventType = @"Fed Meeting";
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
+        formattedEventType = @"US Fed Meeting";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
-        formattedEventType = @"Jobs Report";
+    if ([rawEventType containsString:@"US Jobs Report"]) {
+        formattedEventType = @"US Jobs Report";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
-        formattedEventType = @"Consumer Confidence";
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
+        formattedEventType = @"US Consumer Confidence";
     }
     
     if ([rawEventType containsString:@"US GDP Release"]) {
@@ -3529,15 +3526,15 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionType = @"More";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionType = @"More";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionType = @"More";
     }
     
@@ -3564,7 +3561,7 @@
     return actionType;
 }
 
-// Take the event displayed and format it back to the event type stored in the db. Currently the formatting looks like the following: Earnings -> Quarterly Earnings. Fed Meeting -> Jan Fed Meeting. Jobs Report -> Jan Jobs Report and so on. For product events, only the conference keyword needs to be added back. So WWDC 2016 -> WWDC 2016 Conference. NOTE: When a new product event type other than launch or conference is added, reconcile here as well.
+// Take the event displayed and format it back to the event type stored in the db. Currently the formatting looks like the following: Earnings -> Quarterly Earnings. US Fed Meeting -> Jan US Fed Meeting. US Jobs Report -> Jan US Jobs Report and so on. For product events, only the conference keyword needs to be added back. So WWDC 2016 -> WWDC 2016 Conference. NOTE: When a new product event type other than launch or conference is added, reconcile here as well.
 - (NSString *)formatBackToEventType:(NSString *)rawEventType withAddedInfo:(NSString *)addtlInfo
 {
     NSString *formattedEventType = rawEventType;
@@ -3609,7 +3606,7 @@
     return returnVal;
 }
 
-// Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
+// Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. US Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
 - (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails withStatus:(NSString *)eventStatus
 {
     
@@ -3636,19 +3633,19 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         
         eventTimeString = @"2 p.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         
         eventTimeString = @"8:30 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         
         eventTimeString = @"10 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
@@ -3978,12 +3975,12 @@
         
     }
     
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         
         eventImage = [UIImage imageNamed:@"EconListCircle"];
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         
         eventImage = [UIImage imageNamed:@"EconListCircle"];
     }
@@ -4032,11 +4029,11 @@
         // Punchy Knotifi Green
         colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
     }
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         // Econ Blue
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         // Econ Blue
         colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
     }

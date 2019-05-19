@@ -827,19 +827,19 @@
                 [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
                 [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 
-                if ([self.eventType containsString:@"Fed Meeting"]) {
+                if ([self.eventType containsString:@"US Fed Meeting"]) {
                     // Select the appropriate color and text for Financial Stocks
                     cell.titleLabel.textColor = [UIColor colorWithRed:104.0f/255.0f green:182.0f/255.0f blue:37.0f/255.0f alpha:1.0f];
                     [[cell titleLabel] setText:@"$"];
                 }
                 
-                if ([self.eventType containsString:@"Jobs Report"]) {
+                if ([self.eventType containsString:@"US Jobs Report"]) {
                     // Select the appropriate color and text for All Stocks
                     cell.titleLabel.textColor = [UIColor orangeColor];
                     [[cell titleLabel] setText:@"❖"];
                 }
                 
-                if ([self.eventType containsString:@"Consumer Confidence"]) {
+                if ([self.eventType containsString:@"US Consumer Confidence"]) {
                     // Select the appropriate color and text for Retail Stocks
                     // Pinkish deep red
                     cell.titleLabel.textColor = [UIColor colorWithRed:233.0f/255.0f green:65.0f/255.0f blue:78.0f/255.0f alpha:1.0f];
@@ -2029,7 +2029,7 @@
             // Refresh the event list on the prior screen
             [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
             
-            // Delete existing reminders for this econ event type i.e. Fed Meeting not Jan Fed Meeting. We send in Jan Fed Meeting but it automatically gets converted to Fed Meeting in the delete method.
+            // Delete existing reminders for this econ event type i.e. US Fed Meeting not Jan US Fed Meeting. We send in Jan US Fed Meeting but it automatically gets converted to US Fed Meeting in the delete method.
             [self deleteRemindersForEconEventType:self.eventType];
             
             // Style the button to post set styling with a slight delay to give time for all reminders to finish deleting
@@ -2370,7 +2370,7 @@
 // Process the "Remind Me" action for the event represented by the cell on which the action was taken. If the event is confirmed, create the reminder immediately and make an appropriate entry in the Action data store. If it's estimated, then don't create the reminder, only make an appropriate entry in the action data store for later processing.
 - (void)processReminderForEventType:(NSString *)eventType companyTicker:(NSString *)parentTicker eventDateText:(NSString *)evtDateText eventCertainty:(NSString *)evtCertainty withDataController:(FADataController *)appropriateDataController {
     
-    // NOTE: Format for Event Type is expected to be "Quarterly Earnings"  based on "Earnings" or "Jan Fed Meeting" based on "Fed Meeting" that comes from the UI.
+    // NOTE: Format for Event Type is expected to be "Quarterly Earnings"  based on "Earnings" or "Jan US Fed Meeting" based on "US Fed Meeting" that comes from the UI.
     // If the formatting changes, it needs to be changed here to accomodate as well.
     NSString *cellEventType = eventType;
     NSString *cellCompanyTicker = parentTicker;
@@ -2402,7 +2402,7 @@
         }
     }
     // Economic Event
-    if ([cellEventType containsString:@"Fed Meeting"]||[cellEventType containsString:@"Jobs Report"]||[cellEventType containsString:@"Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]) {
+    if ([cellEventType containsString:@"US Fed Meeting"]||[cellEventType containsString:@"US Jobs Report"]||[cellEventType containsString:@"US Consumer Confidence"]||[cellEventType containsString:@"GDP Release"]) {
         
         // Create the reminder and show user the appropriate message
         BOOL success = [self createReminderForEventOfType:cellEventType withTicker:cellCompanyTicker dateText:cellEventDateText andDataController:appropriateDataController];
@@ -2509,7 +2509,7 @@
     }
 }
 
-// Create reminders for all economic events of a certain type (e.g. Jobs Report) for a given ticker, if it's not already been created
+// Create reminders for all economic events of a certain type (e.g. US Jobs Report) for a given ticker, if it's not already been created
 - (void)createAllRemindersInDetailsViewForEconEventType:(NSString *)type withDataController:(FADataController *)appropriateDataController {
     
     NSString *cellEventType = nil;
@@ -2520,17 +2520,17 @@
     NSDate *todaysDate = [self setTimeToMidnightLastNightOnDate:[NSDate date]];
     
     // Get all events for an econ type
-    // Send in the generic type (e.g. Jobs Report) rather than the exact type (e.g. Jan Jobs Report)
+    // Send in the generic type (e.g. US Jobs Report) rather than the exact type (e.g. Jan US Jobs Report)
     // Filter based on type
     NSArray *allEvents = nil;
-    if ([type containsString:@"Fed Meeting"]) {
-        allEvents = [appropriateDataController getAllEconEventsOfType:@"Fed Meeting"];
+    if ([type containsString:@"US Fed Meeting"]) {
+        allEvents = [appropriateDataController getAllEconEventsOfType:@"US Fed Meeting"];
     }
-    if ([type containsString:@"Jobs Report"]) {
-        allEvents = [appropriateDataController getAllEconEventsOfType:@"Jobs Report"];
+    if ([type containsString:@"US Jobs Report"]) {
+        allEvents = [appropriateDataController getAllEconEventsOfType:@"US Jobs Report"];
     }
-    if ([type containsString:@"Consumer Confidence"]) {
-        allEvents = [appropriateDataController getAllEconEventsOfType:@"Consumer Confidence"];
+    if ([type containsString:@"US Consumer Confidence"]) {
+        allEvents = [appropriateDataController getAllEconEventsOfType:@"US Consumer Confidence"];
     }
     if ([type containsString:@"GDP Release"]) {
         allEvents = [appropriateDataController getAllEconEventsOfType:@"GDP Release"];
@@ -2578,14 +2578,14 @@
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ %@ Earnings tomorrow %@",companyTicker,eventDateText];
     }
-    if ([eventType containsString:@"Fed Meeting"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Fed Meeting Outcome tomorrow %@", eventDateText];
+    if ([eventType containsString:@"US Fed Meeting"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US Fed Meeting Outcome tomorrow %@", eventDateText];
     }
-    if ([eventType containsString:@"Jobs Report"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Jobs Report tomorrow %@", eventDateText];
+    if ([eventType containsString:@"US Jobs Report"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US Jobs Report tomorrow %@", eventDateText];
     }
-    if ([eventType containsString:@"Consumer Confidence"]) {
-        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ Consumer Confidence Report tomorrow %@", eventDateText];
+    if ([eventType containsString:@"US Consumer Confidence"]) {
+        reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ US Consumer Confidence Report tomorrow %@", eventDateText];
     }
     if ([eventType containsString:@"GDP Release"]) {
         reminderText = [NSString stringWithFormat:@"Knotifi ▶︎ GDP Release tomorrow %@", eventDateText];
@@ -2659,20 +2659,20 @@
     }];
 }
 
-// Delete reminders for a given econ event type e.g. Fed Meeting not Jan Fed Meeting
+// Delete reminders for a given econ event type e.g. US Fed Meeting not Jan US Fed Meeting
 - (void)deleteRemindersForEconEventType:(NSString *)eventType {
     
     NSString *genericEventType = nil;
     
-    // Get the generic event type i.e. Fed Meeting as opposed to Jan Fed Meeting
-    if ([eventType containsString:@"Fed Meeting"]) {
-        genericEventType = @"Fed Meeting";
+    // Get the generic event type i.e. US Fed Meeting as opposed to Jan US Fed Meeting
+    if ([eventType containsString:@"US Fed Meeting"]) {
+        genericEventType = @"US Fed Meeting";
     }
-    if ([eventType containsString:@"Jobs Report"]) {
-        genericEventType = @"Jobs Report";
+    if ([eventType containsString:@"US Jobs Report"]) {
+        genericEventType = @"US Jobs Report";
     }
-    if ([eventType containsString:@"Consumer Confidence"]) {
-        genericEventType = @"Consumer Confidence";
+    if ([eventType containsString:@"US Consumer Confidence"]) {
+        genericEventType = @"US Consumer Confidence";
     }
     if ([eventType containsString:@"GDP Release"]) {
         genericEventType = @"GDP Release";
@@ -2768,7 +2768,7 @@
     }
     
     // For econ events: Description(getShortDescriptionForEventType:), Impact Level: getImpactDescriptionForEventType: + Impact(getEpsOrImpactTextForEventType:), Sectors Affected(getEpsOrSectorsTextForEventType:), Tip(getPriceSinceOrTipTextForEventType:),
-    if ([self.eventType containsString:@"Fed Meeting"]) {
+    if ([self.eventType containsString:@"US Fed Meeting"]) {
         if(sectionNo == 0) {
             numberOfPieces = 6;
         }
@@ -2777,7 +2777,7 @@
         }
     }
     
-    if ([self.eventType containsString:@"Jobs Report"]) {
+    if ([self.eventType containsString:@"US Jobs Report"]) {
         if(sectionNo == 0) {
             numberOfPieces = 6;
         }
@@ -2786,7 +2786,7 @@
         }
     }
     
-    if ([self.eventType containsString:@"Consumer Confidence"]) {
+    if ([self.eventType containsString:@"US Consumer Confidence"]) {
         if(sectionNo == 0) {
             numberOfPieces = 6;
         }
@@ -2886,15 +2886,15 @@
         description = @"\"Report Card\" for companies.Covers their performance over the last quarter.";
     }
     
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         description = @"Meeting between federal officials to determine future monetary policy.";
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         description = @"Estimate of the number of people who have jobs and those that don't.";
     }
     
-    if ([eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"US Consumer Confidence"]) {
         description = @"Measure of how likely people are to spend money in the future.";
     }
     
@@ -2934,17 +2934,17 @@
         
     }
     
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         
         eventImage = [UIImage imageNamed:@"EconDetailCircle"];
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         
         eventImage = [UIImage imageNamed:@"EconDetailCircle"];
     }
     
-    if ([eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"US Consumer Confidence"]) {
         
         eventImage = [UIImage imageNamed:@"EconDetailCircle"];
     }
@@ -2973,15 +2973,15 @@
         //description = @"Prior reported quarter EPS";
         description = @"Prior EPS";
     }
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         description = @"Financial stocks are impacted most by this.";
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         description = @"All types of stocks are impacted by this.";
     }
     
-    if ([eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"US Consumer Confidence"]) {
         description = @"Retail stocks are impacted most by this.";
     }
     
@@ -3016,15 +3016,15 @@
         description = @"Expected EPS";
     }
     
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         description = @"Outcome determines key interest rates.";
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         description = @"Reflects the health of the job market.";
     }
     
-    if ([eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"US Consumer Confidence"]) {
         description = @"Indicator of future personal spending.";
     }
     
@@ -3073,15 +3073,15 @@
         }
     }
     
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         description = @"Very High Impact";
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         description = @"Very High Impact";
     }
     
-    if ([eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"US Consumer Confidence"]) {
         description = @"Medium Impact";
     }
     
@@ -3131,15 +3131,15 @@
         }
     }
     
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         description = @"Outcome determines key interest rates.";
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         description = @"Reflects the health of the job market.";
     }
     
-    if ([eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"US Consumer Confidence"]) {
         description = @"Indicator of future personal spending.";
     }
     
@@ -3223,13 +3223,13 @@
         if ([eventType containsString:@"GDP Release"]) {
             searchTerm = @"us gdp growth";
         }
-        if ([eventType containsString:@"Consumer Confidence"]) {
+        if ([eventType containsString:@"US Consumer Confidence"]) {
             searchTerm = @"us consumer confidence";
         }
-        if ([eventType containsString:@"Fed Meeting"]) {
+        if ([eventType containsString:@"US Fed Meeting"]) {
             searchTerm = @"fomc meeting";
         }
-        if ([eventType containsString:@"Jobs Report"]) {
+        if ([eventType containsString:@"US Jobs Report"]) {
             searchTerm = @"jobs report us";
             moreInfoTitle = @"Latest On Google ▶︎";
             moreInfoURL = @"https://www.google.com/search?q=";
@@ -3286,15 +3286,15 @@
         description = [NSString stringWithFormat:@"1 month price change"];
     }
     
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         description = @"Pro Tip! If short term interest rates go up, banks typically benefit.";
     }
     
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         description = @"Tip! Watch the jobless rate. In a strong labor market this decreases.";
     }
     
-    if ([eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"US Consumer Confidence"]) {
         description = @"Pro Tip! Consumers account for about 2/3rd of the nation's economic activity.";
     }
     
@@ -3377,13 +3377,13 @@
         // Punchy Knotifi Green
         colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
     }
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         // Econ Blue
         //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
         // Light purple
         colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         // Econ Blue
         //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
         // Light purple
@@ -3451,19 +3451,19 @@
         // Punchy Knotifi Green
         colorToReturn = [UIColor colorWithRed:104.0f/255.0f green:202.0f/255.0f blue:94.0f/255.0f alpha:1.0f];
     }
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         // Econ Blue
         //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
         // Light purple
         colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
-    if ([eventType containsString:@"Jobs Report"]) {
+    if ([eventType containsString:@"US Jobs Report"]) {
         // Econ Blue
         //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
         // Light purple
         colorToReturn = [UIColor colorWithRed:123.0f/255.0f green:79.0f/255.0f blue:166.0f/255.0f alpha:1.0f];
     }
-    if ([eventType containsString:@"Consumer Confidence"]) {
+    if ([eventType containsString:@"US Consumer Confidence"]) {
         // Econ Blue
         //colorToReturn = [UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f];
         // Light purple
@@ -3508,7 +3508,7 @@
 }
 
 
-// Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
+// Format the event date for appropriate display. Currently the formatting looks like: Quarterly Earnings -> Wed January 27 Before Open. US Fed Meeting -> Wed January 27 2:00 p.m. ET . iPhone 7 Launch -> Early September
 - (NSString *)formatDateBasedOnEventType:(NSString *)rawEventType withDate:(NSDate *)eventDate withRelatedDetails:(NSString *)eventRelatedDetails withStatus:(NSString *)eventStatus
 {
     
@@ -3535,19 +3535,19 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         
         eventTimeString = @"2 p.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         
         eventTimeString = @"8:30 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         
         eventTimeString = @"10 a.m. ET";
         eventDateString = [NSString stringWithFormat:@"%@ %@",eventDateString,eventTimeString];
@@ -3617,7 +3617,7 @@
     return formattedDate;
 }
 
-// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan Fed Meeting -> Fed Meeting. Jan Jobs Report -> Jobs Report and so on. For product events strip out conference keyword WWDC 2016 Conference -> WWDC 2016
+// Format the event type for appropriate display. Currently the formatting looks like the following: Quarterly Earnings -> Earnings. Jan US Fed Meeting -> US Fed Meeting. Jan US Jobs Report -> US Jobs Report and so on. For product events strip out conference keyword WWDC 2016 Conference -> WWDC 2016
 - (NSString *)formatEventType:(Event *)rawEvent
 {
     NSString *rawEventType = rawEvent.type;
@@ -3705,15 +3705,15 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionType = @"See FOMC site";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionType = @"See BLS site";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionType = @"See TCB site";
     }
     
@@ -3758,15 +3758,15 @@
             actionLocation = [NSString stringWithFormat:@"https://seekingalpha.com/symbol/%@",eventTicker];
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionLocation = @"https://www.federalreserve.gov/monetarypolicy.htm";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionLocation = @"https://www.bls.gov/mobile/mobile_releases.htm";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionLocation = @"https://www.conference-board.org/data/consumerconfidence.cfm";
     }
     
@@ -3817,15 +3817,15 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionType = @"Not Available";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionType = @"Not Available";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionType = @"Not Available";
     }
     
@@ -3873,7 +3873,7 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
         searchTerm = @"fomc meeting";
         // Remove any spaces in the URL query string params
@@ -3881,7 +3881,7 @@
         actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
         searchTerm = @"jobs report us";
         // Remove any spaces in the URL query string params
@@ -3889,7 +3889,7 @@
         actionLocation = [externalURL stringByAppendingString:searchTerm];
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         externalURL = [NSString stringWithFormat:@"%@",@"https://www.google.com/m/search?tbm=nws&q="];
         searchTerm = @"us consumer confidence";
         // Remove any spaces in the URL query string params
@@ -3964,15 +3964,15 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionType = @"Not Available";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionType = @"Not Available";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionType = @"Not Available";
     }
     
@@ -4015,15 +4015,15 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionLocation = @"Not Available";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionLocation = @"Not Available";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionLocation = @"Not Available";
     }
     
@@ -4071,15 +4071,15 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionType = @"Scan News";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionType = @"Scan News";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionType = @"Scan News";
     }
     
@@ -4146,15 +4146,15 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionType = @"Go to Site";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionType = @"Go to Site";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionType = @"Go to Site";
     }
     
@@ -4202,15 +4202,15 @@
         }
     }
     
-    if ([rawEventType containsString:@"Fed Meeting"]) {
+    if ([rawEventType containsString:@"US Fed Meeting"]) {
         actionLocation = @"Not Available";
     }
     
-    if ([rawEventType containsString:@"Jobs Report"]) {
+    if ([rawEventType containsString:@"US Jobs Report"]) {
         actionLocation = @"Not Available";
     }
     
-    if ([rawEventType containsString:@"Consumer Confidence"]) {
+    if ([rawEventType containsString:@"US Consumer Confidence"]) {
         actionLocation = @"Not Available";
     }
     

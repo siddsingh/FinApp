@@ -1,7 +1,7 @@
 {
     "eventSets":[
                  {
-                 "name":"Fed Meeting",
+                 "name":"US Fed Meeting",
                  "identifier":"ECONOMY_FOMC",
                  "agency":"Federal Open Market Committee",
                  "impact":"Very High",
@@ -48,7 +48,7 @@
                  "datesPressConference":[20190320,20190619,20190918,20191211]
                  },
                  {
-                 "name":"Jobs Report",
+                 "name":"US Jobs Report",
                  "identifier":"ECONOMY_BLS",
                  "agency":"Bureau of Labor Statistics",
                  "impact":"Very High",
@@ -110,7 +110,7 @@
                               ]
                  },
                  {
-                 "name":"Consumer Confidence",
+                 "name":"US Consumer Confidence",
                  "identifier":"ECONOMY_TCB",
                  "agency":"The Conference Board",
                  "impact":"Medium",

@@ -38,11 +38,11 @@ static FASnapShot *sharedInstance;
     return sharedInstance;
 }
 
-// Returns if that event is a High Impact event or not given the raw event type and parent ticker. Examples of high impact events: 1) High impact product launches like iPhone 8, Naples Chip as these either validate my investment thesis or help form a new one. 2) High impact econ events that help shed light on how the market is likely to play out. e.g. Interest rates are likely to go up. Financials will do well. GDP is a big number stocks will likely do well.3) Big name companies earnings like FANG or Apple whose earnings can impact overall market.
+// Returns if that event is a High Impact event or not given the raw event type and parent ticker. Examples of high impact events: 1) High impact product launches like iPhone 8, Naples Chip as these either validate my investment thesis or help form a new one. 2) High impact econ events that help shed light on how the market is likely to play out. e.g. Interest rates are likely to go up. Financials will do well. GDP is a big number stocks will likely do well.3) Big name companies earnings like FANG or Apple whose earnings can impact overall market.Currently this always returns false.
 - (BOOL)isEventHighImpact:(NSString *)eventType eventParent:(NSString *)parentTicker
 {
     BOOL highImpact = NO;
-    FADataController *impactController = [[FADataController alloc] init];
+  /*  FADataController *impactController = [[FADataController alloc] init];
     
     // If the event type is earnings, return true for big name companies earnings like FANG or Apple whose earnings can impact overall market
     if ([eventType isEqualToString:@"Quarterly Earnings"]) {
@@ -81,17 +81,17 @@ static FASnapShot *sharedInstance;
         }
     }
     
-    if ([eventType containsString:@"Fed Meeting"]) {
+    if ([eventType containsString:@"US Fed Meeting"]) {
         // This is the event description
         //description = @"Very High Impact.Outcome determines key interest rates.";
         highImpact = YES;
     }
     
-   /* if ([eventType containsString:@"Jobs Report"]) {
+   // if ([eventType containsString:@"US Jobs Report"]) {
         // This is the event description
         //description = @"Very High Impact.Reflects the health of the job market.";
-        highImpact = YES;
-    } */
+    //    highImpact = YES;
+  //  }
     
     // If event type is Product, the impact is stored in the event history data store, so fetch it from there.
     if ([eventType containsString:@"Launch"]||[eventType containsString:@"Conference"]) {
@@ -108,7 +108,7 @@ static FASnapShot *sharedInstance;
             //description = @"Very High Impact.Outcome determines key interest rates.";
             highImpact = YES;
         }
-    }
+    } */
     
     return highImpact;
 }
@@ -682,7 +682,8 @@ static FASnapShot *sharedInstance;
     
     if ([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame) {
         // Red
-        colorToReturn = [UIColor redColor];
+        //colorToReturn = [UIColor redColor];
+        colorToReturn = [UIColor colorWithRed:211.0f/255.0f green:56.0f/255.0f blue:48.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"ECONOMY_FOMC"] == NSOrderedSame) {

@@ -1,7 +1,7 @@
 {
     "eventSets":[
                  {
-                 "name":"Fed Meeting",
+                 "name":"US Fed Meeting",
                  "identifier":"ECONOMY_FOMC",
                  "agency":"Federal Open Market Committee",
                  "impact":"Very High",
@@ -48,7 +48,7 @@
                  "datesPressConference":[20180321,20180613,20180926,20181219]
                  },
                  {
-                 "name":"Jobs Report",
+                 "name":"US Jobs Report",
                  "identifier":"ECONOMY_BLS",
                  "agency":"Bureau of Labor Statistics",
                  "impact":"Very High",

@@ -229,7 +229,8 @@
 // Refresh events that are likely to be updated, from API. Additionally also get the events for trending tickers initially. Check to see if product events need to be added or refreshed. If yes, do that. Currently product events are being fetched whole each time. Plus  Typically called in a background thread.
 - (void)refreshEventsIfNeededFromApiInBackgroundWithDataController:(FADataController *)existingDC
 {
-    [existingDC addCurrentTrendingEarnings];
+    // Add Trending events if people are not able to figure out how to add their own events.
+    //[existingDC addCurrentTrendingEarnings];
     [existingDC updateEventsFromRemoteIfNeeded];
 }
 
