@@ -85,14 +85,14 @@
     
     // Set navigation bar header to title "Upcoming Events"
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
-                                    [UIColor blackColor], NSForegroundColorAttributeName,
-                                    nil];
+                                             [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                             [UIColor blackColor], NSForegroundColorAttributeName,
+                                             nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
-    [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING MARKET EVENTS"];
+    [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Events"];
     
     // Set font and size for searchbar text.
-    [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{ NSFontAttributeName: [UIFont fontWithName:@"Helvetica" size:12]}];
+    [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setDefaultTextAttributes:@{ NSFontAttributeName: [UIFont fontWithName:@"Helvetica" size:16]}];
     
     // Change the color of the events search bar placeholder text and text entered
     // Set it to a light gray color
@@ -107,7 +107,8 @@
     // Change the color of the Magnifying glass icon in the search bar to be a light gray text color
     UIImageView *magGlassIcon = (UIImageView *)eventSearchBarInputFld.leftView;
     magGlassIcon.image = [magGlassIcon.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    magGlassIcon.tintColor = [UIColor colorWithRed:160.0f/255.0f green:160.0f/255.0f blue:160.0f/255.0f alpha:1.0f];
+    //magGlassIcon.tintColor = [UIColor colorWithRed:160.0f/255.0f green:160.0f/255.0f blue:160.0f/255.0f alpha:1.0f];
+    magGlassIcon.tintColor = [UIColor blackColor];
     
     // Change the color of the Clear button in the search bar to be a light gray color
     UIButton *searchClearBtn = [eventSearchBarInputFld valueForKey:@"_clearButton"];
@@ -119,11 +120,16 @@
     [self.eventTypeSelector setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
     [self.eventTypeSelector setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
     // Set text color of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
-    [self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
+    NSDictionary *unselectedTxtAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                             [UIFont fontWithName:@"Helvetica" size:16], NSFontAttributeName,
+                                             [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
+                                             nil];
+    //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
+    [self.eventTypeSelector setTitleTextAttributes:unselectedTxtAttributes forState:UIControlStateNormal];
     // Set text color for the segment selected for the very first time which is Bold Black for ALL events type. Also set focus bar to draw focus to the search bar to the same color.
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -676,7 +682,7 @@
             // Set the Filter Specified flag to true, indicating that a search filter has been specified
             self.filterSpecified = YES;
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT TIMELINE"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Product Timeline"];
             // Reload messages table
             [self.eventsListTable reloadData];
             // Remove the search context that removes the keyboard
@@ -2479,7 +2485,7 @@
     
     // Reset the navigation bar header text color to black
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                               [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                               [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
                                                [UIColor blackColor], NSForegroundColorAttributeName,
                                                nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -2489,7 +2495,7 @@
     // All Event Types - Color Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2501,18 +2507,18 @@
         [self searchBar:self.eventsSearchBar textDidChange:@""];
         
         // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"COMPANY/TICKER/EVENT";
+        self.eventsSearchBar.placeholder = @"Search Company or Event";
         
         // Query all future events or future following events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING MARKET EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Events"];
             self.eventResultsController = [self.primaryDataController getAllFutureEventsWithProductEventsOfVeryHighImpact];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"ALL FOLLOWED EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Followed Events"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEvents];
             [self.eventsListTable reloadData];
         }
@@ -2537,7 +2543,7 @@
         
         // Making size smaller to fit iphone SE
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2549,18 +2555,18 @@
         [self searchBar:self.eventsSearchBar textDidChange:@""];
         
         // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"COMPANY/TICKER";
+        self.eventsSearchBar.placeholder = @"Search Company or Ticker";
         
         // Query all future earnings events or following future events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING EARNINGS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Earnings"];
             self.eventResultsController = [self.primaryDataController getAllFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EARNINGS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Followed Earnings"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEarningsEvents];
             [self.eventsListTable reloadData];
         }
@@ -2575,7 +2581,7 @@
         // Black
         //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2588,18 +2594,18 @@
         [self searchBar:self.eventsSearchBar textDidChange:@""];
         
         // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"EVENT";
+        self.eventsSearchBar.placeholder = @"Search Event";
         
         // Query all future economic events or following economic events, including today.
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING ECON EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Econ Events"];
             self.eventResultsController = [self.primaryDataController getAllFutureEconEvents];
             [self.eventsListTable reloadData];
         }
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ECON EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Followed Econ Events"];
             self.eventResultsController = [self.primaryDataController getAllFollowingFutureEconEvents];
             [self.eventsListTable reloadData];
         }
@@ -2624,7 +2630,7 @@
         if (targetURL) {
             
             NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                            [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                            [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
                                             [UIColor blackColor], NSForegroundColorAttributeName,
                                             nil];
             [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2639,13 +2645,13 @@
             // Query all future economic events or following economic events, including today.
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
                 // Set correct header text
-                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING CRYPTO EVENTS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Crypto Events"];
                 self.eventResultsController = [self.primaryDataController getAllFutureCryptoEvents];
                 [self.eventsListTable reloadData];
             }
             if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
                 // Set correct header text
-                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED CRYPTO EVENTS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Followed Crypto Events"];
                 self.eventResultsController = [self.primaryDataController getAllFollowingFutureCryptoEvents];
                 [self.eventsListTable reloadData];
             }
@@ -2668,7 +2674,7 @@
         
         // Black
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         
@@ -2678,12 +2684,12 @@
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Events"] == NSOrderedSame) {
             
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING PRODUCT EVENTS"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Product Events"];
             // Clear out the search context
             [self.eventsSearchBar setText:@""];
             [self searchBar:self.eventsSearchBar textDidChange:@""];
             // Set correct search bar placeholder text
-            self.eventsSearchBar.placeholder = @"COMPANY/TICKER/EVENT";
+            self.eventsSearchBar.placeholder = @"Search Company or Event";
             
             self.eventResultsController = [self.primaryDataController getAllFutureProductEvents];
             [self.eventsListTable reloadData];
@@ -2708,7 +2714,7 @@
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
         
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2718,9 +2724,9 @@
         if ([[self.mainNavSelector titleForSegmentAtIndex:self.mainNavSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Following"] == NSOrderedSame) {
             
             // Set correct header text
-            [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED PRICE CHANGES"];
+            [self.navigationController.navigationBar.topItem setTitle:@"Followed Price Changes"];
             // Set correct search bar placeholder text
-            self.eventsSearchBar.placeholder = @"COMPANY/TICKER";
+            self.eventsSearchBar.placeholder = @"Search Company or Ticker";
             
             // TURNED THIS OFF CURRENTLY  as it was not consistently working. Check to make sure we are syncing daily price data only once a day, after the market has opened.
             // Get time in GMT, US markets open at 9:30 am ET which is 1:30 pm GMT
@@ -2805,7 +2811,7 @@
     
     // Reset the navigation bar header text color to black
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                             [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
                                              [UIColor blackColor], NSForegroundColorAttributeName,
                                              nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -2832,7 +2838,7 @@
         [self.eventTypeSelector setEnabled:YES];
         [self.eventTypeSelector setHidden:NO];
         // Set correct search bar placeholder text
-        self.eventsSearchBar.placeholder = @"COMPANY/TICKER/EVENT";
+        self.eventsSearchBar.placeholder = @"Search Company or Event";
     }
     
     // Go with either NEWS or PRICE option based on Events or Following
@@ -4177,7 +4183,7 @@
         
         // Set navigation bar header to title "Upcoming Events"
         NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [UIFont boldSystemFontOfSize:14], NSFontAttributeName,
+                                                 [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
                                                  [UIColor blackColor], NSForegroundColorAttributeName,
                                                  nil];
         [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -4187,27 +4193,27 @@
             
             // If Home is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING MARKET EVENTS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Events"];
             }
             
             // If Earnings is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING EARNINGS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Earnings"];
             }
             
             // If Econ events is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING ECON EVENTS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Econ Events"];
             }
             
             // If Crypto events is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"UPCOMING CRYPTO EVENTS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Upcoming Crypto Events"];
             }
             
             // If News (Prod) is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Prod"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT NEWS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Product News"];
             }
         }
         // If following is selected
@@ -4215,27 +4221,27 @@
             
             // If Home is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"ALL FOLLOWED EVENTS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Followed Events"];
             }
             
             // If Earnings is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Earnings"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED EARNINGS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Followed Earnings"];
             }
             
             // If Econ events is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Econ"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED ECON EVENTS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Followed Econ Events"];
             }
             
             // If Crypto events is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Crypto"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED CRYPTO EVENTS"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Followed Crypto Events"];
             }
             
             // If Price is selected
             if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
-                [self.navigationController.navigationBar.topItem setTitle:@"FOLLOWED PRICE CHANGES"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Followed Price Changes"];
             }
         }
         // Check to see if the Product Main Nav is selected
@@ -4244,7 +4250,7 @@
             if ([self.filterType isEqualToString:@"None_Specified"]) {
                 [self.navigationController.navigationBar.topItem setTitle:@"See Product Timeline"];
             } else {
-                [self.navigationController.navigationBar.topItem setTitle:@"PRODUCT TIMELINE"];
+                [self.navigationController.navigationBar.topItem setTitle:@"Product Timeline"];
             }
         }
     }

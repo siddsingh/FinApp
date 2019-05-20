@@ -677,7 +677,8 @@ static FASnapShot *sharedInstance;
     
     if ([ticker caseInsensitiveCompare:@"ECONOMY_MOS"] == NSOrderedSame) {
         // Green
-        colorToReturn = [UIColor colorWithRed:50.0f/255.0f green:100.0f/255.0f blue:10.0f/255.0f alpha:1.0f];
+        //colorToReturn = [UIColor colorWithRed:50.0f/255.0f green:100.0f/255.0f blue:10.0f/255.0f alpha:1.0f];
+        colorToReturn = [UIColor colorWithRed:37.0f/255.0f green:73.0f/255.0f blue:44.0f/255.0f alpha:1.0f];
     }
     
     if ([ticker caseInsensitiveCompare:@"ECONOMY_BEA"] == NSOrderedSame) {

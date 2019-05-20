@@ -38,44 +38,17 @@
                                     </mask>
                                 </variation>
                             </label>
-                            <searchBar contentMode="redraw" text="" placeholder="COMPANY/TICKER/EVENT" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
-                                <rect key="frame" x="15" y="0.0" width="290" height="32"/>
-                                <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="560" id="jnJ-Ta-4AT"/>
-                                    <constraint firstAttribute="width" constant="281" id="mhM-BN-IR8"/>
-                                    <constraint firstAttribute="height" constant="32" id="pV3-8V-vCK"/>
-                                </constraints>
-                                <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <color key="barTintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <textInputTraits key="textInputTraits"/>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="jnJ-Ta-4AT"/>
-                                        <exclude reference="mhM-BN-IR8"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=regular">
-                                    <mask key="constraints">
-                                        <exclude reference="mhM-BN-IR8"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <outlet property="delegate" destination="WNQ-2i-B77" id="0Ap-eJ-shR"/>
-                                </connections>
-                            </searchBar>
                             <segmentedControl contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="bar" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Urn-fH-Oqh">
-                                <rect key="frame" x="15" y="38" width="350" height="31"/>
+                                <rect key="frame" x="15" y="55" width="350" height="36"/>
                                 <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="Pqq-Rw-HAS"/>
+                                    <constraint firstAttribute="height" constant="35" id="Pqq-Rw-HAS"/>
                                     <constraint firstAttribute="width" constant="600" id="xxa-4c-ykp"/>
                                 </constraints>
                                 <segments>
                                     <segment title="HOME"/>
                                     <segment title="EARNINGS"/>
                                     <segment title="ECON"/>
-                                    <segment title="CRYPTO"/>
                                 </segments>
                                 <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <variation key="default">
@@ -103,8 +76,8 @@
                                     <action selector="mainNavSelectAction:" destination="WNQ-2i-B77" eventType="valueChanged" id="MYL-af-dw6"/>
                                 </connections>
                             </segmentedControl>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" rowHeight="70" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
-                                <rect key="frame" x="0.0" y="73" width="375" height="651"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="70" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="KbY-6m-WGH">
+                                <rect key="frame" x="0.0" y="96" width="375" height="628"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="separatorColor" red="0.85309709194538152" green="0.85309709194538152" blue="0.85309709194538152" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -114,7 +87,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="70"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GMC-5M-9zB" id="EdO-do-03K">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="69.666666666666671"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bank Of America" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s1x-IM-BDA">
@@ -135,7 +108,7 @@
                                                         </constraint>
                                                         <constraint firstAttribute="width" constant="257" id="My9-p1-kRE"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="16"/>
+                                                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="16"/>
                                                     <color key="textColor" red="0.24652777779999999" green="0.24652777779999999" blue="0.24652777779999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                     <variation key="default">
@@ -166,7 +139,7 @@
                                                         <constraint firstAttribute="width" constant="250" id="KiF-Hk-9Rq"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="13"/>
-                                                    <color key="textColor" red="0.44326073230000002" green="0.44326073230000002" blue="0.44326073230000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="textColor" red="0.44313725490196076" green="0.44326073230000002" blue="0.44326073230000002" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="NTDOY" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bou-Yt-hGl">
@@ -192,14 +165,14 @@
                                                         <color key="titleColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </state>
                                                 </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="🔥" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Cc-6r-XL8">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Cc-6r-XL8">
                                                     <rect key="frame" x="351" y="11" width="20" height="27"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="27" id="1P0-Tt-uzs"/>
                                                         <constraint firstAttribute="width" constant="20" id="yYo-1K-idO"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
-                                                    <color key="textColor" red="0.89803921568627454" green="0.21568627450980393" blue="0.20784313725490194" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Over 1yr ago ▸" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hii-le-ydl">
@@ -289,7 +262,7 @@
                                 </connections>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oCX-du-GHn">
-                                <rect key="frame" x="325" y="0.0" width="40" height="32"/>
+                                <rect key="frame" x="325" y="13" width="40" height="32"/>
                                 <color key="backgroundColor" red="0.94509803921568625" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="8iW-4E-YOb"/>
@@ -298,17 +271,43 @@
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="24"/>
                                 <color key="tintColor" red="0.94509803920000002" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="✉︎">
-                                    <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="titleColor" red="0.44326073230000002" green="0.44326073230000002" blue="0.44326073230000002" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="initiateSupport:" destination="WNQ-2i-B77" eventType="touchUpInside" id="Dgt-qj-3hl"/>
                                 </connections>
                             </button>
+                            <searchBar contentMode="redraw" text="" placeholder="Search Company or Event" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nfw-0u-xss">
+                                <rect key="frame" x="15" y="10" width="290" height="35"/>
+                                <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="560" id="jnJ-Ta-4AT"/>
+                                    <constraint firstAttribute="width" constant="281" id="mhM-BN-IR8"/>
+                                    <constraint firstAttribute="height" constant="35" id="pV3-8V-vCK"/>
+                                </constraints>
+                                <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="barTintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="jnJ-Ta-4AT"/>
+                                        <exclude reference="mhM-BN-IR8"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=regular">
+                                    <mask key="constraints">
+                                        <exclude reference="mhM-BN-IR8"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <outlet property="delegate" destination="WNQ-2i-B77" id="0Ap-eJ-shR"/>
+                                </connections>
+                            </searchBar>
                         </subviews>
                         <color key="backgroundColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="tintColor" red="0.94368587270000004" green="0.95293769500000003" blue="0.95293769500000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="nfw-0u-xss" firstAttribute="top" secondItem="fPu-sh-VAw" secondAttribute="top" id="3yM-vH-t0T"/>
+                            <constraint firstItem="nfw-0u-xss" firstAttribute="top" secondItem="fPu-sh-VAw" secondAttribute="top" constant="10" id="3yM-vH-t0T"/>
                             <constraint firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="5cx-il-ILy"/>
                             <constraint firstItem="Urn-fH-Oqh" firstAttribute="centerX" secondItem="fPu-sh-VAw" secondAttribute="centerX" id="5ff-PD-DhC"/>
                             <constraint firstAttribute="centerX" secondItem="KbY-6m-WGH" secondAttribute="centerX" id="6QW-kk-iAp"/>
@@ -321,7 +320,7 @@
                             <constraint firstItem="oCX-du-GHn" firstAttribute="leading" secondItem="nfw-0u-xss" secondAttribute="trailing" constant="20" id="Ksy-Dc-q9H"/>
                             <constraint firstItem="Nql-41-vTF" firstAttribute="top" secondItem="iRe-G1-Ld7" secondAttribute="bottom" id="Oug-Oa-XTb"/>
                             <constraint firstItem="nfw-0u-xss" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" constant="15" id="Oyg-7c-dWb"/>
-                            <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="Urn-fH-Oqh" secondAttribute="bottom" constant="5" id="QFc-k2-5fy"/>
+                            <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="Urn-fH-Oqh" secondAttribute="bottom" constant="6" id="QFc-k2-5fy"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" id="QJJ-ft-4SW"/>
                             <constraint firstAttribute="trailingMargin" secondItem="KbY-6m-WGH" secondAttribute="trailing" constant="-16" id="RdI-kk-aBD"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leading" id="YYc-TA-BAy"/>
@@ -342,14 +341,14 @@
                             <constraint firstItem="nfw-0u-xss" firstAttribute="trailing" secondItem="fPu-sh-VAw" secondAttribute="trailingMargin" id="jkd-9p-GFJ">
                                 <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
                             </constraint>
-                            <constraint firstItem="Urn-fH-Oqh" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="6" id="m2z-RK-XZg"/>
+                            <constraint firstItem="Urn-fH-Oqh" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="10" id="m2z-RK-XZg"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="leading" secondItem="fPu-sh-VAw" secondAttribute="leadingMargin" constant="-21" id="mgn-w1-GJi">
                                 <variation key="heightClass=regular-widthClass=regular" constant="-16"/>
                             </constraint>
                             <constraint firstItem="7Cj-9c-Flh" firstAttribute="centerX" secondItem="fPu-sh-VAw" secondAttribute="centerX" id="mzg-CQ-CUC"/>
                             <constraint firstItem="iRe-G1-Ld7" firstAttribute="top" secondItem="7Cj-9c-Flh" secondAttribute="bottom" id="pkN-cP-NDP"/>
                             <constraint firstAttribute="trailing" secondItem="oCX-du-GHn" secondAttribute="trailing" constant="10" id="qM9-N9-r46"/>
-                            <constraint firstItem="Urn-fH-Oqh" firstAttribute="top" secondItem="oCX-du-GHn" secondAttribute="bottom" constant="6" id="rW3-uG-6O6"/>
+                            <constraint firstItem="Urn-fH-Oqh" firstAttribute="top" secondItem="oCX-du-GHn" secondAttribute="bottom" constant="10" id="rW3-uG-6O6"/>
                             <constraint firstItem="KbY-6m-WGH" firstAttribute="top" secondItem="nfw-0u-xss" secondAttribute="bottom" constant="9" id="s0K-VK-9ey"/>
                             <constraint firstItem="7Cj-9c-Flh" firstAttribute="top" secondItem="KbY-6m-WGH" secondAttribute="bottom" constant="-34" id="ski-Zh-8Cl"/>
                             <constraint firstAttribute="centerX" secondItem="nfw-0u-xss" secondAttribute="centerX" id="t5v-Db-Sqo"/>

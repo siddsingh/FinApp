@@ -58,8 +58,14 @@
     // Get the one alt data snapshot
     self.altDataSnapShot = [[FACoinAltData alloc] init];
 
-    // Show the company name in the navigation bar header.
-    self.navigationItem.title = [self.eventTitleStr uppercaseString];
+    // Show the company name in the navigation bar header and format it
+    NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                             [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                             [UIColor blackColor], NSForegroundColorAttributeName,
+                                             nil];
+    [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
+    //self.navigationItem.title = self.eventTitleStr;
+    self.navigationItem.title = @"";
     
     // Set the labels to the strings that hold their text. These strings will be set in the prepare for segue method when called. This is necessary since the label outlets are still nil when prepare for segue is called, so can't be set directly.
     [self.eventTitle setText:[self.eventType uppercaseString]];
@@ -1831,8 +1837,14 @@
     // If Info
     if ([[self.detailsInfoSelector titleForSegmentAtIndex:self.detailsInfoSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Info"] == NSOrderedSame) {
         
-        // Reset the company name in the navigation bar header.
-        self.navigationItem.title = [self.eventTitleStr uppercaseString];
+        // Reset the company name in the navigation bar header and format it.
+        NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                 [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                                 [UIColor blackColor], NSForegroundColorAttributeName,
+                                                 nil];
+        [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
+        //self.navigationItem.title = self.eventTitleStr;
+        self.navigationItem.title = @"";
         
         // Format
         [self.bottomBorderLbl1 setBackgroundColor:[UIColor blackColor]];
@@ -4274,8 +4286,16 @@
                                                              [UIColor blackColor], NSForegroundColorAttributeName,
                                                              nil];
                     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
-                    // Reset the company name in the navigation bar header.
-                    self.navigationItem.title = [self.eventTitleStr uppercaseString];
+                    
+                    // Reset the company name in the navigation bar header and format it
+                    NSDictionary *regHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                             [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                                             [UIColor blackColor], NSForegroundColorAttributeName,
+                                                             nil];
+                    [self.navigationController.navigationBar setTitleTextAttributes:regHeaderAttributes];
+                    //self.navigationItem.title = self.eventTitleStr;
+                    self.navigationItem.title = @"";
+                    
                     // Make sure the price list is refreshed as well.
                     [[NSNotificationCenter defaultCenter]postNotificationName:@"EventStoreUpdated" object:self];
                 });
@@ -4321,6 +4341,23 @@
         [self sendUserGuidanceCreatedNotificationWithMessage:@"No Connection. Limited functionality."];
         [refreshTblControl endRefreshing];
     }
+}
+
+// When back button is hit, reset the navigation bar title
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+ /*   NSLog(@"BACK BUTTON CALLED************************************************");
+  //  if (self.isMovingFromParentViewController) {
+        
+        // Set navigation bar header to the list view formatting
+        NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                 [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                                 [UIColor blackColor], NSForegroundColorAttributeName,
+                                                 nil];
+        [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
+        [self.navigationController.navigationBar.topItem setTitle:@"Test"];
+   // } */
 }
 
 #pragma mark - unused code
