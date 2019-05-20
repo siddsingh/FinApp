@@ -58,17 +58,17 @@
     // Get the one alt data snapshot
     self.altDataSnapShot = [[FACoinAltData alloc] init];
 
-    // Show the company name in the navigation bar header and format it
-    NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
-                                             [UIColor blackColor], NSForegroundColorAttributeName,
-                                             nil];
-    [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
+    // Hide the company name in the navigation bar header
+    //[self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
     //self.navigationItem.title = self.eventTitleStr;
     self.navigationItem.title = @"";
+    // Show company name formatted in the eventTitle
+    [self.eventTitle setFont:[UIFont fontWithName:@"Helvetica-Bold" size:22]];
+    [self.eventTitle setTextColor:[UIColor blackColor]];
+    //[self.eventTitle setText:[self.eventType uppercaseString]];
+    [self.eventTitle setText:[self.parentCompany capitalizedString]];
     
     // Set the labels to the strings that hold their text. These strings will be set in the prepare for segue method when called. This is necessary since the label outlets are still nil when prepare for segue is called, so can't be set directly.
-    [self.eventTitle setText:[self.eventType uppercaseString]];
     [self.eventSchedule setText:[self.eventScheduleStr uppercaseString]];
     
     // Format the details Info type selector and bottom border labels
@@ -1839,7 +1839,7 @@
         
         // Reset the company name in the navigation bar header and format it.
         NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                                 [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
                                                  [UIColor blackColor], NSForegroundColorAttributeName,
                                                  nil];
         [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -4289,7 +4289,7 @@
                     
                     // Reset the company name in the navigation bar header and format it
                     NSDictionary *regHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                             [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                                             [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
                                                              [UIColor blackColor], NSForegroundColorAttributeName,
                                                              nil];
                     [self.navigationController.navigationBar setTitleTextAttributes:regHeaderAttributes];
@@ -4352,7 +4352,7 @@
         
         // Set navigation bar header to the list view formatting
         NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                                 [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
                                                  [UIColor blackColor], NSForegroundColorAttributeName,
                                                  nil];
         [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];

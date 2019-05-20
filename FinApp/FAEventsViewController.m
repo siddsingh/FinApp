@@ -85,7 +85,7 @@
     
     // Set navigation bar header to title "Upcoming Events"
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                             [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
                                              [UIColor blackColor], NSForegroundColorAttributeName,
                                              nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -121,7 +121,7 @@
     [self.eventTypeSelector setTintColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
     // Set text color of all unselected segments to a medium dark gray used in the event dates (R:113, G:113, B:113)
     NSDictionary *unselectedTxtAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIFont fontWithName:@"Helvetica" size:16], NSFontAttributeName,
+                                             [UIFont fontWithName:@"Helvetica" size:15], NSFontAttributeName,
                                              [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f], NSForegroundColorAttributeName,
                                              nil];
     //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]} forState:UIControlStateNormal];
@@ -129,7 +129,7 @@
     // Set text color for the segment selected for the very first time which is Bold Black for ALL events type. Also set focus bar to draw focus to the search bar to the same color.
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:15], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2485,7 +2485,7 @@
     
     // Reset the navigation bar header text color to black
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                               [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                               [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
                                                [UIColor blackColor], NSForegroundColorAttributeName,
                                                nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -2495,7 +2495,7 @@
     // All Event Types - Color Black
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Home"] == NSOrderedSame) {
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:15], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2543,7 +2543,7 @@
         
         // Making size smaller to fit iphone SE
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:15], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2581,7 +2581,7 @@
         // Black
         //[self.eventTypeSelector setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:29.0f/255.0f green:119.0f/255.0f blue:239.0f/255.0f alpha:1.0f]} forState:UIControlStateSelected];
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:15], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2630,7 +2630,7 @@
         if (targetURL) {
             
             NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                            [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
+                                            [UIFont fontWithName:@"Helvetica-Bold" size:15], NSFontAttributeName,
                                             [UIColor blackColor], NSForegroundColorAttributeName,
                                             nil];
             [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2674,7 +2674,7 @@
         
         // Black
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:15], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         
@@ -2714,7 +2714,7 @@
     if ([[self.eventTypeSelector titleForSegmentAtIndex:self.eventTypeSelector.selectedSegmentIndex] caseInsensitiveCompare:@"Price"] == NSOrderedSame) {
         
         NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont fontWithName:@"Helvetica-Bold" size:16], NSFontAttributeName,
+                                        [UIFont fontWithName:@"Helvetica-Bold" size:15], NSFontAttributeName,
                                         [UIColor blackColor], NSForegroundColorAttributeName,
                                         nil];
         [self.eventTypeSelector setTitleTextAttributes:textAttributes forState:UIControlStateSelected];
@@ -2811,7 +2811,7 @@
     
     // Reset the navigation bar header text color to black
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                             [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
                                              [UIColor blackColor], NSForegroundColorAttributeName,
                                              nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -4183,7 +4183,7 @@
         
         // Set navigation bar header to title "Upcoming Events"
         NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [UIFont fontWithName:@"Helvetica-Bold" size:24], NSFontAttributeName,
+                                                 [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
                                                  [UIColor blackColor], NSForegroundColorAttributeName,
                                                  nil];
         [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
