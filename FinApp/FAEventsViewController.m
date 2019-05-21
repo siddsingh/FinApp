@@ -85,7 +85,7 @@
     
     // Set navigation bar header to title "Upcoming Events"
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
+                                             [UIFont fontWithName:@"Helvetica-Bold" size:20], NSFontAttributeName,
                                              [UIColor blackColor], NSForegroundColorAttributeName,
                                              nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -2485,7 +2485,7 @@
     
     // Reset the navigation bar header text color to black
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                               [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
+                                               [UIFont fontWithName:@"Helvetica-Bold" size:20], NSFontAttributeName,
                                                [UIColor blackColor], NSForegroundColorAttributeName,
                                                nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -2811,7 +2811,7 @@
     
     // Reset the navigation bar header text color to black
     NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
+                                             [UIFont fontWithName:@"Helvetica-Bold" size:20], NSFontAttributeName,
                                              [UIColor blackColor], NSForegroundColorAttributeName,
                                              nil];
     [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];
@@ -4183,7 +4183,7 @@
         
         // Set navigation bar header to title "Upcoming Events"
         NSDictionary *regularHeaderAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [UIFont fontWithName:@"Helvetica-Bold" size:22], NSFontAttributeName,
+                                                 [UIFont fontWithName:@"Helvetica-Bold" size:20], NSFontAttributeName,
                                                  [UIColor blackColor], NSForegroundColorAttributeName,
                                                  nil];
         [self.navigationController.navigationBar setTitleTextAttributes:regularHeaderAttributes];

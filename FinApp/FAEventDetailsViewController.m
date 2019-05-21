@@ -315,7 +315,7 @@
         //customHeaderView.textColor = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
         customHeaderView.textColor = [UIColor blackColor];
         customHeaderView.textAlignment = NSTextAlignmentCenter;
-        [customHeaderView setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
+    
     
         if(section == 0) {
             
@@ -333,9 +333,11 @@
             {
                 [customHeaderView setText:[self.eventType uppercaseString]];
             } */
+            [customHeaderView setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
             [customHeaderView setText:self.eventType];
         }
         if(section == 1) {
+            [customHeaderView setFont:[UIFont fontWithName:@"Helvetica-Bold" size:15]];
             [customHeaderView setText:@"MORE"];
         }
         
