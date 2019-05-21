@@ -63,10 +63,10 @@
     //self.navigationItem.title = self.eventTitleStr;
     self.navigationItem.title = @"";
     // Show company name formatted in the eventTitle
-    [self.eventTitle setFont:[UIFont fontWithName:@"Helvetica-Bold" size:22]];
+    [self.eventTitle setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
     [self.eventTitle setTextColor:[UIColor blackColor]];
     //[self.eventTitle setText:[self.eventType uppercaseString]];
-    [self.eventTitle setText:[self.parentCompany capitalizedString]];
+    [self.eventTitle setText:self.parentCompany];
     
     // Set the labels to the strings that hold their text. These strings will be set in the prepare for segue method when called. This is necessary since the label outlets are still nil when prepare for segue is called, so can't be set directly.
     [self.eventSchedule setText:[self.eventScheduleStr uppercaseString]];
@@ -312,9 +312,10 @@
     // For all other devices
 //    else {
         [customHeaderView setBackgroundColor:[UIColor colorWithRed:241.0f/255.0f green:243.0f/255.0f blue:243.0f/255.0f alpha:1.0f]];
-        customHeaderView.textColor = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
+        //customHeaderView.textColor = [UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f];
+        customHeaderView.textColor = [UIColor blackColor];
         customHeaderView.textAlignment = NSTextAlignmentCenter;
-        [customHeaderView setFont:[UIFont systemFontOfSize:14]];
+        [customHeaderView setFont:[UIFont fontWithName:@"Helvetica-Bold" size:16]];
     
         if(section == 0) {
             
@@ -332,7 +333,7 @@
             {
                 [customHeaderView setText:[self.eventType uppercaseString]];
             } */
-            [customHeaderView setText:[self.eventType uppercaseString]];
+            [customHeaderView setText:self.eventType];
         }
         if(section == 1) {
             [customHeaderView setText:@"MORE"];
@@ -829,7 +830,7 @@
             else {
                 
                 cell.titleLabel.backgroundColor = [UIColor whiteColor];
-                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:17]];
+                [cell.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
                 [cell.descriptionArea setFont:[UIFont fontWithName:@"Helvetica" size:15]];
                 [cell.descriptionArea setTextColor:[UIColor colorWithRed:113.0f/255.0f green:113.0f/255.0f blue:113.0f/255.0f alpha:1.0f]];
                 

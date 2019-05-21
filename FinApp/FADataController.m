@@ -2239,7 +2239,7 @@ bool eventsUpdated = NO;
     [self insertUniqueCompanyWithTicker:@"LEVI" name:@"Levi Strauss & Co"];
     [self insertUniqueCompanyWithTicker:@"YETI" name:@"YETI Holdings"];
     [self insertUniqueCompanyWithTicker:@"FSLY" name:@"Fastly"];
-    [self insertUniqueCompanyWithTicker:@"SK" name:@"Slack"];
+    [self insertUniqueCompanyWithTicker:@"WORK" name:@"Slack"];
     [self insertUniqueCompanyWithTicker:@"CRWD" name:@"CrowdStrike"];
     [self insertUniqueCompanyWithTicker:@"PINS" name:@"Pinterest"];
     [self insertUniqueCompanyWithTicker:@"LK" name:@"Luckin Coffee"];
